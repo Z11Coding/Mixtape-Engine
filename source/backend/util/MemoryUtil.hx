@@ -36,7 +36,7 @@ class MemoryUtil {
 
 	public static function clearMinor() {
 		#if (cpp || java || neko)
-		Gc.run(false);
+		Gc.run(false);	
 		#end
 	}
 
