@@ -1,5 +1,6 @@
 package states;
 
+import yutautil.MemoryHelper;
 import backend.Highscore;
 import backend.StageData;
 import backend.WeekData;
@@ -9126,6 +9127,8 @@ class PlayState extends MusicBeatState
 		FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
 		FlxG.animationTimeScale = 1;
 		#if FLX_PITCH FlxG.sound.music.pitch = 1; #end
+		var clearfuck:yutautil.MemoryHelper = new MemoryHelper();
+		clearfuck.clearClassObject(Type.getClass(this));
 		instance = null;
 		super.destroy();
 	}
