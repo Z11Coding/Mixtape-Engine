@@ -397,7 +397,7 @@ class ChartingStatePsych extends MusicBeatState implements PsychUIEventHandler.P
 		selectionBox.visible = false;
 		add(selectionBox);
 
-		infoBox = new PsychUIBox(infoBoxPosition.x, infoBoxPosition.y, 220, 220, ['Information']);
+		infoBox = new PsychUIBox(infoBoxPosition.x, infoBoxPosition.y, 220, 720, ['Information']);
 		infoBox.scrollFactor.set();
 		infoBox.cameras = [camUI];
 		infoText = new FlxText(15, 15, 230, '', 16);
@@ -405,7 +405,7 @@ class ChartingStatePsych extends MusicBeatState implements PsychUIEventHandler.P
 		infoBox.getTab('Information').menu.add(infoText);
 		add(infoBox);
 
-		mainBox = new PsychUIBox(mainBoxPosition.x, mainBoxPosition.y, 300, 280, ['Charting', 'Data', 'Events', 'Note', 'Section', 'Song']);
+		mainBox = new PsychUIBox(mainBoxPosition.x, mainBoxPosition.y, 300, 480, ['Charting', 'Data', 'Events', 'Note', 'Section', 'Song']);
 		mainBox.selectedName = 'Song';
 		mainBox.scrollFactor.set();
 		mainBox.cameras = [camUI];
@@ -622,13 +622,15 @@ class ChartingStatePsych extends MusicBeatState implements PsychUIEventHandler.P
 			speed: 1,
 			offset: 0,
 
+			extraTracks: [],
+
 			mania: Note.defaultMania,
 			startMania: Note.defaultMania,
 
 			player1: 'bf',
 			player2: 'dad',
-			player5: 'bf',
-			player4: 'dad',
+			player5: null,
+			player4: null,
 			gfVersion: 'gf',
 			stage: 'stage',
 			format: 'psych_v1'

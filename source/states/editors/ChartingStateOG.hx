@@ -149,8 +149,6 @@ class ChartingStateOG extends MusicBeatChartingState
 		['Enable or Disable Dad Trail', 'Can be either true or false.\nDon\'t ask what it does, you already know.'],
 		['Enable or Disable BF Trail', 'Can be either true or false.\nDon\'t ask what it does, you already know.'],
 		['Enable or Disable GF Trail', 'Can be either true or false.\nDon\'t ask what it does, you already know.'],
-		['window shake', 'Value 1: How Much (Ex: 12,12), Value 2: How Long'],
-
 	];
 
 	var _file:FileReference;

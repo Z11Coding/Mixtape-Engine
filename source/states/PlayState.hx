@@ -3789,16 +3789,30 @@ class PlayState extends MusicBeatState
 
 				if (chartModifier != "4K Only" && chartModifier != "ManiaConverter")
 				{
-					if (songNotes[1] > (Note.ammo[mania] - 1))
+					if (songData.format == "psych_v1" || songData.format == "psych_v1_convert")
+					{	
+						gottaHitNote = (songNotes[1] < Note.ammo[mania]);						
+					}
+					else
 					{
-						gottaHitNote = !section.mustHitSection;
+						if (songNotes[1] > (Note.ammo[mania] - 1))
+						{
+							gottaHitNote = !section.mustHitSection;
+						}
 					}
 				}
 				else
 				{
-					if (songNotes[1] > (Note.ammo[SONG.mania] - 1))
+					if (songData.format == "psych_v1" || songData.format == "psych_v1_convert")
+					{	
+						gottaHitNote = (songNotes[1] < Note.ammo[SONG.mania]);						
+					}
+					else
 					{
-						gottaHitNote = !section.mustHitSection;
+						if (songNotes[1] > (Note.ammo[SONG.mania] - 1))
+						{
+							gottaHitNote = !section.mustHitSection;
+						}
 					}
 				}
 
@@ -6664,7 +6678,7 @@ class PlayState extends MusicBeatState
 					newMania = Std.parseInt(value1);
 				}
 				if (Math.isNaN(newMania) && newMania < 0 && newMania > 9)
-					newMania = 0;
+					newMania = 3;
 				notes.forEach(function(daNote:Note)
 				{
 					daNote.noteData = getNumberFromAnims(daNote.noteData, newMania);
