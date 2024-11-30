@@ -104,6 +104,7 @@ class Song
 		{
 			songJson.startMania = Note.defaultMania;
 		}
+		trace("DID A THING");
 	}
 
 	public static function convert(songJson:Dynamic) // Convert old charts to psych_v1 format
@@ -152,8 +153,8 @@ class Song
 
 			for (note in section.sectionNotes)
 			{
-				var gottaHitNote:Bool = (note[1] < 4) ? section.mustHitSection : !section.mustHitSection;
-				note[1] = (note[1] % 4) + (gottaHitNote ? 0 : 4);
+				var gottaHitNote:Bool = (note[1] < (Note.ammo[PlayState.mania])) ? section.mustHitSection : !section.mustHitSection;
+				note[1] = (note[1] % Note.ammo[PlayState.mania]-1) + (gottaHitNote ? 0 : Note.ammo[PlayState.mania]-1);
 
 				if(note[3] != null && !Std.isOfType(note[3], String))
 					note[3] = Note.defaultNoteTypes[note[3]]; //compatibility with Week 7 and 0.1-0.3 psych charts
@@ -208,48 +209,44 @@ class Song
 
 	public static function parseJSON(rawData:String, ?nameForError:String = null, ?convertTo:String = 'mixtape_v1'):SwagSong
 	{
-		var songJson:SwagSong = cast Json.parse(rawData).song;
+		var songJson:SwagSong = cast Json.parse(rawData);
 		try {
-			songJson = cast Json.parse(rawData);
 			if(Reflect.hasField(songJson, 'song'))
 			{
 				var subSong:SwagSong = Reflect.field(songJson, 'song');
 				if(subSong != null && Type.typeof(subSong) == TObject)
 					songJson = subSong;
 			}
-			if(convertTo != null && convertTo.length > 0)
+			var fmt:String = songJson.format;
+			if(fmt == null) fmt = songJson.format = 'unknown';
+			trace(fmt);
+			switch (fmt)
 			{
-				var fmt:String = songJson.format;
-				if(fmt == null) fmt = songJson.format = 'unknown';
-
-				switch(convertTo)
-				{
-					case 'psych_v1':
-						if(!fmt.startsWith('psych_v1')) //Convert to Psych 1.0 format
-						{
-							trace('converting chart $nameForError with format $fmt to psych_v1 format...');
-							songJson.format = 'psych_v1_convert';
-							convert(songJson);
-						}
-					case 'psych_v1_convert':
-						if(!fmt.startsWith('psych_v1')) //Convert to Psych 1.0 format
-						{
-							trace('converting chart $nameForError with format $fmt to psych_v1 format...');
-							songJson.format = 'psych_v1';
-							convert(songJson);
-						}
-					case 'mixtape_v1':
-						if(!fmt.startsWith('mixtape_v1')) //Convert to Mixtape 1.0 format
-						{
-							trace('converting chart $nameForError with format $fmt to mixtape_v1 format...');
-							songJson.format = 'mixtape_v1_convert';
-							onLoadJsonMixtape(songJson);
-						}
-					default:
-						trace('converting chart $nameForError with format $fmt to mixtape_v1_convert format...');
+				case 'psych_v1':
+					if(!fmt.startsWith('psych_v1')) //Convert to Psych 1.0 format
+					{
+						trace('converting chart $nameForError with format $fmt to psych_v1 format...');
+						songJson.format = 'psych_v1_convert';
+						convert(songJson);
+					}
+				case 'psych_v1_convert':
+					if(!fmt.startsWith('psych_v1')) //Convert to Psych 1.0 format
+					{
+						trace('converting chart $nameForError with format $fmt to psych_v1 format...');
+						songJson.format = 'psych_v1';
+						convert(songJson);
+					}
+				case 'mixtape_v1':
+					if(!fmt.startsWith('mixtape_v1')) //Convert to Mixtape 1.0 format
+					{
+						trace('converting chart $nameForError with format $fmt to mixtape_v1 format...');
 						songJson.format = 'mixtape_v1_convert';
 						onLoadJsonMixtape(songJson);
-				}
+					}
+				default: 
+					trace('converting chart $nameForError with format $fmt to mixtape_v1 format...');
+					songJson.format = 'mixtape_v1_convert';
+					onLoadJsonMixtape(songJson);
 			}
 		} catch (error:Dynamic) {
 			trace('Failed to parse JSON with default method. Attempting to parse with parseJSONshit...');
