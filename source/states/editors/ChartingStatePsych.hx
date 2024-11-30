@@ -91,12 +91,6 @@ class ChartingStatePsych extends MusicBeatState implements PsychUIEventHandler.P
 		['Play Sound', "Value 1: Sound file name\nValue 2: Volume (Default: 1), ranges from 0 to 1"],
 		['Change Mania', "Value 1: The new mania value (min: 0; max: 9)"],
 		['Change Mania (Special)', "Value 1: The new mania value (min: 0; max: 9)"],
-		['Super Burst', "Funnie Powerup"],
-		['Burst Dad', "Funnie Dad Burst"],
-		['Burst Boyfriend', "Funnie BF Burst"],
-		['Burst Dad 2', "Funnie Dad 2 Burst"],
-		['Burst BF2', "Funnie BF 2 Burst"],
-		['Switch Scroll', "Swap da scroll. Value 1: True or False"],
 		['Dad Fly', "Fly da dad. Value 1: True or False"],
 		['Turn on StrumFocus', "focuses the strums"],
 		['Turn off StrumFocus', "un-focuses the strums"],
@@ -119,7 +113,6 @@ class ChartingStatePsych extends MusicBeatState implements PsychUIEventHandler.P
 		['Enable or Disable Dad Trail', 'Can be either true or false.\nDon\'t ask what it does, you already know.'],
 		['Enable or Disable BF Trail', 'Can be either true or false.\nDon\'t ask what it does, you already know.'],
 		['Enable or Disable GF Trail', 'Can be either true or false.\nDon\'t ask what it does, you already know.'],
-		['window shake', 'Value 1: How Much (Ex: 12,12), Value 2: How Long'],
 	];
 	
 	public static var keysArray:Array<FlxKey> = [ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT]; //Used for Vortex Editor

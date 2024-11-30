@@ -11,7 +11,6 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import backend.Song;
 import flixel.addons.transition.FlxTransitionableState;
-import shop.ShopData.MoneyPopup;
 
 class RankingSubstate extends MusicBeatSubstate
 {
@@ -109,17 +108,6 @@ class RankingSubstate extends MusicBeatSubstate
 		FlxTween.tween(hint, {alpha: 1, y: 645 - hint.height}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
 
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
-
-		/*if (PlayState.isStoryMode)
-		{
-			var stichValue:Int = Std.int(PlayState.campaignScore / 600);
-			add(new MoneyPopup(stichValue, cameras[0]));
-		}
-		else
-		{
-			var stichValue:Int = Std.int(PlayState.instance.songScore / 600);
-			add(new MoneyPopup(stichValue, cameras[0]));
-		}*/
 	}
 
 	override function update(elapsed:Float)

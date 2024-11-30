@@ -35,7 +35,7 @@ class ABotSpeaker extends FlxSpriteGroup
 	{
 		super(x, y);
 
-		var antialias = ClientPrefs.data.antialiasing;
+		var antialias = ClientPrefs.data.globalAntialiasing;
 
 		bg = new FlxSprite(90, 20).loadGraphic(Paths.image('abot/stereoBG'));
 		bg.antialiasing = antialias;

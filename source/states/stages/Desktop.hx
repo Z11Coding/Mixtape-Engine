@@ -38,3 +38,4 @@ class Desktop extends BaseStage
         FlxG.fullscreen = wasFullscreen;
         super.destroy();
     }
+}

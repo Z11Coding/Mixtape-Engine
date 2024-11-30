@@ -59,8 +59,6 @@ class FirstCheckState extends MusicBeatState
 		});
 		#end
 
-		PlayerInfo.loadInfo();
-
 		super.create();
 
 		updateRibbon = new FlxSprite(0, FlxG.height - 75).makeGraphic(FlxG.width, 75, 0x88FFFFFF, true);
@@ -95,7 +93,7 @@ class FirstCheckState extends MusicBeatState
 		var tmr = new FlxTimer().start(2, function(tmr:FlxTimer)
 		{
 			trace('checking for update');
-			var http = new haxe.Http("https://raw.githubusercontent.com/Z11Coding/Vs.-Z11-Mixtape-Madness/refs/heads/main/gitVersion.txt");
+			var http = new haxe.Http("https://raw.githubusercontent.com/Z11Coding/Mixtape-Engine/refs/heads/main/gitVersion.txt");
 
 			http.onData = function(data:String)
 			{
@@ -107,16 +105,7 @@ class FirstCheckState extends MusicBeatState
 					trace('versions arent matching!');
 					MusicBeatState.switchState(new states.OutdatedState());
 				}
-				else
-				{
-					switch (FlxG.random.bool(12) && !ClientPrefs.data.gotit && !FlxG.save.data.updated)
-					{
-						case false:
-							FlxG.switchState(new states.CacheState());
-						case true:
-							FlxG.switchState(new states.WelcomeToPain());
-					}
-				}
+				else FlxG.switchState(new states.CacheState());
 			}
 
 			http.onError = function(error)
@@ -127,15 +116,8 @@ class FirstCheckState extends MusicBeatState
 				updateIcon.visible = false;
 				FlxTween.tween(updateAlphabet, {alpha: 0}, 2, {ease:FlxEase.sineOut});
 				FlxTween.tween(updateIcon, {alpha: 0}, 2, {ease:FlxEase.sineOut});
-				new FlxTimer().start(2, function(tmr:FlxTimer)
-				{
-					switch (FlxG.random.bool(12) && !ClientPrefs.data.gotit && !FlxG.save.data.updated)
-					{
-						case false:
-							FlxG.switchState(new states.CacheState());
-						case true:
-							FlxG.switchState(new states.WelcomeToPain());
-					}
+				new FlxTimer().start(2, function(tmr:FlxTimer) {
+					FlxG.switchState(new states.CacheState());
 				});
 			}
 

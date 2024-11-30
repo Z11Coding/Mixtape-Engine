@@ -51,7 +51,7 @@ class TransitionState {
         }
         trace("Switched to state: " + Type.getClassName(targetState));
         currenttransition = null;
-        var chanceToPain:Map<String, Float> = new Map<String, Float>();
+        /*var chanceToPain:Map<String, Float> = new Map<String, Float>();
         chanceToPain.set('WelcomeToPain', 15);
         chanceToPain.set('Nothing', 100 - chanceToPain.get('WelcomeToPain'));
         var chance:Dynamic = ChanceSelector.selectFromMap(chanceToPain);
@@ -59,7 +59,7 @@ class TransitionState {
         {
             var tempHold:FlxState = Type.createInstance(targetState, stateArgs != null ? stateArgs : []);
             TransitionState.transitionState(states.WelcomeToPain, {duration: 1, transitionType: 'fallRandom'}, [tempHold]);
-        }
+        }*/
         trace("Switch complete.");
         FlxG.switchState(Type.createInstance(targetState, stateArgs != null ? stateArgs : []));
     }

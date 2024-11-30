@@ -32,7 +32,7 @@ enum MainMenuColumn {
 class MainMenuState extends MusicBeatState
 {
 	public static var fridayVersion:String = '0.2.7-Git + 0.2.8-NG';
-	public static var mixtapeEngineVersion:String = '0.4.0'; // this is used for Discord RPC
+	public static var mixtapeEngineVersion:String = '1.0.0'; // this is used for Discord RPC
 	public static var psychEngineVersion:String = '1.0'; // This is also used for Discord RPC
 	public static var beta:Bool = false;
 	public static var curSelected:Int = 0;
@@ -70,15 +70,6 @@ class MainMenuState extends MusicBeatState
 	var logoBl:FlxSprite;
 
 	var noname:Bool = false;
-
-	//Secrets
-	var PBTBM:FlxSprite;
-	var FF:FlxSprite;
-	var ohno:FlxSound;
-	var TL:FlxSprite;
-	var h:String;
-	var chroma:ChromaticAberration;
-	var logoTrail:FlxTrail;
 
 	override function create()
 	{
@@ -236,50 +227,6 @@ class MainMenuState extends MusicBeatState
 		Achievements.reloadList();
 		#end
 		#end
-		if (FlxG.save.data.PBTBM == null) FlxG.save.data.PBTBM = false;
-		if (FlxG.save.data.FF == null) FlxG.save.data.FF = false;
-		if (FlxG.save.data.TL == null) FlxG.save.data.TL = false;
-		FlxG.save.flush();
-
-
-		var hh:Array<Chance> = [];
-		if (FlxG.save.data.PBTBM != null && FlxG.save.data.PBTBM == false) hh.push({item: "PBTBM", chance: 99}); //56% chance to get the "Possessed by the Blood Moon" secret
-		if (FlxG.save.data.FF != null && FlxG.save.data.FF == false) hh.push({item: "FF", chance: 99}); // 39% chance to get the "Fangirl Frenzy" secret
-		if (FlxG.save.data.TL != null && FlxG.save.data.TL == false) hh.push({item: "TL", chance: 99}); // 53% chance to get the "Truly Lost" secret
-
-		trace(hh);
-
-		if (Achievements.isUnlocked('secretsuntold') && (FlxG.save.data.menuLocks != null && FlxG.save.data.menuLocks[3] == false)) {
-			if (secretOverride != null) 
-				h = secretOverride;
-			else 
-				h = ChanceSelector.selectOption(hh, false, true, true);
-		} else {
-			h = 'nothing';
-		}
-		
-		trace(h);
-
-		if (h == 'PBTBM')
-		{
-			PBTBM = new FlxSprite().loadGraphic(Paths.image('stages/pbtbm/moon'));
-			PBTBM.setGraphicSize(Std.int(PBTBM.width * 0.3));
-			PBTBM.scrollFactor.set();
-			add(PBTBM);
-			FlxG.autoPause = false;
-			remove(logoTrail);
-			logoTrail = new FlxTrail(PBTBM, null, 3, 6, 0.3, 0.002);
-			add(logoTrail);
-		}
-		else if (h == 'FF')
-		{
-			ohno = new FlxSound();
-			ohno.loadEmbedded(Paths.music("The Shift"), true);
-			ohno.volume = 0;
-			ohno.play();
-		}
-
-		chroma = new ChromaticAberration();
 
 		super.create();
 
@@ -301,13 +248,6 @@ class MainMenuState extends MusicBeatState
 		return menuItem;
 	}
 
-	function setChrome(chromeOffset:Float):Void
-	{
-		chroma.data.rOffset.value = [chromeOffset];
-		chroma.data.gOffset.value = [0.0];
-		chroma.data.bOffset.value = [chromeOffset * -1];
-	}
-
 	var selectedSomethin:Bool = false;
 	var timeNotMoving:Float = 0;
 	var volTween:Bool = false;
@@ -315,157 +255,15 @@ class MainMenuState extends MusicBeatState
 	var initShader:Bool = false;
 	override function update(elapsed:Float)
 	{
-		if (h != 'FF')
-		{	
-			if (FlxG.sound.music.volume < 0.8)
-			{
-				FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
-			}
+		if (FlxG.sound.music.volume < 0.8)
+		{
+			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
 		}
 
 		if (FlxG.keys.justPressed.END) 
 		{
 			trace("resetting progress");
 			Achievements.relock();
-			FlxG.save.data.enableCodes = false;
-			FlxG.save.data.menuLocks = null;
-			FlxG.save.data.slowdown = false;
-			FlxG.save.data.PBTBM = false;
-			FlxG.save.data.TL = false;
-			FlxG.save.data.FF = false;
-			FlxG.save.data.allowedSongs = null;
-			ClientPrefs.data.gotit = false;
-			CategoryState.menuLocks[3] = true; 
-		}
-
-		if (h == 'PBTBM')
-		{
-			PBTBM.x = logoBl.x + 130;
-			PBTBM.y = logoBl.y + 50;
-			PBTBM.alpha = logoBl.alpha;
-			logoBl.visible = false;
-			PBTBM.updateHitbox();
-
-			#if cpp			
-			if(FlxG.sound.music != null && FlxG.sound.music.playing)
-			{
-				@:privateAccess
-				{
-					var aux = lime.media.openal.AL.createAux();
-					var af = lime.media.openal.AL.createEffect(); // create AudioFilter
-					lime.media.openal.AL.effecti( af, lime.media.openal.AL.EFFECT_TYPE, lime.media.openal.AL.EFFECT_REVERB ); // set filter type
-					lime.media.openal.AL.effectf( af, lime.media.openal.AL.REVERB_DECAY_TIME, 5 ); // set gain
-					lime.media.openal.AL.effectf( af, lime.media.openal.AL.REVERB_GAIN, 0.4); // set gainhf
-					lime.media.openal.AL.auxi(aux, lime.media.openal.AL.EFFECTSLOT_EFFECT, af);
-					lime.media.openal.AL.source3i(FlxG.sound.music._channel.__audioSource.__backend.handle, lime.media.openal.AL.AUXILIARY_SEND_FILTER, aux, 0, lime.media.openal.AL.FILTER_NULL);
-				}
-			}
-			#end
-		}
-		else if (h == 'FF')
-		{
-			logoBl.color = FlxColor.fromRGB(49, 176, 209);
-			logoBl.updateHitbox();
-			
-			menuItems.forEach(function(spr:FlxSprite)
-			{
-				spr.color = FlxColor.fromRGB(49, 176, 209);
-			});
-			if (!resetGrad) 
-			{
-				gradientBar = FlxGradient.createGradientFlxSprite(Math.round(FlxG.width), 512, [0x00ff0000, 0x5559CFE4, 0xAA00AEFF], 1, 90, true);
-				resetGrad = true;
-			}
-			checker.color = FlxColor.fromRGB(49, 176, 209);
-			bg.color = FlxColor.fromRGB(49, 176, 209);
-
-			if (FlxG.mouse.overlaps(logoBl) && !volTween)
-			{
-				volTween = true;
-				FlxTween.tween(ohno, {volume: 0.5}, 1, {ease:FlxEase.sineOut});
-				FlxTween.tween(FlxG.sound.music, {volume: 0.2}, 1, {ease:FlxEase.sineOut});
-			}
-			else if (!FlxG.mouse.overlaps(logoBl) && volTween)
-			{
-				volTween = false;
-				FlxTween.tween(ohno, {volume: 0}, 0.5, {ease:FlxEase.sineOut});
-				FlxTween.tween(FlxG.sound.music, {volume: 0.8}, 0.5, {ease:FlxEase.sineOut});
-			}
-
-			#if cpp			
-			if(ohno != null && ohno.playing)
-			{
-				@:privateAccess
-				{
-					var aux = lime.media.openal.AL.createAux();
-					var af = lime.media.openal.AL.createEffect(); // create AudioFilter
-					lime.media.openal.AL.effecti( af, lime.media.openal.AL.EFFECT_TYPE, lime.media.openal.AL.EFFECT_REVERB ); // set filter type
-					lime.media.openal.AL.effectf( af, lime.media.openal.AL.REVERB_DECAY_TIME, 5 ); // set gain
-					lime.media.openal.AL.effectf( af, lime.media.openal.AL.REVERB_GAIN, 0.4); // set gainhf
-					lime.media.openal.AL.auxi(aux, lime.media.openal.AL.EFFECTSLOT_EFFECT, af);
-					lime.media.openal.AL.source3i(ohno._channel.__audioSource.__backend.handle, lime.media.openal.AL.AUXILIARY_SEND_FILTER, aux, 0, lime.media.openal.AL.FILTER_NULL);
-				}
-			}
-			#end
-		}
-		else if (h == 'TL')
-		{
-			if (!initShader)
-			{
-				logoBl.shader = chroma;
-			}
-			var ch = FlxG.random.int(1, 10) / 1000;
-			setChrome(ch);
-			logoBl.updateHitbox();
-
-			if (FlxG.mouse.overlaps(logoBl))
-			{	
-				FlxG.sound.music.pitch = 0.1;
-				logoBl.color = FlxColor.fromRGB(0, 0, 0, 30);
-				menuItems.forEach(function(spr:FlxSprite)
-				{
-					spr.color = FlxColor.fromRGB(0, 0, 0, 255);
-				});
-				if (!resetGrad) 
-				{
-					gradientBar = FlxGradient.createGradientFlxSprite(Math.round(FlxG.width), 512, [0x00ff0000, 0x00ff0000, 0x00ff0000], 1, 90, true);
-					resetGrad = true;
-				}
-				checker.color = FlxColor.fromRGB(0, 0, 0, 255);
-				bg.color = FlxColor.fromRGB(0, 0, 0, 255);
-			}
-			else 
-			{
-				FlxG.sound.music.pitch = 1;
-				logoBl.color = FlxColor.fromRGB(255, 255, 255, 255);
-				menuItems.forEach(function(spr:FlxSprite)
-				{
-					spr.color = FlxColor.fromRGB(255, 255, 255, 255);
-				});
-				if (resetGrad) 
-				{
-					gradientBar = FlxGradient.createGradientFlxSprite(Math.round(FlxG.width), 512, [0x00ff0000, 0x55AE59E4, 0xAAFFA319], 1, 90, true);
-					resetGrad = false;
-				}
-				checker.color = FlxColor.fromRGB(255, 255, 255, 255);
-				bg.color = 0xff270138;
-			} 
-
-			#if cpp			
-			if(FlxG.sound.music != null && FlxG.sound.music.playing)
-			{
-				@:privateAccess
-				{
-					var aux = lime.media.openal.AL.createAux();
-					var af = lime.media.openal.AL.createEffect(); // create AudioFilter
-					lime.media.openal.AL.effecti( af, lime.media.openal.AL.EFFECT_TYPE, lime.media.openal.AL.EFFECT_REVERB ); // set filter type
-					lime.media.openal.AL.effectf( af, lime.media.openal.AL.REVERB_DECAY_TIME, 20 ); // set gain
-					lime.media.openal.AL.effectf( af, lime.media.openal.AL.REVERB_GAIN, 1); // set gainhf
-					lime.media.openal.AL.auxi(aux, lime.media.openal.AL.EFFECTSLOT_EFFECT, af);
-					lime.media.openal.AL.source3i(FlxG.sound.music._channel.__audioSource.__backend.handle, lime.media.openal.AL.AUXILIARY_SEND_FILTER, aux, 0, lime.media.openal.AL.FILTER_NULL);
-				}
-			}
-			#end
 		}
 
 		Conductor.songPosition = FlxG.sound.music.time;
@@ -628,187 +426,64 @@ class MainMenuState extends MusicBeatState
 							item = rightItem;
 					}
 
-					if (h == 'PBTBM')
+					selectedSomethin = true;
+					Cursor.hide();
+					FlxG.sound.play(Paths.sound('confirmMenu'));
+					// Main Menu Select Animations
+					FlxTween.tween(FlxG.camera, {zoom: 5}, 0.8, {ease: FlxEase.expoIn, onComplete: function(twn:FlxTween)
 					{
-						if (!FlxG.mouse.overlaps(PBTBM))
-						{
-							FlxG.sound.play(Paths.sound('cancelMenu'));
-							item.updateHitbox();
-							// spr.x += -300;
-							FlxTween.tween(item, {x: item.x - FlxG.random.int(-240, 240)}, 2, {ease: FlxEase.sineInOut});
-							FlxTween.tween(item, {y: 1000}, 1, {ease: FlxEase.backIn});
-						}
-						else if (FlxG.mouse.overlaps(PBTBM))
-						{
-							FlxG.save.data.PBTBM = true;
-							FlxG.save.flush();
-							FreeplayState.allowedSongs.push('pbtbm');
-							Achievements.unlock('secretsunveiled');
-							MusicBeatState.playSong(['possessed-by-the-blood-moon'], false, 0, 'TransitionState', 'stickers', ['FNF', 'NITG', 'POSSESSED']);
-							FlxG.autoPause = ClientPrefs.data.autoPause;
-						}
+						FlxG.camera.zoom = 1;
+					}});
+					FlxTween.tween(bg, {angle: 45}, 0.8, {ease: FlxEase.expoIn});
+					if (!ClientPrefs.data.lowQuality)
+					{
+						FlxTween.tween(checker, {angle: 45}, 0.8, {ease: FlxEase.expoIn});
+						FlxTween.tween(logoBl, {
+							alpha: 0,
+							x: logoBl.x - 30,
+							y: logoBl.y - 30,
+							angle: 4
+						}, 0.8, {ease: FlxEase.quadOut});
 					}
-					else if (h == 'TL')
+
+					new FlxTimer().start(0.2, function(tmr:FlxTimer)
 					{
-						if (!FlxG.mouse.overlaps(logoBl))
+						hideit(0.6);
+					});
+
+					new FlxTimer().start(1, function(tmr:FlxTimer)
+					{
+						goToState(option);
+					});
+
+					menuItems.forEach(function(spr:FlxSprite)
+					{
+						if (curSelected != spr.ID)
 						{
-							FlxG.sound.play(Paths.sound('cancelMenu'));
-							item.updateHitbox();
-							// spr.x += -300;
-							FlxTween.tween(item.scale, {x: 0}, 2, {ease: FlxEase.sineInOut});
-							FlxTween.tween(item.scale, {y: 0}, 1, {ease: FlxEase.backIn});
-						}
-						else if (FlxG.mouse.overlaps(logoBl))
-						{
-							FlxG.save.data.TL = true;
-							FlxG.save.flush();
-							FreeplayState.allowedSongs.push('lost');
-							Achievements.unlock('secretsunveiled');
-							selectedSomethin = true;
-							Cursor.hide();
-							FlxG.sound.music.stop();
-							FlxG.camera.fade(FlxColor.BLACK, 0.00001);
-							new FlxTimer().start(5, function(ct:FlxTimer)
-							{
-								MusicBeatState.playSong(['truly-lost', 'everlost', 'nowitness'], true, 2, 'FlxG');
+							FlxTween.tween(spr, {alpha: 0.1, x: 1500}, 1, {
+								ease: FlxEase.quadOut,
+								onComplete: function(twn:FlxTween)
+								{
+									spr.kill();
+								}
 							});
-							FlxG.autoPause = ClientPrefs.data.autoPause;
-						}
-					}
-					else if (h == 'FF')
-					{
-						if (FlxG.mouse.overlaps(logoBl))
-						{
-							FlxG.save.data.FF = true;
-							FlxG.save.flush();
-							ohno.stop();
-							FreeplayState.allowedSongs.push('frenzy');
-							Achievements.unlock('secretsunveiled');
-							MusicBeatState.playSong(['fangirl-frenzy'], true, 2, 'TransitionState', 'stickers');
+							FlxTween.tween(spr, {x: 1500}, 1, {
+								ease: FlxEase.quadOut
+							});
 						}
 						else
 						{
-							selectedSomethin = true;
-							Cursor.hide();
-							FlxG.sound.play(Paths.sound('confirmMenu'));
-							// Main Menu Select Animations
-							FlxTween.tween(FlxG.camera, {zoom: 5}, 0.8, {ease: FlxEase.expoIn, onComplete: function(twn:FlxTween)
-							{
-								FlxG.camera.zoom = 1;
-							}});
-							FlxTween.tween(bg, {angle: 45}, 0.8, {ease: FlxEase.expoIn});
-							if (!ClientPrefs.data.lowQuality)
-							{
-								FlxTween.tween(checker, {angle: 45}, 0.8, {ease: FlxEase.expoIn});
-								FlxTween.tween(logoBl, {
-									alpha: 0,
-									x: logoBl.x - 30,
-									y: logoBl.y - 30,
-									angle: 4
-								}, 0.8, {ease: FlxEase.quadOut});
-							}
-	
-							new FlxTimer().start(0.2, function(tmr:FlxTimer)
-							{
-								hideit(0.6);
-							});
-	
+							spr.updateHitbox();
+							// spr.x += -300;
+							FlxTween.tween(spr, {x: spr.x - 240, y: 260}, 0.5, {ease: FlxEase.quadOut});
+							FlxTween.tween(spr.scale, {x: 1.2, y: 1.2}, 0.8, {ease: FlxEase.quadOut});
+
 							new FlxTimer().start(1, function(tmr:FlxTimer)
 							{
 								goToState(option);
 							});
-	
-							menuItems.forEach(function(spr:FlxSprite)
-							{
-								if (curSelected != spr.ID)
-								{
-									FlxTween.tween(spr, {alpha: 0.1, x: 1500}, 1, {
-										ease: FlxEase.quadOut,
-										onComplete: function(twn:FlxTween)
-										{
-											spr.kill();
-										}
-									});
-									FlxTween.tween(spr, {x: 1500}, 1, {
-										ease: FlxEase.quadOut
-									});
-								}
-								else
-								{
-									spr.updateHitbox();
-									// spr.x += -300;
-									FlxTween.tween(spr, {x: spr.x - 240, y: 260}, 0.5, {ease: FlxEase.quadOut});
-									FlxTween.tween(spr.scale, {x: 1.2, y: 1.2}, 0.8, {ease: FlxEase.quadOut});
-	
-									new FlxTimer().start(1, function(tmr:FlxTimer)
-									{
-										goToState(option);
-									});
-								}
-							});
 						}
-					}
-					else
-					{
-						selectedSomethin = true;
-						Cursor.hide();
-						FlxG.sound.play(Paths.sound('confirmMenu'));
-						// Main Menu Select Animations
-						FlxTween.tween(FlxG.camera, {zoom: 5}, 0.8, {ease: FlxEase.expoIn, onComplete: function(twn:FlxTween)
-						{
-							FlxG.camera.zoom = 1;
-						}});
-						FlxTween.tween(bg, {angle: 45}, 0.8, {ease: FlxEase.expoIn});
-						if (!ClientPrefs.data.lowQuality)
-						{
-							FlxTween.tween(checker, {angle: 45}, 0.8, {ease: FlxEase.expoIn});
-							FlxTween.tween(logoBl, {
-								alpha: 0,
-								x: logoBl.x - 30,
-								y: logoBl.y - 30,
-								angle: 4
-							}, 0.8, {ease: FlxEase.quadOut});
-						}
-
-						new FlxTimer().start(0.2, function(tmr:FlxTimer)
-						{
-							hideit(0.6);
-						});
-
-						new FlxTimer().start(1, function(tmr:FlxTimer)
-						{
-							goToState(option);
-						});
-
-						menuItems.forEach(function(spr:FlxSprite)
-						{
-							if (curSelected != spr.ID)
-							{
-								FlxTween.tween(spr, {alpha: 0.1, x: 1500}, 1, {
-									ease: FlxEase.quadOut,
-									onComplete: function(twn:FlxTween)
-									{
-										spr.kill();
-									}
-								});
-								FlxTween.tween(spr, {x: 1500}, 1, {
-									ease: FlxEase.quadOut
-								});
-							}
-							else
-							{
-								spr.updateHitbox();
-								// spr.x += -300;
-								FlxTween.tween(spr, {x: spr.x - 240, y: 260}, 0.5, {ease: FlxEase.quadOut});
-								FlxTween.tween(spr.scale, {x: 1.2, y: 1.2}, 0.8, {ease: FlxEase.quadOut});
-
-								new FlxTimer().start(1, function(tmr:FlxTimer)
-								{
-									goToState(option);
-								});
-							}
-						});
-					}
+					});
 				}
 			}
 			#if desktop
@@ -830,7 +505,6 @@ class MainMenuState extends MusicBeatState
 	function goToState(daChoice:String)
 	{
 		trace(daChoice);
-		if(ohno != null && ohno.playing) ohno.stop(); 
 		switch (daChoice)
 		{
 			case 'freeplay':

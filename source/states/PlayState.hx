@@ -19,11 +19,12 @@ import openfl.utils.Assets as OpenFlAssets;
 import openfl.events.KeyboardEvent;
 import haxe.Json;
 
-import cutscenes.DialogueBoxPsych;
+import backend.cutscenes.DialogueBoxPsych;
 
 import states.StoryMenuState;
 import states.FreeplayState;
-import states.editors.ChartingState;
+import states.editors.ChartingStateOG;
+import states.editors.ChartingStatePsych;
 import states.editors.CharacterEditorState;
 
 import substates.PauseSubState;
@@ -65,6 +66,9 @@ import objects.NoteObject.ObjectType;
 import shaders.ShadersHandler;
 import yutautil.Anomoly;
 import backend.window.CppAPI;
+import shaders.Shaders.ShaderEffect;
+import backend.Section.SwagSection;
+import openfl.media.Sound;
 
 /**
  * This is where all the Gameplay stuff happens and is managed
@@ -413,8 +417,11 @@ class PlayState extends MusicBeatState
 	// aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 	public var bfkilledcheck = false;
 
-	var filters:Array<BitmapFilter> = [];
-	var camfilters2:Array<BitmapFilter> = [];
+	var camGamefilters:Array<BitmapFilter> = [];
+	var camHUDfilters:Array<BitmapFilter> = [];
+	var camVisualfilters:Array<BitmapFilter> = [];
+	var camOtherfilters:Array<BitmapFilter> = [];
+	var camDialoguefilters:Array<BitmapFilter> = [];
 	var ch = 2 / 1000;
 
 	public var shaderUpdates:Array<Float->Void> = [];
@@ -627,24 +634,8 @@ class PlayState extends MusicBeatState
 
 		if (!CacheMode)
 		{
-			if (SONG.song == 'Fangirl Frenzy' && !seenCutscene && isStoryMode)
-			{
-				trace('Loaded Fangirl Frenzy Cutscene!');
-				startCallback = fanfrenOpenPrep;	
-				endCallback = endSong;
-			}
-			else if (SONG.song == 'Funky Fanta' && !seenCutscene)
-			{
-				trace('Loaded Funky Fanta Cutscene!');
-				startCallback = ffOpenPrep;
-				endCallback = endSong;
-			}
-			else
-			{
-				trace('Loaded Normal Countdown!');
-				startCallback = startCountdown;
-				endCallback = endSong;
-			}
+			startCallback = startCountdown;
+			endCallback = endSong;
 		}
 
 		// for lua
@@ -800,22 +791,22 @@ class PlayState extends MusicBeatState
 
 		if (ClientPrefs.data.shaders)
 		{
-			camGame.setFilters(camGameShaders);
+			camGame.setFilters(camGamefilters);
 			camGame.filtersEnabled = true;
-			camHUD.setFilters(camHUDShaders);
+			camHUD.setFilters(camHUDfilters);
 			camHUD.filtersEnabled = true;
-			camVisual.setFilters(filters);
+			camVisual.setFilters(camVisualfilters);
 			camVisual.filtersEnabled = true;
-			camOther.setFilters(camOtherShaders);
+			camOther.setFilters(camOtherfilters);
 			camOther.filtersEnabled = true;
-			camDialogue.setFilters(filters);
+			camDialogue.setFilters(camDialoguefilters);
 			camDialogue.filtersEnabled = true;
-			camHUDShaders.push(shaders.ShadersHandler.chromaticAberration);
-			camOtherShaders.push(shaders.ShadersHandler.chromaticAberration);
-			camGameShaders.push(shaders.ShadersHandler.chromaticAberration);
-			camVisualShaders.push(shaders.ShadersHandler.chromaticAberration);
-			camDialogueShaders.push(shaders.ShadersHandler.chromaticAberration);
-			camGameShaders.push(new ShaderFilter(ShadersHandler.rainShader));
+			camHUDfilters.push(shaders.ShadersHandler.chromaticAberration);
+			camVisualfilters.push(shaders.ShadersHandler.chromaticAberration);
+			camOtherfilters.push(shaders.ShadersHandler.chromaticAberration);
+			camDialoguefilters.push(shaders.ShadersHandler.chromaticAberration);
+			camGamefilters.push(shaders.ShadersHandler.chromaticAberration);
+			camGamefilters.push(new ShaderFilter(ShadersHandler.rainShader));
 			ShadersHandler.setupRainShader();
 		}
 
@@ -2101,46 +2092,66 @@ class PlayState extends MusicBeatState
 		return null;
 	}
 
-	public function addShaderToCamera(cam:String, effect:ShaderEffect)
+	public function addShaderToCamera(cam:String, ?effect:ShaderEffect, ?shader:ShaderFilter)
 	{ // STOLE FROM ANDROMEDA
 
 		switch (cam.toLowerCase())
 		{
 			case 'camhud' | 'hud':
-				camHUDShaders.push(effect);
+				if (effect != null) camHUDShaders.push(effect);
 				var newCamEffects:Array<BitmapFilter> = []; // IT SHUTS HAXE UP IDK WHY BUT WHATEVER IDK WHY I CANT JUST ARRAY<SHADERFILTER>
+				for (i in camHUDfilters)
+				{
+					newCamEffects.push(shader);
+				}
 				for (i in camHUDShaders)
 				{
 					newCamEffects.push(new ShaderFilter(i.shader));
 				}
 				camHUD.setFilters(newCamEffects);
 			case 'camother' | 'other':
-				camOtherShaders.push(effect);
+				if (effect != null) camOtherShaders.push(effect);
 				var newCamEffects:Array<BitmapFilter> = []; // IT SHUTS HAXE UP IDK WHY BUT WHATEVER IDK WHY I CANT JUST ARRAY<SHADERFILTER>
+				for (i in camOtherfilters)
+				{
+					newCamEffects.push(shader);
+				}
 				for (i in camOtherShaders)
 				{
 					newCamEffects.push(new ShaderFilter(i.shader));
 				}
 				camOther.setFilters(newCamEffects);
 			case 'camgame' | 'game':
-				camGameShaders.push(effect);
+				if (effect != null) camGameShaders.push(effect);
 				var newCamEffects:Array<BitmapFilter> = []; // IT SHUTS HAXE UP IDK WHY BUT WHATEVER IDK WHY I CANT JUST ARRAY<SHADERFILTER>
+				for (i in camGamefilters)
+				{
+					newCamEffects.push(shader);
+				}
 				for (i in camGameShaders)
 				{
 					newCamEffects.push(new ShaderFilter(i.shader));
 				}
 				camGame.setFilters(newCamEffects);
 			case 'camvisual' | 'visual':
-				camVisualShaders.push(effect);
+				if (effect != null) camVisualShaders.push(effect);
 				var newCamEffects:Array<BitmapFilter> = []; // IT SHUTS HAXE UP IDK WHY BUT WHATEVER IDK WHY I CANT JUST ARRAY<SHADERFILTER>
+				for (i in camVisualfilters)
+				{
+					newCamEffects.push(shader);
+				}
 				for (i in camVisualShaders)
 				{
 					newCamEffects.push(new ShaderFilter(i.shader));
 				}
 				camVisual.setFilters(newCamEffects);
 			case 'camdialogue' | 'dialogue':
-				camDialogueShaders.push(effect);
+				if (effect != null) camDialogueShaders.push(effect);
 				var newCamEffects:Array<BitmapFilter> = []; // IT SHUTS HAXE UP IDK WHY BUT WHATEVER IDK WHY I CANT JUST ARRAY<SHADERFILTER>
+				for (i in camDialoguefilters)
+				{
+					newCamEffects.push(shader);
+				}
 				for (i in camDialogueShaders)
 				{
 					newCamEffects.push(new ShaderFilter(i.shader));
@@ -2167,45 +2178,70 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	public function removeShaderFromCamera(cam:String, effect:ShaderEffect)
+	public function removeShaderFromCamera(cam:String, ?effect:ShaderEffect, ?shader:ShaderFilter)
 	{
 		switch (cam.toLowerCase())
 		{
 			case 'camhud' | 'hud':
-				camHUDShaders.remove(effect);
+				if (effect != null) camHUDShaders.remove(effect);
+				for (i in camHUDfilters) if (shader == i) camHUDfilters.remove(i);
 				var newCamEffects:Array<BitmapFilter> = [];
+				for (i in camHUDfilters)
+				{
+					newCamEffects.push(shader);
+				}
 				for (i in camHUDShaders)
 				{
 					newCamEffects.push(new ShaderFilter(i.shader));
 				}
 				camHUD.setFilters(newCamEffects);
 			case 'camother' | 'other':
-				camOtherShaders.remove(effect);
+				if (effect != null) camOtherShaders.remove(effect);
+				for (i in camOtherfilters) if (shader == i) camOtherfilters.remove(i);
 				var newCamEffects:Array<BitmapFilter> = [];
+				for (i in camOtherfilters)
+				{
+					newCamEffects.push(shader);
+				}
 				for (i in camOtherShaders)
 				{
 					newCamEffects.push(new ShaderFilter(i.shader));
 				}
 				camOther.setFilters(newCamEffects);
 			case 'camvisual' | 'visual':
-				camVisualShaders.remove(effect);
+				if (effect != null) camVisualShaders.remove(effect);
+				for (i in camVisualfilters) if (shader == i) camVisualfilters.remove(i);
 				var newCamEffects:Array<BitmapFilter> = [];
+				for (i in camVisualfilters)
+				{
+					newCamEffects.push(shader);
+				}
 				for (i in camVisualShaders)
 				{
 					newCamEffects.push(new ShaderFilter(i.shader));
 				}
 				camVisual.setFilters(newCamEffects);
 			case 'camdialogue' | 'dialogue':
-				camDialogueShaders.remove(effect);
+				if (effect != null) camDialogueShaders.remove(effect);
+				for (i in camDialoguefilters) if (shader == i) camDialoguefilters.remove(i);
 				var newCamEffects:Array<BitmapFilter> = [];
+				for (i in camDialoguefilters)
+				{
+					newCamEffects.push(shader);
+				}
 				for (i in camDialogueShaders)
 				{
 					newCamEffects.push(new ShaderFilter(i.shader));
 				}
 				camDialogue.setFilters(newCamEffects);
 			default:
-				camGameShaders.remove(effect);
+				if (effect != null) camGameShaders.remove(effect);
+				for (i in camGamefilters) if (shader == i) camGamefilters.remove(i);
 				var newCamEffects:Array<BitmapFilter> = [];
+				for (i in camGamefilters)
+				{
+					newCamEffects.push(shader);
+				}
 				for (i in camGameShaders)
 				{
 					newCamEffects.push(new ShaderFilter(i.shader));
@@ -2220,14 +2256,27 @@ class PlayState extends MusicBeatState
 		{
 			case 'camhud' | 'hud':
 				camHUDShaders = [];
+				camHUDfilters = [];
 				var newCamEffects:Array<BitmapFilter> = [];
 				camHUD.setFilters(newCamEffects);
 			case 'camother' | 'other':
 				camOtherShaders = [];
+				camOtherfilters = [];
+				var newCamEffects:Array<BitmapFilter> = [];
+				camOther.setFilters(newCamEffects);
+			case 'camvisual' | 'visual':
+				camVisualShaders = [];
+				camVisualfilters = [];
+				var newCamEffects:Array<BitmapFilter> = [];
+				camOther.setFilters(newCamEffects);
+			case 'camdialogue' | 'dialogue':
+				camDialogueShaders = [];
+				camDialoguefilters = [];
 				var newCamEffects:Array<BitmapFilter> = [];
 				camOther.setFilters(newCamEffects);
 			default:
 				camGameShaders = [];
+				camGamefilters = [];
 				var newCamEffects:Array<BitmapFilter> = [];
 				camGame.setFilters(newCamEffects);
 		}
@@ -2368,38 +2417,6 @@ class PlayState extends MusicBeatState
 		{
 			FlxG.log.warn('Your dialogue file is badly formatted!');
 			startAndEnd();
-		}
-	}
-
-	// Same as above, but continues the cutscene timer instead of starting the song
-	public var cutDialogue:DialogueBoxPsych;
-
-	public function startCutDialogue(dialogueFile:DialogueFile, ?song:String = null):Void
-	{
-		// TO DO: Make this more flexible, maybe?
-		if (cutDialogue != null)
-			return;
-
-		if (dialogueFile.dialogue.length > 0)
-		{
-			seenCutscene = true;
-			// inCutscene = true;
-			cutDialogue = new DialogueBoxPsych(dialogueFile, song);
-			cutDialogue.scrollFactor.set();
-			cutDialogue.finishThing = function()
-			{
-				cutDialogue = null;
-				cutsceneHandler.pauseCutscene = false;
-			}
-			cutDialogue.nextDialogueThing = startNextDialogue;
-			cutDialogue.skipDialogueThing = skipDialogue;
-			cutDialogue.cameras = [camOther];
-			add(cutDialogue);
-		}
-		else
-		{
-			FlxG.log.warn('Your dialogue file is badly formatted!');
-			cutsceneHandler.pauseCutscene = false;
 		}
 	}
 
@@ -3290,75 +3307,75 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-public static function getNumberFromAnims(note:Int, mania:Int):Int {
-    var animMap:Map<String, Int> = new Map<String, Int>();
-    animMap.set("LEFT", 0);
-    animMap.set("DOWN", 1);
-    animMap.set("UP", 2);
-    animMap.set("RIGHT", 3);
+	public static function getNumberFromAnims(note:Int, mania:Int):Int {
+		var animMap:Map<String, Int> = new Map<String, Int>();
+		animMap.set("LEFT", 0);
+		animMap.set("DOWN", 1);
+		animMap.set("UP", 2);
+		animMap.set("RIGHT", 3);
 
-    var anims:Array<String> = Note.keysShit.get(mania).get("anims");
-    var animKeys:Array<String> = [
-        for (key in animMap.keys())
-            if (key == "LEFT") "RIGHT" else if (key == "RIGHT") "LEFT" else key
-    ];
+		var anims:Array<String> = Note.keysShit.get(mania).get("anims");
+		var animKeys:Array<String> = [
+			for (key in animMap.keys())
+				if (key == "LEFT") "RIGHT" else if (key == "RIGHT") "LEFT" else key
+		];
 
-    var result:Int;
+		var result:Int;
 
-    if (mania > 3) {
-        var anim = animKeys[note];
-        var matchingIndices:Array<Int> = [];
-        if (note < animKeys.length) {
-            for (i in 0...anims.length) {
-                if (anims[i] == anim) {
-                    matchingIndices.push(i);
-                }
-            }
-            if (matchingIndices.length > 0) {
-                var randomIndex = Std.int(Math.random() * matchingIndices.length);
-                result = matchingIndices[randomIndex];
-            } else {
-                var randomIndex = Std.int(Math.random() * mania);
-                result = randomIndex;
-            }
-        } else {
-            if (matchingIndices.length > 0) {
-                var randomIndex = Std.int(Math.random() * matchingIndices.length);
-                result = matchingIndices[randomIndex];
-            } else {
-                var randomIndex = Std.int(Math.random() * mania);
-                result = randomIndex;
-            }
-        }
-    } else { // mania == 3
-        var anim = anims[note];
-        if (note < anims.length) {
-            if (animMap.exists(anim)) {
-                result = animMap.get(anim);
-            } else {
-                throw 'No matching animation found';
-            }
-        } else {
-            result = animMap.get(anim);
-        }
-    }
+		if (mania > 3) {
+			var anim = animKeys[note];
+			var matchingIndices:Array<Int> = [];
+			if (note < animKeys.length) {
+				for (i in 0...anims.length) {
+					if (anims[i] == anim) {
+						matchingIndices.push(i);
+					}
+				}
+				if (matchingIndices.length > 0) {
+					var randomIndex = Std.int(Math.random() * matchingIndices.length);
+					result = matchingIndices[randomIndex];
+				} else {
+					var randomIndex = Std.int(Math.random() * mania);
+					result = randomIndex;
+				}
+			} else {
+				if (matchingIndices.length > 0) {
+					var randomIndex = Std.int(Math.random() * matchingIndices.length);
+					result = matchingIndices[randomIndex];
+				} else {
+					var randomIndex = Std.int(Math.random() * mania);
+					result = randomIndex;
+				}
+			}
+		} else { // mania == 3
+			var anim = anims[note];
+			if (note < anims.length) {
+				if (animMap.exists(anim)) {
+					result = animMap.get(anim);
+				} else {
+					throw 'No matching animation found';
+				}
+			} else {
+				result = animMap.get(anim);
+			}
+		}
 
-    // Ensure result is within bounds
-if (result < 0 || result > mania) {
-	trace("OOB NOtE: " + note + " MANIA: " + mania + " RESULT: " + result);
-    var foundValidAnimation = false;
-    while (!foundValidAnimation) {
-        var randomIndex = Std.int(Math.random() * anims.length);
-        var randomAnim = anims[randomIndex];
-        if (animMap.exists(randomAnim)) {
-            result = animMap.get(randomAnim);
-            foundValidAnimation = true;
-        }
-    }
-}
+		// Ensure result is within bounds
+		if (result < 0 || result > mania) {
+			trace("OOB NOtE: " + note + " MANIA: " + mania + " RESULT: " + result);
+			var foundValidAnimation = false;
+			while (!foundValidAnimation) {
+				var randomIndex = Std.int(Math.random() * anims.length);
+				var randomAnim = anims[randomIndex];
+				if (animMap.exists(randomAnim)) {
+					result = animMap.get(randomAnim);
+					foundValidAnimation = true;
+				}
+			}
+		}
 
-    return result;
-}
+		return result;
+	}
 
 	var debugNum:Int = 0;
 	var stair:Int = 0;
@@ -4580,27 +4597,28 @@ if (result < 0 || result > mania) {
 					track.pause();
 			}
 
-			FlxTimer.globalManager.forEach(function(tmr:FlxTimer) if (!tmr.finished)
-				tmr.active = false);
-			FlxTween.globalManager.forEach(function(twn:FlxTween) if (!twn.finished)
-				twn.active = false);
+			FlxTimer.globalManager.forEach(function(tmr:FlxTimer) if(!tmr.finished) tmr.active = false);
+			FlxTween.globalManager.forEach(function(twn:FlxTween) if(!twn.finished) twn.active = false);
 		}
 
 		super.openSubState(SubState);
 	}
 
+	public var canResync:Bool = true;
 	override function closeSubState()
 	{
 		super.closeSubState();
 		stagesFunc(function(stage:BaseStage) stage.closeSubState());
 		if (paused)
 		{
-			paused = false;
+			if (FlxG.sound.music != null && !startingSong && canResync)
+			{
+				resyncVocals();
+			}
+			FlxTimer.globalManager.forEach(function(tmr:FlxTimer) if(!tmr.finished) tmr.active = true);
+			FlxTween.globalManager.forEach(function(twn:FlxTween) if(!twn.finished) twn.active = true);
 
-			FlxTimer.globalManager.forEach(function(tmr:FlxTimer) if (!tmr.finished)
-				tmr.active = true);
-			FlxTween.globalManager.forEach(function(twn:FlxTween) if (!twn.finished)
-				twn.active = true);
+			paused = false;
 			callOnScripts('onResume');
 			resetRPC(startTimer != null && startTimer.finished);
 
@@ -4640,7 +4658,7 @@ if (result < 0 || result > mania) {
 			}
 			lostFocus = false;
 		}
-		if (gf != null)
+		if (health > 0 && !paused && gf != null)
 		{
 			resetRPC(Conductor.songPosition > 0.0);
 		}
@@ -4754,140 +4772,6 @@ if (result < 0 || result > mania) {
 		else if (!Crashed)
 			DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter());
 		#end
-	}
-
-	var cutsceneHandler:CutsceneHandler;
-	function fanfrenCutPrep()
-	{
-		cutsceneHandler = new CutsceneHandler();
-
-		camHUD.visible = false;
-		cutsceneHandler.finishCallback = function()
-		{
-			trace("Cutscene Finished! Starting Song!");
-			var timeForStuff:Float = Conductor.crochet / 1000 * 4.5;
-			FlxG.sound.music.fadeOut(timeForStuff);
-			FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, timeForStuff, {ease: FlxEase.quadInOut});
-			startCountdown();
-
-			camHUD.visible = true;
-			boyfriend.animation.finishCallback = null;
-			gf.animation.finishCallback = null;
-			gf.dance();
-		};
-		camFollow.setPosition(boyfriend.x + 280, boyfriend.y + 170);
-	}
-
-	function fanfrenOpenPrep()
-	{
-		fanfrenCutPrep();
-		cutsceneHandler.endTime = 13;
-		//FlxG.camera.zoom *= 1.2;
-		boyfriend.alpha = 0.00001;
-		gf.alpha = 0.00001;
-		bf2.alpha = 0.00001;
-		dad2.alpha = 0.00001;
-		Paths.sound('pop');
-		Paths.sound('ayy');
-
-		cutsceneHandler.finishCallback = function()
-		{
-			FlxG.sound.music.volume = 0;
-		};
-
-		cutsceneHandler.timer(1, function()
-		{
-			boyfriend.alpha = 1;
-			FlxG.sound.play(Paths.sound('pop'));
-		});
-
-		cutsceneHandler.timer(4, function()
-		{
-			boyfriend.playAnim("hey", true);
-		});
-
-		cutsceneHandler.timer(4.3, function()
-		{
-			//sync with the actual HEY part of the animation
-			FlxG.sound.play(Paths.sound('ayy'));
-		});
-
-		cutsceneHandler.timer(4.6, function()
-		{
-			camFollow.x -= 750;
-			camFollow.y -= 200;
-		});
-
-		cutsceneHandler.timer(6, function()
-		{
-			FlxG.sound.playMusic(Paths.music("The Shift"), 1, true);
-			boyfriend.playAnim("idle", true);
-			cutsceneHandler.pauseCutscene = true;
-			startCutDialogue(DialogueBoxPsych.parseDialogue(Paths.json(songName + '/dialogueIntro1')));
-		});
-
-		cutsceneHandler.timer(7, function()
-		{
-			bf2.alpha = 1;
-			FlxG.sound.play(Paths.sound('pop'));
-		});
-
-		cutsceneHandler.timer(8, function()
-		{
-			FlxG.sound.music.fadeOut(1, 1);
-			cutsceneHandler.pauseCutscene = true;
-			startCutDialogue(DialogueBoxPsych.parseDialogue(Paths.json(songName + '/dialogueIntro2')));
-		});
-
-		cutsceneHandler.timer(9, function()
-		{
-			dad2.alpha = 1;
-			FlxG.sound.play(Paths.sound('pop'));
-		});
-
-		cutsceneHandler.timer(10, function()
-		{
-			FlxG.sound.music.fadeOut(1, 1);
-			cutsceneHandler.pauseCutscene = true;
-			startCutDialogue(DialogueBoxPsych.parseDialogue(Paths.json(songName + '/dialogueIntro3')));
-		});
-
-		cutsceneHandler.timer(11, function()
-		{
-			camFollow.x += (750/4);
-			camFollow.y -= 100;
-			gf.alpha = 1;
-			FlxG.sound.play(Paths.sound('pop'));
-		});
-
-		cutsceneHandler.timer(12, function()
-		{
-			FlxG.sound.music.fadeOut(1, 1);
-			cutsceneHandler.pauseCutscene = true;
-			startCutDialogue(DialogueBoxPsych.parseDialogue(Paths.json(songName + '/dialogueIntro4')));
-		});
-
-		cutsceneHandler.timer(12.5, function()
-		{
-			trace("Cutscene Finished! Starting Song!");
-			var timeForStuff:Float = Conductor.crochet / 1000 * 4.5;
-			FlxG.sound.music.fadeOut(timeForStuff);
-			FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, timeForStuff, {ease: FlxEase.quadInOut});
-			startCountdown();
-			moveCamera(true);
-
-			camHUD.visible = true;
-			boyfriend.animation.finishCallback = null;
-			gf.animation.finishCallback = null;
-			gf.dance();
-			//Force end the cutscene cuz it doesn't wanna end by itself
-		});
-
-	}
-
-	function ffOpenPrep()
-	{
-		startVideo('fanta_cutscene_wip_lol');
 	}
 
 	public var paused:Bool = false;
@@ -5346,7 +5230,7 @@ if (result < 0 || result > mania) {
 						for (track in tracks)
 							track.pause();
 					}
-					openSubState(new PauseSubStateLost(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+					openSubState(new substates.PauseSubStateLost(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 				}
 				else
 				{
@@ -6017,21 +5901,6 @@ if (result < 0 || result > mania) {
 		return health;
 	}
 
-	function what(convertedvalue:String)
-	{
-		if (gimmicksAllowed)
-		{
-			if (convertedvalue == 'On' || convertedvalue == 'on')
-			{
-				circlefuntime = true;
-			}
-			else
-			{
-				circlefuntime = false;
-			}
-		}
-	}
-
 	function openChartEditor(?psychEditor:Bool = false)
 	{
 		FlxG.camera.followLerp = 0;
@@ -6124,13 +5993,14 @@ if (result < 0 || result > mania) {
 	}
 
 	public var isDead:Bool = false; // Don't mess with this on Lua!!!
-
+	public var gameOverTimer:FlxTimer;
 	function doDeathCheck(?skipHealthCheck:Bool = false)
 	{
 		if (((skipHealthCheck && instakillOnMiss) || health <= 0)
 			&& !practiceMode
 			&& !isDead
 			&& bfkilledcheck
+			&& gameOverTimer == null
 			|| playAsGF
 			&& healthGF <= 0)
 		{
@@ -6770,75 +6640,56 @@ if (result < 0 || result > mania) {
 					newMania = 0;
 				changeMania(newMania, skipTween);
 
-				case 'Change Mania (Special)':
-					var newMania:Int = 0;
-					var skipTween:Bool = value2 == "true" ? true : false;
-					var prevNote1:Note = null;
-					var prevNote2:Note = null;
+			case 'Change Mania (Special)':
+				var newMania:Int = 0;
+				var skipTween:Bool = value2 == "true" ? true : false;
+				var prevNote1:Note = null;
+				var prevNote2:Note = null;
 
+				playfields.forEach(function(daPlayfield:PlayField)
+				{
+					for (note in allNotes)
+						daPlayfield.unqueue(note);
+				});
+
+				if (value1.toLowerCase().trim() == "random") {
+					newMania = FlxG.random.int(0, 8);
+				} else {
+					newMania = Std.parseInt(value1);
+				}
+				if (Math.isNaN(newMania) && newMania < 0 && newMania > 9)
+					newMania = 0;
+				notes.forEach(function(daNote:Note)
+				{
+					daNote.noteData = getNumberFromAnims(daNote.noteData, newMania);
+				});
+				for (i in 0...allNotes.length)
+				{
+					if (allNotes[i].mustPress)
+					{
+						if (!allNotes[i].isSustainNote)
+						{
+							allNotes[i].noteData = getNumberFromAnims(allNotes[i].noteData, newMania);
+							prevNote1 = allNotes[i];
+						}
+						else if (prevNote1 != null && allNotes[i].isSustainNote) allNotes[i].noteData = prevNote1.noteData;
+					}
+					if (!allNotes[i].mustPress)
+					{
+						if (!allNotes[i].isSustainNote)
+						{
+							allNotes[i].noteData = getNumberFromAnims(allNotes[i].noteData, newMania);
+							prevNote2 = allNotes[i];
+						}
+						else if (prevNote2 != null && allNotes[i].isSustainNote) allNotes[i].noteData = prevNote2.noteData;
+					}
 					playfields.forEach(function(daPlayfield:PlayField)
 					{
 						for (note in allNotes)
-							daPlayfield.unqueue(note);
+							daPlayfield.queue(note);
 					});
-	
-					if (value1.toLowerCase().trim() == "random") {
-						newMania = FlxG.random.int(0, 8);
-					} else {
-						newMania = Std.parseInt(value1);
-					}
-					if (Math.isNaN(newMania) && newMania < 0 && newMania > 9)
-						newMania = 0;
-					notes.forEach(function(daNote:Note)
-					{
-						daNote.noteData = getNumberFromAnims(daNote.noteData, newMania);
-					});
-					for (i in 0...allNotes.length)
-					{
-						if (allNotes[i].mustPress)
-						{
-							if (!allNotes[i].isSustainNote)
-							{
-								allNotes[i].noteData = getNumberFromAnims(allNotes[i].noteData, newMania);
-								prevNote1 = allNotes[i];
-							}
-							else if (prevNote1 != null && allNotes[i].isSustainNote) allNotes[i].noteData = prevNote1.noteData;
-						}
-						if (!allNotes[i].mustPress)
-						{
-							if (!allNotes[i].isSustainNote)
-							{
-								allNotes[i].noteData = getNumberFromAnims(allNotes[i].noteData, newMania);
-								prevNote2 = allNotes[i];
-							}
-							else if (prevNote2 != null && allNotes[i].isSustainNote) allNotes[i].noteData = prevNote2.noteData;
-						}
-						playfields.forEach(function(daPlayfield:PlayField)
-						{
-							for (note in allNotes)
-								daPlayfield.queue(note);
-						});
-					}
-					changeMania(newMania, skipTween, true);
-	
-
-			case 'Super Burst':
-				powerup(value1);
-
-			case 'Burst Dad':
-				burstRelease(dad.getMidpoint().x - 1000, dad.getMidpoint().y - 100);
-
-			case 'Burst Dad 2':
-				burstRelease(dad2.getMidpoint().x - 1000, dad2.getMidpoint().y - 100);
-
-			case 'Burst Boyfriend':
-				burstRelease(boyfriend.getMidpoint().x, boyfriend.getMidpoint().y - 100);
-
-			case 'Burst BF2':
-				burstRelease(bf2.getMidpoint().x, bf2.getMidpoint().y - 100);
-
-			case 'Switch Scroll':
-				daAnswer(value1);
+				}
+				changeMania(newMania, skipTween, true);
 
 			case 'Dad Fly':
 				daAnswer2(value1);
@@ -7049,23 +6900,6 @@ if (result < 0 || result > mania) {
 					colorSwitch('white');
 				if (effect == null || effect == '')
 					effectSwitch('none');
-
-				/*
-					case 'Note Screen Center':
-						if (gimmicksAllowed)
-						{
-							if (value1.toLowerCase() == 'true' || value1.toLowerCase() == 'True' || value1.toLowerCase() == 'TRUE' || value1.toLowerCase() == 'on' || value1.toLowerCase() == 'On' || value1.toLowerCase() == 'ON') 
-							{
-								notesCentered = true;
-							}
-							else
-							{
-								notesCentered = false;
-							}
-						}
-
-					case '???':
-						what(value1); */
 		}
 		stagesFunc(function(stage:BaseStage) stage.eventCalled(eventName, value1, value2, flValue1, flValue2, strumTime));
 		callOnScripts('onEvent', [eventName, value1, value2, strumTime]);

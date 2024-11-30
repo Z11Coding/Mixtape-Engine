@@ -21,7 +21,13 @@ class PauseSubState extends MusicBeatSubstate
 	var difficultyChoices = [];
 	var curSelected:Int = 0;
 
+	var pausebg:FlxSprite;
+	var pausebg1:FlxSprite;
+	var iconBG:FlxSprite;
+	var icon:HealthIcon;
+
 	var pauseMusic:FlxSound;
+	var opponentText:FlxText;
 	var practiceText:FlxText;
 	var skipTimeText:FlxText;
 	var skipTimeTracker:Alphabet;
@@ -80,14 +86,14 @@ class PauseSubState extends MusicBeatSubstate
 		bg.scrollFactor.set();
 		add(bg);
 
-		if (!ClientPrefs.lowQuality)
+		if (!ClientPrefs.data.lowQuality)
 		{
 			pausebg = new FlxSprite().loadGraphic(Paths.image('pause/pausemenubg'));
 			pausebg.color = 0xFF1E1E1E;
 			pausebg.scrollFactor.set();
 			pausebg.updateHitbox();
 			pausebg.screenCenter();
-			pausebg.antialiasing = ClientPrefs.globalAntialiasing;
+			pausebg.antialiasing = ClientPrefs.data.globalAntialiasing;
 			add(pausebg);
 			pausebg.x += 200;
 			pausebg.y -= 200;
@@ -184,6 +190,15 @@ class PauseSubState extends MusicBeatSubstate
 		practiceText.visible = PlayState.instance.practiceMode;
 		add(practiceText);
 
+		opponentText = new FlxText(20, 15 + 96, 0, "OPPONENT MODE", 32);
+		opponentText.scrollFactor.set();
+		opponentText.setFormat(Paths.font('vcr.ttf'), 32);
+		opponentText.y = opponentText.y - 5;
+		opponentText.alpha = 0;
+		opponentText.updateHitbox();
+		opponentText.visible = PlayState.instance.opponentmode;
+		add(opponentText);
+
 		var chartingText:FlxText = new FlxText(20, 15 + 101, 0, Language.getPhrase("Charting Mode").toUpperCase(), 32);
 		chartingText.scrollFactor.set();
 		chartingText.setFormat(Paths.font('vcr.ttf'), 32);
@@ -200,11 +215,13 @@ class PauseSubState extends MusicBeatSubstate
 		levelInfo.x = FlxG.width - (levelInfo.width + 20);
 		levelDifficulty.x = FlxG.width - (levelDifficulty.width + 20);
 		blueballedTxt.x = FlxG.width - (blueballedTxt.width + 20);
+		opponentText.x = FlxG.width - (opponentText.width + 20);
 
 		FlxTween.tween(bg, {alpha: 0.6}, 0.4, {ease: FlxEase.quartInOut});
 		FlxTween.tween(levelInfo, {alpha: 1, y: 20}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
 		FlxTween.tween(levelDifficulty, {alpha: 1, y: levelDifficulty.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.5});
 		FlxTween.tween(blueballedTxt, {alpha: 1, y: blueballedTxt.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7});
+		FlxTween.tween(opponentText, {alpha: 1, y: opponentText.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.9});
 
 		grpMenuShit = new FlxTypedGroup<Alphabet>();
 		add(grpMenuShit);

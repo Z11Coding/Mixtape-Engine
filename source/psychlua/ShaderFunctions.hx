@@ -47,34 +47,6 @@ class ShaderFunctions
 			#end
 			return false;
 		});
-
-		funk.addLocalCallback("addCamShader", function(camera:String, shader:String) {
-			if(!ClientPrefs.data.shaders) return false;
-
-			#if (!flash && sys)
-			if(!funk.runtimeShaders.exists(shader) && !funk.initLuaShader(shader))
-			{
-				FunkinLua.luaTrace('addCamShader: Shader $shader is missing!', false, false, FlxColor.RED);
-				return false;
-			}
-
-			var split:Array<String> = obj.split('.');
-			var leObj:FlxSprite = LuaUtils.getObjectDirectly(split[0]);
-			if(split.length > 1) {
-				leObj = LuaUtils.getVarInArray(LuaUtils.getPropertyLoop(split), split[split.length-1]);
-			}
-
-			if(leObj != null) {
-				var arr:Array<String> = funk.runtimeShaders.get(shader);
-				addShaderToCamera(camera, new FlxRuntimeShader(arr[0], arr[1]));
-				return true;
-			}
-			#else
-			FunkinLua.luaTrace("addCamShader: Platform unsupported for Runtime Shaders!", false, false, FlxColor.RED);
-			#end
-			return false;
-		});
-
 		Lua_helper.add_callback(lua, "removeSpriteShader", function(obj:String) {
 			var split:Array<String> = obj.split('.');
 			var leObj:FlxSprite = LuaUtils.getObjectDirectly(split[0]);
@@ -86,45 +58,6 @@ class ShaderFunctions
 				leObj.shader = null;
 				return true;
 			}
-			return false;
-		});
-
-		funk.addLocalCallback("removeCamShader", function(camera:String, shader:String) {
-			if(!ClientPrefs.data.shaders) return false;
-
-			#if (!flash && sys)
-			if(!funk.runtimeShaders.exists(shader) && !funk.initLuaShader(shader))
-			{
-				FunkinLua.luaTrace('addCamShader: Shader $shader is missing!', false, false, FlxColor.RED);
-				return false;
-			}
-
-			var split:Array<String> = obj.split('.');
-			var leObj:FlxSprite = LuaUtils.getObjectDirectly(split[0]);
-			if(split.length > 1) {
-				leObj = LuaUtils.getVarInArray(LuaUtils.getPropertyLoop(split), split[split.length-1]);
-			}
-
-			if(leObj != null) {
-				var arr:Array<String> = funk.runtimeShaders.get(shader);
-				removeShaderFromCamera(camera, new FlxRuntimeShader(arr[0], arr[1]));
-				return true;
-			}
-			#else
-			FunkinLua.luaTrace("addCamShader: Platform unsupported for Runtime Shaders!", false, false, FlxColor.RED);
-			#end
-			return false;
-		});
-
-		funk.addLocalCallback("clearCamShaders", function(camera:String) {
-			if(!ClientPrefs.data.shaders) return false;
-
-			#if (!flash && sys)
-			removeShaderFromCamera(camera, new FlxRuntimeShader(arr[0], arr[1]));
-			return true;
-			#else
-			FunkinLua.luaTrace("removeCamShader: Platform unsupported for Runtime Shaders!", false, false, FlxColor.RED);
-			#end
 			return false;
 		});
 

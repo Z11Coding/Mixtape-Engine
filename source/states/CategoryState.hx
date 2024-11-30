@@ -33,6 +33,8 @@ class CategoryState extends MusicBeatState
 		menuItems.remove(" ");
 		FlxTransitionableState.skipNextTransOut = false;
 
+		if (FlxG.save.data.gotIntoAnArgument) menuItems.push("Secrets");
+
 		WeekData.reloadWeekFiles(false);
 		var weeks:Array<WeekData> = [];
 		for (i in 0...WeekData.weeksList.length) {
@@ -206,25 +208,10 @@ class CategoryState extends MusicBeatState
 			}
 			else if (accepted)
 			{
-				if (loadWeekForce == 'codes')
-				{
-					TransitionState.transitionState(CodeState, {transitionType: "stickers"});
-				}
-				else if (loadWeekForce == 'secrets')
-				{
-					if (Achievements.isUnlocked('secretsunveiled'))
-					{
-						TransitionState.transitionState(FreeplayState, {transitionType: "instant"});
-					}
-					else
-					{
-						Window.alert('First, you must find the songs that are hidden in the main menu\nOnly then can you enter here.', 'Not yet...');
-					}
-				}
-				else if (loadWeekForce == 'h?')
+				if (loadWeekForce == 'h?')
 				{
 					Window.alert('h?', 'h?');
-					throw "h?";
+					Main.closeGame();
 				}
 				else
 				{

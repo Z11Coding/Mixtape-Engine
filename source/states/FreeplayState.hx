@@ -153,6 +153,8 @@ class FreeplayState extends MusicBeatState
 				}
 			}
 		}
+
+		if (FlxG.save.data.gotIntoAnArgument && CategoryState.loadWeekForce == "Secrets") addSong('Small Arguement', 0, "gfchibi", FlxColor.fromRGB(235, 100, 161));
 		Mods.loadTopMod();
 
 		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
@@ -330,7 +332,7 @@ class FreeplayState extends MusicBeatState
 		}
 		
 		for (i in 0...WeekData.weeksList.length) {
-			if(!allowedSongs.contains(WeekData.weeksList[i])) continue;
+			if(weekIsLocked(WeekData.weeksList[i])) continue;
 
 			var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
 			var leSongs:Array<String> = [];
@@ -347,15 +349,12 @@ class FreeplayState extends MusicBeatState
 			{
 				if (CategoryState.loadWeekForce == "All" && !Std.string(song[0]).toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()))
 				{
-					if (Std.string(song[0]).toLowerCase().trim().contains(allowedSongs[i]))
+					var colors:Array<Int> = song[2];
+					if(colors == null || colors.length < 3)
 					{
-						var colors:Array<Int> = song[2];
-						if(colors == null || colors.length < 3)
-						{
-							colors = [146, 113, 253];
-						}
-						addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
+						colors = [146, 113, 253];
 					}
+					addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
 				}
 				else if (Std.string(song[0]).toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()))
 				{
@@ -711,19 +710,11 @@ class FreeplayState extends MusicBeatState
 					{
 						if (songLowercase == "song-not-found")
 						{
-							trace('ERROR! $e');
-
-							var errorStr:String = e.toString();
-							if(errorStr.startsWith('[file_contents,assets/data/')) errorStr = 'Missing file: ' + errorStr.substring(34, errorStr.length-1); //Missing chart
-							missingText.text = 'ERROR WHILE LOADING CHART:\n$errorStr';
-							missingText.screenCenter(Y);
-							missingText.visible = true;
-							missingTextBG.visible = true;
-							FlxG.sound.play(Paths.sound('cancelMenu'));
-
-							updateTexts(elapsed);
-							super.update(elapsed);
-							return;
+							Song.loadFromJson('small-argument-hard', 'small-argument');
+							FlxG.save.data.gotIntoAnArgument = true;
+							FlxG.save.flush();
+							PlayState.isStoryMode = false;
+							PlayState.storyDifficulty = curDifficulty;
 						}
 						else
 						{
