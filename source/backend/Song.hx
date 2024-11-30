@@ -208,9 +208,8 @@ class Song
 
 	public static function parseJSON(rawData:String, ?nameForError:String = null, ?convertTo:String = 'mixtape_v1'):SwagSong
 	{
-		var songJson:SwagSong = cast Json.parse(rawData).song;
+		var songJson:Dynamic = Json.parse(rawData);
 		try {
-			songJson = cast Json.parse(rawData);
 			if(Reflect.hasField(songJson, 'song'))
 			{
 				var subSong:SwagSong = Reflect.field(songJson, 'song');
