@@ -137,6 +137,15 @@ class Song
 					else i++;
 				}
 			}
+
+			if (songJson.mania == null)
+				{
+					songJson.mania = Note.defaultMania;
+				}
+				if (songJson.startMania == null)
+				{
+					songJson.startMania = Note.defaultMania;
+				}
 		}
 
 		var sectionsData:Array<SwagSection> = songJson.notes;

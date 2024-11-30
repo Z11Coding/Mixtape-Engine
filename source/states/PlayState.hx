@@ -270,7 +270,7 @@ class PlayState extends MusicBeatState
 
 	public var ratingsData:Array<Rating> = Rating.loadDefault();
 
-	public static var mania:Int = 0;
+	public static var mania:Int = -1;
 
 	private var generatedMusic:Bool = false;
 
@@ -722,10 +722,10 @@ class PlayState extends MusicBeatState
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
-		// if (PlayState.mania == -1 && SONG.startMania == -1) {
-		// 	mania = 3;
-		// 	SONG.startMania = 3;
-		// }
+		if (mania == -1 || SONG.startMania == -1) {
+			mania = 3;
+			SONG.startMania = 3;
+		}
 
 		// For the "Just the Two of Us" achievement
 		for (i in 0...keysArray[mania].length)
@@ -3394,6 +3394,11 @@ class PlayState extends MusicBeatState
 
 		// NEW SHIT
 		noteData = songData.notes;
+
+		var mania = if (chartModifier == "ManiaConverter" || chartModifier == "4K Only") null else if (songData.startMania != -1) songData.startMania else if (songData.mania != -1) songData.mania else 3;
+		if (mania != null && mania != PlayState.mania) {
+			changeMania(mania, false);
+		}
 
 		var playerCounter:Int = 0;
 		var daBeats:Int = 0; // Not exactly representative of 'daBeats' lol, just how much it has looped
@@ -6637,7 +6642,7 @@ class PlayState extends MusicBeatState
 
 				newMania = Std.parseInt(value1);
 				if (Math.isNaN(newMania) && newMania < Note.minMania && newMania > Note.maxMania)
-					newMania = 0;
+					newMania = Note.defaultMania;
 				changeMania(newMania, skipTween);
 
 			case 'Change Mania (Special)':
