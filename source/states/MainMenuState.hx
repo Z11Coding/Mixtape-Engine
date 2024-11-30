@@ -42,7 +42,9 @@ class MainMenuState extends MusicBeatState
 
 	var menuItems:FlxTypedGroup<FlxSprite>;
 	var optionShit:Array<String> = [
+		'story_mode',
 		'freeplay',
+		#if MODS_ALLOWED 'mods', #end
 		'credits'
 	];
 	public var iconBG:FlxSprite;
@@ -140,7 +142,7 @@ class MainMenuState extends MusicBeatState
 
 		for (num => option in optionShit)
 		{
-			var item:FlxSprite = createMenuItem(option, 0, (num * 140) + 180);
+			var item:FlxSprite = createMenuItem(option, 20, (num * 140) + 180);
 			item.y += (4 - optionShit.length) * 70; // Offsets for when you have anything other than 4 items
 			item.screenCenter(X);
 		}

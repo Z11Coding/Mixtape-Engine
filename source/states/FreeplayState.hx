@@ -295,8 +295,6 @@ class FreeplayState extends MusicBeatState
 			onComplete: function(twn:FlxTween){
 				searchBar.updateHitbox();
 		}});
-
-		reloadSongs();
 	}
 
 	override function closeSubState() {
@@ -749,12 +747,14 @@ class FreeplayState extends MusicBeatState
 						{
 							if (!alreadyClicked)
 							{
+								LoadingState.loadNextDirectory();
+								alreadyClicked = true;
 								MusicBeatState.reopen = false; //Fix a sticker bug
 								TransitionState.transitionState(PlayState, {transitionType: "instant"});
 							}
-							else TransitionState.transitionState(PlayState, {transitionType: "stickers"});
+							else TransitionState.transitionState(PlayState, {transitionType: "instant"});
 						}
-						else TransitionState.transitionState(PlayState, {transitionType: "stickers"});
+						else TransitionState.transitionState(PlayState, {transitionType: "instant"});
 						#if !SHOW_LOADING_SCREEN FlxG.sound.music.stop(); #end
 						stopMusicPlay = true;
 					}
