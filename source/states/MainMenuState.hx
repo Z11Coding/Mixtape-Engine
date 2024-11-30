@@ -509,6 +509,8 @@ class MainMenuState extends MusicBeatState
 		trace(daChoice);
 		switch (daChoice)
 		{
+			case 'story_mode':
+				TransitionState.transitionState(states.StoryMenuState, {transitionType: "stickers"},[], true);
 			case 'freeplay':
 				TransitionState.transitionState(states.CategoryState, {transitionType: "stickers"},[], true);
 			case 'socials':
