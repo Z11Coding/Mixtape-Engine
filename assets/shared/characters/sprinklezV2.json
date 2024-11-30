@@ -2,14 +2,14 @@
 	"animations": [
 		{
 			"loop": false,
-			"offsets": [40, 58],
+			"offsets": [-20, 58],
 			"anim": "singUPmiss",
 			"fps": 24,
 			"name": "upMISS",
 			"indices": []
 		},
 		{
-			"offsets": [62, -5],
+			"offsets": [-68, -5],
 			"loop": false,
 			"fps": 24,
 			"anim": "firstDeath",
@@ -17,7 +17,7 @@
 			"name": "firstDeath"
 		},
 		{
-			"offsets": [28, -5],
+			"offsets": [-70, -4],
 			"loop": false,
 			"fps": 24,
 			"anim": "deathLoop",
@@ -25,7 +25,7 @@
 			"name": "deathLoop"
 		},
 		{
-			"offsets": [27, -4],
+			"offsets": [-69, -3],
 			"loop": true,
 			"fps": 24,
 			"anim": "deathConfirm",
@@ -50,15 +50,7 @@
 		},
 		{
 			"loop": false,
-			"offsets": [-59, -30],
-			"anim": "singRIGHTmiss",
-			"fps": 24,
-			"name": "rightMISS",
-			"indices": []
-		},
-		{
-			"loop": false,
-			"offsets": [37, -12],
+			"offsets": [-42, -15],
 			"anim": "singDOWNmiss",
 			"fps": 24,
 			"name": "downMISS",
@@ -66,7 +58,7 @@
 		},
 		{
 			"loop": false,
-			"offsets": [32, 28],
+			"offsets": [-28, 28],
 			"anim": "singUP",
 			"fps": 24,
 			"name": "GFup",
@@ -74,7 +66,7 @@
 		},
 		{
 			"loop": false,
-			"offsets": [29, -24],
+			"offsets": [-39, -25],
 			"anim": "singDOWN",
 			"fps": 24,
 			"name": "GFdown",
@@ -82,31 +74,7 @@
 		},
 		{
 			"loop": false,
-			"offsets": [61, -18],
-			"anim": "singLEFT",
-			"fps": 24,
-			"name": "GFleft",
-			"indices": []
-		},
-		{
-			"loop": false,
-			"offsets": [-44, -27],
-			"anim": "singRIGHT",
-			"fps": 24,
-			"name": "GFright",
-			"indices": []
-		},
-		{
-			"loop": false,
-			"offsets": [66, -9],
-			"anim": "singLEFTmiss",
-			"fps": 24,
-			"name": "left MISS",
-			"indices": []
-		},
-		{
-			"loop": false,
-			"offsets": [52, -37],
+			"offsets": [-64, -43],
 			"anim": "gf pre attack",
 			"fps": 24,
 			"name": "gf pre attack",
@@ -114,7 +82,7 @@
 		},
 		{
 			"loop": false,
-			"offsets": [376, -42],
+			"offsets": [37, -49],
 			"anim": "gf attack",
 			"fps": 24,
 			"name": "gf attack",
@@ -129,7 +97,7 @@
 			"name": "gf dodge"
 		},
 		{
-			"offsets": [44, -29],
+			"offsets": [75, -29],
 			"loop": false,
 			"fps": 24,
 			"anim": "gf hit",
@@ -137,24 +105,56 @@
 			"name": "gf hit"
 		},
 		{
-			"offsets": [21, 1],
+			"offsets": [-32, -7],
 			"loop": false,
 			"fps": 24,
 			"anim": "hey",
 			"indices": [],
 			"name": "hey"
+		},
+		{
+			"offsets": [-61, -22],
+			"loop": false,
+			"fps": 24,
+			"anim": "singRIGHT",
+			"indices": [],
+			"name": "GFleft"
+		},
+		{
+			"offsets": [83, -32],
+			"loop": false,
+			"fps": 24,
+			"anim": "singLEFT",
+			"indices": [],
+			"name": "GFright"
+		},
+		{
+			"offsets": [-59, -10],
+			"loop": false,
+			"fps": 24,
+			"anim": "singRIGHTmiss",
+			"indices": [],
+			"name": "left MISS"
+		},
+		{
+			"offsets": [94, -34],
+			"loop": false,
+			"fps": 24,
+			"anim": "singLEFTmiss",
+			"indices": [],
+			"name": "rightMISS"
 		}
 	],
 	"vocals_file": "gf",
 	"no_antialiasing": true,
 	"score_name": "Girlfriend",
 	"image": "characters/ChibiGF-V2",
-	"position": [70, 250],
+	"position": [-50, 240],
 	"healthicon": "gfchibi",
 	"flip_x": true,
 	"healthbar_colors": [235, 100, 161],
 	"camera_position": [60, 10],
 	"sing_duration": 6.1,
 	"scale": 1,
-	"_editor_isPlayer": true
+	"_editor_isPlayer": false
 }
