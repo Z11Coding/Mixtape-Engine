@@ -787,7 +787,7 @@ class PhillyStreets extends BaseStage
 		FlxTween.quadPath(sprite, path, duration, true, {onComplete: function(_) car2Interruptable = true});
 	}
 
-	override function goodNoteHit(note:Note)
+	override function goodNoteHit(note:Note, field:PlayField)
 	{
 		// 10% chance of playing combo50/combo100 animations for Nene
 		if(FlxG.random.bool(10))
@@ -885,7 +885,7 @@ class PhillyStreets extends BaseStage
 		casingGroup.add(casing);
 	}
 
-	override function opponentNoteHit(note:Note)
+	override function opponentNoteHit(note:Note, field:PlayField)
 	{
 		var sndTime:Float = note.strumTime - Conductor.songPosition;
 		switch(note.noteType)
@@ -925,7 +925,7 @@ class PhillyStreets extends BaseStage
 	}
 	
 	var picoFlicker:FlxTimer = null;
-	override function noteMiss(note:Note)
+	override function noteMiss(note:Note, field:PlayField)
 	{
 		switch(note.noteType)
 		{

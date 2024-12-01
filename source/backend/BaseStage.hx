@@ -95,9 +95,9 @@ class BaseStage extends FlxBasic
 	public function eventPushedUnique(event:EventNote) {}
 
 	// Note Hit/Miss
-	public function goodNoteHit(note:Note) {}
-	public function opponentNoteHit(note:Note) {}
-	public function noteMiss(note:Note) {}
+	public function goodNoteHit(note:Note, field:PlayField) {}
+	public function opponentNoteHit(note:Note, field:PlayField) {}
+	public function noteMiss(note:Note, field:PlayField) {}
 	public function noteMissPress(direction:Int) {}
 
 	// Things to replace FlxGroup stuff and inject sprites directly into the state
