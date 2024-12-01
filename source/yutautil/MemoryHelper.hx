@@ -5,40 +5,60 @@ import flixel.FlxSprite;
 import flixel.group.FlxGroup;
 import flixel.util.FlxDestroyUtil;
 import Reflect;
+class MemoryHelper implements IFlxDestroyable {
 
-class MemoryHelper {
+    public var protectedFields:Map<String, Bool> = new Map();
+    public var protectStatics:Bool = false;
+    
     public function new() {}
 
     // Clear data from a specific state
     public inline function clearClassObject(state:Class<Dynamic>):Void {
         trace('Starting clearClassObject for state: ' + Type.getClassName(state));
         for (field in Type.getInstanceFields(state)) {
-            trace('Processing field: ' + field);
+            if (protectedFields.exists(field)) {
+                trace('Skipping protected field: ' + field);
+                continue;
+            }
             var value = Reflect.getProperty(state, field);
-            if (Std.is(value, Dynamic)) {
-                // trace('Field ' + field + ' is Dynamic');
+            if (protectStatics && Reflect.hasField(state, field) && Reflect.field(state, field) == value) {
+                trace('Skipping static field: ' + field);
+                continue;
+            }
+            if (Std.is(value, Class)) {
                 if (Reflect.hasField(value, "destroy")) {
                     trace('Field ' + field + ' has destroy method, destroying...');
                     FlxDestroyUtil.destroy(value);
-                } else {
-                    // trace('Field ' + field + ' does not have destroy method');
                 }
-            } else {
-                // trace('Field ' + field + ' is not Dynamic');
             }
             Reflect.setField(state, field, null);
-            // trace('Field ' + field + ' set to null');
-            // trace("Field " + field + " is " + Reflect.field(state, field));
         }
-        // trace('Finished clearClassObject for state: ' + Type.getClassName(state));
+        trace('Finished clearClassObject for state: ' + Type.getClassName(state));
     }
+
+    public inline function addProtectedField(state:Class<Dynamic>, fieldName:String):Void {
+        if (Reflect.hasField(state, fieldName)) {
+            protectedFields.set(fieldName, true);
+        } else {
+            trace('Field ' + fieldName + ' does not exist in ' + Type.getClassName(state));
+        }
+    }
+
+    public function removeProtectedField(fieldName:String):Void {
+        protectedFields.remove(fieldName);
+    }
+
+    public function setProtectStatics(protect:Bool):Void {
+        protectStatics = protect;
+    }
+
 
     // Clear data from a specific object
     public inline function clearObject(object:Dynamic):Void {
         for (field in Reflect.fields(object)) {
             try {
                 var value = Reflect.field(object, field);
-                if (Std.is(value, Dynamic) && Reflect.hasField(value, "destroy")) {
+                if (Std.is(value, Class) && Reflect.hasField(value, "destroy")) {
                     FlxDestroyUtil.destroy(value);
                 }
                 Reflect.setField(object, field, null);
@@ -61,5 +81,9 @@ class MemoryHelper {
         for (object in group.members) {
             clearObject(object);
         }
+    }
+    public function destroy():Void {
+        clearObject(this);
+        // super.destroy();
     }
 }

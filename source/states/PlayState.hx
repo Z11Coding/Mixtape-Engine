@@ -4179,13 +4179,12 @@ class PlayState extends MusicBeatState
 
 		try
 		{
-			if (songData.needsVoices && songData.newVoiceStyle)
+			if (songData.needsVoices)
 			{
-				var playerVocals = Paths.voices(songData.song,
-					(boyfriend.vocalsFile == null || boyfriend.vocalsFile.length < 1) ? 'Player' : boyfriend.vocalsFile);
+				var playerVocals = Paths.voices(songData.song, (boyfriend.vocalsFile == null || boyfriend.vocalsFile.length < 1) ? 'Player' : boyfriend.vocalsFile);
 				if (playerVocals != null)
 				{
-					vocals.loadEmbedded(playerVocals != null ? playerVocals : Paths.music('empty'));
+					vocals.loadEmbedded(playerVocals != null ? playerVocals : Paths.voices(songData.song));
 					FlxG.sound.list.add(vocals);
 				}
 
@@ -4205,15 +4204,6 @@ class PlayState extends MusicBeatState
 						gfVocals.loadEmbedded(gfVoc != null ? gfVoc : Paths.music('empty'));
 						FlxG.sound.list.add(gfVocals);
 					}
-				}
-			}
-			else if (songData.needsVoices && !songData.newVoiceStyle)
-			{
-				var playerVocals = Paths.voices(songData.song);
-				if (playerVocals != null)
-				{
-					vocals.loadEmbedded(playerVocals != null ? playerVocals : Paths.voices(songData.song));
-					FlxG.sound.list.add(vocals);
 				}
 			}
 		}
@@ -9239,7 +9229,6 @@ class PlayState extends MusicBeatState
 		{
 			if (Math.abs(FlxG.sound.music.time - (Conductor.songPosition - Conductor.offset)) > (20 * playbackRate)
 				|| (SONG.needsVoices
-					&& SONG.newVoiceStyle
 					&& opponentVocals.playing
 					&& Math.abs(opponentVocals.time - (Conductor.songPosition - Conductor.offset)) > (20 * playbackRate)))
 			{
@@ -9251,7 +9240,6 @@ class PlayState extends MusicBeatState
 		{
 			if (Math.abs(FlxG.sound.music.time - (Conductor.songPosition - Conductor.offset)) > (20 * playbackRate)
 				|| (SONG.needsVoices
-					&& SONG.newVoiceStyle
 					&& gfVocals.playing
 					&& Math.abs(gfVocals.time - (Conductor.songPosition - Conductor.offset)) > (20 * playbackRate)))
 			{
@@ -9267,7 +9255,6 @@ class PlayState extends MusicBeatState
 			{
 				if (Math.abs(FlxG.sound.music.time - (Conductor.songPosition - Conductor.offset)) > (20 * playbackRate)
 					|| (SONG.needsVoices
-						&& SONG.newVoiceStyle
 						&& Math.abs(track.time - (Conductor.songPosition - Conductor.offset)) > (20 * playbackRate)))
 				{
 					resyncVocals();

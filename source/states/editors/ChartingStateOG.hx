@@ -433,7 +433,6 @@ class ChartingStateOG extends MusicBeatChartingState
 				bpm: 180.0,
 				needsVoices: true,
 				extraTracks: [],
-				newVoiceStyle: false,
 				arrowSkin: '',
 				splashSkin: 'noteSplashes',//idk it would crash if i didn't
 				player1: 'bf',
@@ -660,15 +659,6 @@ class ChartingStateOG extends MusicBeatChartingState
 		check_voices.callback = function()
 		{
 			_song.needsVoices = check_voices.checked;
-			//trace('CHECKED!');
-		};
-
-		var check_new_voices = new FlxUICheckBox(10, 45, null, null, "Has Seprate Voices", 100);
-		check_new_voices.checked = _song.newVoiceStyle;
-		// _song.needsVoices = check_voices.checked;
-		check_new_voices.callback = function()
-		{
-			_song.newVoiceStyle = check_new_voices.checked;
 			//trace('CHECKED!');
 		};
 
@@ -931,7 +921,6 @@ class ChartingStateOG extends MusicBeatChartingState
 		tab_group_song.add(UI_songTitle);
 
 		tab_group_song.add(check_voices);
-		tab_group_song.add(check_new_voices);
 		tab_group_song.add(clear_events);
 		tab_group_song.add(clear_notes);
 		tab_group_song.add(saveButton);
@@ -1810,14 +1799,11 @@ class ChartingStateOG extends MusicBeatChartingState
 
 		try 
 		{
-			if (_song.needsVoices && _song.newVoiceStyle)
+			if (_song.needsVoices)
 			{
 				var playerVocals = Paths.voices(_song.song, (characterData.vocalsP1 == null || characterData.vocalsP1.length < 1) ? 'player' : characterData.vocalsP1);
-				if(playerVocals != null) 
-				{
-					vocals.loadEmbedded(playerVocals != null ? playerVocals : Paths.voices(_song.song));
-					FlxG.sound.list.add(vocals);
-				}
+				vocals.loadEmbedded(playerVocals != null ? playerVocals : Paths.voices(_song.song));
+				FlxG.sound.list.add(vocals);
 
 				var oppVocals = Paths.voices(_song.song, (characterData.vocalsP2 == null || characterData.vocalsP2.length < 1) ? 'opponent' : characterData.vocalsP2);
 				if(oppVocals != null) 
@@ -1831,15 +1817,6 @@ class ChartingStateOG extends MusicBeatChartingState
 				{
 					gfVocals.loadEmbedded(gfVoc != null ? gfVoc : Paths.music('empty'));
 					FlxG.sound.list.add(gfVocals);
-				}
-			}
-			else if (_song.needsVoices && !_song.newVoiceStyle)
-			{
-				var playerVocals = Paths.voices(_song.song);
-				if(playerVocals != null) 
-				{
-					vocals.loadEmbedded(playerVocals != null ? playerVocals : Paths.voices(_song.song));
-					FlxG.sound.list.add(vocals);
 				}
 			}
 		}
@@ -2183,7 +2160,7 @@ class ChartingStateOG extends MusicBeatChartingState
 			notSaved = false;
 		}
 
-		if (FlxG.mouse.overlaps(curRenderedNotes) && !FlxG.mouse.justPressed) Cursor.cursorMode = Pointer	;
+		if (FlxG.mouse.overlaps(curRenderedNotes) && !FlxG.mouse.justPressed) Cursor.cursorMode = Pointer;
 
 		if (FlxG.mouse.justPressed)
 		{
@@ -3545,7 +3522,6 @@ function updateGrid():Void
 		var delnote = false;
 		if(strumLineNotes.members[d].overlaps(curRenderedNotes))
 		{
-			Cursor.cursorMode = Pointer;
 			curRenderedNotes.forEachAlive(function(note:Note)
 			{
 				if (note.overlapsPoint(new FlxPoint(strumLineNotes.members[d].x + 1,strumLine.y+1)) && note.noteData == d%Note.ammo[_song.mania])
