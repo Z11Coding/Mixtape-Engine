@@ -569,13 +569,13 @@ class EditorPlayState extends MusicBeatSubstate
 
 		FlxG.sound.music.pause();
 		vocals.pause();
-		if (PlayState.SONG.newVoiceStyle) opponentVocals.pause();
+		opponentVocals.pause();
 
 		if(finishTimer != null)
 			finishTimer.destroy();
 
 		Conductor.songPosition = FlxG.sound.music.time = vocals.time = startPos - Conductor.offset;
-		if (PlayState.SONG.newVoiceStyle) opponentVocals.time = startPos - Conductor.offset;
+		opponentVocals.time = startPos - Conductor.offset;
 		close();
 	}
 	
@@ -821,7 +821,7 @@ class EditorPlayState extends MusicBeatSubstate
 	
 	function opponentNoteHit(note:Note, field:PlayField):Void
 	{
-		if (PlayState.SONG.needsVoices && PlayState.SONG.newVoiceStyle && opponentVocals.length <= 0)
+		if (PlayState.SONG.needsVoices && opponentVocals.length <= 0)
 			vocals.volume = 1;
 
 		if (note.visible)

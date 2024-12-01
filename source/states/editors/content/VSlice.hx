@@ -261,12 +261,11 @@ class VSlice
 				player2: metadata.playData.characters.opponent,
 				gfVersion: metadata.playData.characters.girlfriend,
 				stage: stage,
-				format: 'mixtape_v1_convert',
+				format: 'psych_v1',
 
 				player4: null,
 				player5: null,
 				extraTracks: [],
-				newVoiceStyle: false,
 				mania: Note.defaultMania,
 				startMania: Note.defaultMania
 			}

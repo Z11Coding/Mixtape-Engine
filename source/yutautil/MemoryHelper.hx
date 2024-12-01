@@ -36,11 +36,15 @@ class MemoryHelper {
     // Clear data from a specific object
     public inline function clearObject(object:Dynamic):Void {
         for (field in Reflect.fields(object)) {
-            var value = Reflect.field(object, field);
-            if (Std.is(value, Dynamic) && Reflect.hasField(value, "destroy")) {
-                FlxDestroyUtil.destroy(value);
+            try {
+                var value = Reflect.field(object, field);
+                if (Std.is(value, Dynamic) && Reflect.hasField(value, "destroy")) {
+                    FlxDestroyUtil.destroy(value);
+                }
+                Reflect.setField(object, field, null);
+            } catch (e:Dynamic) {
+                trace('Error processing field ' + field + ': ' + e);
             }
-            Reflect.setField(object, field, null);
         }
     }
 
