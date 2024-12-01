@@ -2472,6 +2472,8 @@ class PlayState extends MusicBeatState
 			callOnScripts('preReceptorGeneration'); // backwards compat, deprecated
 			callOnScripts('onReceptorGeneration');
 
+			changeMania(mania);
+
 			for (field in playfields.members)
 			{
 				field.keyCount = Note.ammo[mania];
@@ -3396,10 +3398,16 @@ class PlayState extends MusicBeatState
 		// NEW SHIT
 		noteData = songData.notes;
 
+		trace(songData.mania);
+		trace(songData.startMania);
 		var mania = if (chartModifier == "ManiaConverter" || chartModifier == "4K Only") null else if (songData.startMania != -1) songData.startMania else if (songData.mania != -1) songData.mania else 3;
 		if (mania != null && mania != PlayState.mania) {
+			// trace("Changing Mania...");
+			// PlayState.mania = mania;
 			changeMania(mania, false);
-		}
+		} else if (chartModifier == "ManiaConverter" || chartModifier == "4K Only") changeMania(Note.defaultMania, false); mania = Note.defaultMania;
+		trace(mania);
+		trace(PlayState.mania);
 
 		var playerCounter:Int = 0;
 		var daBeats:Int = 0; // Not exactly representative of 'daBeats' lol, just how much it has looped
@@ -9119,6 +9127,10 @@ class PlayState extends MusicBeatState
 		#if FLX_PITCH FlxG.sound.music.pitch = 1; #end
 		var clearfuck:yutautil.MemoryHelper = new MemoryHelper();
 		var oldMania = mania;
+
+		var protected:Array<String> = ['mania', 'SONG'];
+		for (stuff in protected)
+			clearfuck.addProtectedField(Type.getClass(this), stuff);
 		clearfuck.clearClassObject(Type.getClass(this));
 		for (stuff in instance)	// Clear all variables
 			clearfuck.clearObject(stuff);
