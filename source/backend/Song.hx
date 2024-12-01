@@ -14,6 +14,8 @@ typedef SwagSong =
 {
 	var song:String;
 	var notes:Array<SwagSection>;
+	@:optional var playerNotes:Array<Dynamic>;
+	@:optional var opponentNotes:Array<Dynamic>;
 	var events:Array<Dynamic>;
 	var bpm:Float;
 	var needsVoices:Bool;
@@ -234,7 +236,13 @@ class Song
 			var fmt:String = songJson.format;
 			if(fmt == null) fmt = songJson.format = 'unknown';
 			trace(fmt);
-			var chartMod:String = (ClientPrefs.getGameplaySetting('chartModifier', 'Normal') ?? "Normal");
+			var chartMod:String = switch (Type.getClassName(Type.getClass(FlxG.state)).split(".")[Lambda.count(Type.getClassName(Type.getClass(FlxG.state)).split(".")) - 1]) {
+				case "ChartingStateOG", "ChartingStatePsych":
+					null;
+				default:
+					ClientPrefs.getGameplaySetting('chartModifier', 'Normal') ?? "Normal";
+			}
+			trace("Accessed from State: " + Type.getClassName(Type.getClass(FlxG.state)).split(".")[Lambda.count(Type.getClassName(Type.getClass(FlxG.state)).split(".")) - 1]);
 			if (songJson.mania != null) {
 				songJson.usualMania = songJson.mania;
 			}
@@ -258,6 +266,31 @@ class Song
 				songJson.mania = 3;
 				songJson.startMania = 3;
 			}
+
+			    // Separate notes into player and opponent notes
+				var playerNotes:Array<Dynamic> = [];
+				var opponentNotes:Array<Dynamic> = [];
+				var mania:Int = (Json.parse(rawData)).mania != null ? (Json.parse(rawData)).mania : Note.defaultMania;
+				var theNotes:Array<SwagSection> = songJson.notes;
+				trace("Mania: " + mania);
+				for (note in theNotes)
+				{
+					for (note in note.sectionNotes)
+						if (note[1] < Note.ammo[mania] && !note.mustHitSection)
+						{
+							playerNotes.push(note);
+						}
+						else
+						{
+							opponentNotes.push(note);
+						}
+					}
+			
+				songJson.playerNotes = playerNotes;
+				songJson.opponentNotes = opponentNotes;
+			
+				trace("Player Notes: " + playerNotes.length);
+				trace("Opponent Notes: " + opponentNotes.length);
 			switch (fmt)
 			{
 				case 'psych_v1':
