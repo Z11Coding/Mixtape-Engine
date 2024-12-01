@@ -35,42 +35,138 @@ class Anomoly {
         randomizeFields(currentState, traceOutput);
     }
 
-    public function randomizeFields(obj:Dynamic, traceOutput:Bool = false):Void {
-        var fields = Reflect.fields(obj);
-        for (field in fields) {
-            var value = Reflect.field(obj, field);
-            if (Std.is(value, Int)) {
+    private function valueType(value:Dynamic, ?type:Type.ValueType):Type.ValueType {
+        var valueType = Type.typeof(value);
+        if (type != null) {
+            if (valueType == type) {
+                return type;
+            } else {
+                return null;
+            }
+        } else {
+            return valueType;
+        }
+    }
+public function randomizeFields(obj:Dynamic, traceOutput:Bool = false):Void {
+    var fields = grabFields(obj);
+    for (field in fields) {
+        var value = Reflect.field(obj, field);
+        switch (valueType(value)) {
+            case TNull:
+                // Handle null values if necessary
+            case TInt:
                 var randomInt = Math.random() * 100;
                 Reflect.setField(obj, field, randomInt);
                 if (traceOutput) {
                     trace("Randomized " + field + " to " + randomInt);
                 }
-            } else if (Std.is(value, Float)) {
+            case TFloat:
                 var randomFloat = Math.random();
                 Reflect.setField(obj, field, randomFloat);
                 if (traceOutput) {
                     trace("Randomized " + field + " to " + randomFloat);
                 }
-            } else if (Std.is(value, Bool)) {
+            case TBool:
                 var randomBool = Math.random() > 0.5;
                 Reflect.setField(obj, field, randomBool);
                 if (traceOutput) {
                     trace("Randomized " + field + " to " + randomBool);
                 }
-            } else if (Std.is(value, String)) {
-                var randomString = randomString(5);
-                Reflect.setField(obj, field, randomString);
-                if (traceOutput) {
-                    trace("Randomized " + field + " to " + randomString);
-                }
-            } else if (Std.is(value, Array)) {
-                for (i in 0...value.length) {
-                    randomizeFields(value[i], traceOutput);
-                }
-            } else if (Reflect.isObject(value)) {
+            case TObject:
                 randomizeFields(value, traceOutput);
+            case TFunction:
+                // Skip functions
+            case TClass(c):
+                if (c == String) {
+                    var randomString = randomString(5);
+                    Reflect.setField(obj, field, randomString);
+                    if (traceOutput) {
+                        trace("Randomized " + field + " to " + randomString);
+                    }
+                } else if (c == Array) {
+                    for (i in 0...value.length) {
+                        randomizeFields(value[i], traceOutput);
+                    }
+                }
+            case TEnum(e):
+                // Handle enums if necessary
+            case TUnknown:
+                // Handle unknown types if necessary
+        }
+    }
+}
+
+private function randomizeFieldsBetter(obj:Dynamic, traceOutput:Bool = false):Void {
+    var fields = grabFields(obj);
+    for (field in fields) {
+        var value = Reflect.field(obj, field);
+        var valueType = Type.typeof(value);
+        switch (valueType) {
+            case TNull:
+                // Handle null values if necessary
+            case TInt:
+                var randomInt = Std.int(Math.random() * 100);
+                Reflect.setField(obj, field, randomInt);
+                if (traceOutput) {
+                    trace("Randomized " + field + " to " + randomInt);
+                }
+            case TFloat:
+                var randomFloat = Math.random();
+                Reflect.setField(obj, field, randomFloat);
+                if (traceOutput) {
+                    trace("Randomized " + field + " to " + randomFloat);
+                }
+            case TBool:
+                var randomBool = Math.random() > 0.5;
+                Reflect.setField(obj, field, randomBool);
+                if (traceOutput) {
+                    trace("Randomized " + field + " to " + randomBool);
+                }
+            case TObject:
+                randomizeFieldsBetter(value, traceOutput);
+            case TFunction:
+                // Skip functions
+            case TClass(c):
+                if (c == String) {
+                    var randomString = randomString(5);
+                    Reflect.setField(obj, field, randomString);
+                    if (traceOutput) {
+                        trace("Randomized " + field + " to " + randomString);
+                    }
+                } else if (c == Array) {
+                    for (i in 0...value.length) {
+                        randomizeFieldsBetter(value[i], traceOutput);
+                    }
+                }
+            case TEnum(e):
+                // Handle enums if necessary
+            case TUnknown:
+                // Handle unknown types if necessary
+        }
+    }
+}
+
+    private function grabFields(obj:Dynamic):Array<String> {
+        var fieldList = [];
+        var fields = Reflect.fields(obj);
+        
+        if (fields != null) {
+            for (field in fields) {
+                fieldList.push(field);
+            }
+        } else {
+            var classFields = Type.getInstanceFields(Type.getClass(obj));
+            if (classFields != null) {
+                for (field in classFields) {
+                    fieldList.push(field);
+                }
+            } else {
+                trace("Invalid object???");
+                return null;
             }
         }
+        
+        return fieldList;
     }
 
     private function randomString(length:Int):String {
