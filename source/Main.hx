@@ -339,7 +339,7 @@ class Main extends Sprite
 	{
 		// if (Main.commandPrompt != null)
 		// 	commandPrompt.remove();
-
+		trace("Closing game...");
 		WindowUtils.preventClosing = false;
 		Lib.application.window.close();
 

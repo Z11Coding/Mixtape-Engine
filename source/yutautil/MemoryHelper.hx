@@ -14,9 +14,23 @@ class MemoryHelper implements IFlxDestroyable {
 
     // Clear data from a specific state
     public inline function clearClassObject(state:Class<Dynamic>):Void {
+        var methods = [];
+        for (method in Type.getInstanceFields(state)) {
+            if (Reflect.isFunction(Reflect.field(state, method))) {
+                methods.push(method);
+                addProtectedField(state, method);
+            }
+        }
         trace('Starting clearClassObject for state: ' + Type.getClassName(state));
-        for (field in Type.getInstanceFields(state)) {
-            if (protectedFields.exists(field)) {
+        trace('Protected fields: ' + protectedFields);
+        for (field in Type.getInstanceFields(state).filter(function(f:String):Bool {
+            // trace('Checking field: ' + f);
+            if (protectedFields.exists(f)) {
+                return false;
+            }
+            return true;
+        })) {
+            if (protectedFields.exists(field)) { 
                 trace('Skipping protected field: ' + field);
                 continue;
             }
@@ -33,12 +47,16 @@ class MemoryHelper implements IFlxDestroyable {
             }
             Reflect.setField(state, field, null);
         }
+        for (method in methods) {
+            removeProtectedField(method);
+        }
         trace('Finished clearClassObject for state: ' + Type.getClassName(state));
     }
 
     public inline function addProtectedField(state:Class<Dynamic>, fieldName:String):Void {
         if (Reflect.hasField(state, fieldName)) {
             protectedFields.set(fieldName, true);
+            trace('Added protected field ' + fieldName + ' to ' + Type.getClassName(state));
         } else {
             trace('Field ' + fieldName + ' does not exist in ' + Type.getClassName(state));
         }
@@ -46,6 +64,7 @@ class MemoryHelper implements IFlxDestroyable {
 
     public function removeProtectedField(fieldName:String):Void {
         protectedFields.remove(fieldName);
+        trace('Removed protected field ' + fieldName);
     }
 
     public function setProtectStatics(protect:Bool):Void {
@@ -56,6 +75,10 @@ class MemoryHelper implements IFlxDestroyable {
     // Clear data from a specific object
     public inline function clearObject(object:Dynamic):Void {
         for (field in Reflect.fields(object)) {
+            if (protectedFields.exists(field)) {
+                trace('Skipping protected field: ' + field);
+                continue;
+            }
             try {
                 var value = Reflect.field(object, field);
                 if (Std.is(value, Class) && Reflect.hasField(value, "destroy")) {

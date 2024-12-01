@@ -167,9 +167,9 @@ class GameOverSubstate extends MusicBeatSubstate
 	
 				Mods.loadTopMod();
 				if (PlayState.isStoryMode)
-					MusicBeatState.switchState(new StoryMenuState());
+					TransitionState.transitionState(StoryMenuState);
 				else
-					MusicBeatState.switchState(new FreeplayState());
+					TransitionState.transitionState(FreeplayState);
 	
 				FlxG.sound.playMusic(Paths.music('panixPress'));
 				PlayState.instance.callOnScripts('onGameOverConfirm', [false]);

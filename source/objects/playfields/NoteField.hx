@@ -1,5 +1,6 @@
 package objects.playfields;
 
+import haxe.Exception;
 import math.*;
 import flixel.math.FlxMath;
 import flixel.math.FlxAngle;
@@ -673,7 +674,18 @@ class NoteField extends FieldBase
 			if(len <= 0) len = e.message.length;
 			#if windows
 			lime.app.Application.current.window.alert('ERROR: ' + e.message.substr(0, len)+'\nChances are your noteskin broke if you\'re reading this', 'Error Loading!');
-			Sys.exit(0);
+			// FlxTween.tween(FlxG.sound.music, { pitch: 0 }, FlxG.random.float(1, 3), {
+			// 	onComplete: function(e) {
+			// 		if (PlayState.isStoryMode) {
+			// 			FlxG.switchState(new states.StoryMenuState());
+			// 		} else {
+			// 			FlxG.switchState(new states.FreeplayState());
+			// 		}
+			// 		return null;
+			// 	}
+			// });
+			Main.closeGame();
+					
 			#else
 			throw 'Error: '+e+'\nChances are your noteskin broke something if you\'re reading this';
 			#end
