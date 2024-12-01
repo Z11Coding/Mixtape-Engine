@@ -520,6 +520,7 @@ class Note extends NoteObject
 					//Nothing
 						
 			}
+			if (value != null && value.length > 1) NoteTypesConfig.applyNoteTypeData(this, value);
 			noteType = value;
 		}
 
