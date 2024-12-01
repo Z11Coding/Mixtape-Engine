@@ -323,6 +323,17 @@ class PlayField extends FlxTypedGroup<FlxBasic>
 		}
 	}
 
+	private function getKeyBinds(mania:Int):Array<Dynamic> {
+		// Return the keybind for the given index
+		var keyBinds:Array<Dynamic> = backend.Keybinds.fill()[mania];
+		return keyBinds;
+	}
+
+	private function getBinding(mania:Int, index:Int):String {
+		// Return the keybind for the given index
+		return getKeyBinds(mania)[index];
+	}
+
 	// just sorts by z indexes, not used anymore tho
 	function sortByOrderNote(Obj1:Note, Obj2:Note):Int
 	{

@@ -3403,11 +3403,15 @@ class PlayState extends MusicBeatState
 		var mania = if (chartModifier == "ManiaConverter" || chartModifier == "4K Only") null else if (songData.startMania != -1) songData.startMania else if (songData.mania != -1) songData.mania else 3;
 		if (mania != null && mania != PlayState.mania) {
 			// trace("Changing Mania...");
-			// PlayState.mania = mania;
+			songData.mania = mania;
+			songData.startMania = mania;
+			PlayState.mania = mania;
 			changeMania(mania, false);
-		} else if (chartModifier == "ManiaConverter" || chartModifier == "4K Only") changeMania(Note.defaultMania, false); mania = Note.defaultMania;
+		} else if (chartModifier == "ManiaConverter" || chartModifier == "4K Only") {}
 		trace(mania);
+		// PlayState.mania = mania;
 		trace(PlayState.mania);
+		// changeMania(PlayState.mania);
 
 		var playerCounter:Int = 0;
 		var daBeats:Int = 0; // Not exactly representative of 'daBeats' lol, just how much it has looped
@@ -3448,6 +3452,37 @@ class PlayState extends MusicBeatState
 				}
 
 				var gottaHitNote:Bool = section.mustHitSection;
+
+				
+				if (chartModifier != "4K Only" && chartModifier != "ManiaConverter")
+					{ // TODO: Fix broken logic due to changes in Song.hx! (Likely fix is to make Song manage mustHit)
+						if (songData.format == "psych_v1" || songData.format == "psych_v1_convert")
+						{	
+							gottaHitNote = (songNotes[1] < Note.ammo[songData.usualMania]);						
+						}
+						else
+						{
+							if (songNotes[1] > (Note.ammo[songData.usualMania] - 1))
+							{
+								gottaHitNote = !section.mustHitSection;
+							}
+						}
+					}
+					else
+					{
+						if (songData.format == "psych_v1" || songData.format == "psych_v1_convert")
+						{	
+							gottaHitNote = (songNotes[1] < Note.ammo[SONG.usualMania]);						
+						}
+						else
+						{
+							if (songNotes[1] > (Note.ammo[SONG.usualMania] - 1))
+							{
+								gottaHitNote = !section.mustHitSection;
+							}
+						}
+					}
+	
 
 				switch (chartModifier)
 				{
@@ -3538,7 +3573,7 @@ class PlayState extends MusicBeatState
 					case "4K Only":
 						daNoteData = getNumberFromAnims(daNoteData, SONG.mania);
 					case "ManiaConverter":
-						daNoteData = getNumberFromAnims(daNoteData, mania);
+						daNoteData = getNumberFromAnims(daNoteData, PlayState.mania);
 					case "Stairs":
 						daNoteData = stair % Note.ammo[mania];
 						stair++;
@@ -3793,35 +3828,6 @@ class PlayState extends MusicBeatState
 									// Default case (optional)
 							}
 						}
-				}
-
-				if (chartModifier != "4K Only" && chartModifier != "ManiaConverter")
-				{
-					if (songData.format == "psych_v1" || songData.format == "psych_v1_convert")
-					{	
-						gottaHitNote = (songNotes[1] < Note.ammo[mania]);						
-					}
-					else
-					{
-						if (songNotes[1] > (Note.ammo[mania] - 1))
-						{
-							gottaHitNote = !section.mustHitSection;
-						}
-					}
-				}
-				else
-				{
-					if (songData.format == "psych_v1" || songData.format == "psych_v1_convert")
-					{	
-						gottaHitNote = (songNotes[1] < Note.ammo[SONG.mania]);						
-					}
-					else
-					{
-						if (songNotes[1] > (Note.ammo[SONG.mania] - 1))
-						{
-							gottaHitNote = !section.mustHitSection;
-						}
-					}
 				}
 
 				var oldNote:Note;
@@ -9128,7 +9134,7 @@ class PlayState extends MusicBeatState
 		var clearfuck:yutautil.MemoryHelper = new MemoryHelper();
 		var oldMania = mania;
 
-		var protected:Array<String> = ['mania', 'SONG'];
+		var protected:Array<String> = ['mania', 'SONG', 'E'];
 		for (stuff in protected)
 			clearfuck.addProtectedField(Type.getClass(this), stuff);
 		clearfuck.clearClassObject(Type.getClass(this));

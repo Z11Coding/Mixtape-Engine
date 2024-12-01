@@ -416,6 +416,204 @@ class ClientPrefs {
 	public static var defaultKeys:Map<String, Array<FlxKey>> = null;
 	public static var defaultButtons:Map<String, Array<FlxGamepadInputID>> = null;
 
+	public static function getKeyBindsForKeys(numKeys:Int):Array<Array<FlxKey>> {
+		var keyBindsList:Array<Array<FlxKey>> = [];
+		switch (numKeys) {
+			case 1:
+				keyBindsList.push(keyBinds.get('note_one1'));
+			case 2:
+				keyBindsList.push(keyBinds.get('note_two1'));
+				keyBindsList.push(keyBinds.get('note_two2'));
+			case 3:
+				keyBindsList.push(keyBinds.get('note_three1'));
+				keyBindsList.push(keyBinds.get('note_three2'));
+				keyBindsList.push(keyBinds.get('note_three3'));
+			case 4:
+				keyBindsList.push(keyBinds.get('note_left'));
+				keyBindsList.push(keyBinds.get('note_down'));
+				keyBindsList.push(keyBinds.get('note_up'));
+				keyBindsList.push(keyBinds.get('note_right'));
+			case 5:
+				keyBindsList.push(keyBinds.get('note_five1'));
+				keyBindsList.push(keyBinds.get('note_five2'));
+				keyBindsList.push(keyBinds.get('note_five3'));
+				keyBindsList.push(keyBinds.get('note_five4'));
+				keyBindsList.push(keyBinds.get('note_five5'));
+			case 6:
+				keyBindsList.push(keyBinds.get('note_six1'));
+				keyBindsList.push(keyBinds.get('note_six2'));
+				keyBindsList.push(keyBinds.get('note_six3'));
+				keyBindsList.push(keyBinds.get('note_six4'));
+				keyBindsList.push(keyBinds.get('note_six5'));
+				keyBindsList.push(keyBinds.get('note_six6'));
+			case 7:
+				keyBindsList.push(keyBinds.get('note_seven1'));
+				keyBindsList.push(keyBinds.get('note_seven2'));
+				keyBindsList.push(keyBinds.get('note_seven3'));
+				keyBindsList.push(keyBinds.get('note_seven4'));
+				keyBindsList.push(keyBinds.get('note_seven5'));
+				keyBindsList.push(keyBinds.get('note_seven6'));
+				keyBindsList.push(keyBinds.get('note_seven7'));
+			case 8:
+				keyBindsList.push(keyBinds.get('note_eight1'));
+				keyBindsList.push(keyBinds.get('note_eight2'));
+				keyBindsList.push(keyBinds.get('note_eight3'));
+				keyBindsList.push(keyBinds.get('note_eight4'));
+				keyBindsList.push(keyBinds.get('note_eight5'));
+				keyBindsList.push(keyBinds.get('note_eight6'));
+				keyBindsList.push(keyBinds.get('note_eight7'));
+				keyBindsList.push(keyBinds.get('note_eight8'));
+			case 9:
+				keyBindsList.push(keyBinds.get('note_nine1'));
+				keyBindsList.push(keyBinds.get('note_nine2'));
+				keyBindsList.push(keyBinds.get('note_nine3'));
+				keyBindsList.push(keyBinds.get('note_nine4'));
+				keyBindsList.push(keyBinds.get('note_nine5'));
+				keyBindsList.push(keyBinds.get('note_nine6'));
+				keyBindsList.push(keyBinds.get('note_nine7'));
+				keyBindsList.push(keyBinds.get('note_nine8'));
+				keyBindsList.push(keyBinds.get('note_nine9'));
+			case 10:
+				keyBindsList.push(keyBinds.get('note_ten1'));
+				keyBindsList.push(keyBinds.get('note_ten2'));
+				keyBindsList.push(keyBinds.get('note_ten3'));
+				keyBindsList.push(keyBinds.get('note_ten4'));
+				keyBindsList.push(keyBinds.get('note_ten5'));
+				keyBindsList.push(keyBinds.get('note_ten6'));
+				keyBindsList.push(keyBinds.get('note_ten7'));
+				keyBindsList.push(keyBinds.get('note_ten8'));
+				keyBindsList.push(keyBinds.get('note_ten9'));
+				keyBindsList.push(keyBinds.get('note_ten10'));
+			case 11:
+				keyBindsList.push(keyBinds.get('note_elev1'));
+				keyBindsList.push(keyBinds.get('note_elev2'));
+				keyBindsList.push(keyBinds.get('note_elev3'));
+				keyBindsList.push(keyBinds.get('note_elev4'));
+				keyBindsList.push(keyBinds.get('note_elev5'));
+				keyBindsList.push(keyBinds.get('note_elev6'));
+				keyBindsList.push(keyBinds.get('note_elev7'));
+				keyBindsList.push(keyBinds.get('note_elev8'));
+				keyBindsList.push(keyBinds.get('note_elev9'));
+				keyBindsList.push(keyBinds.get('note_elev10'));
+				keyBindsList.push(keyBinds.get('note_elev11'));
+			case 12:
+				keyBindsList.push(keyBinds.get('note_twel1'));
+				keyBindsList.push(keyBinds.get('note_twel2'));
+				keyBindsList.push(keyBinds.get('note_twel3'));
+				keyBindsList.push(keyBinds.get('note_twel4'));
+				keyBindsList.push(keyBinds.get('note_twel5'));
+				keyBindsList.push(keyBinds.get('note_twel6'));
+				keyBindsList.push(keyBinds.get('note_twel7'));
+				keyBindsList.push(keyBinds.get('note_twel8'));
+				keyBindsList.push(keyBinds.get('note_twel9'));
+				keyBindsList.push(keyBinds.get('note_twel10'));
+				keyBindsList.push(keyBinds.get('note_twel11'));
+				keyBindsList.push(keyBinds.get('note_twel12'));
+			case 13:
+				keyBindsList.push(keyBinds.get('note_thir1'));
+				keyBindsList.push(keyBinds.get('note_thir2'));
+				keyBindsList.push(keyBinds.get('note_thir3'));
+				keyBindsList.push(keyBinds.get('note_thir4'));
+				keyBindsList.push(keyBinds.get('note_thir5'));
+				keyBindsList.push(keyBinds.get('note_thir6'));
+				keyBindsList.push(keyBinds.get('note_thir7'));
+				keyBindsList.push(keyBinds.get('note_thir8'));
+				keyBindsList.push(keyBinds.get('note_thir9'));
+				keyBindsList.push(keyBinds.get('note_thir10'));
+				keyBindsList.push(keyBinds.get('note_thir11'));
+				keyBindsList.push(keyBinds.get('note_thir12'));
+				keyBindsList.push(keyBinds.get('note_thir13'));
+			case 14:
+				keyBindsList.push(keyBinds.get('note_fort1'));
+				keyBindsList.push(keyBinds.get('note_fort2'));
+				keyBindsList.push(keyBinds.get('note_fort3'));
+				keyBindsList.push(keyBinds.get('note_fort4'));
+				keyBindsList.push(keyBinds.get('note_fort5'));
+				keyBindsList.push(keyBinds.get('note_fort6'));
+				keyBindsList.push(keyBinds.get('note_fort7'));
+				keyBindsList.push(keyBinds.get('note_fort8'));
+				keyBindsList.push(keyBinds.get('note_fort9'));
+				keyBindsList.push(keyBinds.get('note_fort10'));
+				keyBindsList.push(keyBinds.get('note_fort11'));
+				keyBindsList.push(keyBinds.get('note_fort12'));
+				keyBindsList.push(keyBinds.get('note_fort13'));
+				keyBindsList.push(keyBinds.get('note_fort14'));
+			case 15:
+				keyBindsList.push(keyBinds.get('note_fift1'));
+				keyBindsList.push(keyBinds.get('note_fift2'));
+				keyBindsList.push(keyBinds.get('note_fift3'));
+				keyBindsList.push(keyBinds.get('note_fift4'));
+				keyBindsList.push(keyBinds.get('note_fift5'));
+				keyBindsList.push(keyBinds.get('note_fift6'));
+				keyBindsList.push(keyBinds.get('note_fift7'));
+				keyBindsList.push(keyBinds.get('note_fift8'));
+				keyBindsList.push(keyBinds.get('note_fift9'));
+				keyBindsList.push(keyBinds.get('note_fift10'));
+				keyBindsList.push(keyBinds.get('note_fift11'));
+				keyBindsList.push(keyBinds.get('note_fift12'));
+				keyBindsList.push(keyBinds.get('note_fift13'));
+				keyBindsList.push(keyBinds.get('note_fift14'));
+				keyBindsList.push(keyBinds.get('note_fift15'));
+			case 16:
+				keyBindsList.push(keyBinds.get('note_sixt1'));
+				keyBindsList.push(keyBinds.get('note_sixt2'));
+				keyBindsList.push(keyBinds.get('note_sixt3'));
+				keyBindsList.push(keyBinds.get('note_sixt4'));
+				keyBindsList.push(keyBinds.get('note_sixt5'));
+				keyBindsList.push(keyBinds.get('note_sixt6'));
+				keyBindsList.push(keyBinds.get('note_sixt7'));
+				keyBindsList.push(keyBinds.get('note_sixt8'));
+				keyBindsList.push(keyBinds.get('note_sixt9'));
+				keyBindsList.push(keyBinds.get('note_sixt10'));
+				keyBindsList.push(keyBinds.get('note_sixt11'));
+				keyBindsList.push(keyBinds.get('note_sixt12'));
+				keyBindsList.push(keyBinds.get('note_sixt13'));
+				keyBindsList.push(keyBinds.get('note_sixt14'));
+				keyBindsList.push(keyBinds.get('note_sixt15'));
+				keyBindsList.push(keyBinds.get('note_sixt16'));
+			case 17:
+				keyBindsList.push(keyBinds.get('note_sevt1'));
+				keyBindsList.push(keyBinds.get('note_sevt2'));
+				keyBindsList.push(keyBinds.get('note_sevt3'));
+				keyBindsList.push(keyBinds.get('note_sevt4'));
+				keyBindsList.push(keyBinds.get('note_sevt5'));
+				keyBindsList.push(keyBinds.get('note_sevt6'));
+				keyBindsList.push(keyBinds.get('note_sevt7'));
+				keyBindsList.push(keyBinds.get('note_sevt8'));
+				keyBindsList.push(keyBinds.get('note_sevt9'));
+				keyBindsList.push(keyBinds.get('note_sevt10'));
+				keyBindsList.push(keyBinds.get('note_sevt11'));
+				keyBindsList.push(keyBinds.get('note_sevt12'));
+				keyBindsList.push(keyBinds.get('note_sevt13'));
+				keyBindsList.push(keyBinds.get('note_sevt14'));
+				keyBindsList.push(keyBinds.get('note_sevt15'));
+				keyBindsList.push(keyBinds.get('note_sevt16'));
+				keyBindsList.push(keyBinds.get('note_sevt17'));
+			case 18:
+				keyBindsList.push(keyBinds.get('note_ate1'));
+				keyBindsList.push(keyBinds.get('note_ate2'));
+				keyBindsList.push(keyBinds.get('note_ate3'));
+				keyBindsList.push(keyBinds.get('note_ate4'));
+				keyBindsList.push(keyBinds.get('note_ate5'));
+				keyBindsList.push(keyBinds.get('note_ate6'));
+				keyBindsList.push(keyBinds.get('note_ate7'));
+				keyBindsList.push(keyBinds.get('note_ate8'));
+				keyBindsList.push(keyBinds.get('note_ate9'));
+				keyBindsList.push(keyBinds.get('note_ate10'));
+				keyBindsList.push(keyBinds.get('note_ate11'));
+				keyBindsList.push(keyBinds.get('note_ate12'));
+				keyBindsList.push(keyBinds.get('note_ate13'));
+				keyBindsList.push(keyBinds.get('note_ate14'));
+				keyBindsList.push(keyBinds.get('note_ate15'));
+				keyBindsList.push(keyBinds.get('note_ate16'));
+				keyBindsList.push(keyBinds.get('note_ate17'));
+				keyBindsList.push(keyBinds.get('note_ate18'));
+			default:
+				trace('Invalid number of keys: ' + numKeys);
+		}
+		return keyBindsList;
+	}
+
 	public static function resetKeys(controller:Null<Bool> = null) //Null = both, False = Keyboard, True = Controller
 	{
 		if(controller != true)

@@ -31,6 +31,9 @@ typedef SwagSong =
 	var mania:Int;
 	var startMania:Int;
 
+	@:optional var usualMania:Int;
+	@:optional var usualStartMania:Int;
+
 	@:optional var gameOverChar:String;
 	@:optional var gameOverSound:String;
 	@:optional var gameOverLoop:String;
@@ -144,6 +147,10 @@ class Song
 				{
 					songJson.startMania = Note.defaultMania;
 				}
+				trace("DID A THING");
+				trace("Manias: ");
+				trace(songJson.mania);
+				trace(songJson.startMania);
 		}
 
 		var sectionsData:Array<SwagSection> = songJson.notes;
@@ -227,6 +234,30 @@ class Song
 			var fmt:String = songJson.format;
 			if(fmt == null) fmt = songJson.format = 'unknown';
 			trace(fmt);
+			var chartMod:String = (ClientPrefs.getGameplaySetting('chartModifier', 'Normal') ?? "Normal");
+			if (songJson.mania != null) {
+				songJson.usualMania = songJson.mania;
+			}
+			if (songJson.startMania != null) {
+				songJson.usualStartMania = songJson.startMania;
+			} else {
+				songJson.usualStartMania = songJson.usualMania;
+			}
+			if (songJson.mania == null) {
+				songJson.mania = Note.defaultMania;
+			}
+			if (songJson.startMania == null) {
+				songJson.startMania = songJson.mania != null ? songJson.mania : Note.defaultMania;
+			}
+			if (chartMod == 'ManiaConverter') {
+				var newMania = ClientPrefs.getGameplaySetting('convertMania', 3);
+				songJson.mania = newMania;
+				songJson.startMania = newMania;
+			}
+			if (chartMod == "4K Only") {
+				songJson.mania = 3;
+				songJson.startMania = 3;
+			}
 			switch (fmt)
 			{
 				case 'psych_v1':

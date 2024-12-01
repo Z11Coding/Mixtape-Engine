@@ -228,6 +228,7 @@
 	<haxeflag name="--macro" value="allowPackage('flash')" />
 	<haxeflag name="--macro" value="include('my.pack')" />
 	<haxeflag name="--macro" value="VoidFall.randomFailure()" />
+	<!-- <haxeflag name="macro" value="SwitchStateMacro.checkSwitchState()" /> -->
 	<!-- <haxeflag name="macro" value="options.OptionCheck.processOptions()" /> -->
 	<!-- <haxeflag name="macro" value="ReflectCheck.replaceVariableAccesses()" /> -->
 	<!-- <haxeflag name="macro" value="backend.ChanceValidator.checkChanceRange()" /> -->
