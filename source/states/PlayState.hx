@@ -1389,7 +1389,7 @@ class PlayState extends MusicBeatState
 
 		introStageText = new FlxTypedGroup<FlxText>();
 
-		songTxt = new FlxText(0, 1280/6, FlxG.width - 800, "", 32);
+		songTxt = new FlxText(0, 1280/6, FlxG.width, "", 32);
 		songTxt.setFormat(Paths.font("mania-free.ttf"), 32, FlxColor.ORANGE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		songTxt.scrollFactor.set();
 		songTxt.screenCenter(X);
@@ -1397,14 +1397,14 @@ class PlayState extends MusicBeatState
 		songTxt.alpha = 0;
 		introStageText.insert(0, songTxt);
 
-		artistTxt = new FlxText(songTxt.x, songTxt.y+40, FlxG.width - 800, "", 32);
+		artistTxt = new FlxText(songTxt.x, songTxt.y+40, FlxG.width, "", 32);
 		artistTxt.setFormat(Paths.font("mania-free.ttf"), 32, FlxColor.ORANGE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		artistTxt.scrollFactor.set();
 		artistTxt.borderSize = 1.25;
 		artistTxt.alpha = 0;
 		introStageText.insert(0, artistTxt);
 
-		charterTxt = new FlxText(artistTxt.x, artistTxt.y+40, FlxG.width - 800, "", 32);
+		charterTxt = new FlxText(artistTxt.x, artistTxt.y+40, FlxG.width, "", 32);
 		charterTxt.setFormat(Paths.font("mania-free.ttf"), 32, FlxColor.ORANGE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		charterTxt.scrollFactor.set();
 		charterTxt.borderSize = 1.25;

@@ -9,6 +9,18 @@ function onCreatePost()
     setValue('alpha3', 1, 1)
     setValue('beat', 1)
 end
+
+function onSkipIntro()
+    setValue('alpha0', 0, 0)
+    setValue('alpha1', 0, 0)
+    setValue('alpha2', 0, 0)
+    setValue('alpha3', 0, 0)
+    setValue('alpha0', 0, 1)
+    setValue('alpha1', 0, 1)
+    setValue('alpha2', 0, 1)
+    setValue('alpha3', 0, 1)
+end
+
 local localStep = 0
 
 function onStepHit()

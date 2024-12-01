@@ -880,7 +880,7 @@ class ChartingStateOG extends MusicBeatChartingState
 			}
 			catch (e:Any)
 			{
-				trace("File " + _song.song.toLowerCase() + Difficulty.getString(Std.parseInt(difficulty)) + " is not found.");
+				trace("File " + _song.song.toLowerCase() + '-' + Difficulty.getString(Std.parseInt(difficulty)) + " is not found.");
 			}
 		});
 		if (Difficulty.list != null)

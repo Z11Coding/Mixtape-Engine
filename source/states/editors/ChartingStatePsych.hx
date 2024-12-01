@@ -407,7 +407,7 @@ class ChartingStatePsych extends MusicBeatState implements PsychUIEventHandler.P
 		infoBox = new PsychUIBox(infoBoxPosition.x, infoBoxPosition.y, 250, 620, ['Information']);
 		infoBox.scrollFactor.set();
 		infoBox.cameras = [camUI];
-		infoText = new FlxText(15, 15, 230, '', 16);
+		infoText = new FlxText(15, 15, 260, '', 16);
 		infoText.scrollFactor.set();
 		infoBox.getTab('Information').menu.add(infoText);
 		add(infoBox);
@@ -506,6 +506,9 @@ class ChartingStatePsych extends MusicBeatState implements PsychUIEventHandler.P
 		gameOverCharDropDown.list = gameOverCharacters;
 
 		stageDropDown.list = loadFileList('stages/', 'data/stageList.txt');
+
+		if (Difficulty.list.length <= 0 || Difficulty.list == []) Difficulty.list = Difficulty.defaultList;
+		difficultyDropDown.list = Difficulty.list;
 		onChartLoaded();
 		changeMania();
 
@@ -671,6 +674,9 @@ class ChartingStatePsych extends MusicBeatState implements PsychUIEventHandler.P
 		songNameInputText.text = PlayState.SONG.song;
 		allowVocalsCheckBox.checked = (PlayState.SONG.needsVoices != false); //If the song for some reason does not have this value, it will be set to true
 
+		maniaStepper.value = PlayState.SONG.mania;
+		startManiaStepper.value = PlayState.SONG.startMania;
+
 		bpmStepper.value = PlayState.SONG.bpm;
 		scrollSpeedStepper.value = PlayState.SONG.speed;
 		audioOffsetStepper.value = Reflect.hasField(PlayState.SONG, 'offset') ? PlayState.SONG.offset : 0;
@@ -682,6 +688,7 @@ class ChartingStatePsych extends MusicBeatState implements PsychUIEventHandler.P
 		opponent2DropDown.selectedLabel = PlayState.SONG.player4;
 		girlfriendDropDown.selectedLabel = PlayState.SONG.gfVersion;
 		stageDropDown.selectedLabel = PlayState.SONG.stage;
+		difficultyDropDown.selectedLabel = Difficulty.list[PlayState.storyDifficulty];
 		StageData.loadDirectory(PlayState.SONG);
 
 		GRID_COLUMNS_PER_PLAYER = Note.ammo[PlayState.SONG.mania];
@@ -1565,7 +1572,8 @@ class ChartingStatePsych extends MusicBeatState implements PsychUIEventHandler.P
 				"\nGF: " + PlayState.SONG.gfVersion +
 				"\nDAD 2: " + PlayState.SONG.player4 + 
 				"\nBF 2: " + PlayState.SONG.player5 + 
-				"\n\nStage: " + PlayState.SONG.stage;
+				"\n\nStage: " + PlayState.SONG.stage +
+				"\n\nDifficulty: " + Difficulty.list[PlayState.storyDifficulty];
 
 			if(str != infoText.text)
 			{
@@ -3365,6 +3373,7 @@ class ChartingStatePsych extends MusicBeatState implements PsychUIEventHandler.P
 	var audioOffsetStepper:PsychUINumericStepper;
 
 	var stageDropDown:PsychUIDropDownMenu;
+	var difficultyDropDown:PsychUIDropDownMenu;
 	var playerDropDown:PsychUIDropDownMenu;
 	var player2DropDown:PsychUIDropDownMenu;
 	var opponentDropDown:PsychUIDropDownMenu;
@@ -3458,6 +3467,23 @@ class ChartingStatePsych extends MusicBeatState implements PsychUIEventHandler.P
 			StageData.loadDirectory(PlayState.SONG);
 			trace('selected $stage');
 		});
+
+		difficultyDropDown = new PsychUIDropDownMenu(objX + 140, objY + 120, [''], function(id:Int, difficulty:String)
+		{
+			try
+			{
+				PlayState.storyDifficulty = id;
+				if (difficulty.toLowerCase() == "normal")
+					PlayState.SONG = Song.loadFromJson(PlayState.SONG.song.toLowerCase(), PlayState.SONG.song.toLowerCase());
+				else
+					PlayState.SONG = Song.loadFromJson(PlayState.SONG.song.toLowerCase() + '-' + difficulty.toLowerCase(), PlayState.SONG.song.toLowerCase());
+				MusicBeatState.resetState();
+			}
+			catch (e:Any)
+			{
+				trace("File " + PlayState.SONG.song.toLowerCase() + '-' + difficulty.toLowerCase() + " is not found.");
+			}
+		});
 		
 		opponentDropDown = new PsychUIDropDownMenu(objX, objY + 80, [''], function(id:Int, character:String)
 		{
@@ -3496,12 +3522,14 @@ class ChartingStatePsych extends MusicBeatState implements PsychUIEventHandler.P
 
 		//dropdowns
 		tab_group.add(new FlxText(stageDropDown.x, stageDropDown.y - 15, 80, 'Stage:'));
+		tab_group.add(new FlxText(difficultyDropDown.x, difficultyDropDown.y - 15, 80, 'Difficulty:'));
 		tab_group.add(new FlxText(playerDropDown.x, playerDropDown.y - 15, 80, 'Player:'));
 		tab_group.add(new FlxText(player2DropDown.x, player2DropDown.y - 15, 80, 'Player 2:'));
 		tab_group.add(new FlxText(opponentDropDown.x, opponentDropDown.y - 15, 80, 'Opponent:'));
 		tab_group.add(new FlxText(opponent2DropDown.x, opponent2DropDown.y - 15, 80, 'Opponent 2:'));
 		tab_group.add(new FlxText(girlfriendDropDown.x, girlfriendDropDown.y - 15, 80, 'Girlfriend:'));
 		tab_group.add(stageDropDown);
+		tab_group.add(difficultyDropDown);
 		tab_group.add(girlfriendDropDown);
 		tab_group.add(opponentDropDown);
 		tab_group.add(opponent2DropDown);
