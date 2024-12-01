@@ -31,8 +31,16 @@ class NotefieldManager extends FlxBasic {
     {
         super.destroy();
 
-        while (members.length > 0)
-            members.pop().destroy(); 
+        try {
+            while (members.length > 0)
+            try {
+                members.pop().destroy();
+            } catch (e:Dynamic) {
+                trace('Error destroying member: $e');
+            }
+        } catch (e:Dynamic) {
+            trace("Doesn't exist.");
+        }
         
         members = null;
     }

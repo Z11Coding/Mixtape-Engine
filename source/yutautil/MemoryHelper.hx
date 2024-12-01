@@ -16,31 +16,36 @@ class MemoryHelper {
             trace('Processing field: ' + field);
             var value = Reflect.getProperty(state, field);
             if (Std.is(value, Dynamic)) {
-                trace('Field ' + field + ' is Dynamic');
+                // trace('Field ' + field + ' is Dynamic');
                 if (Reflect.hasField(value, "destroy")) {
                     trace('Field ' + field + ' has destroy method, destroying...');
                     FlxDestroyUtil.destroy(value);
                 } else {
-                    trace('Field ' + field + ' does not have destroy method');
+                    // trace('Field ' + field + ' does not have destroy method');
                 }
             } else {
-                trace('Field ' + field + ' is not Dynamic');
+                // trace('Field ' + field + ' is not Dynamic');
             }
             Reflect.setField(state, field, null);
-            trace('Field ' + field + ' set to null');
-            trace("Field " + field + " is " + Reflect.field(state, field));
+            // trace('Field ' + field + ' set to null');
+            // trace("Field " + field + " is " + Reflect.field(state, field));
         }
-        trace('Finished clearClassObject for state: ' + Type.getClassName(state));
+        // trace('Finished clearClassObject for state: ' + Type.getClassName(state));
     }
 
     // Clear data from a specific object
     public inline function clearObject(object:Dynamic):Void {
         for (field in Reflect.fields(object)) {
-            var value = Reflect.field(object, field);
-            if (Std.is(value, Dynamic) && Reflect.hasField(value, "destroy")) {
-                FlxDestroyUtil.destroy(value);
+            try {
+                var value = Reflect.field(object, field);
+                if (Std.is(value, Dynamic) && Reflect.hasField(value, "destroy")) {
+                    FlxDestroyUtil.destroy(value);
+                }
+                Reflect.setField(object, field, null);
+                // trace("Field " + field + " is " + Reflect.field(object, field));
+            } catch (e:Dynamic) {
+                // trace('Error processing field ' + field + ': ' + e);
             }
-            Reflect.setField(object, field, null);
         }
     }
 

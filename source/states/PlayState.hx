@@ -9128,8 +9128,12 @@ class PlayState extends MusicBeatState
 		FlxG.animationTimeScale = 1;
 		#if FLX_PITCH FlxG.sound.music.pitch = 1; #end
 		var clearfuck:yutautil.MemoryHelper = new MemoryHelper();
+		var oldMania = mania;
 		clearfuck.clearClassObject(Type.getClass(this));
+		for (stuff in instance)	// Clear all variables
+			clearfuck.clearObject(stuff);
 		instance = null;
+		mania = oldMania;
 		super.destroy();
 	}
 
