@@ -90,8 +90,7 @@ class CoolUtil
 		return Std.int((f + interval / 2) / interval) * interval;
 	}
 
-	inline public static function quantize(f:Float, snap:Float)
-	{
+	inline public static function quantize(f:Float, snap:Float){
 		// changed so this actually works lol
 		var m:Float = Math.fround(f * snap);
 		//trace(snap);
@@ -114,35 +113,26 @@ class CoolUtil
 	}
 
 	inline public static function capitalize(text:String)
-	{
 		return text.charAt(0).toUpperCase() + text.substr(1).toLowerCase();
-	}
 
 	inline public static function coolTextFile(path:String):Array<String>
 	{
-		var daList:Array<String> = [];
-		#if sys
-		if(FileSystem.exists(path)) daList = File.getContent(path).trim().split('\n');
+		var daList:String = null;
+		#if (sys && MODS_ALLOWED)
+		if(FileSystem.exists(path)) daList = File.getContent(path);
 		#else
-		if(Assets.exists(path)) daList = Assets.getText(path).trim().split('\n');
+		if(Assets.exists(path)) daList = Assets.getText(path);
 		#end
-
-		for (i in 0...daList.length)
-		{
-			daList[i] = daList[i].trim();
-		}
-
-		return daList;
+		return daList != null ? listFromString(daList) : [];
 	}
+
 	inline public static function listFromString(string:String):Array<String>
 	{
 		var daList:Array<String> = [];
 		daList = string.trim().split('\n');
 
 		for (i in 0...daList.length)
-		{
 			daList[i] = daList[i].trim();
-		}
 
 		return daList;
 	}
@@ -179,13 +169,11 @@ class CoolUtil
 		return maxKey;
 	}
 
-	public static function numberArray(max:Int, ?min = 0):Array<Int>
+	inline public static function numberArray(max:Int, ?min = 0):Array<Int>
 	{
 		var dumbArray:Array<Int> = [];
-		for (i in min...max)
-		{
-			dumbArray.push(i);
-		}
+		for (i in min...max) dumbArray.push(i);
+
 		return dumbArray;
 	}
 
@@ -312,7 +300,7 @@ class CoolUtil
 		#end
 	}
 
-	public static function browserLoad(site:String) {
+	inline public static function browserLoad(site:String) {
 		#if linux
 		Sys.command('/usr/bin/xdg-open', [site]);
 		#else

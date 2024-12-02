@@ -1016,6 +1016,7 @@ class PlayState extends MusicBeatState
 		whiteBG.scrollFactor.set(0, 0);
 		whiteBG.active = false;
 		whiteBG.alpha = 0.0;
+
 		blackOverlay = new FlxSprite(0, 0).makeGraphic(screenWidth, screenHeight, FlxColor.BLACK);
 		blackOverlay.updateHitbox();
 		blackOverlay.screenCenter();
@@ -1023,6 +1024,7 @@ class PlayState extends MusicBeatState
 		blackOverlay.scrollFactor.set(0, 0);
 		blackOverlay.active = false;
 		blackOverlay.alpha = 0;
+
 		blackUnderlay = new FlxSprite(0, 0).makeGraphic(screenWidth, screenHeight, FlxColor.BLACK);
 		blackUnderlay.updateHitbox();
 		blackUnderlay.screenCenter();
@@ -1030,10 +1032,24 @@ class PlayState extends MusicBeatState
 		blackUnderlay.scrollFactor.set(0, 0);
 		blackUnderlay.active = false;
 		blackUnderlay.alpha = 0;
+
+		additionalLighten = new FlxSprite(-600, -175).makeGraphic(1, 1, FlxColor.WHITE);
+		additionalLighten.scrollFactor.set();
+		additionalLighten.scale.set(2500, 2500);
+		additionalLighten.updateHitbox();
+		additionalLighten.blend = ADD;
+		additionalLighten.visible = false;
+
+		lightning = new BGSprite('effects/lightning', -50, -300, 0.0, 0.0, ['lightning0'], false);
+		setupScale(lightning);
+		lightning.visible = false;
+
 		specialOverlays = new FlxTypedGroup<FlxSprite>();
 		specialOverlays.add(whiteBG);
 		specialOverlays.add(blackOverlay);
 		specialOverlays.add(blackUnderlay);
+		specialOverlays.add(additionalLighten);
+		specialOverlays.add(lightning);
 		if (stageData.objects != null && stageData.objects.length > 0)
 		{
 			var list:Map<String, FlxSprite> = StageData.addObjectsToState(stageData.objects, !stageData.hide_girlfriend ? gfGroup : null, dadGroup,
@@ -1571,6 +1587,12 @@ class PlayState extends MusicBeatState
 		cachePopUpScore();
 		if (eventNotes.length < 1)
 			checkEventNote();
+	}
+
+	function setupScale(spr:BGSprite)
+	{
+		spr.scale.set(1.75, 1.75);
+		spr.updateHitbox();
 	}
 
 	public function strumInit()
@@ -2504,19 +2526,13 @@ class PlayState extends MusicBeatState
 			if (ClientPrefs.data.middleScroll)
 			{
 				modManager.setValue('transformX', -315, 0);
-				if (mania == 3)
-				{
-					modManager.setValue('noteAlpha', .7, 1);
-					modManager.setValue('alpha', .7, 1);
-					modManager.setValue('transform2X', FlxG.width / 2, 1);
-					modManager.setValue('transform3X', FlxG.width / 2, 1);
-				}
-				else
-				{
-					modManager.setValue('noteAlpha', 1, 1);
-					modManager.setValue('alpha', 1, 1);
-					forceInvis = true;
-				}
+				modManager.setValue('noteAlpha', .7, 1);
+				modManager.setValue('alpha', .7, 1);
+				for (i in 0...dadField.strumNotes.length)
+					if (i > ((dadField.strumNotes.length/2)-1))
+						modManager.setValue('transform'+i+'X', (FlxG.width / 2)-50, 1);
+					else
+						modManager.setValue('transform'+i+'X', 50, 1);
 			}
 
 			startedCountdown = true;
@@ -4433,6 +4449,11 @@ class PlayState extends MusicBeatState
 
 			case 'Play Sound':
 				Paths.sound(event.value1); // Precache sound
+			case "Thunderstorm Trigger":
+				for (i in 1...4)
+				{
+					Paths.sound('lightning/Lightning$i');
+				}
 		}
 
 		stagesFunc(function(stage:BaseStage) stage.eventPushed(event));
@@ -4911,6 +4932,43 @@ class PlayState extends MusicBeatState
 		#end
 	}
 
+	var lightningTimer:Float = 3.0;
+	var lightning:BGSprite;
+	var additionalLighten:FlxSprite;
+	function applyLightning():Void
+	{
+		if(ClientPrefs.data.lowQuality || endingSong) return;
+
+		final LIGHTNING_FULL_DURATION = 1.5;
+		final LIGHTNING_FADE_DURATION = 0.3;
+
+		additionalLighten.visible = true;
+		additionalLighten.alpha = 0.3;
+		FlxTween.tween(additionalLighten, {alpha: 0.0}, LIGHTNING_FADE_DURATION, {onComplete: function(_)
+		{
+			lightning.visible = false;
+			additionalLighten.visible = false;
+		}});
+
+		lightning.visible = true;
+		lightning.animation.play('lightning0', true);
+
+		if(FlxG.random.bool(65))
+			lightning.x = FlxG.random.int(-250, 280);
+		else
+			lightning.x = FlxG.random.int(780, 900);
+
+		// Darken characters
+		FlxTween.color(boyfriend, LIGHTNING_FADE_DURATION, 0xFF606060, 0xFFDEDEDE);
+		FlxTween.color(dad, LIGHTNING_FADE_DURATION, 0xFF606060, 0xFFDEDEDE);
+		FlxTween.color(gf, LIGHTNING_FADE_DURATION, 0xFF606060, 0xFF888888);
+		if (bf2 != null) FlxTween.color(bf2, LIGHTNING_FADE_DURATION, 0xFF606060, 0xFFDEDEDE);
+		if (dad2 != null) FlxTween.color(dad2, LIGHTNING_FADE_DURATION, 0xFF606060, 0xFFDEDEDE);
+
+		// Sound
+		FlxG.sound.play(Paths.soundRandom('lightning/Lightning', 1, 3));
+	}
+
 	var didntPress:Bool = false;
 
 	override public function update(elapsed:Float)
@@ -4937,6 +4995,16 @@ class PlayState extends MusicBeatState
 			ShadersHandler.rainShader.intensity = rainIntensity;
 			ShadersHandler.rainShader.updateViewInfo(FlxG.width, FlxG.height, camGame);
 			ShadersHandler.rainShader.update(elapsed);
+
+			if (thunderON)
+			{
+				lightningTimer -= elapsed;
+				if (lightningTimer <= 0)
+				{
+					applyLightning();
+					lightningTimer = FlxG.random.float(7, 15);
+				}
+			}
 		}
 
 		if (!isStoryMode)
@@ -5038,7 +5106,7 @@ class PlayState extends MusicBeatState
 
 		if (boyfriend.hasAnimation('idle'))
 		{
-			if (justmissed && boyfriend.animation.curAnim.name == 'idle')
+			if (justmissed && boyfriend.animation.curAnim != null && boyfriend.animation.curAnim.name == 'idle')
 			{
 				justmissed = false;
 				boyfriend.stunned = false;
@@ -5303,7 +5371,7 @@ class PlayState extends MusicBeatState
 				}
 				playerScoreTxt.color = FlxColor.fromInt(Std.parseInt("0xFFFFE600"));
 				playerScoreTxt.text = '[' + daNameB + ']\nScore: ' + songScore + '\nRating: ' + ratingName + ' ('
-					+ Highscore.floorDecimal(ratingPercent * 100, 2) + '%)' + ' - ' + ratingFC; // peeps wanted no integer rating
+					+ CoolUtil.formatAccuracy(Highscore.floorDecimal(ratingPercent * 100, 2)) + '%)' + ' - ' + ratingFC; // peeps wanted no integer rating
 			}
 			else
 			{
@@ -5324,7 +5392,7 @@ class PlayState extends MusicBeatState
 					+ ' | Rating: '
 					+ ratingName
 					+ ' ('
-					+ Highscore.floorDecimal(ratingPercent * 100, 2)
+					+ CoolUtil.formatAccuracy(Highscore.floorDecimal(ratingPercent * 100, 2))
 					+ '%)'
 					+ ' - '
 					+ ratingFC
@@ -5339,7 +5407,7 @@ class PlayState extends MusicBeatState
 				}
 				playerScoreTxt.borderColor = FlxColor.fromRGB(boyfriend.healthColorArray[0], boyfriend.healthColorArray[1], boyfriend.healthColorArray[2]);
 				playerScoreTxt.text = '[' + daNameB + ']\nScore: ' + songScore + '\nRating: ' + ratingName + ' ('
-					+ Highscore.floorDecimal(ratingPercent * 100, 2) + '%)' + ' - ' + ratingFC; // peeps wanted no integer rating
+					+ CoolUtil.formatAccuracy(Highscore.floorDecimal(ratingPercent * 100, 2)) + '%)' + ' - ' + ratingFC; // peeps wanted no integer rating
 			}
 		}
 		else

@@ -75,7 +75,7 @@ class PhillyBlazin extends BaseStage
 			add(additionalLighten);
 		}
 
-		abot = new ABotSpeaker(gfGroup.x, gfGroup.y + 550);
+		abot = new ABotSpeaker(gfGroup.x, gfGroup.y + 530);
 		add(abot);
 		
 		if(ClientPrefs.data.shaders)
@@ -143,6 +143,18 @@ class PhillyBlazin extends BaseStage
 		}
 		remove(dadGroup, true);
 		addBehindBF(dadGroup);
+
+		if (!ClientPrefs.data.middleScroll)
+		{
+			game.modManager.setValue('transformX', -315, 0);
+			game.modManager.setValue('noteAlpha', .7, 1);
+			game.modManager.setValue('alpha', .7, 1);
+			for (i in 0...game.dadField.strumNotes.length)
+				if (i > ((game.dadField.strumNotes.length/2)-1))
+					game.modManager.setValue('transform'+i+'X', (FlxG.width / 2)-50, 1);
+				else
+					game.modManager.setValue('transform'+i+'X', 50, 1);
+		}
 	}
 
 	override function beatHit()
