@@ -172,7 +172,7 @@ class PlayField extends FlxTypedGroup<FlxBasic>
 	}
 
 	// queues a note to be spawned
-	public function queue(note:Note){
+	public function queue(note:PreloadedChartNote){
 		if(noteQueue[note.column]==null)
 			noteQueue[note.column] = [];
 		noteQueue[note.column].push(note);
@@ -182,7 +182,7 @@ class PlayField extends FlxTypedGroup<FlxBasic>
 	}
 
 	// unqueues a note
-	public function unqueue(note:Note)
+	public function unqueue(note:flixel.util.typeLimit.OneOfTwo<Note, PreloadedChartNote>)
 	{
 		if (noteQueue[note.column] == null)
 			noteQueue[note.column] = [];
