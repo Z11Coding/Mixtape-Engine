@@ -66,7 +66,7 @@ class Note extends NoteObject
 	public static var ammo:Array<Int> = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
 	public static var scales:Array<Float> = [0.9, 0.85, 0.8, 0.7, 0.66, 0.6, 0.55, 0.50, 0.46, 0.39, 0.36, 0.32, 0.31, 0.31, 0.3, 0.26, 0.26, 0.22]; 
 	public static var lessX:Array<Int> = [0, 0, 0, 0, 0, 8, 7, 8, 8, 7, 6, 6, 8, 7, 6, 7, 6, 6];
-	public static var separator:Array<Int> = [0, 0, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5, 6, 6, 7, 6, 5];
+	public static var separator:Array<Int> = [99, 99, 99, 1, 1, 1, 2, 3, 3, 3, 4, 5, 6, 6, 7, 6, 5];
 	public static var xtra:Array<Int> = [150, 89, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 	public static var posRest:Array<Int> = [0, 0, 0, 0, 25, 32,46, 52, 60, 40, 45, 30, 30, 29,72, 37, 61, 16];
 	public static var gridSizes:Array<Int> = [40, 40, 40, 40, 40, 40, 40, 40, 40, 35, 30, 25, 25, 20, 20, 20, 20, 15];
@@ -427,7 +427,7 @@ class Note extends NoteObject
 	public var rgbShader:RGBShaderReference;
 	public static var globalRgbShaders:Array<RGBPalette> = [];
 	public static var SUSTAIN_SIZE:Int = 44;
-	public static var defaultNoteSkin(default, never):String = 'noteskins/normalNOTE';
+	public static var defaultNoteSkin(default, never):String = 'normalNOTE';
 
 	//AI Stuff
 	public var AIStrumTime:Float = 0;
@@ -489,7 +489,7 @@ class Note extends NoteObject
 			switch(value) {
 				case 'Hurt Note':
 					ignoreNote = mustPress;
-					reloadNote('noteskins/HURT');
+					reloadNote('HURT');
 					noteSplashTexture = 'HURTnoteSplashes';
 					usesDefaultColours = false;
 					if(isSustainNote) {
@@ -512,10 +512,6 @@ class Note extends NoteObject
 					ghostNote = true;
 				case 'EX Note':
 					exNote = true;
-				case 'Center Note':
-					reloadNote('noteskins/CENTER');
-					hitCausesMiss = false;
-					centerNote = true;
 				default:
 					//Nothing
 						
@@ -671,7 +667,7 @@ class Note extends NoteObject
 		{
 			skin = PlayState.SONG != null ? PlayState.SONG.arrowSkin : null;
 			if(skin == null || skin.length < 1)
-				skin = defaultNoteSkin + postfix;
+				skin = 'noteskins/' + defaultNoteSkin + postfix;
 		}
 		//else rgbShader.enabled = false;
 
@@ -872,88 +868,5 @@ class Note extends NoteObject
 			if (alpha > 0.3)
 				alpha = 0.3;
 		}
-	}
-
-	// this is used for note recycling
-	var firstOffX = false;
-	var shouldCenterOffsets:Bool = true;
-	public function setupNoteData(chartNoteData:PreloadedChartNote):Void 
-	{
-		wasGoodHit = hitByOpponent = tooLate = canBeHit = false; // Don't make an update call of this for the note group
-
-		if (chartNoteData.noteskin.length > 0 && chartNoteData.noteskin != '' && chartNoteData.noteskin != texture) 
-		{
-			texture = 'noteskins/' + chartNoteData.noteskin;
-		}
-		if (chartNoteData.texture.length > 0 && chartNoteData.texture != texture) 
-		{
-			texture = chartNoteData.texture;
-			shouldCenterOffsets = false;
-		}
-
-		strumTime = chartNoteData.strumTime;
-		if(!inEditor) strumTime += ClientPrefs.data.noteOffset;
-		noteData = chartNoteData.noteData % 4;
-		noteType = chartNoteData.noteType;
-		animSuffix = chartNoteData.animSuffix;
-		noAnimation = noMissAnimation = chartNoteData.noAnimation;
-		mustPress = chartNoteData.mustPress;
-		gfNote = chartNoteData.gfNote;
-		isSustainNote = chartNoteData.isSustainNote;
-		lowPriority = chartNoteData.lowPriority;
-		
-		hitHealth = chartNoteData.hitHealth;
-		missHealth = chartNoteData.missHealth;
-		hitCausesMiss = chartNoteData.hitCausesMiss;
-		ignoreNote = chartNoteData.ignoreNote;
-		blockHit = chartNoteData.blockHit;
-		multSpeed = chartNoteData.multSpeed;
-
-		if (noteType == 'Hurt Note')
-		{
-			texture = 'HURTNOTE_assets';
-		}
-
-		if (PlayState.isPixelStage)
-		{
-			@:privateAccess reloadNote(texture);
-			if (isSustainNote && !firstOffX) 
-			{
-				firstOffX = true;
-				offsetX += 30;
-			}
-		}
-
-		if (isSustainNote) {
-			offsetX += width / 2;
-			copyAngle = false;
-			animation.play(colArray[noteData % 4] + (chartNoteData.isSustainEnd ? 'holdend' : 'hold'));
-			updateHitbox();
-			offsetX -= width / 2;
-		}
-		else {
-			animation.play(colArray[noteData % 4] + 'Scroll');
-			if (!copyAngle) copyAngle = true;
-			offsetX = 0; //Juuuust in case we recycle a sustain note to a regular note
-			if (shouldCenterOffsets)
-			{
-				centerOffsets();
-				centerOrigin();
-			}
-		}
-		angle = 0;
-
-		clipRect = null;
-		if (!mustPress) 
-		{
-			visible = true;
-			alpha = ClientPrefs.data.middleScroll ? 0.3 : 1;
-		}
-		else
-		{
-			if (!visible) visible = true;
-			if (alpha != 1) alpha = 1;
-		}
-		if (flipY) flipY = false;
 	}
 }

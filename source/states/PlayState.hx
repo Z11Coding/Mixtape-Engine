@@ -1415,7 +1415,11 @@ class PlayState extends MusicBeatState
 
 		charterTxt = new FlxText(artistTxt.x, artistTxt.y+40, FlxG.width, "", 32);
 		charterTxt.setFormat(Paths.font("mania-free.ttf"), 32, FlxColor.ORANGE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		charterTxt.scrollFactor.set();
+		charterTxt.borderSize = 1.25;
+		charterTxt.alpha = 0;
 		introStageText.insert(0, charterTxt);
+
 		modTxt = new FlxText(charterTxt.x, charterTxt.y + 40, FlxG.width - 800, "", 32);
 		modTxt.setFormat(Paths.font("mania-free.ttf"), 32, FlxColor.ORANGE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		modTxt.scrollFactor.set();
@@ -2525,14 +2529,15 @@ class PlayState extends MusicBeatState
 
 			if (ClientPrefs.data.middleScroll)
 			{
-				modManager.setValue('transformX', -315, 0);
+				modManager.setValue('transformX', -335, 0);
 				modManager.setValue('noteAlpha', .7, 1);
 				modManager.setValue('alpha', .7, 1);
 				for (i in 0...dadField.strumNotes.length)
 					if (i > ((dadField.strumNotes.length/2)-1))
-						modManager.setValue('transform'+i+'X', (FlxG.width / 2)-50, 1);
+						modManager.setValue('transform'+i+'X', (FlxG.width / 2)-50 * Note.separator[mania], 1);
 					else
-						modManager.setValue('transform'+i+'X', 50, 1);
+						modManager.setValue('transform'+i+'X', 30, 1);
+				if (mania > 8) forceInvis = true; //dont wanna deal with anything higher then 9K
 			}
 
 			startedCountdown = true;
@@ -4292,14 +4297,21 @@ class PlayState extends MusicBeatState
 		{
 			if (songData.needsVoices)
 			{
-				var playerVocals = Paths.voices(songData.song,
-					(boyfriend.vocalsFile == null || boyfriend.vocalsFile.length < 1) ? 'Player' : boyfriend.vocalsFile);
-				if (playerVocals != null)
-				{
-					vocals.loadEmbedded(playerVocals != null ? playerVocals : Paths.voices(songData.song));
-					FlxG.sound.list.add(vocals);
-				}
+				var playerVocals = Paths.voices(songData.song, (boyfriend.vocalsFile == null || boyfriend.vocalsFile.length < 1) ? 'Player' : boyfriend.vocalsFile);
+				vocals.loadEmbedded(playerVocals != null ? playerVocals : Paths.voices(songData.song));
+				FlxG.sound.list.add(vocals);
+			}
+		}
+		catch (e)
+		{
+			addTextToDebug("Something's wrong with your vocals!", FlxColor.RED);
+			trace("Something's wrong with your vocals!");
+		}
 
+		try
+		{
+			if (songData.needsVoices)
+			{
 				var oppVocals = Paths.voices(songData.song, (dad.vocalsFile == null || dad.vocalsFile.length < 1) ? 'Opponent' : dad.vocalsFile);
 				if (oppVocals != null)
 				{
@@ -6176,7 +6188,8 @@ class PlayState extends MusicBeatState
 		if (AIPlayer.active)
 			AIPlayMap = AIPlayer.GeneratePlayMap(SONG, AIPlayer.diff);
 
-		backend.Threader.runInThread(generateNotes(SONG, AIPlayMap), 0, "generateNotes");
+		//backend.Threader.runInThread(generateNotes(SONG, AIPlayMap), 0, "generateNotes");
+		generateNotes(SONG, AIPlayMap);
 
 		if (loopModeChallenge)
 		{

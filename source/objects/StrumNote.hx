@@ -131,9 +131,12 @@ class StrumNote extends NoteObject
 		// trace(noteData);
 
 		var skin:String = 'normal';
-		if(PlayState.SONG.arrowSkin != null && PlayState.SONG.arrowSkin.length > 1 && (!Paths.doesImageAssetExist(Paths.modsImages('noteskins/normal')) || !Paths.doesImageAssetExist(Paths.getPath('images/noteskins/normal')))) skin = 'normal';
-			texture = skin; //Load texture and anims
+		if(PlayState.SONG != null && PlayState.SONG.arrowSkin != null && PlayState.SONG.arrowSkin.length > 1 && (!Paths.doesImageAssetExist(Paths.modsImages('noteskins/normal')) || !Paths.doesImageAssetExist(Paths.getPath('images/noteskins/normal')))) 
+			skin = PlayState.SONG.arrowSkin;
+		else 
+			skin = "noteskins/"+Note.defaultNoteSkin;
 
+		texture = skin; //Load texture and anims
 		scrollFactor.set();
 	}
 
@@ -172,7 +175,7 @@ class StrumNote extends NoteObject
 		}
 		else
 		{
-			frames = Paths.getSparrowAtlas('noteskins/'+texture);
+			frames = Paths.getSparrowAtlas(texture);
 
 			antialiasing = ClientPrefs.data.globalAntialiasing;
 
@@ -235,9 +238,12 @@ class StrumNote extends NoteObject
 
 	public function playAnim(anim:String, ?force:Bool = false, ?note:Note) {
 		animation.play(anim, force);
-		centerOrigin();
-		centerOffsets();
-		updateZIndex();
+		if(animation.curAnim != null)
+		{
+			centerOrigin();
+			centerOffsets();
+			updateZIndex();
+		}
 		if(useRGBShader) rgbShader.enabled = (animation.curAnim != null && animation.curAnim.name != 'static');
 	}
 }

@@ -77,12 +77,20 @@ class FreeplayState extends MusicBeatState
 	public static var doChange:Bool = false;
 	
 	public static var multisong:Bool = false;
+	var h:String;
 	
 	var rankTable:Array<String> = [
 		'P-small', 'X-small', 'X--small', 'SS+-small', 'SS-small', 'SS--small', 'S+-small', 'S-small', 'S--small', 'A+-small', 'A-small', 'A--small',
 		'B-small', 'C-small', 'D-small', 'E-small', 'NA'
 	];
 	var rank:FlxSprite = new FlxSprite(0).loadGraphic(Paths.image('rankings/NA'));
+
+	var hh:Array<Chance> = [
+		{item: "normal error", chance: 95}, // 95% chance to got the normal error screen
+		{item: "small argument", chance: 5}, // 5% chance to play Small Argument
+		{item: "beat battle", chance: 5}, // 5% chance to play Beat Battle
+		{item: "beat battle 2", chance: 5} // 5% chance to do Beat Battle 2
+	];
 
 	override function create()
 	{
@@ -93,9 +101,13 @@ class FreeplayState extends MusicBeatState
 			curSelected = 0;
 			lastCategory = CategoryState.loadWeekForce;
 		} 
+		
 		MemoryUtil.clearMajor();
 		//Paths.clearStoredMemory();
 		//Paths.clearUnusedMemory();
+
+		if (FlxG.save.data.gotIntoAnArgument && (CategoryState.loadWeekForce == "Secrets" || CategoryState.loadWeekForce == "All")) 
+			addSong('Small Arguement', 0, "gfchibi", FlxColor.fromRGB(235, 100, 161));
 		
 		persistentUpdate = true;
 		PlayState.isStoryMode = false;
@@ -154,7 +166,6 @@ class FreeplayState extends MusicBeatState
 			}
 		}
 
-		if (FlxG.save.data.gotIntoAnArgument && CategoryState.loadWeekForce == "Secrets") addSong('Small Arguement', 0, "gfchibi", FlxColor.fromRGB(235, 100, 161));
 		Mods.loadTopMod();
 
 		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
@@ -295,6 +306,9 @@ class FreeplayState extends MusicBeatState
 			onComplete: function(twn:FlxTween){
 				searchBar.updateHitbox();
 		}});
+
+		// Main.simulateIntenseMaps();
+		trace(hh);
 	}
 
 	override function closeSubState() {
@@ -329,6 +343,9 @@ class FreeplayState extends MusicBeatState
 			iconArray.pop();
 		}
 		
+		if (FlxG.save.data.gotIntoAnArgument && (CategoryState.loadWeekForce == "Secrets" || CategoryState.loadWeekForce == "All")) 
+			addSong('Small Arguement', 0, "gfchibi", FlxColor.fromRGB(235, 100, 161));
+
 		for (i in 0...WeekData.weeksList.length) {
 			if(weekIsLocked(WeekData.weeksList[i])) continue;
 
@@ -708,9 +725,34 @@ class FreeplayState extends MusicBeatState
 					{
 						if (songLowercase == "song-not-found")
 						{
-							Song.loadFromJson('small-argument-hard', 'small-argument');
-							FlxG.save.data.gotIntoAnArgument = true;
-							FlxG.save.flush();
+							h = ChanceSelector.selectOption(hh, false, true, true);
+							switch (h)
+							{
+								case "small argument":
+									Song.loadFromJson('small-argument-hard', 'small-argument');
+									FlxG.save.data.gotIntoAnArgument = true;
+									FlxG.save.flush();
+								case "beat battle":
+									Song.loadFromJson('beat-battle-reasonable', 'beat-battle');
+									FlxG.save.data.gotbeatbattle = true;
+									FlxG.save.flush();
+								case "beat battle 2":
+									Song.loadFromJson('beat-battle-2-hard', 'beat-battle-2');
+									FlxG.save.data.gotbeatbattle2 = true;
+									FlxG.save.flush();
+								case "normal error":
+									trace('ERROR! NO SONGS FOUND!');
+
+									missingText.text = 'ERROR! NO SONGS FOUND!';
+									missingText.screenCenter(Y);
+									missingText.visible = true;
+									missingTextBG.visible = true;
+									FlxG.sound.play(Paths.sound('cancelMenu'));
+
+									updateTexts(elapsed);
+									super.update(elapsed);
+									return;
+							}
 							PlayState.isStoryMode = false;
 							PlayState.storyDifficulty = curDifficulty;
 						}
@@ -890,24 +932,30 @@ class FreeplayState extends MusicBeatState
 			curSelected = songs.length - 1;
 		if (curSelected >= songs.length)
 			curSelected = 0;
-			
-		if (songs.length >= 0)
-		{
-			var newColor:Int = songs[curSelected].color;
-			if(newColor != intendedColor) {
-				if(colorTween != null) {
-					colorTween.cancel();
-				}
-				intendedColor = newColor;
-				#if sys
-				ArtemisIntegration.setBackgroundFlxColor (intendedColor);
-				#end
-				colorTween = FlxTween.color(bg, 1, bg.color, intendedColor, {
-					onComplete: function(twn:FlxTween) {
-						colorTween = null;
+		
+		try {
+			if (songs.length >= 0)
+			{
+				var newColor:Int = songs[curSelected].color;
+				if(newColor != intendedColor) {
+					if(colorTween != null) {
+						colorTween.cancel();
 					}
-				});
+					intendedColor = newColor;
+					#if sys
+					ArtemisIntegration.setBackgroundFlxColor (intendedColor);
+					#end
+					colorTween = FlxTween.color(bg, 1, bg.color, intendedColor, {
+						onComplete: function(twn:FlxTween) {
+							colorTween = null;
+						}
+					});
+				}
 			}
+		}
+		catch(e)
+		{
+			trace('NO SONGS FOUND! Running Freeplay anyway...');
 		}
 
 		// selector.y = (70 * curSelected) + 30;
@@ -952,27 +1000,9 @@ class FreeplayState extends MusicBeatState
 			try {Difficulty.loadFromWeek();} catch(e:Dynamic) {}
 		}
 		
-		var savedDiff:String = songs[curSelected].lastDifficulty;
-		var lastDiff:Int = Difficulty.list.indexOf(lastDifficultyName);
-		if(savedDiff != null && !lastList.contains(savedDiff) && Difficulty.list.contains(savedDiff))
-			curDifficulty = Math.round(Math.max(0, Difficulty.list.indexOf(savedDiff)));
-		else if(lastDiff > -1)
-			curDifficulty = lastDiff;
-		else if(Difficulty.list.contains(Difficulty.getDefault()))
-			curDifficulty = Math.round(Math.max(0, Difficulty.defaultList.indexOf(Difficulty.getDefault())));
-		else
-			curDifficulty = 0;
-
-		if (songs[curSelected].songName != 'SONG NOT FOUND') 
-		{
-			Mods.currentModDirectory = songs[curSelected].folder;
-			PlayState.storyWeek = songs[curSelected].week;
-
-			Difficulty.loadFromWeek();
+		try {
 			var savedDiff:String = songs[curSelected].lastDifficulty;
 			var lastDiff:Int = Difficulty.list.indexOf(lastDifficultyName);
-			if(songs[curSelected].songName != 'SONG NOT FOUND') savedDiff = WeekData.getCurrentWeek().difficulties.trim(); //Fuck you HTML5
-			else savedDiff = 'SONG NOT FOUND!'; //and you too search bar
 			if(savedDiff != null && !lastList.contains(savedDiff) && Difficulty.list.contains(savedDiff))
 				curDifficulty = Math.round(Math.max(0, Difficulty.list.indexOf(savedDiff)));
 			else if(lastDiff > -1)
@@ -981,11 +1011,45 @@ class FreeplayState extends MusicBeatState
 				curDifficulty = Math.round(Math.max(0, Difficulty.defaultList.indexOf(Difficulty.getDefault())));
 			else
 				curDifficulty = 0;
-			
-			curDifficulty = Math.round(Math.max(0, Difficulty.defaultList.indexOf(lastDifficultyName)));
 		}
-		else
+		catch (e)
 		{
+			trace('DIFFICULTY BROKE. Setting default difficulty...');
+			curDifficulty = 0;
+		}
+
+		try {
+			if (songs[curSelected].songName != 'SONG NOT FOUND') 
+			{
+				Mods.currentModDirectory = songs[curSelected].folder;
+				PlayState.storyWeek = songs[curSelected].week;
+
+				Difficulty.loadFromWeek();
+				var savedDiff:String = songs[curSelected].lastDifficulty;
+				var lastDiff:Int = Difficulty.list.indexOf(lastDifficultyName);
+				if(songs[curSelected].songName != 'SONG NOT FOUND') savedDiff = WeekData.getCurrentWeek().difficulties.trim(); //Fuck you HTML5
+				else savedDiff = 'SONG NOT FOUND!'; //and you too search bar
+				if(savedDiff != null && !lastList.contains(savedDiff) && Difficulty.list.contains(savedDiff))
+					curDifficulty = Math.round(Math.max(0, Difficulty.list.indexOf(savedDiff)));
+				else if(lastDiff > -1)
+					curDifficulty = lastDiff;
+				else if(Difficulty.list.contains(Difficulty.getDefault()))
+					curDifficulty = Math.round(Math.max(0, Difficulty.defaultList.indexOf(Difficulty.getDefault())));
+				else
+					curDifficulty = 0;
+				
+				curDifficulty = Math.round(Math.max(0, Difficulty.defaultList.indexOf(lastDifficultyName)));
+			}
+			else
+			{
+				Difficulty.list = ['SONG NOT FOUND'];
+				curDifficulty = 0;
+				addSong('SONG NOT FOUND', -999, 'face', FlxColor.fromRGB(255, 255, 255));
+			}
+		}
+		catch(e)
+		{
+			trace("songs couldn't be found, even though there are songs??? adding SONG NOT FOUND just in case.");
 			Difficulty.list = ['SONG NOT FOUND'];
 			curDifficulty = 0;
 			addSong('SONG NOT FOUND', -999, 'face', FlxColor.fromRGB(255, 255, 255));
