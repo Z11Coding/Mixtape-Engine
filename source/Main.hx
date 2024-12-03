@@ -47,6 +47,7 @@ import backend.ALSoftConfig; // Just to make sure DCE doesn't remove this, since
 #end
 class Main extends Sprite
 {
+	public static var demoMode:Bool = false;
 	var game = {
 		width: 1280, // WINDOW width
 		height: 720, // WINDOW height
@@ -347,6 +348,11 @@ class Main extends Sprite
 	}
 
 	public static var pressedOnce:Bool = false;
+
+	public static function currentState():String {
+        var classNameParts = Type.getClassName(Type.getClass(FlxG.state)).split(".");
+        return classNameParts[Lambda.count(classNameParts) - 1];
+    }
 
 	public static inline function handleStateBasedClosing()
 	{

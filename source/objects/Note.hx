@@ -25,31 +25,39 @@ typedef EventNote = {
 }
 
 typedef PreloadedChartNote = {
-	strumTime:Float,
-	noteData:Int,
-	mustPress:Bool,
-	oppNote:Bool,
-	noteType:String,
-	animSuffix:String,
-	noteskin:String,
-	texture:String,
-	noAnimation:Bool,
-	noMissAnimation:Bool,
-	gfNote:Bool,
-	isSustainNote:Bool,
-	isSustainEnd:Bool,
-	sustainLength:Float,
-	parentST:Float,
-	hitHealth:Float,
-	missHealth:Float,
-	hitCausesMiss:Null<Bool>,
-	wasHit:Bool,
-	multSpeed:Float,
-	noteDensity:Float,
-	ignoreNote:Bool,
-	blockHit:Bool,
-	lowPriority:Bool
+	var strumTime:Float;
+	var noteData:Int;
+	var column:Int;
+	var mustPress:Bool;
+	// var oppNote:Bool;
+	var noteType:String;
+	var animSuffix:String;
+	@:optional var noteskin:String;
+	var texture:String;
+	var noAnimation:Bool;
+	var noMissAnimation:Bool;
+	var gfNote:Bool;
+	var exNote:Bool;
+	var isSustainNote:Bool;
+	var isSustainEnd:Bool;
+	var sustainLength:Float;
+	var parentST:Float;
+	var hitHealth:Float;
+	var missHealth:Float;
+	var hitCausesMiss:Null<Bool>;
+	var wasHit:Bool;
+	var multSpeed:Float;
+	// var noteDensity:Float;
+	var ignoreNote:Bool;
+	var blockHit:Bool;
+	var lowPriority:Bool;
+	@:optional var AIMiss:Bool;
+	@:optional var AIstrumTime:Float;
+	@:optional var field:PlayField;
+	@:optional var fieldIndex:Int;
+	@:optional var noteIndex:Int;
 }
+
 
 class Note extends NoteObject
 {
@@ -556,7 +564,7 @@ class Note extends NoteObject
 				parentNote = parentNote.parentNote;
 			parentNote.childrenNotes.push(this);
 		} else if (!isSustainNote)
-			parentNote = null;
+			parentfspawnedNote = null;
 
 		antialiasing = ClientPrefs.data.globalAntialiasing;
 		
