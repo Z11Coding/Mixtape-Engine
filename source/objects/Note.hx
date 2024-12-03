@@ -564,7 +564,7 @@ class Note extends NoteObject
 				parentNote = parentNote.parentNote;
 			parentNote.childrenNotes.push(this);
 		} else if (!isSustainNote)
-			parentfspawnedNote = null;
+			parentNote = null;
 
 		antialiasing = ClientPrefs.data.globalAntialiasing;
 		

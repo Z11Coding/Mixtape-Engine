@@ -106,8 +106,12 @@ class FreeplayState extends MusicBeatState
 		//Paths.clearStoredMemory();
 		//Paths.clearUnusedMemory();
 
-		if (FlxG.save.data.gotIntoAnArgument && (CategoryState.loadWeekForce == "Secrets" || CategoryState.loadWeekForce == "All")) 
-			addSong('Small Arguement', 0, "gfchibi", FlxColor.fromRGB(235, 100, 161));
+		if (FlxG.save.data.gotIntoAnArgument && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
+			addSong('Small Argument', 0, "gfchibi", FlxColor.fromRGB(235, 100, 161));
+		if (FlxG.save.data.gotBeatBattle && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
+			addSong('Beat Battle', 0, "gf", FlxColor.fromRGB(165, 0, 77));
+		if (FlxG.save.data.gotBeatBattle2 && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
+			addSong('Beat Battle 2', 0, "gf", FlxColor.fromRGB(165, 0, 77));
 		
 		persistentUpdate = true;
 		PlayState.isStoryMode = false;
@@ -159,7 +163,7 @@ class FreeplayState extends MusicBeatState
 				{
 					colors = [146, 113, 253];
 				}
-				if (categoryWhaat.toLowerCase() == CategoryState.loadWeekForce || (CategoryState.loadWeekForce == "mods" && categoryWhaat == null) || CategoryState.loadWeekForce == "All")
+				if (categoryWhaat.toLowerCase() == CategoryState.loadWeekForce || (CategoryState.loadWeekForce == "mods" && categoryWhaat == null) || CategoryState.loadWeekForce == "all")
 				{
 					addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
 				}
@@ -343,8 +347,8 @@ class FreeplayState extends MusicBeatState
 			iconArray.pop();
 		}
 		
-		if (FlxG.save.data.gotIntoAnArgument && (CategoryState.loadWeekForce == "Secrets" || CategoryState.loadWeekForce == "All")) 
-			addSong('Small Arguement', 0, "gfchibi", FlxColor.fromRGB(235, 100, 161));
+		if (FlxG.save.data.gotIntoAnArgument && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
+			addSong('Small Argument', 0, "gfchibi", FlxColor.fromRGB(235, 100, 161));
 
 		for (i in 0...WeekData.weeksList.length) {
 			if(weekIsLocked(WeekData.weeksList[i])) continue;
@@ -362,7 +366,7 @@ class FreeplayState extends MusicBeatState
 			WeekData.setDirectoryFromWeek(leWeek);
 			for (song in leWeek.songs)
 			{
-				if (CategoryState.loadWeekForce == "All" && !Std.string(song[0]).toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()))
+				if (CategoryState.loadWeekForce == "all" && !Std.string(song[0]).toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()))
 				{
 					var colors:Array<Int> = song[2];
 					if(colors == null || colors.length < 3)
