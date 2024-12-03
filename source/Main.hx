@@ -348,6 +348,11 @@ class Main extends Sprite
 
 	public static var pressedOnce:Bool = false;
 
+	public static function currentState():String {
+        var classNameParts = Type.getClassName(Type.getClass(FlxG.state)).split(".");
+        return classNameParts[Lambda.count(classNameParts) - 1];
+    }
+
 	public static inline function handleStateBasedClosing()
 	{
 		if (!pressedOnce || WindowUtils.__triedClosing)
