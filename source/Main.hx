@@ -47,6 +47,7 @@ import backend.ALSoftConfig; // Just to make sure DCE doesn't remove this, since
 #end
 class Main extends Sprite
 {
+	public static var demoMode:Bool = false;
 	var game = {
 		width: 1280, // WINDOW width
 		height: 720, // WINDOW height
