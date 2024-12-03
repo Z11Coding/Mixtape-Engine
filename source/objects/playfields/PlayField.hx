@@ -76,8 +76,8 @@ class PlayField extends FlxTypedGroup<FlxBasic>
 	function get_judgeManager()
 		return judgeManager;
 	public var spawnedNotes:Array<Note> = []; // spawned notes
-	public var spawnedByData:Array<Array<Note>> = [[], [], [], [], [], [], [], [],[], [], [], [],[], [], [], [], [], []]; // spawned notes by data. Used for input
-	public var noteQueue:Array<Array<Note>> = [[], [], [], [], [], [], [], [],[], [], [], [],[], [], [], [], [], []]; // unspawned notes
+	public var spawnedByData:Array<Array<flixel.util.typeLimit.OneOfTwo<Note, PreloadedChartNote>>> = [[], [], [], [], [], [], [], [],[], [], [], [],[], [], [], [], [], []]; // spawned notes by data. Used for input
+	public var noteQueue:Array<Array<flixel.util.typeLimit.OneOfTwo<Note, PreloadedChartNote>>> = [[], [], [], [], [], [], [], [],[], [], [], [],[], [], [], [], [], []]; // unspawned notes
 	public var strumNotes:Array<StrumNote> = []; // receptors
 	public var characters:Array<Character> = []; // characters that sing when field is hit
 	public var noteField:NoteField; // renderer
@@ -172,7 +172,7 @@ class PlayField extends FlxTypedGroup<FlxBasic>
 	}
 
 	// queues a note to be spawned
-	public function queue(note:PreloadedChartNote){
+	public function queue(note:flixel.util.typeLimit.OneOfTwo<Note, PreloadedChartNote>){
 		if(noteQueue[note.column]==null)
 			noteQueue[note.column] = [];
 		noteQueue[note.column].push(note);
@@ -223,8 +223,33 @@ class PlayField extends FlxTypedGroup<FlxBasic>
 	}
 
 	// spawns a note
-	public function spawnNote(note:Note){
-		if(note.spawned)
+	public function spawnNote(note:flixel.util.typeLimit.OneOfTwo<Note, PreloadedChartNote>){
+		var newNote:Note;
+		var note:Dynamic = cast note;
+		if (note is Note)
+			newNote = cast note;
+		else
+		{
+			if (Type.typeof(note) == Type.getClass(PreloadedChartNote))
+			{
+				//trace("spawning preloaded note");
+				var note:PreloadedChartNote = cast note;
+				newNote = new Note(note.strumTime, note.column);
+				newNote.sustainLength = note.sustainLength;
+				newNote.isSustainNote = note.isSustainNote;
+				newNote.noteType = note.noteType;
+				newNote.lowPriority = note.lowPriority;
+				newNote.multSpeed = note.multSpeed;
+				newNote.ignoreNote = note.ignoreNote;
+			}
+			else
+			{
+				trace("Note is not a note or preloaded chart note");
+				return;
+			}
+			
+		}
+		if(newNote.spawned)
 			return;
 		
 		if (noteQueue[note.column]!=null){
