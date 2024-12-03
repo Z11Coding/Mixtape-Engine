@@ -36,6 +36,7 @@ typedef PreloadedChartNote = {
 	noAnimation:Bool,
 	noMissAnimation:Bool,
 	gfNote:Bool,
+	exNote:Bool,
 	isSustainNote:Bool,
 	isSustainEnd:Bool,
 	sustainLength:Float,
@@ -48,7 +49,12 @@ typedef PreloadedChartNote = {
 	noteDensity:Float,
 	ignoreNote:Bool,
 	blockHit:Bool,
-	lowPriority:Bool
+	lowPriority:Bool,
+	@:optional AIMiss:Bool,
+	@:optional AIstrumTime:Float,
+	@:optional field:PlayField,
+	@:optional fieldIndex:Int,
+	@:optional noteIndex:Int,
 }
 
 class Note extends NoteObject

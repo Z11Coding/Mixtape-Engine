@@ -221,7 +221,8 @@ class PlayState extends MusicBeatState
 	public var bf2:Character = null;
 
 	public var notes:FlxTypedGroup<Note>;
-	public var unspawnNotes:Array<Note> = [];
+	public var unspawnNotes:Array<PreloadedChartNote> = [];
+	public var unspawnNotesCopy:Array<PreloadedChartNote> = [];
 	public var curChart:Array<Note> = [];
 	public var eventNotes:Array<EventNote> = [];
 	public var curEvents:Array<EventNote> = [];
@@ -483,7 +484,7 @@ class PlayState extends MusicBeatState
 
 	public var notefields = new NotefieldManager();
 	public var playfields = new FlxTypedGroup<PlayField>();
-	public var allNotes:Array<Note> = []; // all notes
+	public var allNotes:Array<PreloadedChartNote> = []; // all notes
 
 	public var noteHits:Array<Float> = [];
 	public var nps:Int = 0;
@@ -3499,7 +3500,7 @@ class PlayState extends MusicBeatState
 
 			for (songNotes in section.sectionNotes)
 			{
-				var daStrumTime:Float = songNotes[0];
+				final daStrumTime:Float = songNotes[0];
 				var daNoteData:Int;
 				if (chartModifier != "4K Only" && chartModifier != "ManiaConverter")
 				{
@@ -3939,20 +3940,41 @@ class PlayState extends MusicBeatState
 				// TODO: maybe make a checkNoteType n shit but idfk im lazy
 				// or maybe make a "Transform Notes" event which'll make notes which don't change texture change into the specified one
 
-				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote);
-				if (!swagNote.mustPress)
-				{
-					if (AIPlayMap.length != 0 && [noteData.indexOf(section)] != null)
-					{
-						swagNote.AIStrumTime = AIPlayMap[noteData.indexOf(section)][section.sectionNotes.indexOf(songNotes)];
-						if (Math.abs(swagNote.AIStrumTime) > Conductor.safeZoneOffset)
-							swagNote.ignoreNote = swagNote.AIMiss = true;
-					}
-				}
-				swagNote.mustPress = gottaHitNote;
-				swagNote.sustainLength = songNotes[2];
-				swagNote.gfNote = section.gfSection;
-				swagNote.exNote = section.exSection;
+				var swagNote:PreloadedChartNote = cast {
+					strumTime: daStrumTime,
+					noteData: daNoteData,
+					mustPress: gottaHitNote,
+					noteType: songNotes[3],
+					animSuffix: (songNotes[3] == 'Alt Animation' || section.altAnim ? '-alt' : ''),
+					noteskin: (gottaHitNote ? bfNoteskin : dadNoteskin),
+					gfNote: section.gfSection,
+					exNote, section.exSection,
+					noAnimation: songNotes[3] == 'No Animation',
+					noMissAnimation: songNotes[3] == 'No Animation',
+					sustainLength: songNotes[2],
+					hitHealth: 0.023,
+					missHealth: songNotes[3] != 'Hurt Note' ? 0.0475 : 0.3,
+					wasHit: false,
+					hitCausesMiss: songNotes[3] == 'Hurt Note',
+					multSpeed: 1,
+					noteDensity: currentMultiplier,
+					ignoreNote: (!gottaHitNote && AIPlayMap.length != 0 && noteData.indexOf(section) != null && Math.abs(AIPlayMap[noteData.indexOf(section)][section.sectionNotes.indexOf(songNotes)]) > Conductor.safeZoneOffset) ? true : false,
+					AIMiss: (!gottaHitNote && AIPlayMap.length != 0 && noteData.indexOf(section) != null && Math.abs(AIPlayMap[noteData.indexOf(section)][section.sectionNotes.indexOf(songNotes)]) > Conductor.safeZoneOffset) ? true : false,
+					AIStrumTime: (!gottaHitNote && AIPlayMap.length != 0 && noteData.indexOf(section) != null) ? AIPlayMap[noteData.indexOf(section)][section.sectionNotes.indexOf(songNotes)] : 0
+				};
+				// if (!swagNote.mustPress)
+				// {
+				// 	if (AIPlayMap.length != 0 && [noteData.indexOf(section)] != null)
+				// 	{
+				// 		swagNote.AIStrumTime = AIPlayMap[noteData.indexOf(section)][section.sectionNotes.indexOf(songNotes)];
+				// 		if (Math.abs(swagNote.AIStrumTime) > Conductor.safeZoneOffset)
+				// 			swagNote.ignoreNote = swagNote.AIMiss = true;
+				// 	}
+				// }
+				// swagNote.mustPress = gottaHitNote;
+				// swagNote.sustainLength = songNotes[2];
+				// swagNote.gfNote = section.gfSection;
+				// swagNote.exNote = section.exSection;
 				// swagNote.animSuffix = section.altAnim ? '-alt' : '';
 				swagNote.noteType = type;
 				swagNote.noteIndex = noteIndex++;
@@ -3984,7 +4006,7 @@ class PlayState extends MusicBeatState
 				}
 				else
 				{
-					swagNote.destroy();
+					swagNote = null;
 					continue;
 				}
 
