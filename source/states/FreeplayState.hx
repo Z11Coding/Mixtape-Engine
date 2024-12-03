@@ -108,9 +108,9 @@ class FreeplayState extends MusicBeatState
 
 		if (FlxG.save.data.gotIntoAnArgument && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
 			addSong('Small Argument', 0, "gfchibi", FlxColor.fromRGB(235, 100, 161));
-		if (FlxG.save.data.gotBeatBattle && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
+		if (FlxG.save.data.gotbeatbattle && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
 			addSong('Beat Battle', 0, "gf", FlxColor.fromRGB(165, 0, 77));
-		if (FlxG.save.data.gotBeatBattle2 && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
+		if (FlxG.save.data.gotbeatbattle2 && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
 			addSong('Beat Battle 2', 0, "gf", FlxColor.fromRGB(165, 0, 77));
 		
 		persistentUpdate = true;
@@ -346,9 +346,6 @@ class FreeplayState extends MusicBeatState
 		{
 			iconArray.pop();
 		}
-		
-		if (FlxG.save.data.gotIntoAnArgument && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
-			addSong('Small Argument', 0, "gfchibi", FlxColor.fromRGB(235, 100, 161));
 
 		for (i in 0...WeekData.weeksList.length) {
 			if(weekIsLocked(WeekData.weeksList[i])) continue;
@@ -366,23 +363,30 @@ class FreeplayState extends MusicBeatState
 			WeekData.setDirectoryFromWeek(leWeek);
 			for (song in leWeek.songs)
 			{
-				if (CategoryState.loadWeekForce == "all" && !Std.string(song[0]).toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()))
+				var categoryWhaat:String = leWeek.category;
+				var colors:Array<Int> = song[2];
+				if(colors == null || colors.length < 3)
 				{
-					var colors:Array<Int> = song[2];
-					if(colors == null || colors.length < 3)
-					{
-						colors = [146, 113, 253];
-					}
-					addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
+					colors = [146, 113, 253];
 				}
-				else if (Std.string(song[0]).toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()))
+				if (categoryWhaat.toLowerCase() == CategoryState.loadWeekForce || (CategoryState.loadWeekForce == "mods" && categoryWhaat == null) || CategoryState.loadWeekForce == "all")
 				{
-					var colors:Array<Int> = song[2];
-					if(colors == null || colors.length < 3)
+					if (Std.string(song[0]).toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()))
 					{
-						colors = [146, 113, 253];
+						var colors:Array<Int> = song[2];
+						if(colors == null || colors.length < 3)
+						{
+							colors = [146, 113, 253];
+						}
+						addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
 					}
-					addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
+
+					if (Std.string('Small Argument').toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()) && FlxG.save.data.gotIntoAnArgument && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
+						addSong('Small Argument', 0, "gfchibi", FlxColor.fromRGB(235, 100, 161));
+					if (Std.string('Beat Battle').toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()) && FlxG.save.data.gotbeatbattle && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
+						addSong('Beat Battle', 0, "gf", FlxColor.fromRGB(165, 0, 77));
+					if (Std.string('Beat Battle 2').toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()) && FlxG.save.data.gotbeatbattle2 && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
+						addSong('Beat Battle 2', 0, "gf", FlxColor.fromRGB(165, 0, 77));
 				}
 			}
 		}
@@ -1003,24 +1007,6 @@ class FreeplayState extends MusicBeatState
 			PlayState.storyWeek = songs[curSelected].week;
 			try {Difficulty.loadFromWeek();} catch(e:Dynamic) {}
 		}
-		
-		try {
-			var savedDiff:String = songs[curSelected].lastDifficulty;
-			var lastDiff:Int = Difficulty.list.indexOf(lastDifficultyName);
-			if(savedDiff != null && !lastList.contains(savedDiff) && Difficulty.list.contains(savedDiff))
-				curDifficulty = Math.round(Math.max(0, Difficulty.list.indexOf(savedDiff)));
-			else if(lastDiff > -1)
-				curDifficulty = lastDiff;
-			else if(Difficulty.list.contains(Difficulty.getDefault()))
-				curDifficulty = Math.round(Math.max(0, Difficulty.defaultList.indexOf(Difficulty.getDefault())));
-			else
-				curDifficulty = 0;
-		}
-		catch (e)
-		{
-			trace('DIFFICULTY BROKE. Setting default difficulty...');
-			curDifficulty = 0;
-		}
 
 		try {
 			if (songs[curSelected].songName != 'SONG NOT FOUND') 
@@ -1028,7 +1014,15 @@ class FreeplayState extends MusicBeatState
 				Mods.currentModDirectory = songs[curSelected].folder;
 				PlayState.storyWeek = songs[curSelected].week;
 
-				Difficulty.loadFromWeek();
+				switch (songs[curSelected].songName)
+				{
+					case 'Small Argument' | 'Beat Battle 2':
+						Difficulty.list = ['Hard'];
+					case "Beat Battle":
+						Difficulty.list = ["Normal", "Reasonable", "Unreasonable", "Semi-Impossible", "Impossible"];
+					default:
+						Difficulty.loadFromWeek();
+				}
 				var savedDiff:String = songs[curSelected].lastDifficulty;
 				var lastDiff:Int = Difficulty.list.indexOf(lastDifficultyName);
 				if(songs[curSelected].songName != 'SONG NOT FOUND') savedDiff = WeekData.getCurrentWeek().difficulties.trim(); //Fuck you HTML5
