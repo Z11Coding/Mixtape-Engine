@@ -544,6 +544,7 @@ class NotesSubState extends MusicBeatSubstate
 		updateNotes();
 		FlxG.sound.play(Paths.sound('scrollMenu'));
 	}
+
 	function changeSelectionNote(change:Int = 0) {
 		curSelectedNote += change;
 		if (curSelectedNote < 0)
@@ -631,6 +632,8 @@ class NotesSubState extends MusicBeatSubstate
 		for (i in 0...dataArray.length)
 		{
 			Note.initializeGlobalRGBShader(i);
+			//have to do this cuz strumNote's a lil BABY and cant handle these not being set for some reason
+			PlayState.mania = 8;
 			var newNote:StrumNote = new StrumNote(20 + (680 / dataArray.length * i), 200, i, null);
 			newNote.useRGBShader = true;
 			newNote.setGraphicSize(80);
@@ -669,7 +672,7 @@ class NotesSubState extends MusicBeatSubstate
 			var newAnim:String = curSelectedNote == note.ID ? 'confirm' : 'pressed';
 			note.alpha = (curSelectedNote == note.ID) ? 1 : 0.6;
 			if(note.animation.curAnim == null || note.animation.curAnim.name != newAnim) note.playAnim(newAnim, true);
-			if(instant) note.animation.curAnim.finish();
+			if(note.animation.curAnim != null && instant) note.animation.curAnim.finish();
 		}
 		bigNote.animation.play('note$curSelectedNote', true);
 		updateColors();

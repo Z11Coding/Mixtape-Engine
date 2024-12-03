@@ -146,14 +146,14 @@ class PhillyBlazin extends BaseStage
 
 		if (!ClientPrefs.data.middleScroll)
 		{
-			game.modManager.setValue('transformX', -315, 0);
+			game.modManager.setValue('transformX', -335, 0);
 			game.modManager.setValue('noteAlpha', .7, 1);
 			game.modManager.setValue('alpha', .7, 1);
 			for (i in 0...game.dadField.strumNotes.length)
 				if (i > ((game.dadField.strumNotes.length/2)-1))
-					game.modManager.setValue('transform'+i+'X', (FlxG.width / 2)-50, 1);
+					game.modManager.setValue('transform'+i+'X', (FlxG.width / 2)-50 * Note.separator[game.mania], 1);
 				else
-					game.modManager.setValue('transform'+i+'X', 50, 1);
+					game.modManager.setValue('transform'+i+'X', 30, 1);
 		}
 	}
 
