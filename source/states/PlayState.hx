@@ -7561,6 +7561,7 @@ class PlayState extends MusicBeatState
 			track.volume = 0;
 			track.pause();
 		}
+		
 		if (AIScore > songScore)
 			die();
 		else
