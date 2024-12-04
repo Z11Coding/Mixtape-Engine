@@ -4744,7 +4744,7 @@ class PlayState extends MusicBeatState
 				if (swagNote.field != null)
 					swagNote.fieldIndex = playfields.members.indexOf(swagNote.field);
 
-				var playfield:PlayField = playfields.members[swagNote.fieldIndex];
+				// var playfield:PlayField = playfields.members[swagNote.fieldIndex];
 
 				if (playfield != null)
 				{
@@ -6974,11 +6974,23 @@ class PlayState extends MusicBeatState
 			RecalculateRatingAI();
 		}
 
-		backend.Threader.runInThread(regenerateNotes(SONG, AIPlayMap), 0, "generateNotes");
+		// backend.Threader.runInThread(regenerateNotes(SONG, AIPlayMap), 0, "generateNotes");
 		//generateNotes(SONG, AIPlayMap);
 		allNotes = curChart.copy();
 		unspawnNotes = curChart.copy();
 		eventNotes = curEvents.copy();
+
+		for (playfield in playfields)
+		{for (note in allNotes)
+		{
+			if (note != null)
+			{
+				if (note.field == playfield)
+				{
+					playfield.queue(note);
+				}
+			}
+		}}
 
 		if (loopModeChallenge)
 		{
