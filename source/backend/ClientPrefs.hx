@@ -9,6 +9,7 @@ import states.FirstCheckState;
 // Add a variable here and it will get automatically saved
 @:structInit class SaveVariables {
 	public var showCrash:Bool = true;
+	public var ignoreTweenErrors:Bool = false;
 	public var downScroll:Bool = false;
 	public var silentVol:Bool = false;
 	public var noParticles:Bool = false;

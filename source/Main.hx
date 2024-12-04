@@ -395,6 +395,27 @@ class Main extends Sprite
 
 		path = "./crash/" + "MixtapeEngine_" + dateNow + ".txt";
 
+		if (ClientPrefs.data.ignoreTweenErrors)
+			{
+				for (stackItem in callStack)
+					{
+						switch (stackItem)
+						{
+							case FilePos(s, file, line, column):
+								if (file.contains("FlxTween.hx"))
+								{
+									FlxTween.globalManager.clear();
+									// trace(FlxTween.globalManager._tweens);
+									trace("Tween Error occurred. Clearing all tweens.");
+									return;
+								}
+			
+							default:
+								dummy();
+						}
+					}
+			}
+
 		for (stackItem in callStack)
 		{
 			switch (stackItem)
@@ -422,6 +443,7 @@ class Main extends Sprite
 			Application.current.window.alert(errMsg, "Error!");
 		}
 		trace("Crash caused in: " + Type.getClassName(Type.getClass(FlxG.state)));
+
 		// Handle different states
 		switch (Type.getClassName(Type.getClass(FlxG.state)).split(".")[Lambda.count(Type.getClassName(Type.getClass(FlxG.state)).split(".")) - 1])
 		{
@@ -532,7 +554,7 @@ class Main extends Sprite
 					if (file.contains("FlxTween.hx"))
 					{
 						FlxTween.globalManager.clear();
-						trace(FlxTween.globalManager._tweens);
+						// trace(FlxTween.globalManager._tweens);
 						trace("Tween Error occurred. Clearing all tweens.");
 					}
 
