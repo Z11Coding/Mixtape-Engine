@@ -135,7 +135,7 @@ class CacheState extends MusicBeatState
 		if((FlxG.save.data.musicPreload2 != null && ClientPrefs.data.musicPreload2 == false)
 			|| (FlxG.save.data.graphicsPreload2 != null && ClientPrefs.data.graphicsPreload2 == false)
 				|| (FlxG.save.data.videoPreload2 != null && ClientPrefs.data.videoPreload2 == false)) {
-				FlxG.switchState(new SplashScreen());
+				FlxG.switchState(newDest);
 				dontBother = true;
 				allowMusic = false;
 		}	

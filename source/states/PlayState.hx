@@ -5637,6 +5637,7 @@ class PlayState extends MusicBeatState
 
 		if ((loopMode || loopModeChallenge || curSong == "Small Argument") && startedCountdown && !endingSong)
 		{
+			PauseSubState.menuItemsOG.insert(4, "End Song");
 			if (FlxG.sound.music.length - Conductor.songPosition <= endingTimeLimit)
 			{
 				songAboutToLoop = true;
@@ -6269,9 +6270,34 @@ class PlayState extends MusicBeatState
 				isPlayerDying = true;
 				halfReset();
 
-				if (GameOverSubstate.deathDelay > 0)
+				if (PlayState.instance.loopMode || PlayState.instance.loopModeChallenge || PlayState.SONG.song == "Small Argument")
 				{
-					gameOverTimer = new FlxTimer().start(GameOverSubstate.deathDelay, function(_)
+					paused = true;
+					vocals.stop();
+					opponentVocals.stop();
+					gfVocals.stop();
+					for (track in tracks)
+						track.stop();
+					FlxG.sound.music.stop();
+					FlxG.cameras.fade(0xff000000, 0.01, true);
+				}
+				else
+				{
+					if (GameOverSubstate.deathDelay > 0)
+					{
+						gameOverTimer = new FlxTimer().start(GameOverSubstate.deathDelay, function(_)
+						{
+							vocals.stop();
+							opponentVocals.stop();
+							gfVocals.stop();
+							for (track in tracks)
+								track.stop();
+							FlxG.sound.music.stop();
+							openSubState(new GameOverSubstate(boyfriend));
+							gameOverTimer = null;
+						});
+					}
+					else
 					{
 						vocals.stop();
 						opponentVocals.stop();
@@ -6280,18 +6306,7 @@ class PlayState extends MusicBeatState
 							track.stop();
 						FlxG.sound.music.stop();
 						openSubState(new GameOverSubstate(boyfriend));
-						gameOverTimer = null;
-					});
-				}
-				else
-				{
-					vocals.stop();
-					opponentVocals.stop();
-					gfVocals.stop();
-					for (track in tracks)
-						track.stop();
-					FlxG.sound.music.stop();
-					openSubState(new GameOverSubstate(boyfriend));
+					}
 				}
 
 				// MusicBeatState.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
@@ -7679,13 +7694,20 @@ class PlayState extends MusicBeatState
 		var ret:Dynamic = callOnScripts('onEndSong', null, true);
 		if (ret != LuaUtils.Function_Stop && !transitioning)
 		{
-			if (!cpuControlled && !playAsGF)
+			if (!cpuControlled && !playAsGF && !hadBotplayOn)
 			{
 				#if !switch
-				var percent:Float = ratingPercent;
-				if (Math.isNaN(percent))
-					percent = 0;
-				Highscore.saveScore(SONG.song, songScore, storyDifficulty, percent);
+				if (PlayState.instance.loopMode || PlayState.instance.loopModeChallenge || PlayState.SONG.song == "Small Argument")
+				{
+					Highscore.saveEndlessScore(SONG.song.toLowerCase(), songScore);
+				}
+				else
+				{
+					var percent:Float = ratingPercent;
+					if (Math.isNaN(percent))
+						percent = 0;
+					Highscore.saveScore(SONG.song, songScore, storyDifficulty, percent, deathCounter);
+				}
 				#end
 			}
 			playbackRate = 1;
