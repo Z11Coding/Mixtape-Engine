@@ -8,6 +8,7 @@ class Highscore
 	public static var songMisses:Map<String, Int> = new Map<String, Int>();
 	public static var songRanks:Map<String, Int> = new Map<String, Int>();
 	public static var songDeaths:Map<String, Int> = new Map<String, Int>();
+	public static var endlessScores:Map<String, Int> = new Map<String, Int>();
 
 	//For the Opponent
 	public static var weekScoresOpp:Map<String, Int> = new Map();
@@ -16,6 +17,7 @@ class Highscore
 	public static var songMissesOpp:Map<String, Int> = new Map<String, Int>();
 	public static var songRanksOpp:Map<String, Int> = new Map<String, Int>();
 	public static var songDeathsOpp:Map<String, Int> = new Map<String, Int>();
+	public static var endlessScoresOpp:Map<String, Int> = new Map<String, Int>();
 
 	public static var isOppMode:Bool = ClientPrefs.getGameplaySetting('opponentplay', false);
 	public static function resetSong(song:String, diff:Int = 0):Void
@@ -82,7 +84,20 @@ class Highscore
 		setDeaths(daSong, deaths);
 	}
 
-	public static function saveScore(song:String, score:Int = 0, ?diff:Int = 0, ?rating:Float = -1, ?misses:Int = 0):Void
+	public static function saveEndlessScore(song:String, score:Int = 0):Void
+	{
+		var daSong:String = song;
+
+		if (endlessScores.exists(daSong))
+		{
+			if (endlessScores.get(daSong) < score)
+				setEndless(daSong, score);
+		}
+		else
+			setEndless(daSong, score);
+	}
+
+	public static function saveScore(song:String, score:Int = 0, ?diff:Int = 0, ?rating:Float = -1, ?misses:Int = 0, ?deaths:Int = 0):Void
 	{
 		//Score and Rating now save seperately and Misses now save as well.
 		if(song == null) return;
@@ -97,6 +112,7 @@ class Highscore
 			else {
 				setScore(daSong, score);
 			}
+
 			if (songRatingOpp.exists(daSong)) {
 				if (songRatingOpp.get(daSong) < rating) {
 					setRating(daSong, rating);
@@ -105,6 +121,7 @@ class Highscore
 			else {
 				if(rating >= 0) setRating(daSong, rating);
 			}
+
 			if (songMissesOpp.exists(daSong)) {
 				if (songMissesOpp.get(daSong) > misses) {
 					setMisses(daSong, misses);
@@ -112,6 +129,15 @@ class Highscore
 			}
 			else {
 				if(misses >= 0) setMisses(daSong, misses);
+			}
+
+			if (songDeathsOpp.exists(daSong)) {
+				if (songDeathsOpp.get(daSong) > deaths) {
+					setDeaths(daSong, deaths);
+				}
+			}
+			else {
+				if(deaths >= 0) setDeaths(daSong, deaths);
 			}
 		}
 		else
@@ -139,6 +165,15 @@ class Highscore
 			}
 			else {
 				if(misses >= 0) setMisses(daSong, misses);
+			}
+
+			if (songDeaths.exists(daSong)) {
+				if (songDeaths.get(daSong) > deaths) {
+					setDeaths(daSong, deaths);
+				}
+			}
+			else {
+				if(deaths >= 0) setDeaths(daSong, deaths);
 			}
 		}
 	}
@@ -208,6 +243,24 @@ class Highscore
 		}
 		FlxG.save.flush();
 	}
+
+	static function setEndless(song:String, score:Int):Void
+	{
+		if (isOppMode)
+		{
+			// Reminder that I don't need to format this song, it should come formatted!
+			endlessScoresOpp.set(song, score);
+			FlxG.save.data.endlessScoresOpp = endlessScoresOpp;
+			FlxG.save.flush();
+		}
+		else
+		{
+			endlessScores.set(song, score);
+			FlxG.save.data.endlessScores = endlessScores;
+			FlxG.save.flush();
+		}
+	}
+
 	static function setScore(song:String, score:Int):Void
 	{
 		if (isOppMode)
@@ -298,6 +351,27 @@ class Highscore
 		}
 		return songScores.get(daSong);
 	}
+
+	public static function getEndless(song:String, diff:Int):Int
+	{
+		var daSong:String = formatSong(song, diff);
+		if (isOppMode)
+		{
+			if (!endlessScoresOpp.exists(daSong))
+				setEndless(daSong, 0);
+
+			return endlessScoresOpp.get(daSong);
+		}
+		else
+		{
+			if (!endlessScores.exists(daSong))
+				setEndless(daSong, 0);
+
+			return endlessScores.get(daSong);
+		}
+		return endlessScores.get(song);
+	}
+	
 	public static function getRank(song:String, diff:Int):Int
 	{
 		if (isOppMode)

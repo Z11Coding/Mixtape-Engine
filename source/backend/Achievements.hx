@@ -40,13 +40,6 @@ class Achievements {
 		createAchievement('beat_battle_master',		{name: "King Of Memory", description: "Beat \"Beat Battle\" on at least Reasonable difficulty or higher with no higher then 10 misses."});
 		createAchievement('beat_battle_god',		{name: "God Teir Memory", description: "Beat \"Beat Battle\" on at least Semi-Impossible difficulty or higher with no higher then 25 misses."});
 		createAchievement('beat_battle_fanatic',	{name: "Number One Fan", description: "Beat \"Beat Battle\" on at least Reasonable difficulty or higher and \"Beat Battle 2\" with modcharts on", maxScore: 2, maxDecimals: 0});
-		createAchievement('feelinfrisky',	        {name: "FANTA IN MY SYSTEM", description: "Beat \"Funky Fanta\" without missing"});
-		createAchievement('leantastic',	            {name: "Maybe We Should Cool It On The Lean...", description: "Beat \"ULS\" without missing"});
-		createAchievement('punchout',	            {name: "Where's The COD Reference?", description: "Beat \"Pack-A-Punch\" without missing"});
-		createAchievement('rawr',	                {name: "Don't mess with michael", description: "Beat \"Rawr\" without missing"});
-		createAchievement('underlust',	            {name: "DETERMINATION...I Think...", description: "Beat \"Resistalovania (Mega Mix)\" on the hardest difficulty"});
-		createAchievement('resistified',	        {name: "True Resistance", description: "Beat Every version of \"Resistance\" without missing", maxScore: 7, maxDecimals: 0});
-		createAchievement('skysthelimit',	        {name: "Sky's The Limit", description: "Beat \"Fangirl Frenzy\" without missing", hidden: true});
 		createAchievement('secretsunveiled',	    {name: "THERE'S MORE???", description: "Find one of the 4 secrets", hidden: true});
 		createAchievement('pokemon',	    		{name: "Gotta find em' all!", description: "Find all 3 menu secrets", hidden: true});
 		createAchievement('waldosworstnightmare',	{name: "Detective", description: "Find all 4 secret songs", hidden: true});
@@ -60,11 +53,6 @@ class Achievements {
 		createAchievement('matt',	                {name: "Max Efficiency 4X", description: "Beat a song at 15X Speed or higher", hidden: true});
 		createAchievement('mattbeyond',	            {name: "Bro what are you even doing anymore", description: "Beat a song at 20X Speed or higher", hidden: true});
 		createAchievement('perfectionist',	        {name: "S for the best", description: "Beat every song with an S Rank or higher"});
-		createAchievement('nohitspecialist',	    {name: "No-Hit Specialist", description: "Beat \"Resistalovania (Mega Mix)\" without getting damaged"});
-		createAchievement('multitasker',	        {name: "Two-For-One Special", description: "Beat \"Resistalovania (Mega Mix)\" without getting damaged AND without missing"});
-		createAchievement('possessed',	        	{name: "The Moon Slayer", description: "Beat \"Possessed by The Blood Moon\" on FNF or NITG difficulty without missing", hidden: true});
-		createAchievement('themoon',	        	{name: "The Exorcist", description: "Beat \"Possessed by The Blood Moon\" on Possessed difficulty without missing", hidden: true});
-		createAchievement('what',	        	    {name: "What.", description: "You did read the bottom of the file, right?"});
 		createAchievement('lessismore',	        	{name: "Master of Less", description: "Beat any song in a mania of 1-3"});
 		createAchievement('toomanynotes',	        {name: "Master of Mania", description: "Beat any song in a mania higher than 4"});
 		createAchievement('h?',	                    {name: "h?", description: "h?"});

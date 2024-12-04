@@ -14,6 +14,7 @@ class SplashScreen extends MusicBeatState
     var engineT:FlxTween;
     var mixtapeEngineT:FlxTween;
     
+    var camTween:FlxTween;
     var mixTA:FlxTween;
     var tapeTA:FlxTween;
     var engineTA:FlxTween;
@@ -139,16 +140,24 @@ class SplashScreen extends MusicBeatState
                 FlxG.camera.scrollAngle = (360*2);
             case 10:
                 mixtapeLogo.alpha = 1;
-                FlxTween.tween(FlxG.camera, {zoom: 1, scrollAngle: 0}, Conductor.stepCrochet*0.001*2, {ease: FlxEase.sineInOut});
+                camTween = FlxTween.tween(FlxG.camera, {zoom: 1, scrollAngle: 0}, Conductor.stepCrochet*0.001*2, {ease: FlxEase.sineInOut});
             case 12:
                 mix.alpha = 1;
                 tape.alpha = 1;
+                FlxG.camera.zoom = 1.2;
+                FlxG.camera.scrollAngle = 15;
+                camTween = FlxTween.tween(FlxG.camera, {zoom: 1, scrollAngle: 0}, Conductor.stepCrochet*0.001*1, {ease: FlxEase.sineInOut});
                 mixTA = FlxTween.tween(mix, {alpha: 0}, Conductor.stepCrochet*0.001*3, {ease: FlxEase.expoInOut});
                 tapeTA = FlxTween.tween(tape, {alpha: 0}, Conductor.stepCrochet*0.001*3, {ease: FlxEase.expoInOut});
             case 14:
+                FlxG.camera.zoom = 1.2;
+                FlxG.camera.scrollAngle = -15;
+                camTween = FlxTween.tween(FlxG.camera, {zoom: 1, scrollAngle: 0}, Conductor.stepCrochet*0.001*1, {ease: FlxEase.sineInOut});    
                 engine.alpha = 1;
                 engineTA = FlxTween.tween(engine, {alpha: 0}, Conductor.stepCrochet*0.001*3, {ease: FlxEase.expoInOut});
             case 16:
+                FlxG.camera.zoom = 1.5;
+                camTween = FlxTween.tween(FlxG.camera, {zoom: 1}, Conductor.stepCrochet*0.001*8, {ease: FlxEase.sineInOut});
                 particleBoom();
                 mixtapeEngine.alpha = 1;
                 FlxTween.tween(mixtapeEngine, {alpha: 0}, Conductor.stepCrochet*0.001*8, {ease: FlxEase.expoInOut});
