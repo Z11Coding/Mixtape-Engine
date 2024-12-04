@@ -5,7 +5,7 @@ import haxe.Http;
 
 class SyncUtils {
 	// Wait for a specified amount of time (in milliseconds)
-	public extern overload static function wait(milliseconds: Int): Void {
+	public extern inline overload static function wait(milliseconds: Int): Void {
 		trace("Waiting for " + milliseconds + " milliseconds...");
 		var timer = new Timer(milliseconds);
 		timer.run = function() {
@@ -17,7 +17,7 @@ class SyncUtils {
 	}
 
 	// Wait until a boolean condition is true
-	public extern overload static function wait(condition: () -> Bool): Void {
+	public extern inline overload static function wait(condition: () -> Bool): Void {
 		trace("Waiting for condition...");
 		while (!condition()) {
 			// Busy wait
@@ -37,10 +37,10 @@ class SyncUtils {
     // Example of a synchronous version of an async function (e.g., tween)
     public static function syncTween(start: Float, end: Float, duration: Int): Void {
         trace("Starting tween from " + start + " to " + end);
-        var tween = FlxTween.tween(start, end, duration, function(value: Float) {
-            // Update the value during the tween
-            // You can do something with the value here if needed
-        });
+		var tween = FlxTween.tween(start, end, duration, { onUpdate: function(value: Float) {
+			// Update the value during the tween
+			// You can do something with the value here if needed
+		}});
         wait(() -> tween.active == false);
         trace("Tween completed");
     }

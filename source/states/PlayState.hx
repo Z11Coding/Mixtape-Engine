@@ -2490,6 +2490,8 @@ class PlayState extends MusicBeatState
 
 	public function startCountdown()
 	{
+		backend.Threader.waitForThread('generateNotes');
+		// backend.Threader.runInThread(backend.Threader.waitForThreads(), "T^E^S^T");
 		if (startedCountdown)
 		{
 			callOnScripts('onStartCountdown');
@@ -6189,7 +6191,8 @@ class PlayState extends MusicBeatState
 			AIPlayMap = AIPlayer.GeneratePlayMap(SONG, AIPlayer.diff);
 
 		//backend.Threader.runInThread(generateNotes(SONG, AIPlayMap), 0, "generateNotes");
-		generateNotes(SONG, AIPlayMap);
+		// generateNotes(SONG, AIPlayMap);
+		unspawnNotes = allNotes.copy();
 
 		if (loopModeChallenge)
 		{

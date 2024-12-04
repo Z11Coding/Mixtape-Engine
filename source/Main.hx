@@ -532,6 +532,7 @@ class Main extends Sprite
 					if (file.contains("FlxTween.hx"))
 					{
 						FlxTween.globalManager.clear();
+						trace(FlxTween.globalManager._tweens);
 						trace("Tween Error occurred. Clearing all tweens.");
 					}
 

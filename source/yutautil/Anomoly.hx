@@ -178,6 +178,11 @@ private function randomizeFieldsBetter(obj:Dynamic, traceOutput:Bool = false):Vo
         return str;
     }
 
+    public static function stringRandomizer(length:Int):String {
+        var anon = new Anomoly();
+        return anon.randomString(length);
+    }
+
     // public static function createRandomizedObject<T>(cls:Class<T>, modifyInternals:Bool = false):T {
     //     var typeInfo = TypeInfo.getType(cls);
     //     var constructor = typeInfo.constructor;
