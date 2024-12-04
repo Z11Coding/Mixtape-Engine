@@ -100,7 +100,9 @@ class FirstCheckState extends MusicBeatState
 				updateVersion = data.split('\n')[0].trim();
 				var curVersion:String = MainMenuState.mixtapeEngineVersion.trim();
 				trace('version online: ' + updateVersion + ', your version: ' + curVersion);
-				if (updateVersion != curVersion && ClientPrefs.data.checkForUpdates)
+				var updateVersionNum = Std.parseFloat(updateVersion.replace(".", ""));
+				var curVersionNum = Std.parseFloat(curVersion.replace(".", ""));
+				if (curVersionNum < updateVersionNum && ClientPrefs.data.checkForUpdates)
 				{
 					trace('versions arent matching!');
 					MusicBeatState.switchState(new states.OutdatedState());
