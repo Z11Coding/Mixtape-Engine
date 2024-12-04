@@ -146,11 +146,9 @@ class CacheState extends MusicBeatState
 			didPreCache = true;
 		}
 
-		menuBG = new FlxSprite().loadGraphic(Paths.image('loading/' + FlxG.random.int(0, 16, [3])));
+		menuBG = new FlxSprite().loadGraphic(Paths.image('loading/' + FlxG.random.int(0, 8)));
 		menuBG.screenCenter();
 		add(menuBG);
-
-
 
 		#if cpp
 		if (ClientPrefs.data.graphicsPreload2)

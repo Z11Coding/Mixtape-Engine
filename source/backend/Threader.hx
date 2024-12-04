@@ -15,9 +15,6 @@ import haxe.macro.Printer;
 typedef QuietThread = String;
 
 class Threader {
-
- 
-
     public static var threadQueue:ThreadQueue;
     public static var specialThreads:Array<BakedThread> = [];
     public static var quietThreads:Array<QuietThread> = [];

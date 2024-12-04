@@ -277,6 +277,7 @@ class PlayState extends MusicBeatState
 	public var healthGain:Float = 1;
 	public var healthLoss:Float = 1;
 	public var guitarHeroSustains:Bool = false;
+	public var mixupMode:Bool = false;
 	public var instakillOnMiss:Bool = false;
 	public var cpuControlled(default, set) = false;
 	public var practiceMode:Bool = false;
@@ -741,6 +742,18 @@ class PlayState extends MusicBeatState
 			keysPressed.push(false);
 		}
 
+		// Modifiers
+		bothMode = ClientPrefs.getGameplaySetting('bothMode', false);
+		mixupMode = (ClientPrefs.data.mixupMode || SONG.song == "Small Argument") && !bothMode;
+		opponentmode = ClientPrefs.getGameplaySetting('opponentplay', false) && !bothMode;
+		playAsGF = ClientPrefs.getGameplaySetting('gfMode', false)
+			&& !bothMode
+			&& !opponentmode; // dont do it to yourself its not worth it
+		AIMode = mixupMode && !bothMode;
+		AIDifficulty = SONG.song == "Small Argument" ? "Baby Mode" : ClientPrefs.data.aiDifficulty;
+		gimmicksAllowed = ClientPrefs.data.gimmicksAllowed;
+		guitarHeroSustains = ClientPrefs.data.guitarHeroSustains;
+
 		// Gameplay settings
 		healthGain = ClientPrefs.getGameplaySetting('healthgain', 1);
 		healthLoss = ClientPrefs.getGameplaySetting('healthloss', 1);
@@ -749,15 +762,6 @@ class PlayState extends MusicBeatState
 		cpuControlled = ClientPrefs.getGameplaySetting('botplay', false);
 		chartModifier = CacheMode ? "Normal" : (ClientPrefs.getGameplaySetting('chartModifier', 'Normal') ?? "Normal");
 		trace("Chart Modifier: " + chartModifier);
-		bothMode = ClientPrefs.getGameplaySetting('bothMode', false);
-		opponentmode = ClientPrefs.getGameplaySetting('opponentplay', false) && !bothMode;
-		playAsGF = ClientPrefs.getGameplaySetting('gfMode', false)
-			&& !bothMode
-			&& !opponentmode; // dont do it to yourself its not worth it
-		AIMode = ClientPrefs.data.mixupMode && !bothMode;
-		AIDifficulty = ClientPrefs.data.aiDifficulty;
-		gimmicksAllowed = ClientPrefs.data.gimmicksAllowed;
-		guitarHeroSustains = ClientPrefs.data.guitarHeroSustains;
 
 		AIPlayer.active = AIMode && !bothMode;
 		switch (AIDifficulty)
@@ -1345,7 +1349,7 @@ class PlayState extends MusicBeatState
 			gf != null ? FlxColor.fromRGB(gf.healthColorArray[0], gf.healthColorArray[1], gf.healthColorArray[2]) : FlxColor.BLACK);
 		scoreTxt.scrollFactor.set();
 		scoreTxt.borderSize = 1.25;
-		scoreTxt.visible = !ClientPrefs.data.mixupMode && !bothMode && (!cpuControlled || playAsGF && !cpuControlled);
+		scoreTxt.visible = !mixupMode && !bothMode && (!cpuControlled || playAsGF && !cpuControlled);
 		uiGroup.add(scoreTxt);
 
 		playerScoreTxt = new FlxText(0, 0, FlxG.width, "", 20);
@@ -1354,7 +1358,7 @@ class PlayState extends MusicBeatState
 		playerScoreTxt.scrollFactor.set();
 		playerScoreTxt.borderSize = 1.25;
 		playerScoreTxt.screenCenter(Y);
-		playerScoreTxt.visible = ClientPrefs.data.mixupMode && !bothMode && (!cpuControlled || playAsGF && !cpuControlled);
+		playerScoreTxt.visible = mixupMode && !bothMode && (!cpuControlled || playAsGF && !cpuControlled);
 		uiGroup.add(playerScoreTxt);
 
 		opponentScoreTxt = new FlxText(0, 0, FlxG.width, "", 20);
@@ -1363,7 +1367,7 @@ class PlayState extends MusicBeatState
 		opponentScoreTxt.scrollFactor.set();
 		opponentScoreTxt.borderSize = 1.25;
 		opponentScoreTxt.screenCenter(Y);
-		opponentScoreTxt.visible = ClientPrefs.data.mixupMode && !bothMode && (!cpuControlled || playAsGF && !cpuControlled);
+		opponentScoreTxt.visible = mixupMode && !bothMode && (!cpuControlled || playAsGF && !cpuControlled);
 		uiGroup.add(opponentScoreTxt);
 
 		botplayTxt = new FlxText(400, timeBar.y + 155, FlxG.width - 800, Language.getPhrase("Botplay").toUpperCase(), 32);
@@ -1420,7 +1424,7 @@ class PlayState extends MusicBeatState
 		charterTxt.alpha = 0;
 		introStageText.insert(0, charterTxt);
 
-		modTxt = new FlxText(charterTxt.x, charterTxt.y + 40, FlxG.width - 800, "", 32);
+		modTxt = new FlxText(charterTxt.x, charterTxt.y + 40, FlxG.width, "", 32);
 		modTxt.setFormat(Paths.font("mania-free.ttf"), 32, FlxColor.ORANGE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		modTxt.scrollFactor.set();
 		modTxt.borderSize = 1.25;
@@ -2490,7 +2494,7 @@ class PlayState extends MusicBeatState
 
 	public function startCountdown()
 	{
-		backend.Threader.waitForThread('generateNotes');
+		//backend.Threader.waitForThread('generateNotes');
 		// backend.Threader.runInThread(backend.Threader.waitForThreads(), "T^E^S^T");
 		if (startedCountdown)
 		{
@@ -4266,6 +4270,764 @@ class PlayState extends MusicBeatState
 		}
 	}
 
+	public function regenerateNotes(songData:SwagSong, AIPlayMap:Array<Array<Float>>)
+	{
+		var noteData:Array<SwagSection>;
+
+		// NEW SHIT
+		noteData = songData.notes;
+		var daBeats:Int = 0; // Not exactly representative of 'daBeats' lol, just how much it has looped
+
+		var songName:String = Paths.formatToSongPath(SONG.song);
+		try
+		{
+			var eventsChart:SwagSong = Song.getChart('events', songName);
+			if (eventsChart != null)
+				for (event in eventsChart.events) // Event Notes
+					for (i in 0...event[1].length)
+						makeEvent(event, i);
+		}
+		catch (e:Dynamic)
+		{
+		}
+
+		speedChanges.sort(svSort);
+
+		var daBpm:Float = Conductor.bpm;
+		for (section in noteData)
+		{
+			if (section.changeBPM != null && section.changeBPM && section.bpm != null && daBpm != section.bpm)
+				daBpm = section.bpm;
+
+			for (songNotes in section.sectionNotes)
+			{
+				var daStrumTime:Float = songNotes[0];
+				var daNoteData:Int;
+				if (chartModifier != "4K Only" && chartModifier != "ManiaConverter")
+				{
+					daNoteData = Std.int(songNotes[1] % Note.ammo[mania]);
+				}
+				else
+				{
+					daNoteData = Std.int(songNotes[1] % Note.ammo[SONG.mania]);
+				}
+
+				var gottaHitNote:Bool = section.mustHitSection;
+				switch (chartModifier)
+				{
+					case "Random":
+						daNoteData = FlxG.random.int(0, mania);
+					case "RandomBasic":
+						var randomDirection:Int;
+						do
+						{
+							randomDirection = FlxG.random.int(0, mania);
+						}
+						while (randomDirection == prevNoteData && mania > 1);
+						prevNoteData = randomDirection;
+						daNoteData = randomDirection;
+					case "RandomComplex":
+						var thisNoteData = daNoteData;
+						if (initialNoteData == -1)
+						{
+							initialNoteData = daNoteData;
+							daNoteData = FlxG.random.int(0, mania);
+						}
+						else
+						{
+							var newNoteData:Int;
+							do
+							{
+								newNoteData = FlxG.random.int(0, mania);
+							}
+							while (newNoteData == prevNoteData && mania > 1);
+							if (thisNoteData == initialNoteData)
+							{
+								daNoteData = prevNoteData;
+							}
+							else
+							{
+								daNoteData = newNoteData;
+							}
+						}
+						prevNoteData = daNoteData;
+						initialNoteData = thisNoteData;
+
+					case "Mirror": // Broken
+						var length = mania;
+						var mirroredIndex:Int;
+						var middle = Math.floor(length / 2);
+						if (daNoteData < middle)
+						{
+							mirroredIndex = (middle - daNoteData) + middle - 1;
+						}
+						else if (daNoteData > middle)
+						{
+							mirroredIndex = middle - (daNoteData - middle);
+						}
+						else
+						{
+							mirroredIndex = daNoteData;
+						}
+						daNoteData = mirroredIndex;
+					case "ReverseMirror":
+						var median:Float = (mania + 1) / 2;
+						if (daNoteData <= median)
+						{
+							// For values below the median, mirror downwards
+							daNoteData = Std.int(median - (median - daNoteData) - 1);
+						}
+						else
+						{
+							// For values above the median, mirror upwards
+							daNoteData = Std.int(median + (daNoteData - median) + 1);
+						}
+						daNoteData = Std.int(Math.max(0, Math.min(daNoteData, mania - 1)));
+
+					case "Skip":
+						var skipStep = 2; // Define the step size for skipping notes.
+						var randomLane = Math.random() < 0.5 ? prevNoteData : (prevNoteData + skipStep) % mania;
+						var randomDuration = Math.random() * 30; // Randomize the duration before switching lanes (in notes).
+						daNoteData = randomLane;
+					case "Flip":
+						if (gottaHitNote)
+						{
+							daNoteData = mania - Std.int(songNotes[1] % Note.ammo[mania]);
+						}
+					case "Pain":
+						daNoteData = daNoteData - Std.int(songNotes[1] % Note.ammo[mania]);
+					case "4K Only":
+						daNoteData = getNumberFromAnims(daNoteData, SONG.mania);
+					case "ManiaConverter":
+						daNoteData = getNumberFromAnims(daNoteData, PlayState.mania);
+					case "Stairs":
+						daNoteData = stair % Note.ammo[mania];
+						stair++;
+					case "Wave":
+						// Sketchie... WHY?!
+						var ammoFromFortnite:Int = Note.ammo[mania];
+						var luigiSex:Int = (ammoFromFortnite * 2 - 2);
+						var marioSex:Int = stair++ % luigiSex;
+						if (marioSex < ammoFromFortnite)
+						{
+							daNoteData = marioSex;
+						}
+						else
+						{
+							daNoteData = luigiSex - marioSex;
+						}
+					case "Trills":
+						var ammoFromFortnite:Int = Note.ammo[mania];
+						var luigiSex:Int = (ammoFromFortnite * 2 - 2);
+						var marioSex:Int;
+						do
+						{
+							marioSex = Std.int((stair++ % (luigiSex * 4)) / 4 + stair % 2);
+							if (marioSex < ammoFromFortnite)
+							{
+								daNoteData = marioSex;
+							}
+							else
+							{
+								daNoteData = luigiSex - marioSex;
+							}
+						}
+						while (daNoteData == prevNoteData && mania > 1);
+						prevNoteData = daNoteData;
+					case "Ew":
+						// I hate that I used Sketchie's variables as a base for this... ;-;
+						var ammoFromFortnite:Int = Note.ammo[mania];
+						var luigiSex:Int = (ammoFromFortnite * 2 - 2);
+						var marioSex:Int = stair++ % luigiSex;
+						var noteIndex:Int = Std.int(marioSex / 2);
+						var noteDirection:Int = marioSex % 2 == 0 ? 1 : -1;
+						daNoteData = noteIndex + noteDirection;
+						// If the note index is out of range, wrap it around
+						if (daNoteData < 0)
+						{
+							daNoteData = 1;
+						}
+						else if (daNoteData >= ammoFromFortnite)
+						{
+							daNoteData = ammoFromFortnite - 2;
+						}
+					case "Death":
+						var ammoFromFortnite:Int = Note.ammo[mania];
+						var luigiSex:Int = (ammoFromFortnite * 4 - 4);
+						var marioSex:Int = stair++ % luigiSex;
+						var step:Int = Std.int(luigiSex / 3);
+
+						if (marioSex < ammoFromFortnite)
+						{
+							daNoteData = marioSex % step;
+						}
+						else if (marioSex < ammoFromFortnite * 2)
+						{
+							daNoteData = (marioSex - ammoFromFortnite) % step + step;
+						}
+						else if (marioSex < ammoFromFortnite * 3)
+						{
+							daNoteData = (marioSex - ammoFromFortnite * 2) % step + step * 2;
+						}
+						else
+						{
+							daNoteData = (marioSex - ammoFromFortnite * 3) % step + step * 3;
+						}
+					case "What":
+						switch (stair % (2 * Note.ammo[mania]))
+						{
+							case 0:
+							case 1:
+							case 2:
+							case 3:
+							case 4:
+								daNoteData = stair % Note.ammo[mania];
+							default:
+								daNoteData = Note.ammo[mania] - 1 - (stair % Note.ammo[mania]);
+						}
+						stair++;
+					case "Amalgam":
+						{
+							var modifierNames:Array<String> = [
+								"Random",
+								"RandomBasic",
+								"RandomComplex",
+								"Flip",
+								"Pain",
+								"Stairs",
+								"Wave",
+								"Huh",
+								"Ew",
+								"What",
+								"Jack Wave",
+								"SpeedRando",
+								"Trills"
+							];
+
+							if (caseExecutionCount <= 0)
+							{
+								currentModifier = FlxG.random.int(-1, (modifierNames.length - 1)); // Randomly select a case from 0 to 9
+								caseExecutionCount = FlxG.random.int(1, 51); // Randomly select a number from 1 to 50
+								trace("Active Modifier: " + modifierNames[currentModifier] + ", Notes to edit: " + caseExecutionCount);
+							}
+							// trace('Notes remaining: ' + caseExecutionCount);
+							caseExecutionCount--;
+							switch (currentModifier)
+							{
+								case 0: // "Random"
+									daNoteData = FlxG.random.int(0, mania);
+								case 1: // "RandomBasic"
+									var randomDirection:Int;
+									do
+									{
+										randomDirection = FlxG.random.int(0, mania);
+									}
+									while (randomDirection == prevNoteData && mania > 1);
+									prevNoteData = randomDirection;
+									daNoteData = randomDirection;
+								case 2: // "RandomComplex"
+									var thisNoteData = daNoteData;
+									if (initialNoteData == -1)
+									{
+										initialNoteData = daNoteData;
+										daNoteData = FlxG.random.int(0, mania);
+									}
+									else
+									{
+										var newNoteData:Int;
+										do
+										{
+											newNoteData = FlxG.random.int(0, mania);
+										}
+										while (newNoteData == prevNoteData && mania > 1);
+										if (thisNoteData == initialNoteData)
+										{
+											daNoteData = prevNoteData;
+										}
+										else
+										{
+											daNoteData = newNoteData;
+										}
+									}
+									prevNoteData = daNoteData;
+									initialNoteData = thisNoteData;
+								case 3: // "Flip"
+									if (gottaHitNote)
+									{
+										daNoteData = mania - Std.int(songNotes[1] % Note.ammo[mania]);
+									}
+								case 4: // "Pain"
+									daNoteData = daNoteData - Std.int(songNotes[1] % Note.ammo[mania]);
+								case 5: // "Stairs"
+									daNoteData = stair % Note.ammo[mania];
+									stair++;
+								case 6: // "Wave"
+									// Sketchie... WHY?!
+									var ammoFromFortnite:Int = Note.ammo[mania];
+									var luigiSex:Int = (ammoFromFortnite * 2 - 2);
+									var marioSex:Int = stair++ % luigiSex;
+									if (marioSex < ammoFromFortnite)
+									{
+										daNoteData = marioSex;
+									}
+									else
+									{
+										daNoteData = luigiSex - marioSex;
+									}
+								case 7: // "Huh"
+									var ammoFromFortnite:Int = Note.ammo[mania];
+									var luigiSex:Int = (ammoFromFortnite * 4 - 4);
+									var marioSex:Int = stair++ % luigiSex;
+									var step:Int = Std.int(luigiSex / 3);
+									var waveIndex:Int = Std.int(marioSex / step);
+									var waveDirection:Int = waveIndex % 2 == 0 ? 1 : -1;
+									var waveRepeat:Int = Std.int(waveIndex / 2);
+									var repeatStep:Int = marioSex % step;
+									if (repeatStep < waveRepeat)
+									{
+										daNoteData = waveIndex * step + waveDirection * repeatStep;
+									}
+									else
+									{
+										daNoteData = waveIndex * step + waveDirection * (waveRepeat * 2 - repeatStep);
+									}
+									if (daNoteData < 0)
+									{
+										daNoteData = 0;
+									}
+									else if (daNoteData >= ammoFromFortnite)
+									{
+										daNoteData = ammoFromFortnite - 1;
+									}
+								case 8: // "Ew"
+									// I hate that I used Sketchie's variables as a base for this... ;-;
+									var ammoFromFortnite:Int = Note.ammo[mania];
+									var luigiSex:Int = (ammoFromFortnite * 2 - 2);
+									var marioSex:Int = stair++ % luigiSex;
+									var noteIndex:Int = Std.int(marioSex / 2);
+									var noteDirection:Int = marioSex % 2 == 0 ? 1 : -1;
+									daNoteData = noteIndex + noteDirection;
+									// If the note index is out of range, wrap it around
+									if (daNoteData < 0)
+									{
+										daNoteData = 1;
+									}
+									else if (daNoteData >= ammoFromFortnite)
+									{
+										daNoteData = ammoFromFortnite - 2;
+									}
+								case 9: // "What"
+									switch (stair % (2 * Note.ammo[mania]))
+									{
+										case 0:
+										case 1:
+										case 2:
+										case 3:
+										case 4:
+											daNoteData = stair % Note.ammo[mania];
+										default:
+											daNoteData = Note.ammo[mania] - 1 - (stair % Note.ammo[mania]);
+									}
+									stair++;
+								case 10: // Jack Wave
+									var ammoFromFortnite:Int = Note.ammo[mania];
+									var luigiSex:Int = (ammoFromFortnite * 2 - 2);
+									var marioSex:Int = Std.int((stair++ % (luigiSex * 4)) / 4);
+									if (marioSex < ammoFromFortnite)
+									{
+										daNoteData = marioSex;
+									}
+									else
+									{
+										daNoteData = luigiSex - marioSex;
+									}
+								case 11: // SpeedRando
+									// Handled by SpeedRando Code below!
+								case 12: // Trills
+									var ammoFromFortnite:Int = Note.ammo[mania];
+									var luigiSex:Int = (ammoFromFortnite * 2 - 2);
+									var marioSex:Int;
+									do
+									{
+										marioSex = Std.int((stair++ % (luigiSex * 4)) / 4 + stair % 2);
+										if (marioSex < ammoFromFortnite)
+										{
+											daNoteData = marioSex;
+										}
+										else
+										{
+											daNoteData = luigiSex - marioSex;
+										}
+									}
+									while (daNoteData == prevNoteData && mania > 1);
+									prevNoteData = daNoteData;
+								default:
+									// Default case (optional)
+							}
+						}
+				}
+
+				if (chartModifier != "4K Only" && chartModifier != "ManiaConverter")
+				{
+					if (songData.format == "psych_v1" || songData.format == "psych_v1_convert")
+					{	
+						gottaHitNote = (songNotes[1] < Note.ammo[mania]);						
+					}
+					else
+					{
+						if (songNotes[1] > (Note.ammo[SONG.mania] - 1))
+						{
+							gottaHitNote = !section.mustHitSection;
+						}
+					}
+				}
+				else
+				{
+					if (songData.format == "psych_v1" || songData.format == "psych_v1_convert")
+					{	
+						gottaHitNote = (songNotes[1] < Note.ammo[mania]);						
+					}
+					else
+					{
+						if (songNotes[1] > (Note.ammo[SONG.mania] - 1))
+						{
+							gottaHitNote = !section.mustHitSection;
+						}
+					}
+				}
+
+				var oldNote:Note;
+				if (allNotes.length > 0)
+					oldNote = allNotes[Std.int(allNotes.length - 1)];
+				else
+					oldNote = null;
+
+				var type:Dynamic = songNotes[3];
+				// if(!Std.isOfType(type, String)) type = editors.ChartingStateOG.noteTypeList[type];
+
+				// TODO: maybe make a checkNoteType n shit but idfk im lazy
+				// or maybe make a "Transform Notes" event which'll make notes which don't change texture change into the specified one
+
+				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote);
+				if (!swagNote.mustPress)
+				{
+					if (AIPlayMap.length != 0 && [noteData.indexOf(section)] != null)
+					{
+						swagNote.AIStrumTime = AIPlayMap[noteData.indexOf(section)][section.sectionNotes.indexOf(songNotes)];
+						if (Math.abs(swagNote.AIStrumTime) > Conductor.safeZoneOffset)
+							swagNote.ignoreNote = swagNote.AIMiss = true;
+					}
+				}
+				swagNote.mustPress = gottaHitNote;
+				swagNote.sustainLength = songNotes[2];
+				swagNote.gfNote = section.gfSection;
+				swagNote.exNote = section.exSection;
+				// swagNote.animSuffix = section.altAnim ? '-alt' : '';
+				swagNote.noteType = type;
+				swagNote.noteIndex = noteIndex++;
+				if (!Std.isOfType(songNotes[3], String))
+					swagNote.noteType = ChartingStateOG.noteTypeList[songNotes[3]]; // Backward compatibility + compatibility with Week 7 charts
+				swagNote.scrollFactor.set();
+				if (chartModifier == 'Amalgam' && currentModifier == 11)
+				{
+					swagNote.multSpeed = FlxG.random.float(0.1, 2);
+				}
+
+				var susLength:Float = swagNote.sustainLength;
+
+				susLength = susLength / Conductor.stepCrochet;
+				swagNote.ID = allNotes.length;
+
+				if (swagNote.fieldIndex == -1 && swagNote.field == null)
+					swagNote.field = swagNote.mustPress ? playerField : dadField;
+
+				if (swagNote.field != null)
+					swagNote.fieldIndex = playfields.members.indexOf(swagNote.field);
+
+				var playfield:PlayField = playfields.members[swagNote.fieldIndex];
+
+				if (playfield != null)
+				{
+					playfield.queue(swagNote); // queues the note to be spawned
+					allNotes.push(swagNote); // just for the sake of convenience
+				}
+				else
+				{
+					swagNote.destroy();
+					continue;
+				}
+
+				var curStepCrochet:Float = 60 / daBpm * 1000 / 4.0;
+				final roundSus:Int = Math.round(swagNote.sustainLength / curStepCrochet);
+				if (roundSus > 0)
+				{
+					for (susNote in 0...roundSus)
+					{
+						oldNote = allNotes[Std.int(allNotes.length - 1)];
+
+						var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + (Conductor.stepCrochet), daNoteData, oldNote, true);
+						sustainNote.mustPress = gottaHitNote;
+						sustainNote.gfNote = swagNote.gfNote;
+						sustainNote.exNote = swagNote.exNote;
+						sustainNote.animSuffix = swagNote.animSuffix;
+						sustainNote.noteType = type;
+						sustainNote.noteIndex = swagNote.noteIndex;
+						if (chartModifier == 'Amalgam' && currentModifier == 11)
+						{
+							sustainNote.multSpeed = swagNote.multSpeed;
+						}
+						if (sustainNote == null || !sustainNote.alive)
+							break;
+						sustainNote.ID = allNotes.length;
+						sustainNote.scrollFactor.set();
+						swagNote.tail.push(sustainNote);
+						swagNote.unhitTail.push(sustainNote);
+						sustainNote.parent = swagNote;
+						// allNotes.push(sustainNote);
+						sustainNote.fieldIndex = swagNote.fieldIndex;
+						playfield.queue(sustainNote);
+						allNotes.push(sustainNote);
+
+						if (sustainNote.mustPress)
+						{
+							sustainNote.x += FlxG.width * 0.5; // general offset
+						}
+					}
+				}
+
+				if (swagNote.mustPress)
+				{
+					swagNote.x += FlxG.width * 0.5; // general offset
+				}
+				else if (ClientPrefs.data.middleScroll)
+				{
+					swagNote.x += 310;
+					if (daNoteData > 1) // Up and Right
+					{
+						swagNote.x += FlxG.width / 2 + 25;
+					}
+				}
+
+				if (!reGenerating)
+				{
+					if (!noteTypes.contains(swagNote.noteType))
+					{
+						noteTypes.push(swagNote.noteType);
+					}
+				}
+			}
+			daBeats += 1;
+		}
+
+		if (!reGenerating)
+		{
+			for (event in songData.events) // Event Notes
+				for (i in 0...event[1].length)
+					makeEvent(event, i);
+		}
+		// playerCounter += 1;
+		allNotes.sort(sortByNotes);
+		for (fuck in allNotes)
+		{
+			unspawnNotes.push(fuck);
+			curChart.push(fuck);
+		}
+		for (field in playfields.members)
+		{
+			var goobaeg:Array<Note> = [];
+			for (column in field.noteQueue)
+			{
+				if (column.length >= Note.ammo[mania])
+				{
+					for (nIdx in 1...column.length)
+					{
+						var last = column[nIdx - 1];
+						var current = column[nIdx];
+
+						if (last == null || current == null)
+							continue;
+						if (last.isSustainNote || current.isSustainNote)
+							continue; // holds only get fukt if their parents get fukt
+						if (!last.alive || !current.alive)
+							continue; // just incase
+						if (Math.abs(last.strumTime - current.strumTime) <= Conductor.stepCrochet / (192 / 16))
+						{
+							if (last.sustainLength < current.sustainLength) // keep the longer hold
+								field.removeNote(last);
+							else
+							{
+								current.kill();
+								goobaeg.push(current); // mark to delete after, cant delete here because otherwise it'd fuck w/ stuff
+							}
+						}
+					}
+				}
+			}
+			for (note in goobaeg)
+				field.removeNote(note);
+		}
+		checkEventNote();
+		generatedMusic = true;
+		if (chartModifier == 'SpeedRando')
+		{
+			var curNotes:Array<Note> = [];
+			var allowBrokenSustains = Math.random() < 0.2;
+
+			trace('Broken Sustains?: ' + allowBrokenSustains);
+			for (i in 0...unspawnNotes.length)
+			{
+				if (unspawnNotes[i] != null)
+				{ // Null check
+					if (unspawnNotes[i].mustPress)
+					{
+						if (!unspawnNotes[i].isSustainNote)
+						{
+							unspawnNotes[i].multSpeed = FlxG.random.float(0.1, 2);
+							curNotes[unspawnNotes[i].noteData] = unspawnNotes[i];
+						}
+						else
+						{
+							if (curNotes[unspawnNotes[i].noteData] != null)
+							{
+								unspawnNotes[i].multSpeed = curNotes[unspawnNotes[i].noteData].multSpeed;
+							}
+						}
+					}
+					if (!unspawnNotes[i].mustPress)
+					{
+						if (!unspawnNotes[i].isSustainNote)
+						{
+							unspawnNotes[i].multSpeed = FlxG.random.float(0.1, 2);
+							curNotes[unspawnNotes[i].noteData] = unspawnNotes[i];
+						}
+						else
+						{
+							if (curNotes[unspawnNotes[i].noteData] != null)
+							{
+								unspawnNotes[i].multSpeed = curNotes[unspawnNotes[i].noteData].multSpeed;
+							}
+						}
+					}
+				}
+				if (!allowBrokenSustains)
+				{
+					if (unspawnNotes[i] != null)
+					{
+						if (unspawnNotes[i].isSustainNote)
+						{
+							for (note in unspawnNotes)
+							{
+								if (note != null && !note.isSustainNote && note.noteIndex == unspawnNotes[i].noteIndex)
+								{
+									unspawnNotes[i].multSpeed = note.multSpeed;
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		if (chartModifier == "SpeedUp")
+		{
+			var scaryMode:Bool = Math.random() < 0.5;
+
+			var endSpeed:Float = Math.random() < 0.9 ? Math.random() * 10 : Math.random() * 2 - 1;
+			var startSpeed:Float;
+			if (endSpeed == 1)
+			{
+				// If endSpeed is exactly 1, startSpeed is a random float between -0.1 and 0.1
+				startSpeed = Math.random() < 0.5 ? Math.random() * 0.1 : -Math.random() * 0.1;
+			}
+			else if (endSpeed > 1)
+			{
+				startSpeed = Math.random() * 1.1 - 0.1;
+			}
+			else
+			{
+				startSpeed = Math.random() * 1;
+			}
+			var speedMultiplier:Float = 0;
+			var currentMultiplier:Float = 0;
+			if (scaryMode)
+			{
+				speedMultiplier = (endSpeed - startSpeed) / unspawnNotes.length;
+			}
+			else
+			{
+				var nonSustainNotes = unspawnNotes.filter(function(note) return !note.isSustainNote);
+				speedMultiplier = (endSpeed - startSpeed) / nonSustainNotes.length;
+			}
+			trace("startSpeed: " + startSpeed);
+			trace("endSpeed: " + endSpeed);
+			trace("speedMultiplier: " + speedMultiplier);
+			trace("currentMultiplier: " + currentMultiplier);
+			trace("scaryMode: " + scaryMode);
+			trace("noteIndex: " + noteIndex);
+			for (i in 0...unspawnNotes.length)
+			{
+				if (unspawnNotes[i] != null)
+				{
+					if (scaryMode)
+					{
+						currentMultiplier += speedMultiplier;
+						var noteIndex = unspawnNotes[i].noteIndex;
+						var multSpeed = unspawnNotes[i].multSpeed;
+						var newMultSpeed = currentMultiplier;
+						unspawnNotes[i].multSpeed = newMultSpeed;
+					}
+					else if (!scaryMode && !unspawnNotes[i].isSustainNote)
+					{
+						currentMultiplier += speedMultiplier;
+						var noteIndex = unspawnNotes[i].noteIndex;
+						var multSpeed = unspawnNotes[i].multSpeed;
+						var newMultSpeed = currentMultiplier;
+						unspawnNotes[i].multSpeed = newMultSpeed;
+					}
+				}
+			}
+			if (!scaryMode)
+			{
+				for (i in 0...unspawnNotes.length)
+				{
+					if (unspawnNotes[i] != null)
+					{
+						if (unspawnNotes[i].isSustainNote)
+						{
+							for (note in unspawnNotes)
+							{
+								if (note != null && !note.isSustainNote && note.noteIndex == unspawnNotes[i].noteIndex)
+								{
+									unspawnNotes[i].multSpeed = note.multSpeed;
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		if (!reGenerating)
+		{
+			#if LUA_ALLOWED
+			for (notetype in noteTypes)
+				startLuasNamed('custom_notetypes/' + notetype + '.lua');
+			for (event in eventsPushed)
+				startLuasNamed('custom_events/' + event + '.lua');
+			#end
+
+			#if HSCRIPT_ALLOWED
+			for (notetype in noteTypes)
+				startHScriptsNamed('custom_notetypes/' + notetype + '.hx');
+			for (event in eventsPushed)
+				startHScriptsNamed('custom_events/' + event + '.hx');
+			#end
+			noteTypes = null;
+			eventsPushed = null;
+		}
+	}
+
 	private function generateSong(dataPath:String):Void
 	{
 		songSpeedType = ClientPrefs.getGameplaySetting('scrolltype', 'multiplicative');
@@ -4367,8 +5129,8 @@ class PlayState extends MusicBeatState
 				}
 			}
 		}
-		// backend.Threader.runInThread(generateNotes(songData, AIPlayMap), 0, "generateNotes");
-		generateNotes(songData, AIPlayMap);
+		backend.Threader.runInThread(generateNotes(songData, AIPlayMap), 0, "generateNotes");
+		//generateNotes(songData, AIPlayMap);
 	}
 
 	public function getNoteInitialTime(time:Float)
@@ -5367,7 +6129,7 @@ class PlayState extends MusicBeatState
 			else if (ratingName == '?')
 			{
 				scoreTxt.borderColor = FlxColor.fromInt(Std.parseInt("0xFFFFE600"));
-				scoreTxt.text = ClientPrefs.data.mixupMode
+				scoreTxt.text = mixupMode
 					&& !bothMode ? 'Misses: ' + songMisses + ' | NPS: ' + nps : 'Score: '
 					+ songScore
 					+ ' | Misses: '
@@ -5393,7 +6155,7 @@ class PlayState extends MusicBeatState
 					&& FlxColor.fromRGB(gf.healthColorArray[0], gf.healthColorArray[1],
 						gf.healthColorArray[2]) != 0xFFFFFFFF ? FlxColor.fromRGB(gf.healthColorArray[0], gf.healthColorArray[1],
 						gf.healthColorArray[2]) : FlxColor.BLACK;
-				scoreTxt.text = ClientPrefs.data.mixupMode
+				scoreTxt.text = mixupMode
 					&& !bothMode ? 'Misses: '
 					+ songMisses
 					+ ' | NPS: '
@@ -5637,7 +6399,6 @@ class PlayState extends MusicBeatState
 
 		if ((loopMode || loopModeChallenge || curSong == "Small Argument") && startedCountdown && !endingSong)
 		{
-			PauseSubState.menuItemsOG.insert(4, "End Song");
 			if (FlxG.sound.music.length - Conductor.songPosition <= endingTimeLimit)
 			{
 				songAboutToLoop = true;
@@ -6186,53 +6947,44 @@ class PlayState extends MusicBeatState
 		endingSong = false;
 		songAboutToLoop = false;
 
+		songScore = 0;
+		songMisses = 0;
+		songHits = 0;
+		combo = 0;
+		ratingPercent = 0;
+		ratingName = "";
+		ratingFC = "";
+
+		RecalculateRating();
+
+		if (curSong == "Small Argument" && AIPlayer.diff != 6) //Six is the highest there is. It's literally botplay at that point.
+			AIPlayer.diff += 1;
+
 		var AIPlayMap = [];
-
 		if (AIPlayer.active)
+		{
 			AIPlayMap = AIPlayer.GeneratePlayMap(SONG, AIPlayer.diff);
+			AIScore = 0;
+			AIMisses = 0;
+			AITotalNotesHit = 0;
+			AITotalPlayed = 0;
+			ratingFCAI = "";
+			ratingNameAI = "";
+			ratingPercentAI = 0;
+			RecalculateRatingAI();
+		}
 
-		//backend.Threader.runInThread(generateNotes(SONG, AIPlayMap), 0, "generateNotes");
-		// generateNotes(SONG, AIPlayMap);
-		unspawnNotes = allNotes.copy();
+		backend.Threader.runInThread(regenerateNotes(SONG, AIPlayMap), 0, "generateNotes");
+		//generateNotes(SONG, AIPlayMap);
+		allNotes = curChart.copy();
+		unspawnNotes = curChart.copy();
+		eventNotes = curEvents.copy();
 
 		if (loopModeChallenge)
 		{
 			playbackRate *= loopPlayMult;
 			currentRate *= loopPlayMult;
 		}
-
-		/*
-			allNotes = curChart.copy();
-			unspawnNotes = curChart.copy();
-			eventNotes = curEvents.copy();
-			for (n in unspawnNotes)
-				if (n.strumTime <= startingPoint)
-					notesToKill++;
-	
-			for (e in eventNotes)
-				if (e.strumTime <= startingPoint)
-					eventsToRemove++;
-	
-			if (notesToKill > 0)
-				unspawnNotes.splice(0, notesToKill);
-	
-			if (eventsToRemove > 0)
-				eventNotes.splice(0, eventsToRemove);
-	
-			var noteIndex:Int = 0;
-			while (unspawnNotes.length > 0 && unspawnNotes[noteIndex] != null)
-			{
-				var playfield:PlayField = playfields.members[unspawnNotes[noteIndex].fieldIndex];
-				//unspawnNotes[noteIndex].wasHit = false;
-				if (playfield != null)
-				{
-					playfield.queue(curChart[noteIndex]);
-					//trace("NOTE QUEUED!");
-				}
-				else trace("NOTE QUEUE FAILED!");
-				noteIndex++;
-			}
-		 */
 	}
 
 	public var isDead:Bool = false; // Don't mess with this on Lua!!!
@@ -6257,6 +7009,11 @@ class PlayState extends MusicBeatState
 				if (bf2 != null)
 					bf2.stunned = true;
 				deathCounter++;
+
+				if (loopMode || loopModeChallenge || curSong == "Small Argument")
+				{
+					Highscore.saveEndlessScore(SONG.song.toLowerCase(), songScore);
+				}
 
 				paused = true;
 				canResync = false;
@@ -7697,17 +8454,10 @@ class PlayState extends MusicBeatState
 			if (!cpuControlled && !playAsGF && !hadBotplayOn)
 			{
 				#if !switch
-				if (PlayState.instance.loopMode || PlayState.instance.loopModeChallenge || PlayState.SONG.song == "Small Argument")
-				{
-					Highscore.saveEndlessScore(SONG.song.toLowerCase(), songScore);
-				}
-				else
-				{
-					var percent:Float = ratingPercent;
-					if (Math.isNaN(percent))
-						percent = 0;
-					Highscore.saveScore(SONG.song, songScore, storyDifficulty, percent, deathCounter);
-				}
+				var percent:Float = ratingPercent;
+				if (Math.isNaN(percent))
+					percent = 0;
+				Highscore.saveScore(SONG.song, songScore, storyDifficulty, percent, deathCounter);
 				#end
 			}
 			playbackRate = 1;
@@ -7973,7 +8723,6 @@ class PlayState extends MusicBeatState
 		comboSpr.velocity.x += FlxG.random.int(1, 10) * playbackRate;
 
 		comboGroup.add(rating);
-
 		if (!ClientPrefs.data.comboStacking)
 		{
 			if (lastRating != null)
@@ -8051,8 +8800,8 @@ class PlayState extends MusicBeatState
 			numScore.velocity.x = FlxG.random.float(-5, 5) * playbackRate;
 
 			// if (combo >= 10 || combo == 0)
-			if (showComboNum)
-				insert(members.indexOf(strumLineNotes), numScore);
+			if(showComboNum)
+				comboGroup.add(numScore);
 
 			FlxTween.tween(numScore, {alpha: 0}, 0.2 / playbackRate, {
 				onComplete: function(tween:FlxTween)
@@ -8089,6 +8838,15 @@ class PlayState extends MusicBeatState
 			},
 			startDelay: Conductor.crochet * 0.002 / playbackRate
 		});
+
+		if (comboGroup.members.length > 0)
+		{
+			for (spr in comboGroup)
+			{
+				if(spr == null) continue;
+				spr.cameras = [if (ClientPrefs.data.inGameRatings) camGame else camHUD];
+			}
+		}
 	}
 
 	private function popUpScoreOpp(note:Note = null):Void
@@ -8590,7 +9348,7 @@ class PlayState extends MusicBeatState
 		#end
 
 		vocals.volume = 0;
-
+		showCombo = false;
 		totalPlayed++;
 		RecalculateRating();
 
@@ -8784,6 +9542,9 @@ class PlayState extends MusicBeatState
 			popUpScoreOpp(note);
 			// if(combo > 9999) combo = 9999;
 		}
+
+		if (dad.color == 0xFF003BB9)
+			dad.color = FlxColor.WHITE;
 
 		if (!note.noAnimation)
 		{
@@ -9011,7 +9772,27 @@ class PlayState extends MusicBeatState
 			if (!practiceMode)
 				AIScore -= 10;
 		}
-		dad.color = 0xFF003BB9;
+
+		var char:Character = dad;
+		if (opponentmode || field == playerField)
+			char = boyfriend;
+		if (daNote.gfNote)
+			char = gf;
+		if (daNote.exNote && field == playerField)
+			char = bf2;
+		if (daNote.exNote && field == dadField)
+			char = dad2;
+
+		if (char != null && char.hasMissAnimations)
+		{
+			var animToPlay:String = singAnimations[Std.int(Math.abs(daNote.noteData))] + 'miss' + daNote.animSuffix;
+			char.playAnim(animToPlay, true);
+		}
+		else
+		{
+			dad.color = 0xFF003BB9;
+		}
+
 		if (opponentVocals != null && opponentVocals.length <= 0)
 			opponentVocals.volume = 0;
 		if (gfVocals != null && gfVocals.length <= 0 && (daNote.gfNote || daNote.noteType == 'GF Duet'))
@@ -9250,6 +10031,7 @@ class PlayState extends MusicBeatState
 			#if sys
 			ArtemisIntegration.setCombo(combo);
 			#end
+			if(combo > 9) showCombo = true;
 			// if(combo > 9999) combo = 9999;
 		}
 		health += note.hitHealth * healthGain;
