@@ -26,6 +26,8 @@ class RankingSubstate extends MusicBeatSubstate
 	{
 		super();
 
+		Conductor.songPosition = 0;
+
 		generateRanking();
 
 		if (!PlayState.instance.cpuControlled)

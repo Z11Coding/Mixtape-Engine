@@ -7016,16 +7016,23 @@ class PlayState extends MusicBeatState
 				isPlayerDying = true;
 				halfReset();
 
-				if (PlayState.instance.loopMode || PlayState.instance.loopModeChallenge || PlayState.SONG.song == "Small Argument")
+				if (loopMode || loopModeChallenge || curSong == "Small Argument")
 				{
-					paused = true;
+					KillNotes();
 					vocals.stop();
 					opponentVocals.stop();
 					gfVocals.stop();
 					for (track in tracks)
 						track.stop();
 					FlxG.sound.music.stop();
-					FlxG.cameras.fade(0xff000000, 0.01, true);
+					new FlxTimer().start(0.1, function(tmr:FlxTimer)
+					{
+						camHUD.alpha -= 1 / 10;
+					}, 10);
+					gameplayArea = "Freeplay";
+					#if DISCORD_ALLOWED DiscordClient.resetClientID(); #end
+					openSubState(new substates.RankingSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+					changedDifficulty = false;
 				}
 				else
 				{
@@ -8503,6 +8510,10 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
+				new FlxTimer().start(0.1, function(tmr:FlxTimer)
+				{
+					camHUD.alpha -= 1 / 10;
+				}, 10);
 				gameplayArea = "Freeplay";
 				#if DISCORD_ALLOWED DiscordClient.resetClientID(); #end
 				openSubState(new substates.RankingSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
@@ -8515,16 +8526,7 @@ class PlayState extends MusicBeatState
 
 	public function KillNotes()
 	{
-		while (allNotes.length > 0)
-		{
-			var daNote:Note = allNotes[0];
-			daNote.active = false;
-			daNote.visible = false;
-
-			daNote.kill();
-			notes.remove(daNote, true);
-			// daNote.destroy();
-		}
+		notes.clear();
 		allNotes = [];
 		unspawnNotes = [];
 		for (field in playfields)
