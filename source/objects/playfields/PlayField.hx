@@ -233,6 +233,7 @@ class PlayField extends FlxTypedGroup<FlxBasic>
 			noteQueue[note.column].remove(note);
 			noteQueue[note.column].sort((a, b) -> Std.int(a.strumTime - b.strumTime));
 			var loopMode = ClientPrefs.getGameplaySetting("loopMode") || ClientPrefs.getGameplaySetting("loopModeC");
+			// trace("Loop mode: " + loopMode);
 			if (loopMode)
 				backupQueue[note.column].push(note);
 			// trace("backup");

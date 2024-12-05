@@ -750,7 +750,14 @@ class PlayState extends MusicBeatState
 			&& !bothMode
 			&& !opponentmode; // dont do it to yourself its not worth it
 		AIMode = mixupMode && !bothMode;
-		AIDifficulty = SONG.song == "Small Argument" ? "Baby Mode" : ClientPrefs.data.aiDifficulty;
+		AIDifficulty = (SONG.song == "Small Argument") ? ChanceSelector.selectOption([
+			{ item: "Baby Mode", chance: 5 },
+			{ item: "Easier", chance: 10 },
+			{ item: "Normal", chance: 20 },
+			{ item: "Harder", chance: 25 },
+			{ item: "Hardest", chance: 25 },
+			{ item: "Average FNF Player", chance: 15 }
+		]) : ClientPrefs.data.aiDifficulty;
 		gimmicksAllowed = ClientPrefs.data.gimmicksAllowed;
 		guitarHeroSustains = ClientPrefs.data.guitarHeroSustains;
 

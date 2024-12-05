@@ -1744,7 +1744,7 @@ class FunkinLua {
 			case ValueType.TObject:
 				return Dynamic;
 			case ValueType.TEnum(e):
-				return Type.createEnum(e, v);
+				return v != null ? Type.createEnum(e, v) : null;
 			case ValueType.TInt:
 				return Int;
 			case ValueType.TNull:

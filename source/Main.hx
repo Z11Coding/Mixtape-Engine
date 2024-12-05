@@ -62,6 +62,7 @@ class Main extends Sprite
 	public static var noTerminalColor:Bool = false;
 	public static var playTest:Bool = false;
 	public static var forceGPUOnlyBitmapsOff:Bool = #if windows false #else true #end;
+	public static var closing:Bool = false;
 
 	// public var initStuff = game;
 	public static var fpsVar:FPSCounter;
@@ -340,7 +341,11 @@ class Main extends Sprite
 	{
 		// if (Main.commandPrompt != null)
 		// 	commandPrompt.remove();
+		if (!closing) {
 		trace("Closing game...");
+		closing = true;
+		trace("Disabling command prompt hook...");
+		}
 		WindowUtils.preventClosing = false;
 		Lib.application.window.close();
 

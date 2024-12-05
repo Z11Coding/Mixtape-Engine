@@ -65,7 +65,7 @@ typedef ChanceFunction = {
         if (selectedOption == null && !allowNull) {
             throw "Selected option is null";
         }
-
+        trace("Selected option: " + selectedOption);
         return selectedOption;
     }
 
