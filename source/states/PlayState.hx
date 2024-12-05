@@ -5136,8 +5136,8 @@ class PlayState extends MusicBeatState
 				}
 			}
 		}
-		backend.Threader.runInThread(generateNotes(songData, AIPlayMap), 0, "generateNotes");
-		//generateNotes(songData, AIPlayMap);
+		// backend.Threader.runInThread(generateNotes(songData, AIPlayMap), 0, "generateNotes");
+		generateNotes(songData, AIPlayMap);
 	}
 
 	public function getNoteInitialTime(time:Float)

@@ -46,6 +46,7 @@ class MusicBeatState extends FlxState
 			//trace('reopened stickers');
 		}
 		TransitionState.currenttransition = null;
+		trace("Transition = " + TransitionState.currenttransition);
 	}
 
 	public static var emptyStickers:StickerSubState = null;
