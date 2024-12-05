@@ -374,6 +374,7 @@ class Main extends Sprite
 		{
 			Main.closeGame();
 		}
+		WindowUtils.__triedClosing = false;
 	}
 
 	// Code was entirely made by sqirra-rng for their fnf engine named "Izzy Engine", big props to them!!!
@@ -452,6 +453,8 @@ class Main extends Sprite
 				// Check if it's a Null Object Reference error
 				if (errType.contains("Null Object Reference"))
 				{
+					FlxG.sound.music != null ? FlxG.sound.music.stop() : null;
+					FlxG.sound.play(Paths.sound("metal_pipe"));
 					if (PlayState.isStoryMode)
 					{
 						FlxG.switchState(new states.StoryMenuState());

@@ -78,6 +78,7 @@ class PlayField extends FlxTypedGroup<FlxBasic>
 	public var spawnedNotes:Array<Note> = []; // spawned notes
 	public var spawnedByData:Array<Array<Note>> = [[], [], [], [], [], [], [], [],[], [], [], [],[], [], [], [], [], []]; // spawned notes by data. Used for input
 	public var noteQueue:Array<Array<Note>> = [[], [], [], [], [], [], [], [],[], [], [], [],[], [], [], [], [], []]; // unspawned notes
+	public var backupQueue:Array<Array<Note>> = [[], [], [], [], [], [], [], [],[], [], [], [],[], [], [], [], [], []]; // notes for looping
 	public var strumNotes:Array<StrumNote> = []; // receptors
 	public var characters:Array<Character> = []; // characters that sing when field is hit
 	public var noteField:NoteField; // renderer
@@ -226,10 +227,15 @@ class PlayField extends FlxTypedGroup<FlxBasic>
 	public function spawnNote(note:Note){
 		if(note.spawned)
 			return;
+		// trace("Loop mote: " + ClientPrefs.getGameplaySetting("loopMode"));
 		
 		if (noteQueue[note.column]!=null){
 			noteQueue[note.column].remove(note);
 			noteQueue[note.column].sort((a, b) -> Std.int(a.strumTime - b.strumTime));
+			var loopMode = ClientPrefs.getGameplaySetting("loopMode") || ClientPrefs.getGameplaySetting("loopModeC");
+			if (loopMode)
+				backupQueue[note.column].push(note);
+			// trace("backup");
 		}
 
 		//trace(noteQueue[note.column]);
@@ -385,6 +391,23 @@ class PlayField extends FlxTypedGroup<FlxBasic>
                 
                 while (column.length > 0 && column[0].strumTime - Conductor.songPosition < time)
 					spawnNote(column[0]);
+			}
+			for (data => column in backupQueue)
+			{if (column[0] != null)
+				{
+					var dataSpawnTime = modManager.get("noteSpawnTime" + data); 
+					var noteSpawnTime = (dataSpawnTime != null && dataSpawnTime.getValue(modNumber)>0)?dataSpawnTime:modManager.get("noteSpawnTime");
+					var time:Float = noteSpawnTime == null ? spawnTime : noteSpawnTime.getValue(modNumber); // no longer averages the spawn times
+					if (time <= 0)time = spawnTime;
+					
+					while (column.length > 0 && Conductor.songPosition > column[0].strumTime)
+					{
+						var note = column.shift();
+						note.spawned = false;
+						noteQueue[data].push(note);
+						// trace("backup");
+					}
+				}
 			}
 		}
 

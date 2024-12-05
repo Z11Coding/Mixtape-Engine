@@ -69,10 +69,10 @@ class TransitionState {
         requiredTransition = { targetState: targetState, options: options, args: args };
     }
     
-        // if (isTransitioning) {
-        //     trace("Transition already in progress. Ignoring new transition request.");
-        //     return;
-        // }
+        if (currenttransition != null) {
+            trace("Transition already in progress. Ignoring new transition request.");
+            return;
+        }
         isTransitioning = true;
         //trace("Transitioning to state: " + Type.getClassName(targetState));
         //trace("Options: " + options);

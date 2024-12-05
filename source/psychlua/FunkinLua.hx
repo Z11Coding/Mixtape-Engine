@@ -45,6 +45,8 @@ import haxe.Json;
 
 import backend.modchart.SubModifier;
 
+typedef ValueType = Type.ValueType;
+
 class FunkinLua {
 	public var lua:State = null;
 	public var camTarget:FlxCamera;
@@ -235,6 +237,8 @@ class FunkinLua {
 		// username
 		var names:Array<String> = ["user", "player", "boyfriend"];
 		set('username', ClientPrefs.data.username ? #if desktop Sys.environment()["USERNAME"] #else Sys.environment()["USER"] #end : names[Math.floor(Math.random() * names.length)]);
+
+
 
 		Lua_helper.add_callback(lua, "set", function(varName:String, value:Dynamic) {
 			set(varName, value);
@@ -1646,6 +1650,115 @@ class FunkinLua {
 	//main
 	public var lastCalledFunction:String = '';
 	public static var lastCalledScript:FunkinLua = null;
+
+	public static function getAllVariables(l:State):Map<String, Dynamic> {
+		var variables:Map<String, Dynamic> = new Map<String, Dynamic>();
+		
+		// Push the global environment onto the stack
+		Lua.getglobal(l, "_G");
+		
+		// Push nil onto the stack to start the iteration
+		Lua.pushnil(l);
+		
+		// Iterate over the global environment
+		while (Lua.next(l, -2) != 0) {
+			// Get the key at the top of the stack
+			var key:String = Lua.tostring(l, -2);
+			
+			// Get the type of the value
+			var valueType:ValueType = getLuaType(l, -1);
+			
+			// Store the key and type in the map
+			variables.set(key, valueType);
+			
+			// Pop the value, keep the key for the next iteration
+			Lua.pop(l, 1);
+		}
+		
+		// Pop the global environment from the stack
+		Lua.pop(l, 1);
+		
+		return variables;
+	}
+
+	public function getVariables():Map<String, Dynamic> {
+		return FunkinLua.getAllVariables(lua);
+	}
+	
+	private static function getLuaType(l:State, index:Int):ValueType {
+		return binaryIntasBool(Lua.isnil(l, index)) ? ValueType.TNull :
+			   Lua.isnumber(l, index) ? ValueType.TFloat :
+			   Lua.isboolean(l, index) ? ValueType.TBool :
+			   Lua.isstring(l, index) ? ValueType.TClass(String) :
+			   Lua.isfunction(l, index) ? ValueType.TFunction :
+			   Lua.isuserdata(l, index) ? ValueType.TObject :
+			   ValueType.TUnknown;
+	}
+
+	private static function binaryIntasBool(value:Int):Bool {
+		return value == 1;
+	}
+
+	public static function getLuaVariable(l:State, name:String):Dynamic {
+		var variables = getAllVariables(l);
+		var the = variables.get(name);
+		if(the == null) return null;
+		// switch(the) {
+		// 	case ValueType.TFloat:
+		// 		return Lua.tonumber(l, name);
+		// 	case ValueType.TBool:
+		// 		return Lua.toboolean(l, name);
+		// 	case ValueType.TClass(String):
+		// 		return Lua.tostring(l, name);
+		// 	case ValueType.TFunction:
+		// 		return Lua.tocfunction(l, name);
+		// 	case ValueType.TObject:
+		// 		return Lua.touserdata(l, name);
+		// }
+		var luaVar = function() {
+			for (v in variables) {
+				if (v == name) return v;
+			}
+			return null;
+		}
+
+		return astype(luaVar, the);
+	}
+
+	private static function astype<T:{}>(v:Dynamic, t:ValueType):T {
+
+		return Std.is(v, convertTtoType(t, v)) ? Std.downcast(v, convertTtoType(t, v)) : null;
+	}
+	
+	private static function convertTtoType(t:ValueType, ?v:Dynamic):Dynamic {
+		switch(t) {
+			case ValueType.TFloat:
+				return Float;
+			case ValueType.TBool:
+				return Bool;
+			case ValueType.TClass(thing):
+				return Type.getClass(thing);
+			case ValueType.TFunction:
+				return untyped t;
+				// return Dynamic;
+			case ValueType.TObject:
+				return Dynamic;
+			case ValueType.TEnum(e):
+				return Type.createEnum(e, v);
+			case ValueType.TInt:
+				return Int;
+			case ValueType.TNull:
+				return null;
+			case ValueType.TUnknown:
+				return Dynamic;
+		}
+		return null;
+	}
+
+	public function getVariable(name:String):Dynamic {
+		return FunkinLua.getLuaVariable(lua, name);
+	}
+
 	public function call(func:String, args:Array<Dynamic>):Dynamic {
 		if(closed) return LuaUtils.Function_Continue;
 
