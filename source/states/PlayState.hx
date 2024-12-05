@@ -750,14 +750,7 @@ class PlayState extends MusicBeatState
 			&& !bothMode
 			&& !opponentmode; // dont do it to yourself its not worth it
 		AIMode = mixupMode && !bothMode;
-		AIDifficulty = (SONG.song == "Small Argument") ? ChanceSelector.selectOption([
-			{ item: "Baby Mode", chance: 5 },
-			{ item: "Easier", chance: 10 },
-			{ item: "Normal", chance: 20 },
-			{ item: "Harder", chance: 25 },
-			{ item: "Hardest", chance: 25 },
-			{ item: "Average FNF Player", chance: 15 }
-		]) : ClientPrefs.data.aiDifficulty;
+		AIDifficulty = (SONG.song == "Small Argument") ? "Baby Mode" : ClientPrefs.data.aiDifficulty;
 		gimmicksAllowed = ClientPrefs.data.gimmicksAllowed;
 		guitarHeroSustains = ClientPrefs.data.guitarHeroSustains;
 
@@ -4057,23 +4050,17 @@ class PlayState extends MusicBeatState
 					}
 				}
 
-				if (!reGenerating)
+				if (!noteTypes.contains(swagNote.noteType))
 				{
-					if (!noteTypes.contains(swagNote.noteType))
-					{
-						noteTypes.push(swagNote.noteType);
-					}
+					noteTypes.push(swagNote.noteType);
 				}
 			}
 			daBeats += 1;
 		}
 
-		if (!reGenerating)
-		{
-			for (event in songData.events) // Event Notes
-				for (i in 0...event[1].length)
-					makeEvent(event, i);
-		}
+		for (event in songData.events) // Event Notes
+			for (i in 0...event[1].length)
+				makeEvent(event, i);
 		// playerCounter += 1;
 		allNotes.sort(sortByNotes);
 		for (fuck in allNotes)
@@ -4826,12 +4813,6 @@ class PlayState extends MusicBeatState
 			daBeats += 1;
 		}
 
-		if (!reGenerating)
-		{
-			for (event in songData.events) // Event Notes
-				for (i in 0...event[1].length)
-					makeEvent(event, i);
-		}
 		// playerCounter += 1;
 		allNotes.sort(sortByNotes);
 		for (fuck in allNotes)
@@ -5136,7 +5117,7 @@ class PlayState extends MusicBeatState
 				}
 			}
 		}
-		// backend.Threader.runInThread(generateNotes(songData, AIPlayMap), 0, "generateNotes");
+		//backend.Threader.runInThread(generateNotes(songData, AIPlayMap), 0, "generateNotes");
 		generateNotes(songData, AIPlayMap);
 	}
 
@@ -6939,7 +6920,7 @@ class PlayState extends MusicBeatState
 
 	public function loopCallback(startingPoint:Float = 0) // this took so much effort to get working I really hope people use this
 	{
-		KillNotes(); // kill any existing notes
+		//KillNotes(); // kill any existing notes...except there should be any 
 		FlxG.sound.music.time = startingPoint;
 		if (SONG.needsVoices)
 			setVocalsTime(startingPoint);
@@ -6954,22 +6935,23 @@ class PlayState extends MusicBeatState
 		endingSong = false;
 		songAboutToLoop = false;
 
-		songScore = 0;
-		songMisses = 0;
-		songHits = 0;
-		combo = 0;
-		ratingPercent = 0;
-		ratingName = "";
-		ratingFC = "";
-
-		RecalculateRating();
-
 		if (curSong == "Small Argument" && AIPlayer.diff != 6) //Six is the highest there is. It's literally botplay at that point.
 			AIPlayer.diff += 1;
 
+		trace("AI LEVEL: "+AIPlayer.diff);
 		var AIPlayMap = [];
 		if (AIPlayer.active)
 		{
+			songScore = 0;
+			songMisses = 0;
+			songHits = 0;
+			combo = 0;
+			ratingPercent = 0;
+			ratingName = "";
+			ratingFC = "";
+
+			RecalculateRating();
+
 			AIPlayMap = AIPlayer.GeneratePlayMap(SONG, AIPlayer.diff);
 			AIScore = 0;
 			AIMisses = 0;
@@ -6982,22 +6964,10 @@ class PlayState extends MusicBeatState
 		}
 
 		// backend.Threader.runInThread(regenerateNotes(SONG, AIPlayMap), 0, "generateNotes");
-		//generateNotes(SONG, AIPlayMap);
+		regenerateNotes(SONG, AIPlayMap);
 		// allNotes = curChart.copy();
 		// unspawnNotes = curChart.copy();
-		// eventNotes = curEvents.copy();
-
-		// for (playfield in playfields)
-		// {for (note in allNotes)
-		// {
-		// 	if (note != null)
-		// 	{
-		// 		if (note.field == playfield)
-		// 		{
-		// 			playfield.queue(note);
-		// 		}
-		// 	}
-		// }}
+		eventNotes = curEvents.copy();
 
 		if (loopModeChallenge)
 		{
@@ -8943,8 +8913,7 @@ class PlayState extends MusicBeatState
 		comboSpr.x -= 200;
 		comboSpr.velocity.x += FlxG.random.int(1, 10) * playbackRate;
 
-		insert(members.indexOf(strumLineNotes), rating);
-
+		comboGroup.add(rating);
 		if (!ClientPrefs.data.comboStacking)
 		{
 			if (lastRatingOpp != null)
@@ -8981,12 +8950,6 @@ class PlayState extends MusicBeatState
 		var daLoop:Int = 0;
 		var xThing:Float = 0;
 		if (showCombo) comboGroup.add(comboSpr);
-		/*if (!ClientPrefs.data.comboStacking)
-		{
-			if (lastComboOpp != null)
-				lastComboOpp.kill();
-			lastComboOpp = comboSpr;
-		}*/
 		if (lastScore != null)
 		{
 			while (lastScore.length > 0)
