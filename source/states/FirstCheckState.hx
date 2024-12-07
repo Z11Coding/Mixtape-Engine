@@ -21,9 +21,19 @@ class FirstCheckState extends MusicBeatState
 	var updateRibbon:FlxSprite;
 
 	public static function checkInternetConnection():Bool {
-        var url = "https://www.google.com"; // A reliable server to check connectivity
-        var response = SyncUtils.syncHttpRequest(url);
-        return response != null;
+		var response:Dynamic = null;
+		var urls = [
+			"https://httpbin.org/get",
+			"https://raw.githubusercontent.com/Z11Coding/Mixtape-Engine/refs/heads/main/gitVersion.txt",
+			"https://www.google.com"
+		];
+		for (url in urls) {
+			response = SyncUtils.syncHttpRequest(url);
+			if (response != null && response != '') {
+			return true;
+			}
+		}
+        return response != null || response == '';
     }
 
 	override public function create()
@@ -108,6 +118,7 @@ class FirstCheckState extends MusicBeatState
 				FlxTween.tween(updateAlphabet, {alpha: 0}, 2, {ease:FlxEase.sineOut});
 				FlxTween.tween(updateIcon, {alpha: 0}, 2, {ease:FlxEase.sineOut});
 				new FlxTimer().start(2, function(tmr:FlxTimer) {
+					trace("Ew, no internet!");
 					FlxG.switchState(new states.CacheState());
 				});
 				return;

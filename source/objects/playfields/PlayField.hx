@@ -321,22 +321,24 @@ class PlayField extends FlxTypedGroup<FlxBasic>
 						daKeyTxt.size = 32 - PlayState.mania; // essentially if i ever add 0k!?!?
 						daKeyTxt.x = babyArrow.x + (babyArrow.width / 2);
 						daKeyTxt.x -= daKeyTxt.width / 2;
-						add(daKeyTxt);
-						daKeyTxt.cameras = [this.cameras[0]];
+						PlayState.instance.add(daKeyTxt);
+						daKeyTxt.cameras = cameras;
 						var textY:Float = (j == 0 ? babyArrow.y - 32 : ((babyArrow.y - 32) + babyArrow.height) - daKeyTxt.height);
-						daKeyTxt.y = -daKeyTxt.height; // Start from the top of the screen
+						// daKeyTxt.y = -daKeyTxt.height;
+						
 
-						FlxTween.tween(daKeyTxt, {y: textY, alpha: 1, angle: 360}, 1, {ease: FlxEase.circOut});
-
-						new FlxTimer().start(4, function(_)
-						{
-							FlxTween.tween(daKeyTxt, {y: daKeyTxt.y + 32, alpha: 0, angle: 720}, 1, {
-								ease: FlxEase.circIn,
-								onComplete: function(t)
-								{
-									remove(daKeyTxt);
-								}
-							});
+						FlxTween.tween(daKeyTxt, {y: textY, alpha: 1, angle: 360}, 5, {
+							ease: FlxEase.circOut,
+							onComplete: function(t) {
+								new FlxTimer().start(4, function(_) {
+									FlxTween.tween(daKeyTxt, {y: daKeyTxt.y + 32, alpha: 0, angle: 720}, 1, {
+										ease: FlxEase.circIn,
+										onComplete: function(t) {
+											remove(daKeyTxt);
+										}
+									});
+								});
+							}
 						});
 					}
 				}
