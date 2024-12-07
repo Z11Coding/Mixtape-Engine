@@ -9612,7 +9612,7 @@ class PlayState extends MusicBeatState
 				{
 					if (dad != null)
 					{
-						if (!note.animation.curAnim.name.endsWith('tail'))
+						if (note.animation != null && !note.animation.curAnim.name.endsWith('tail'))
 						{
 							dad.playAnim('sing' + Note.keysShit.get(mania).get('anims')[Std.int(Math.abs(note.noteData))] + altAnim, true);
 							dad.holdTimer = 0;
@@ -10178,6 +10178,7 @@ class PlayState extends MusicBeatState
 			clearfuck.clearObject(stuff);
 		instance = null;
 		mania = oldMania;
+		MemoryUtil.clearMajor();
 		super.destroy();
 	}
 
