@@ -32,7 +32,7 @@ class MemoryUtil {
 			enable();
 	}
 
-	public static function init() {}
+	public static function init() {enable();}
 
 	public static function clearMinor() {
 		#if (cpp || java || neko)

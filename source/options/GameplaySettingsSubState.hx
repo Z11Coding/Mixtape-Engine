@@ -20,6 +20,11 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 			'bool');
 		addOption(option);
 
+		var option:Option = new Option('Input System', "The input system you wish to use.", 'inputSystem', 'string',
+			["Native", "BEAT! Engine", "Kade Engine", "ZoroForce EK"]);
+		addOption(option);
+		option.displayFormat = '< %v >';
+
 		var option:Option = new Option('Opponent Notes',
 			'If unchecked, opponent notes get hidden.',
 			'opponentStrums',
@@ -30,6 +35,10 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 			"If checked, you won't get misses from pressing keys\nwhile there are no notes able to be hit.",
 			'ghostTapping',
 			'bool');
+		addOption(option);
+
+		var option:Option = new Option('No Antimash', // even tho only one person asked, it here
+			"If checked, Antimash will be disabled.", 'noAntimash', 'bool');
 		addOption(option);
 
 		var option:Option = new Option('Disable Reset Button',

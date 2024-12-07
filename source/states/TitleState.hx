@@ -534,7 +534,7 @@ class TitleState extends MusicBeatState
 				case 1:
 					if (!playJingle) {
 						//FlxG.sound.music.stop();
-						FlxG.sound.music.time = 0;
+						if (FlxG.sound.music != null) FlxG.sound.music.time = 0;
 						FlxG.sound.playMusic(Paths.music('panixPress'), 0);
 						FlxG.sound.music.fadeIn(4, 0, 0.7);
 						playJingle = true;

@@ -104,7 +104,7 @@ class VideoSprite extends FlxSpriteGroup {
 			finishCallback();
 		onSkip = null;
 
-		PlayState.instance.remove(this);
+		if (PlayState.instance != null) PlayState.instance.remove(this);
 		super.destroy();
 	}
 

@@ -22,7 +22,7 @@ class RankingSubstate extends MusicBeatSubstate
 	var ranking:String = "NA";
 	var rankingNum:Int = 15;
 
-	public function new(x:Float, y:Float)
+	public function new()
 	{
 		super();
 
@@ -32,11 +32,13 @@ class RankingSubstate extends MusicBeatSubstate
 
 		if (!PlayState.instance.cpuControlled)
 			backend.Highscore.saveRank(PlayState.SONG.song, rankingNum, PlayState.storyDifficulty);
+	}
 
+	override function create()
+	{
 		pauseMusic = new FlxSound().loadEmbedded(Paths.formatToSongPath(ClientPrefs.data.pauseMusic), true, true);
 		pauseMusic.volume = 0;
 		pauseMusic.play(false, FlxG.random.int(0, Std.int(pauseMusic.length / 2)));
-
 		FlxG.sound.list.add(pauseMusic);
 
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
@@ -121,8 +123,6 @@ class RankingSubstate extends MusicBeatSubstate
 
 		if (FlxG.keys.justPressed.ANY || PlayState.instance.practiceMode)
 		{
-			//PlayState.endingSong = false;
-
 			switch (PlayState.gameplayArea)
 			{
 				case "Story":

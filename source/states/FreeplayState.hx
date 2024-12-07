@@ -1118,6 +1118,9 @@ class FreeplayState extends MusicBeatState
 		FlxG.autoPause = ClientPrefs.data.autoPause;
 		if (!FlxG.sound.music.playing && !stopMusicPlay)
 			FlxG.sound.playMusic(Paths.music('panixPress'));
+		// Clean all the gunk out
+		Paths.clearUnusedMemory();
+		Paths.clearStoredMemory();
 	}	
 }
 

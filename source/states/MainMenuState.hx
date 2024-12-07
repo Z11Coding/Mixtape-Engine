@@ -585,4 +585,12 @@ class MainMenuState extends MusicBeatState
 			});
 		}
 	}
+
+	override function destroy()
+	{
+		super.destroy();
+		// Clean all the gunk out
+		Paths.clearUnusedMemory();
+		Paths.clearStoredMemory();
+	}
 }

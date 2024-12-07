@@ -125,6 +125,7 @@ class PlayField extends FlxTypedGroup<FlxBasic>
 	public var noteMissed:Event<NoteCallback> = new Event<NoteCallback>(); // event that gets called every time you miss a note. multiple functions can be bound here
 	public var noteRemoved:Event<NoteCallback> = new Event<NoteCallback>(); // event that gets called every time a note is removed. multiple functions can be bound here
 	public var noteSpawned:Event<NoteCallback> = new Event<NoteCallback>(); // event that gets called every time a note is spawned. multiple functions can be bound here
+	public var noteMissPress:Event<NoteCallback> = new Event<NoteCallback>(); // event that gets called every time you tap without ghost tapping. multiple functions can be bound here
 
 	public var keysPressed:Array<Bool> = [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]; // what keys are pressed rn
     public var isHolding:Array<Bool> = [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false];
@@ -277,21 +278,203 @@ class PlayField extends FlxTypedGroup<FlxBasic>
 	public function hasNote(note:Note)
 		return spawnedNotes.contains(note) || noteQueue[note.column]!=null && noteQueue[note.column].contains(note);
 	
+	var closestNotes:Array<Note> = [];
 	// sends an input to the playfield
 	public function input(data:Int){
-		if(data > keyCount || data < 0)return null;
-		
-		var noteList = getNotesWithEnd(data, Conductor.songPosition + ClientPrefs.data.badWindow, (note:Note) -> !note.isSustainNote && note.requiresTap);
-		#if PE_MOD_COMPATIBILITY
-		noteList.sort((a, b) -> Std.int((b.strumTime + (b.lowPriority ? 10000 : 0)) - (a.strumTime + (a.lowPriority ? 10000 : 0)))); // so lowPriority actually works (even though i hate it lol!)
-		#else
-        noteList.sort((a, b) -> Std.int(b.strumTim - a.strumTime)); // so lowPriority actually works (even though i hate it lol!)
-        #end
-		while (noteList.length > 0)
+		switch (ClientPrefs.data.inputSystem)
 		{
-			var note:Note = noteList.pop();
-            noteHitCallback(note, this);
-            return note;
+			case "Native":
+				if(data > keyCount || data < 0)return null;
+				
+				var noteList = getNotesWithEnd(data, Conductor.songPosition + ClientPrefs.data.badWindow, (note:Note) -> !note.isSustainNote && note.requiresTap);
+				#if PE_MOD_COMPATIBILITY
+				noteList.sort((a, b) -> Std.int((b.strumTime + (b.lowPriority ? 10000 : 0)) - (a.strumTime + (a.lowPriority ? 10000 : 0)))); // so lowPriority actually works (even though i hate it lol!)
+				#else
+				noteList.sort((a, b) -> Std.int(b.strumTim - a.strumTime)); // so lowPriority actually works (even though i hate it lol!)
+				#end
+				while (noteList.length > 0)
+				{
+					var note:Note = noteList.pop();
+					noteHitCallback(note, this);
+					return note;
+				}
+			case 'BEAT! Engine':
+				var noteList = getNotesWithEnd(data, Conductor.songPosition + ClientPrefs.data.badWindow, (note:Note) -> !note.isSustainNote && note.requiresTap);
+				// more accurate hit time for the ratings?
+				var lastTime:Float = Conductor.songPosition;
+				Conductor.songPosition = FlxG.sound.music.time;
+
+				var canMiss:Bool = !ClientPrefs.data.ghostTapping;
+
+				// heavily based on my own code LOL if it aint broke dont fix it
+				var pressNotes:Array<Note> = [];
+				// var notesDatas:Array<Int> = [];
+				var notesStopped:Bool = false;
+
+				var sortedNotesList:Array<Note> = [];
+				for (daNote in noteList)
+				{
+					if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit && !daNote.isSustainNote)
+					{
+						if (daNote.noteData == data)
+						{
+							sortedNotesList.push(daNote);
+							// notesDatas.push(daNote.noteData);
+						}
+						if (!ClientPrefs.data.noAntimash)
+						{ // shut up
+							canMiss = true;
+						}
+					}
+				}
+				sortedNotesList.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
+
+				if (sortedNotesList.length > 0)
+				{
+					for (epicNote in sortedNotesList)
+					{
+						for (doubleNote in pressNotes)
+						{
+							if (Math.abs(doubleNote.strumTime - epicNote.strumTime) < 1)
+							{
+								removeNote(doubleNote);
+							}
+							else
+								notesStopped = true;
+						}
+
+						// eee jack detection before was not super good
+						if (!notesStopped)
+						{
+							pressNotes.push(epicNote);
+							var note:Note = sortedNotesList.pop();
+							noteHitCallback(note, this);
+							return note;
+						}
+					}
+				}
+				else if (canMiss)
+				{
+					PlayState.instance.noteMissPress(data);
+				}
+
+				// I dunno what you need this for but here you go
+				//									- Shubs
+
+				// Shubs, this is for the "Just the Two of Us" achievement lol
+				//									- Shadow Mario
+				keysPressed[data] = true;
+
+				// more accurate hit time for the ratings? part 2 (Now that the calculations are done, go back to the time it was before for not causing a note stutter)
+				Conductor.songPosition = lastTime;
+			case 'Kade Engine': // 1.8 input btw
+				var canMiss:Bool = !ClientPrefs.data.ghostTapping;
+
+				keysPressed[data] = true;
+
+				closestNotes = [];
+
+				var noteList = getNotesWithEnd(data, Conductor.songPosition + ClientPrefs.data.badWindow, (note:Note) -> !note.isSustainNote && note.requiresTap);
+				for (daNote in noteList)
+				{
+					if (daNote.canBeHit && daNote.mustPress && !daNote.wasGoodHit)
+						closestNotes.push(daNote);
+				}
+
+				closestNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
+
+				var dataNotes = [];
+				for (i in closestNotes)
+					if (i.noteData == data && !i.isSustainNote)
+						dataNotes.push(i);
+
+				if (dataNotes.length != 0)
+				{
+					var coolNote = null;
+
+					for (i in dataNotes)
+					{
+						coolNote = i;
+						break;
+					}
+
+					if (dataNotes.length > 1) // stacked notes or really close ones
+					{
+						for (i in 0...dataNotes.length)
+						{
+							if (i == 0) // skip the first note
+								continue;
+
+							var note = dataNotes[i];
+
+							if (!note.isSustainNote && ((note.strumTime - coolNote.strumTime) < 2) && note.noteData == data)
+							{
+								trace('found a stacked/really close note ' + (note.strumTime - coolNote.strumTime));
+								// just fuckin remove it since it's a stacked note and shouldn't be there
+								removeNote(note);
+							}
+						}
+					}
+
+					var note:Note = dataNotes.pop();
+					noteHitCallback(note, this);
+					return note;
+				}
+				else if (canMiss)
+				{
+					PlayState.instance.noteMissPress(data);
+				}
+			case 'ZoroForce EK':
+				var hittableNotes = [];
+				var closestNotes = [];
+
+				var noteList = getNotesWithEnd(data, Conductor.songPosition + ClientPrefs.data.badWindow, (note:Note) -> !note.isSustainNote && note.requiresTap);
+				for (daNote in noteList)
+				{
+					if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit && !daNote.isSustainNote)
+					{
+						closestNotes.push(daNote);
+					}
+				}
+				closestNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
+
+				for (i in closestNotes)
+					if (i.noteData == data)
+						hittableNotes.push(i);
+
+				if (hittableNotes.length != 0)
+				{
+					var daNote = null;
+
+					for (i in hittableNotes)
+					{
+						daNote = i;
+						break;
+					}
+
+					if (daNote == null)
+						return null;
+
+					if (hittableNotes.length > 1)
+					{
+						for (shitNote in hittableNotes)
+						{
+							if (shitNote.strumTime == daNote.strumTime)
+							{
+								noteHitCallback(shitNote, this);
+								return shitNote;
+							}
+							else if ((!shitNote.isSustainNote && (shitNote.strumTime - daNote.strumTime) < 15))
+							{
+								noteHitCallback(shitNote, this);
+								return shitNote;
+							}
+						}
+					}
+					noteHitCallback(daNote, this);
+				}
+				else if (!ClientPrefs.data.ghostTapping)
+					PlayState.instance.noteMissPress(data);
 		}
 
 		return null;
@@ -498,6 +681,19 @@ class PlayField extends FlxTypedGroup<FlxBasic>
 					}
 				}
 			}
+
+			//kade is just evil lmao
+			if (daNote.isParent && daNote.tooLate && !daNote.isSustainNote)
+			{
+				PlayState.instance.health -= 0.15; // give a health punishment for failing a LN
+				trace("hold fell over at the start");
+				for (i in daNote.childs)
+				{
+					i.alpha = 0.3;
+					i.susActive = false;
+				}
+			}
+
 			// check for note deletion
 			if (daNote.garbage)
 				garbage.push(daNote);

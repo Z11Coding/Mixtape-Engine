@@ -98,6 +98,19 @@ class CacheState extends MusicBeatState
 	var currentLoaded:Int = 0;
 	var loadTotal:Int = 0;
 	
+	var listoSongs:Array<String> = [
+		'breakfast', 
+		'breakfast-(pico)', 
+		'tea-time', 
+		'celebration', 
+		'drippy-genesis', 
+		'Reglitch', 
+		'false-memory', 
+		'funky-genesis', 
+		'late-night-cafe', 
+		'late-night-jersey', 
+		'silly-little-sample-song'
+	];
 
 	public static var newDest:FlxState;
 
@@ -156,11 +169,6 @@ class CacheState extends MusicBeatState
 			var cache:Array<String> = [];
 			cache = cache.concat(Paths.crawlDirectoryOG("assets", ".png", images));
 			cache = cache.concat(Paths.crawlDirectoryOG("mods", ".png", modImages));
-
-			if (ClientPrefs.data.saveCache) {
-				ImageCache.loadCache();
-			}
-
 
 			for (image in cache) {
 				if (ImageCache.exists(image)) {
@@ -234,6 +242,24 @@ class CacheState extends MusicBeatState
 		add(loadingWhat);
 		add(loadingWhatMini);
 
+		if(ClientPrefs.data.graphicsPreload2){
+			GPUBitmap.disposeAll(); //cuz we moved to a pack without the undertale or origins and i didnt wanna complain about it cuz i know they were causing issues so i was being
+			ImageCache.cache.clear();
+		}
+		else{
+			modImagesCached = true;
+			graphicsCached = true;
+		}
+
+		if(ClientPrefs.data.musicPreload2){
+			Assets.cache.clear("music");
+		}
+		else{
+			songsCached = true;
+		}
+
+		if (allowMusic && !cacheInit) FlxG.sound.playMusic(listoSongs[FlxG.random.int(0, 10)], 1, true);
+
 		if(!cacheStart){
 			#if web
 			new FlxTimer().start(3, function(tmr:FlxTimer)
@@ -251,26 +277,6 @@ class CacheState extends MusicBeatState
 			#end
 		}
 
-		if(ClientPrefs.data.graphicsPreload2){
-			GPUBitmap.disposeAll(); //cuz we moved to a pack without the undertale or origins and i didnt wanna complain about it cuz i know they were causing issues so i was being
-			ImageCache.cache.clear();
-		}
-		else{
-			modImagesCached = true;
-			graphicsCached = true;
-		}
-
-		if(ClientPrefs.data.musicPreload2){
-			Assets.cache.clear("music");
-		}
-		else{
-			songsCached = true;
-		}
-
-		totalToDo = totalthing.length;
-
-		if (allowMusic && !cacheInit) FlxG.sound.playMusic(Paths.music('greetings'), 1, true);
-
 		super.create();
 	}
 
@@ -284,7 +290,7 @@ class CacheState extends MusicBeatState
 	var move:Bool = false;
 	override function update(elapsed) 
 	{
-		if (!dontBother && pause)
+		if (!dontBother && !pause)
 		{
 			loadingBox.width = Std.int(loadingWhat.width);
 			loadingBox.height = Std.int(loadingWhat.height);
@@ -305,9 +311,6 @@ class CacheState extends MusicBeatState
 
 			if(menuBG.alpha == 0){
 				System.gc();
-				if (ClientPrefs.data.saveCache) {
-					ImageCache.saveCache();
-				}
 				FlxG.sound.music.time = 0;
 				if (ClientPrefs.data.cacheCharts) {
 					var charts:Array<String> = Paths.crawlDirectory("assets/shared/data", ".json");
@@ -554,10 +557,7 @@ class CacheState extends MusicBeatState
 		if(loadingBar != null){
             loadingBar.visible = true;
         }
-
-		#if sys
 		startCachingSoundsAndMusic = true;
-		#end
 	}
 
 	function preloadMusic(){

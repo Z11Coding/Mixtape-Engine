@@ -14,7 +14,6 @@ class GameOverSubstate extends MusicBeatSubstate
 {
 	public var boyfriend:Character;
 	var camFollow:FlxObject;
-
 	var stagePostfix:String = "";
 
 	public static var characterName:String = 'bf-dead';

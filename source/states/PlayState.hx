@@ -628,9 +628,7 @@ class PlayState extends MusicBeatState
 		if (!CacheMode)
 			PlayState.cachingSongs = [];
 
-		if (nextReloadAll)
-			Paths.clearUnusedMemory();
-		nextReloadAll = false;
+		Paths.clearUnusedMemory(); // Please just do it anyway
 		MemoryUtil.clearMajor();
 		// motionBlur = new shaders.Shaders.MotionBlur();
 
@@ -2545,6 +2543,7 @@ class PlayState extends MusicBeatState
 						modManager.setValue('transform'+i+'X', 30, 1);
 				if (mania > 8) forceInvis = true; //dont wanna deal with anything higher then 9K
 			}
+			if (ClientPrefs.data.opponentStrums) forceInvis = true;
 
 			startedCountdown = true;
 			countActive = true;
@@ -3999,10 +3998,14 @@ class PlayState extends MusicBeatState
 					continue;
 				}
 
+				var spot = 0;
+
 				var curStepCrochet:Float = 60 / daBpm * 1000 / 4.0;
 				final roundSus:Int = Math.round(swagNote.sustainLength / curStepCrochet);
 				if (roundSus > 0)
 				{
+					if (ClientPrefs.data.inputSystem == 'Kade Engine')
+						swagNote.isParent = true;
 					for (susNote in 0...roundSus)
 					{
 						oldNote = allNotes[Std.int(allNotes.length - 1)];
@@ -4033,6 +4036,14 @@ class PlayState extends MusicBeatState
 						if (sustainNote.mustPress)
 						{
 							sustainNote.x += FlxG.width * 0.5; // general offset
+						}
+
+						if (ClientPrefs.data.inputSystem == 'Kade Engine')
+						{ // if fireable ever plays this
+							sustainNote.parent = swagNote;
+							swagNote.childs.push(sustainNote);
+							sustainNote.spotInLine = spot;
+							spot++;
 						}
 					}
 				}
@@ -6390,7 +6401,7 @@ class PlayState extends MusicBeatState
 			if (FlxG.sound.music.length - Conductor.songPosition <= endingTimeLimit)
 			{
 				songAboutToLoop = true;
-				if (AIScore > songScore && AIMode)
+				if (AIScore >= songScore && AIMode)
 				{
 					if (FlxG.sound.music.time < 0 || Conductor.songPosition < 0)
 					{
@@ -6935,7 +6946,7 @@ class PlayState extends MusicBeatState
 		endingSong = false;
 		songAboutToLoop = false;
 
-		if (curSong == "Small Argument" && AIPlayer.diff != 6) //Six is the highest there is. It's literally botplay at that point.
+		if (curSong == "Small Argument" && AIPlayer.diff != 6 && AIScore != songScore) //Six is the highest there is. It's literally botplay at that point.
 			AIPlayer.diff += 1;
 
 		trace("AI LEVEL: "+AIPlayer.diff);
@@ -7018,21 +7029,7 @@ class PlayState extends MusicBeatState
 
 				if (loopMode || loopModeChallenge || curSong == "Small Argument")
 				{
-					KillNotes();
-					vocals.stop();
-					opponentVocals.stop();
-					gfVocals.stop();
-					for (track in tracks)
-						track.stop();
-					FlxG.sound.music.stop();
-					new FlxTimer().start(0.1, function(tmr:FlxTimer)
-					{
-						camHUD.alpha -= 1 / 10;
-					}, 10);
-					gameplayArea = "Freeplay";
-					#if DISCORD_ALLOWED DiscordClient.resetClientID(); #end
-					openSubState(new substates.RankingSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
-					changedDifficulty = false;
+					endSong();
 				}
 				else
 				{
@@ -8464,7 +8461,24 @@ class PlayState extends MusicBeatState
 				return false;
 			}
 
-			if (isStoryMode)
+			if (loopMode || loopModeChallenge || curSong == "Small Argument")
+			{
+				vocals.stop();
+				opponentVocals.stop();
+				gfVocals.stop();
+				for (track in tracks)
+					track.stop();
+				FlxG.sound.music.stop();
+				new FlxTimer().start(0.1, function(tmr:FlxTimer)
+				{
+					camHUD.alpha -= 1 / 10;
+				}, 10);
+				gameplayArea = "Freeplay";
+				#if DISCORD_ALLOWED DiscordClient.resetClientID(); #end
+				openSubState(new substates.RankingSubstate());
+				changedDifficulty = false;
+			}
+			else if (isStoryMode)
 			{
 				if (!cpuControlled && !playAsGF)
 				{
@@ -8496,7 +8510,7 @@ class PlayState extends MusicBeatState
 					{
 						camHUD.alpha -= 1 / 10;
 					}, 10);
-					openSubState(new substates.RankingSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+					openSubState(new substates.RankingSubstate());
 				}
 				else
 				{
@@ -8505,7 +8519,7 @@ class PlayState extends MusicBeatState
 						camHUD.alpha -= 1 / 10;
 					}, 10);
 					gameplayArea = "Story";
-					openSubState(new substates.RankingSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+					openSubState(new substates.RankingSubstate());
 				}
 			}
 			else
@@ -8516,7 +8530,7 @@ class PlayState extends MusicBeatState
 				}, 10);
 				gameplayArea = "Freeplay";
 				#if DISCORD_ALLOWED DiscordClient.resetClientID(); #end
-				openSubState(new substates.RankingSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+				openSubState(new substates.RankingSubstate());
 				changedDifficulty = false;
 			}
 			transitioning = true;
@@ -9367,7 +9381,7 @@ class PlayState extends MusicBeatState
 			callOnHScript('noteMiss', [daNote]);
 	}
 
-	function noteMissPress(direction:Int = 1):Void // You pressed a key when there was no notes to press for this key
+	public function noteMissPress(direction:Int = 1):Void // You pressed a key when there was no notes to press for this key
 	{
 		justmissed = true;
 		if (ClientPrefs.data.ghostTapping)
@@ -9375,7 +9389,10 @@ class PlayState extends MusicBeatState
 		bfkilledcheck = true;
 		if (!boyfriend.stunned)
 		{
-			health -= 0.05 * healthLoss;
+			if (ClientPrefs.data.inputSystem == "Kade Engine")
+				health -= 0.20; // kade is evillll			
+			else
+				health -= 0.05 * healthLoss;
 			if (instakillOnMiss)
 			{
 				vocals.volume = 0;
@@ -10114,7 +10131,8 @@ class PlayState extends MusicBeatState
 			camHUD.zoom += 0.03;
 
 			if (!camZooming)
-			{ // Just a way for preventing it to be permanently zoomed until Skid & Pump hits a note
+			{ 
+				// Just a way for preventing it to be permanently zoomed until Skid & Pump hits a note
 				FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 0.5);
 				FlxTween.tween(camHUD, {zoom: 1}, 0.5);
 			}
@@ -10179,6 +10197,9 @@ class PlayState extends MusicBeatState
 		instance = null;
 		mania = oldMania;
 		super.destroy();
+		// Clean all the gunk out
+		Paths.clearUnusedMemory();
+		Paths.clearStoredMemory();
 	}
 
 	function resyncVocals():Void

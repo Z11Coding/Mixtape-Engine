@@ -361,25 +361,32 @@ class Main extends Sprite
 
 	public static inline function handleStateBasedClosing()
 	{
-		if (!pressedOnce || WindowUtils.__triedClosing)
+		if (!pressedOnce)
 		{
-			pressedOnce = true;
-			switch (Type.getClassName(Type.getClass(FlxG.state)).split(".")[Lambda.count(Type.getClassName(Type.getClass(FlxG.state)).split(".")) - 1])
+			if (WindowUtils.__triedClosing)
 			{
-				case "ChartingStateOG", "ChartingStatePsych":
-					// new Prompt("Are you sure you want to exit? Your progress will not be saved.", function (result:Bool) {
+				pressedOnce = true;
+				switch (Type.getClassName(Type.getClass(FlxG.state)).split(".")[Lambda.count(Type.getClassName(Type.getClass(FlxG.state)).split(".")) - 1])
+				{
+					case "ChartingStateOG", "ChartingStatePsych":
+						// new Prompt("Are you sure you want to exit? Your progress will not be saved.", function (result:Bool) {
 
-				default:
-					// Default behavior: close the window
-					FlxG.autoPause = false;
-					TransitionState.transitionState(ExitState, {transitionType: "transparent close"});
+					default:
+						// Default behavior: close the window
+						FlxG.autoPause = false;
+						TransitionState.transitionState(ExitState, {transitionType: "transparent close"});
+				}
+			}
+			else
+			{
+				Main.closeGame();
 			}
 		}
 		else
 		{
 			Main.closeGame();
 		}
-		WindowUtils.__triedClosing = false;
+		//WindowUtils.__triedClosing = false;
 	}
 
 	// Code was entirely made by sqirra-rng for their fnf engine named "Izzy Engine", big props to them!!!

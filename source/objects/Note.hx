@@ -419,6 +419,7 @@ class Note extends NoteObject
 	public var changeAnim:Bool = true;
 	public var changeColSwap:Bool = true;
 	public var isParent:Bool; // ke input shits
+	public var childs:Array<Note> = [];
 	public var spotInLine:Int = 0;
 	public var ratingDisabled:Bool = false;
 	public var hitHealth:Float = 0.023;
@@ -703,17 +704,17 @@ class Note extends NoteObject
 		{
 			if (isSustainNote)
 			{
-				loadGraphic(Paths.image('pixelUI/' + skinPixel + 'ENDS' + skinPostfix));
+				loadGraphic(Paths.image('pixelUI/' + skinPixel + 'ENDS' + skinPostfix, null, true));
 				width = width / 18;
 				height = height / 2;
-				loadGraphic(Paths.image('pixelUI/' + skinPixel + 'ENDS' + skinPostfix), true, Math.floor(width), Math.floor(height));
+				loadGraphic(Paths.image('pixelUI/' + skinPixel + 'ENDS' + skinPostfix, null, true), true, Math.floor(width), Math.floor(height));
 			}
 			else
 			{
-				loadGraphic(Paths.image('pixelUI/' + skinPixel + skinPostfix));
+				loadGraphic(Paths.image('pixelUI/' + skinPixel + skinPostfix, null, true));
 				width = width / 18;
 				height = height / 5;
-				loadGraphic(Paths.image('pixelUI/' + skinPixel + skinPostfix), true, Math.floor(width), Math.floor(height));
+				loadGraphic(Paths.image('pixelUI/' + skinPixel + skinPostfix, null, true), true, Math.floor(width), Math.floor(height));
 			}
 			defaultWidth = width;
 			setGraphicSize(Std.int(width * PlayState.daPixelZoom * Note.pixelScales[mania]));
@@ -722,7 +723,7 @@ class Note extends NoteObject
 		}
 		else
 		{
-			frames = Paths.getSparrowAtlas(skin);
+			frames = Paths.getSparrowAtlas(skin, null, true);
 			loadNoteAnims();
 			antialiasing = ClientPrefs.data.globalAntialiasing;
 		}
