@@ -65,7 +65,9 @@ typedef ChanceFunction = {
         if (selectedOption == null && !allowNull) {
             throw "Selected option is null";
         }
+        #if !macro
         trace("Selected option: " + selectedOption);
+        #end
         return selectedOption;
     }
 

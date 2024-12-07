@@ -106,6 +106,12 @@ class MusicBeatState extends FlxState
 		super.update(elapsed);
 	}
 
+	override function destroy()
+	{		var clearfuck:yutautil.MemoryHelper = new yutautil.MemoryHelper();
+		clearfuck.clearClassObject(Type.getClass(this));
+	super.destroy();
+	}
+
 	private function updateSection():Void
 	{
 		if(stepsToDo < 1) stepsToDo = Math.round(getBeatsOnSection() * 4);

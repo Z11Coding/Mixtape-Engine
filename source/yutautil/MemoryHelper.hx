@@ -73,7 +73,7 @@ class MemoryHelper implements IFlxDestroyable {
 
 
     // Clear data from a specific object
-    public inline function clearObject(object:Dynamic):Void {
+    public inline function clearObject(object:Dynamic, ?nullify:Bool = true):Void {
         for (field in Reflect.fields(object)) {
             if (protectedFields.exists(field)) {
                 trace('Skipping protected field: ' + field);
@@ -86,6 +86,9 @@ class MemoryHelper implements IFlxDestroyable {
                 }
                 Reflect.setField(object, field, null);
                 // trace("Field " + field + " is " + Reflect.field(object, field));
+                if (nullify) {
+                    Reflect.setProperty(FlxG.state, object, null);
+                }
             } catch (e:Dynamic) {
                 // trace('Error processing field ' + field + ': ' + e);
             }

@@ -492,7 +492,42 @@ class PlayField extends FlxTypedGroup<FlxBasic>
 			babyArrow.cameras = cameras;
 			strumNotes.push(babyArrow);
 			babyArrow.playerPosition();
+			if (ClientPrefs.showKeybindsOnStart && this.isPlayer)
+				{
+					for (j in 0...PlayState.instance.keysArray[PlayState.mania][i].length)
+					{
+						var keysArray = PlayState.instance.keysArray;
+						var daKeyTxt:FlxText = new FlxText(babyArrow.x, babyArrow.y - 10, 0, InputFormatter.getKeyName(keysArray[PlayState.mania][i][j]), 32);
+						daKeyTxt.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+						daKeyTxt.borderSize = 1.25;
+						daKeyTxt.alpha = 0;
+						daKeyTxt.size = 32 - PlayState.mania; // essentially if i ever add 0k!?!?
+						daKeyTxt.x = babyArrow.x + (babyArrow.width / 2);
+						daKeyTxt.x -= daKeyTxt.width / 2;
+						PlayState.instance.add(daKeyTxt);
+						daKeyTxt.cameras = cameras;
+						var textY:Float = (j == 0 ? babyArrow.y - 32 : ((babyArrow.y - 32) + babyArrow.height) - daKeyTxt.height);
+						// daKeyTxt.y = -daKeyTxt.height;
+						
+
+						FlxTween.tween(daKeyTxt, {y: textY, alpha: 1, angle: 360}, 5, {
+							ease: FlxEase.circOut,
+							onComplete: function(t) {
+								new FlxTimer().start(4, function(_) {
+									FlxTween.tween(daKeyTxt, {y: daKeyTxt.y + 32, alpha: 0, angle: 720}, 1, {
+										ease: FlxEase.circIn,
+										onComplete: function(t) {
+											remove(daKeyTxt);
+										}
+									});
+								});
+							}
+						});
+					}
+				}
 		}
+
+
 	}
 
 	// does the introduction thing for the receptors. story mode usually sets skip to true. OYT uses this when mario comes in

@@ -1,4 +1,5 @@
 package states;
+import backend.modules.SyncUtils;
 import backend.Highscore;
 import backend.Achievements;
 import backend.util.WindowUtil;
@@ -18,6 +19,22 @@ class FirstCheckState extends MusicBeatState
 	var updateAlphabet:Alphabet;
 	var updateIcon:FlxSprite;
 	var updateRibbon:FlxSprite;
+
+	public static function checkInternetConnection():Bool {
+		var response:Dynamic = null;
+		var urls = [
+			"https://httpbin.org/get",
+			"https://raw.githubusercontent.com/Z11Coding/Mixtape-Engine/refs/heads/main/gitVersion.txt",
+			"https://www.google.com"
+		];
+		for (url in urls) {
+			response = SyncUtils.syncHttpRequest(url);
+			if (response != null && response != '') {
+			return true;
+			}
+		}
+        return response != null || response == '';
+    }
 
 	override public function create()
 	{
@@ -93,6 +110,19 @@ class FirstCheckState extends MusicBeatState
 		var tmr = new FlxTimer().start(2, function(tmr:FlxTimer)
 		{
 			trace('checking for update');
+			if (!checkInternetConnection())
+			{
+				updateAlphabet.text = 'Failed the vibe check! (No internet connection?)';
+				updateAlphabet.color = FlxColor.RED;
+				updateIcon.visible = false;
+				FlxTween.tween(updateAlphabet, {alpha: 0}, 2, {ease:FlxEase.sineOut});
+				FlxTween.tween(updateIcon, {alpha: 0}, 2, {ease:FlxEase.sineOut});
+				new FlxTimer().start(2, function(tmr:FlxTimer) {
+					trace("Ew, no internet!");
+					FlxG.switchState(new states.CacheState());
+				});
+				return;
+			}
 			var http = new haxe.Http("https://raw.githubusercontent.com/Z11Coding/Mixtape-Engine/refs/heads/main/gitVersion.txt");
 
 			http.onData = function(data:String)
