@@ -2543,7 +2543,7 @@ class PlayState extends MusicBeatState
 						modManager.setValue('transform'+i+'X', 30, 1);
 				if (mania > 8) forceInvis = true; //dont wanna deal with anything higher then 9K
 			}
-			if (ClientPrefs.data.opponentStrums) forceInvis = true;
+			if (!ClientPrefs.data.opponentStrums) forceInvis = true;
 
 			startedCountdown = true;
 			countActive = true;
