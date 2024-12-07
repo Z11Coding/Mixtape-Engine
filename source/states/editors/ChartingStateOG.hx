@@ -1375,6 +1375,31 @@ class ChartingStateOG extends MusicBeatChartingState
 	var noteTypeDropDown:FlxUIDropDownMenu;
 	var currentType:Int = 0;
 
+	function loadSongNoteTypes() {
+		var noteTypeList:Array<String> = [];
+		var curNoteTypes:Array<String> = [];
+		var modfoler = Mods.currentModDirectory;
+		var songName = Paths.formatToSongPath(_song.song);
+
+		noteTypeList = backend.Paths.crawlMulti([
+			'assets/data/$songName',
+			'assets/shared/data/$songName',
+			'mods/data/$songName',
+			'mods/$modfoler/data/$songName'], 'txt', null, true);
+
+		for (file in noteTypeList) {
+			var lines = File.getContent(file).split("\n");
+			for (line in lines) {
+				curNoteTypes.push(line.trim());
+			}
+		}
+
+		for (noteType in curNoteTypes)
+		{
+			curNoteTypes.push(noteType);
+		}
+	}
+
 	function addNoteUI():Void
 	{
 		var tab_group_note = new FlxUI(null, UI_box);
