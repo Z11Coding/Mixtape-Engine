@@ -5,6 +5,7 @@ import states.editors.ChartingStateOG;
 import backend.animation.PsychAnimationController;
 
 import shaders.ColorSwap;
+import flixel.addons.effects.FlxSkewedSprite;
 
 import shaders.RGBPalette;
 import shaders.RGBPalette.RGBShaderReference;
@@ -53,18 +54,12 @@ typedef PreloadedChartNote = {
 	var lowPriority:Bool;
 	@:optional var AIMiss:Bool;
 	@:optional var AIstrumTime:Float;
-	@:optional var field:PlayField;
-	@:optional var fieldIndex:Int;
-	@:optional var noteIndex:Int;
 }
 
 
-class Note extends NoteObject
+class Note extends FlxSkewedSprite
 {
-	public var vec3Cache:Vector3 = new Vector3(); // for vector3 operations in modchart code
-	public var mAngle:Float = 0;
-	public var bAngle:Float = 0;
-
+	//Extra Keys Stuff
 	public static var gfxLetter:Array<String> = [
 		'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
 		'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R'
@@ -277,6 +272,9 @@ class Note extends NoteObject
 	];
 
 	public var extraData:Map<String, Dynamic> = new Map<String, Dynamic>();
+	// modchart
+	public var mesh:modchart.modcharting.SustainStrip = null;
+	public var z:Float = 0;
 
 	public var noteDiff:Float = 1000;
 	
@@ -323,12 +321,6 @@ class Note extends NoteObject
 	public var breaksCombo:Bool = false; // hitting this will cause a combo break
 	public var hitsoundDisabled:Bool = false; // hitting this does not cause a hitsound when user turns on hitsounds
 	public var gfNote:Bool = false; // gf sings this note (pushes gf into characters array when the note is hit)
-	public var characters:Array<Character> = []; // which characters sing this note, leave blank for the playfield's characters
-	public var fieldIndex:Int = -1; // Used to denote which PlayField to be placed into
-	// Leave -1 if it should be automatically determined based on mustPress and placed into either bf or dad's based on that.
-	// Note that holds automatically have this set to their parent's fieldIndex
-	public var field:PlayField; // same as fieldIndex but lets you set the field directly incase you wanna do that i  guess
-
 	// custom health values
 	public var ratingHealth:Map<String, Float> = [];
 
@@ -349,21 +341,7 @@ class Note extends NoteObject
 	public var eventVal2:String = '';
 
 	// etc
-	public var inEditor:Bool = false;
-	public var desiredZIndex:Float = 0;
-	
-	// do not tuch
-	public var baseScaleX:Float = 1;
-	public var baseScaleY:Float = 1;
-	public var zIndex:Float = 0;
-	public var z:Float = 0;
-	public var realColumn:Int;
-	@:isVar
-	public var realNoteData(get, set):Int; // backwards compat
-    inline function get_realNoteData()
-        return realColumn;
-    inline function set_realNoteData(v:Int)
-        return realColumn = v;
+	public var inEditor:Bool = false;	
 
 	public static var swagWidth:Float = 160 * 0.6;
 	public static var swagWidthAlt:Float = 160; //For ModManager
@@ -371,13 +349,6 @@ class Note extends NoteObject
 	public static var colArrayAlt:Array<String> = ['purple', 'blue', 'green', 'red', 'white', 'yellow', 'violet', 'black', 'dark'];
 
 
-	// mod manager
-	public var garbage:Bool = false; // if this is true, the note will be removed in the next update cycle
-	public var alphaMod:Float = 1;
-	public var alphaMod2:Float = 1; // TODO: unhardcode this shit lmao
-	public var typeOffsetX:Float = 0; // used to offset notes, mainly for note types. use in place of offset.x and offset.y when offsetting notetypes
-	public var typeOffsetY:Float = 0;
-	public var typeOffsetAngle:Float = 0;
 	public var multSpeed(default, set):Float = 1;
 	/** If you need to tap the note to hit it, or just have the direction be held when it can be judged to hit.
 		An example is Stepmania mines **/
@@ -433,6 +404,7 @@ class Note extends NoteObject
 	public var noteIndex:Int = -1;
 
 	//Psych Engine Stuff
+	public var useRGBShader(default, set):Bool = false;
 	public var rgbShader:RGBShaderReference;
 	public static var globalRgbShaders:Array<RGBPalette> = [];
 	public static var SUSTAIN_SIZE:Int = 44;
@@ -455,6 +427,17 @@ class Note extends NoteObject
 
 	public var isSustainEnd:Bool = false;
 
+	private function set_useRGBShader(value:Bool):Bool
+	{
+		if (useRGBShader != value)
+		{
+			useRGBShader = value;
+			if (rgbShader != null)
+				rgbShader.enabled = value;
+		}
+		return value;
+	}
+
 	private function set_multSpeed(value:Float):Float {
 		resizeByRatio(value / multSpeed);
 		multSpeed = value;
@@ -464,16 +447,19 @@ class Note extends NoteObject
 
 	public function resizeByRatio(ratio:Float) //haha funny twitter shit
 	{
-		if(isSustainNote && animation.curAnim != null && !animation.curAnim.name.endsWith('end'))
+		if(isSustainNote && animation.curAnim != null && !animation.curAnim.name.endsWith('tail'))
 		{
 			scale.y *= ratio;
 			updateHitbox();
 		}
 	}
 
-	private function set_texture(value:String):String {
-		if(texture != value) reloadNote(value);
-
+	private function set_texture(value:String):String
+	{
+		if (texture != value)
+		{
+			reloadNote('', value);
+		}
 		texture = value;
 		return value;
 	}

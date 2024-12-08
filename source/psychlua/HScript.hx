@@ -4,7 +4,6 @@ import flixel.FlxBasic;
 import objects.Character;
 import psychlua.LuaUtils;
 import psychlua.CustomSubstate;
-import backend.modchart.SubModifier;
 
 #if LUA_ALLOWED
 import psychlua.FunkinLua;
@@ -324,79 +323,6 @@ class HScript extends Iris
 			set('addBehindBF', PlayState.instance.addBehindBF);
 			set('addBehindBF2', PlayState.instance.addBehindBF2);
 		}
-
-		//Troll Engine Hscript Functions
-		set("NoteObject", objects.NoteObject);
-		set("PlayField", objects.playfields.PlayField);
-		set("NoteField", objects.playfields.NoteField);
-		set("ProxyField", objects.proxies.ProxyField);
-		set("ProxySprite", objects.proxies.ProxySprite);
-		set("ModManager", backend.modchart.ModManager);
-		set("Modifier", backend.modchart.Modifier);
-		set("SubModifier", backend.modchart.SubModifier);
-		set("NoteModifier", backend.modchart.NoteModifier);
-		set("EventTimeline", backend.modchart.EventTimeline);
-		set("StepCallbackEvent", backend.modchart.events.StepCallbackEvent);
-		set("CallbackEvent", backend.modchart.events.CallbackEvent);
-		set("ModEvent", backend.modchart.events.ModEvent);
-		set("EaseEvent", backend.modchart.events.EaseEvent);
-		set("SetEvent", backend.modchart.events.SetEvent);
-
-		set("modMgr", PlayState.instance.modManager);
-
-		set("setPercent", function(modName:String, val:Float, player:Int = -1)
-		{
-			PlayState.instance.modManager.setPercent(modName, val, player);
-		});
-
-		set("addBlankMod", function(modName:String, defaultVal:Float = 0, player:Int = -1)
-		{
-			PlayState.instance.modManager.quickRegister(new SubModifier(modName, PlayState.instance.modManager));
-			PlayState.instance.modManager.setValue(modName, defaultVal);
-		});
-
-		set("setValue", function(modName:String, val:Float, player:Int = -1)
-		{
-			PlayState.instance.modManager.setValue(modName, val, player);
-		});
-
-		set("getPercent", function(modName:String, player:Int)
-		{
-			return PlayState.instance.modManager.getPercent(modName, player);
-		});
-
-		set("getValue", function(modName:String, player:Int)
-		{
-			return PlayState.instance.modManager.getValue(modName, player);
-		});
-
-		set("queueSet", 
-		function(step:Float, modName:String, target:Float, player:Int = -1)
-			{
-				PlayState.instance.modManager.queueSet(step, modName, target, player);
-			}
-		);
-
-		set("queueSetP", 
-			function(step:Float, modName:String, perc:Float, player:Int = -1)
-			{
-				PlayState.instance.modManager.queueSetP(step, modName, perc, player);
-			}
-		);
-
-		set("queueEase",
-			function(step:Float, endStep:Float, modName:String, percent:Float, style:String = 'linear', player:Int = -1, ?startVal:Float) // lua is autistic and can only accept 5 args
-			{
-				PlayState.instance.modManager.queueEase(step, endStep, modName, percent, style, player, startVal);
-			}
-		);
-
-		set("queueEaseP",
-			function(step:Float, endStep:Float, modName:String, percent:Float, style:String = 'linear', player:Int = -1, ?startVal:Float) // lua is autistic and can only accept 5 args
-			{
-				PlayState.instance.modManager.queueEaseP(step, endStep, modName, percent, style, player, startVal);
-			}
-		);
 
 		//Base game things
 		set("FlxPoint", {

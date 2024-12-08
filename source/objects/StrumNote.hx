@@ -7,20 +7,13 @@ import flixel.addons.plugin.FlxMouseControl;
 import shaders.RGBPalette;
 import shaders.RGBPalette.RGBShaderReference;
 
-import backend.math.Vector3;
+import flixel.addons.effects.FlxSkewedSprite;
 
-using StringTools;
-
-class StrumNote extends NoteObject
+class StrumNote extends FlxSkewedSprite
 {
 
 	public var rgbShader:RGBShaderReference;
 	public var vec3Cache:Vector3 = new Vector3(); // for vector3 operations in modchart code
-
-	public var zIndex:Float = 0;
-	public var desiredZIndex:Float = 0;
-	public var z:Float = 0;
-	
 	override function destroy()
 	{
 		defScale.put();
@@ -98,9 +91,8 @@ class StrumNote extends NoteObject
 		zIndex = getZIndex();
 	}
 	
-	var field:PlayField;
 	public var useRGBShader:Bool = true;
-	public function new(x:Float, y:Float, leData:Int, ?field:PlayField) {
+	public function new(x:Float, y:Float, leData:Int) {
 		FlxG.plugins.add(new FlxMouseControl());
 		animation = new PsychAnimationController(this);
 		
@@ -122,7 +114,6 @@ class StrumNote extends NoteObject
 			}
 		}
 		else useRGBShader = false;
-		this.field = field;
 		super(x, y);
 		objType = STRUM;
 		noteData = leData;

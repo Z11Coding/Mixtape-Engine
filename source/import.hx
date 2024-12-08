@@ -53,7 +53,6 @@ import objects.Alphabet;
 import objects.BGSprite;
 import objects.StrumNote;
 import objects.HealthIcon;
-import objects.NoteObject;
 
 import states.PlayState;
 import states.LoadingState;
