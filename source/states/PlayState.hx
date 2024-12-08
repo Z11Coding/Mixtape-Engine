@@ -3640,7 +3640,7 @@ class PlayState extends MusicBeatState
 					case "4K Only":
 						daNoteData = getNumberFromAnims(daNoteData, SONG.mania);
 					case "ManiaConverter":
-						daNoteData = getNumberFromAnims(daNoteData, PlayState.mania);
+						daNoteData = getNumberFromAnims(daNoteData, mania);
 					case "Stairs":
 						daNoteData = stair % Note.ammo[mania];
 						stair++;
@@ -11268,6 +11268,12 @@ class PlayState extends MusicBeatState
 							unlock = (FlxG.save.data.PBTBM && FlxG.save.data.FF && FlxG.save.data.TL && FlxG.save.data.slowdown);
 						}
 				}
+			}
+			else // any FC achievements, name should be "weekFileName_nomiss", e.g: "week3_nomiss";
+			{
+				if(isStoryMode && campaignMisses + songMisses < 1 && Difficulty.getString().toUpperCase() == 'HARD'
+					&& storyPlaylist.length <= 1 && !changedDifficulty && !usedPractice)
+					unlock = true;
 			}
 
 			if (unlock)
