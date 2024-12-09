@@ -504,7 +504,7 @@ class PlayField extends FlxTypedGroup<FlxBasic>
 						daKeyTxt.size = 32 - PlayState.mania; // essentially if i ever add 0k!?!?
 						daKeyTxt.x = babyArrow.x + (babyArrow.width / 2);
 						daKeyTxt.x -= daKeyTxt.width / 2;
-						PlayState.instance.add(daKeyTxt);
+						insert(1000000000, daKeyTxt);
 						daKeyTxt.cameras = cameras;
 						var textY:Float = (j == 0 ? babyArrow.y - 32 : ((babyArrow.y - 32) + babyArrow.height) - daKeyTxt.height);
 						// daKeyTxt.y = -daKeyTxt.height;
