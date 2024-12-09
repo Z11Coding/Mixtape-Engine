@@ -1,5 +1,8 @@
 package backend;
 
+import haxe.Constraints.IMap;
+import haxe.ds.Map;
+
 class DynamicIterator2<T> {
     var current:Int = 0;
     var dynamicValue:Dynamic;
@@ -9,9 +12,9 @@ class DynamicIterator2<T> {
     var isObject:Bool;
 
     public inline function new(value:Dynamic) {
-        this.dynamicValue = value;
+        // this.isMap = Std.is(value, Map);
         this.isArray = Std.is(value, Array);
-        this.isMap = Std.is(value, Map);
+        this.isMap = Std.is(value, IMap);
         this.isObject = !isArray && !isMap && Std.is(value, Dynamic);
         if (isObject) {
             if (Type.getClass(value) != null) {
@@ -20,6 +23,10 @@ class DynamicIterator2<T> {
             this.keys = Reflect.fields(value);
             }
         }
+    }
+
+    public inline function createIter(value:Dynamic):DynamicIterator2<T> {
+        return new DynamicIterator2<T>(value);
     }
 
     public inline function hasNext():Bool {

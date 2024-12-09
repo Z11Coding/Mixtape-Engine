@@ -4,8 +4,9 @@ package yutautil;
 import haxe.Constraints.IMap;
 import haxe.ds.StringMap;
 
+// @:inline
 class CollectionUtils {
-    public static function mapT<T, R>(input:Dynamic, func:T -> R):Dynamic {
+    public static inline function mapT<T, R>(input:Dynamic, func:T -> R):Dynamic {
         if (Std.is(input, Array)) {
             return (input: Array<T>).map(func);
         } else if (Std.is(input, IMap)) {
@@ -25,7 +26,7 @@ class CollectionUtils {
         }
     }
 
-    public static function filterT<T>(input:Dynamic, func:T -> Bool):Dynamic {
+    public static inline function filterT<T>(input:Dynamic, func:T -> Bool):Dynamic {
         if (Std.is(input, Array)) {
             return (input: Array<T>).filter(func);
         } else if (Std.is(input, IMap)) {
@@ -50,7 +51,7 @@ class CollectionUtils {
         }
     }
 
-    public static function forEachT<T>(input:Dynamic, func:T -> Void):Void {
+    public static inline function forEachT<T>(input:Dynamic, func:T -> Void):Void {
         if (Std.is(input, Array)) {
             for (item in (input: Array<T>)) {
                 func(item);
@@ -68,7 +69,240 @@ class CollectionUtils {
         }
     }
 
-    public static function generateRandomString(length:Int):String {
+    public static inline function toIterable<T>(input:Dynamic):Iterable<T> {
+        if (Std.is(input, Array)) {
+            return input;
+        } else if (Std.is(input, IMap)) {
+            var result = [];
+            for (key in (input: Map<Dynamic, T>).keys()) {
+                result.push(input.get(key));
+            }
+            return result;
+        } else if (Reflect.hasField(input, "iterator") || (Reflect.hasField(input, "hasNext") && Reflect.hasField(input, "next"))) {
+            return input;
+        } else {
+            return [input];
+        }
+    }
+
+    public static inline function forEachIf<T>(input:Dynamic, predicate:T -> Bool, func:T -> Void):Void {
+        if (Std.is(input, Array)) {
+            for (item in (input: Array<T>)) {
+                if (predicate(item)) {
+                    func(item);
+                }
+            }
+        } else if (Std.is(input, IMap)) {
+            for (key in (input: Map<Dynamic, T>).keys()) {
+                var value = input.get(key);
+                if (predicate(value)) {
+                    func(value);
+                }
+            }
+        } else if (Reflect.hasField(input, "iterator") || (Reflect.hasField(input, "hasNext") && Reflect.hasField(input, "next"))) {
+            for (item in (input: Iterable<T>)) {
+                if (predicate(item)) {
+                    func(item);
+                }
+            }
+        } else {
+            if (predicate(input)) {
+                func(input);
+            }
+        }
+    }
+
+    public static inline function mapTIf<T, R>(input:Dynamic, predicate:T -> Bool, func:T -> R):Dynamic {
+        inline function identity<T, R>(value:T):R {
+            return cast value;
+        }
+
+
+        if (Std.is(input, Array)) {
+            return (input: Array<T>).map(function(item) return predicate(item) ? func(item) : identity(item));
+        } else if (Std.is(input, IMap)) {
+            var result = new Map<Dynamic, R>();
+            for (key in (input: Map<Dynamic, T>).keys()) {
+                var value = input.get(key);
+                result.set(key, predicate(value) ? func(value) : cast value);
+            }
+            return result;
+        } else if (Reflect.hasField(input, "iterator") || (Reflect.hasField(input, "hasNext") && Reflect.hasField(input, "next"))) {
+            var result = [];
+            for (item in (input: Iterable<T>)) {
+                result.push(predicate(item) ? func(item) : cast item);
+            }
+            return result;
+        } else {
+            return predicate(input) ? func(input) : input;
+        }
+    }
+
+    public static inline function forEachIfElse<T>(input:Dynamic, predicate:T -> Bool, ifFunc:T -> Void, elseFunc:T -> Void):Void {
+        if (Std.is(input, Array)) {
+            for (item in (input: Array<T>)) {
+                if (predicate(item)) {
+                    ifFunc(item);
+                } else {
+                    elseFunc(item);
+                }
+            }
+        } else if (Std.is(input, IMap)) {
+            for (key in (input: Map<Dynamic, T>).keys()) {
+                var value = input.get(key);
+                if (predicate(value)) {
+                    ifFunc(value);
+                } else {
+                    elseFunc(value);
+                }
+            }
+        } else if (Reflect.hasField(input, "iterator") || (Reflect.hasField(input, "hasNext") && Reflect.hasField(input, "next"))) {
+            for (item in (input: Iterable<T>)) {
+                if (predicate(item)) {
+                    ifFunc(item);
+                } else {
+                    elseFunc(item);
+                }
+            }
+        } else {
+            if (predicate(input)) {
+                ifFunc(input);
+            } else {
+                elseFunc(input);
+            }
+        }
+    }
+
+    public static inline function forEachIfElseTree<T>(input:Dynamic, conditions:Map<T -> Bool, T -> Void>, elseFunc:T -> Void):Void {
+        if (Std.is(input, Array)) {
+            for (item in (input: Array<T>)) {
+                var matched = false;
+                for (predicate in conditions.keys()) {
+                    if (predicate(item)) {
+                        conditions.get(predicate)(item);
+                        matched = true;
+                        break;
+                    }
+                }
+                if (!matched) {
+                    elseFunc(item);
+                }
+            }
+        } else if (Std.is(input, IMap)) {
+            for (key in (input: Map<Dynamic, T>).keys()) {
+                var value = input.get(key);
+                var matched = false;
+                for (predicate in conditions.keys()) {
+                    if (predicate(value)) {
+                        conditions.get(predicate)(value);
+                        matched = true;
+                        break;
+                    }
+                }
+                if (!matched) {
+                    elseFunc(value);
+                }
+            }
+        } else if (Reflect.hasField(input, "iterator") || (Reflect.hasField(input, "hasNext") && Reflect.hasField(input, "next"))) {
+            for (item in (input: Iterable<T>)) {
+                var matched = false;
+                for (predicate in conditions.keys()) {
+                    if (predicate(item)) {
+                        conditions.get(predicate)(item);
+                        matched = true;
+                        break;
+                    }
+                }
+                if (!matched) {
+                    elseFunc(item);
+                }
+            }
+        } else {
+            var matched = false;
+            for (predicate in conditions.keys()) {
+                if (predicate(input)) {
+                    conditions.get(predicate)(input);
+                    matched = true;
+                    break;
+                }
+            }
+            if (!matched) {
+                elseFunc(input);
+            }
+        }
+    }
+
+    public static inline function mapTIfElse<T, R>(input:Dynamic, predicate:T -> Bool, ifFunc:T -> R, elseFunc:T -> R):Dynamic {
+        if (Std.is(input, Array)) {
+            return (input: Array<T>).map(function(item) return predicate(item) ? ifFunc(item) : elseFunc(item));
+        } else if (Std.is(input, IMap)) {
+            var result = new Map<Dynamic, R>();
+            for (key in (input: Map<Dynamic, T>).keys()) {
+                var value = input.get(key);
+                result.set(key, predicate(value) ? ifFunc(value) : elseFunc(value));
+            }
+            return result;
+        } else if (Reflect.hasField(input, "iterator") || (Reflect.hasField(input, "hasNext") && Reflect.hasField(input, "next"))) {
+            var result = [];
+            for (item in (input: Iterable<T>)) {
+                result.push(predicate(item) ? ifFunc(item) : elseFunc(item));
+            }
+            return result;
+        } else {
+            return predicate(input) ? ifFunc(input) : elseFunc(input);
+        }
+    }
+
+    public static inline function mapTIfElseTree<T, R>(input:Dynamic, conditions:Map<T -> Bool, T -> R>, elseFunc:T -> R):Dynamic {
+        if (Std.is(input, Array)) {
+            return (input: Array<T>).map(function(item) {
+                for (predicate in conditions.keys()) {
+                    if (predicate(item)) {
+                        return conditions.get(predicate)(item);
+                    }
+                }
+                return elseFunc(item);
+            });
+        } else if (Std.is(input, IMap)) {
+            var result = new Map<Dynamic, R>();
+            for (key in (input: Map<Dynamic, T>).keys()) {
+                var value = input.get(key);
+                for (predicate in conditions.keys()) {
+                    if (predicate(value)) {
+                        result.set(key, conditions.get(predicate)(value));
+                        break;
+                    }
+                }
+                if (!result.exists(key)) {
+                    result.set(key, elseFunc(value));
+                }
+            }
+            return result;
+        } else if (Reflect.hasField(input, "iterator") || (Reflect.hasField(input, "hasNext") && Reflect.hasField(input, "next"))) {
+            var result = [];
+            for (item in (input: Iterable<T>)) {
+                for (predicate in conditions.keys()) {
+                    if (predicate(item)) {
+                        result.push(conditions.get(predicate)(item));
+                        break;
+                    }
+                }
+                if (result.length == 0) {
+                    result.push(elseFunc(item));
+                }
+            }
+            return result;
+        } else {
+            for (predicate in conditions.keys()) {
+                if (predicate(input)) {
+                    return conditions.get(predicate)(input);
+                }
+            }
+            return elseFunc(input);
+        }
+    }
+
+    public static inline function generateRandomString(length:Int):String {
         var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         var str = "";
         for (i in 0...length) {
@@ -77,7 +311,7 @@ class CollectionUtils {
         return str;
     }
 
-    public static function generateRandomNumber():Float {
+    public static inline function generateRandomNumber():Float {
         return Math.random() * 1000000;
     }
 

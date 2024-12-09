@@ -361,4 +361,19 @@ class HTable<T>
 	{
 		return [Std.parseInt( ind .row)][Std.parseInt( ind .col)];
 	}
+
+	public function getValueFromStringIndex(index:String):T
+	{
+		var parts = index.split("_");
+		var row = Std.parseInt(parts[1]);
+		var col = Std.parseInt(parts[3]);
+		return table[row][col].getValue();
+	}
+public function getValueFromSecondaryArray(index:String, secondaryArray:Array<Array<T>>):T
+{
+	var parts = index.split("_");
+	var row = Std.parseInt(parts[1]);
+	var col = Std.parseInt(parts[3]);
+	return secondaryArray[row][col];
+}
 }
