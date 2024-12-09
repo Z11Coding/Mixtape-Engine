@@ -5,14 +5,6 @@ import haxe.Exception;
 import haxe.Json;
 import haxe.format.JsonParser;
 import lime.utils.Assets;
-#if LEATHER
-import states.PlayState;
-import game.Note;
-import game.Conductor;
-#if polymod
-import polymod.backends.PolymodAssets;
-#end
-#end
 #if sys
 import sys.FileSystem;
 import sys.io.File;
@@ -20,7 +12,7 @@ import sys.io.File;
 #if hscript
 import hscript.*;
 #end
-#if (HSCRIPT_ALLOWED && PSYCH && PSYCHVERSION >= "0.7")
+#if HSCRIPT_ALLOWED
 import psychlua.HScript as FunkinHScript;
 #end
 using StringTools;
@@ -66,15 +58,7 @@ class ModchartFile
     
     public function new(renderer:PlayfieldRenderer)
     {
-        #if PSYCH
-	    #if (PSYCHVERSION >= "0.7")
-           	data = loadFromJson(PlayState.SONG.song.toLowerCase(), Difficulty.getString().toLowerCase() == null ? Difficulty.defaultList[PlayState.storyDifficulty] : Difficulty.getString().toLowerCase());
-	    #elseif (PSYCHVERSION < "0.7")
-            	data = loadFromJson(PlayState.SONG.song.toLowerCase(), CoolUtil.difficultyString().toLowerCase() == null ? CoolUtil.difficulties[PlayState.storyDifficulty] : CoolUtil.difficultyString().toLowerCase());
-	    #end
-        #else 
-            data = loadFromJson(PlayState.SONG.song.toLowerCase(), PlayState.storyDifficultyStr);
-        #end
+        data = loadFromJson(PlayState.SONG.song.toLowerCase(), Difficulty.getString().toLowerCase() == null ? Difficulty.defaultList[PlayState.storyDifficulty] : Difficulty.getString().toLowerCase());
         this.renderer = renderer;
         renderer.modchart = this;
         loadPlayfields();
@@ -89,15 +73,14 @@ class ModchartFile
 
         var folderShit:String = "";
         
-        var moddyFile:String = Paths.json(#if PSYCH Paths.formatToSongPath(folder) #else PlayState.SONG.song #end + '/modchart-' + difficulty.toLowerCase());
-        var moddyFile2:String = Paths.json(#if PSYCH Paths.formatToSongPath(folder) #else PlayState.SONG.song #end + '/modchart');
+        var moddyFile:String = Paths.json(Paths.formatToSongPath(folder) + '/modchart-' + difficulty.toLowerCase());
+        var moddyFile2:String = Paths.json(Paths.formatToSongPath(folder) + '/modchart');
 
         #if MODS_ALLOWED
-        var moddyFileMods:String = Paths.modsJson(#if PSYCH Paths.formatToSongPath(folder) #else PlayState.SONG.song #end + '/modchart-' + difficulty.toLowerCase());
-        var moddyFileMods2:String = Paths.modsJson(#if PSYCH Paths.formatToSongPath(folder) #else PlayState.SONG.song #end + '/modchart');
+        var moddyFileMods:String = Paths.modsJson(Paths.formatToSongPath(folder) + '/modchart-' + difficulty.toLowerCase());
+        var moddyFileMods2:String = Paths.modsJson(Paths.formatToSongPath(folder) + '/modchart');
         #end
 
-        #if PSYCH
         try 
         {
 
@@ -199,7 +182,6 @@ class ModchartFile
         {
             trace(e);
         }
-        #end
         
         if (rawJson == null)
         {
@@ -209,25 +191,15 @@ class ModchartFile
                 if (hasDifficultyModchart)
                 {
 
-                    #if LEATHER
-                        filePath = Paths.json("song data/" + folder + '/modchart-' + difficulty.toLowerCase());
-                        folderShit = PolymodAssets.getPath(filePath.replace('modchart-' + difficulty.toLowerCase() + '.json', "customMods/"));
-                    #else 
-                        filePath = Paths.modsJson(folder + '/modchart-' + difficulty.toLowerCase());
-                        folderShit = filePath.replace('modchart-' + difficulty.toLowerCase() + '.json', "customMods/");
-                    #end
+                    filePath = Paths.modsJson(folder + '/modchart-' + difficulty.toLowerCase());
+                    folderShit = filePath.replace('modchart-' + difficulty.toLowerCase() + '.json', "customMods/");
 
                     trace('${difficulty} Modchart FolderShit Found In Mods! loading modchart-${difficulty.toLowerCase()}.json');
                 }
                 else
                 { 
-                    #if LEATHER
-                        filePath = Paths.json("song data/" + folder + '/modchart');
-                        folderShit = PolymodAssets.getPath(filePath.replace('modchart.json', "customMods/"));
-                    #else 
-                        filePath = Paths.modsJson(folder + '/modchart');
-                        folderShit = filePath.replace('modchart.json', "customMods/");
-                    #end
+                    filePath = Paths.modsJson(folder + '/modchart');
+                    folderShit = filePath.replace('modchart.json', "customMods/");
 
                     trace('${difficulty} Modchart Has No FolderShit Found In Mods! loading modchart.json');
                 }
@@ -236,25 +208,15 @@ class ModchartFile
 
                 if (hasDifficultyModchart)
                 {
-                    #if LEATHER
-                        filePath = Paths.json("song data/" + folder + '/modchart-' + difficulty.toLowerCase());
-                        folderShit = PolymodAssets.getPath(filePath.replace('modchart-' + difficulty.toLowerCase() + '.json', "customMods/"));
-                    #else 
-                        filePath = Paths.json(folder + '/modchart-' + difficulty.toLowerCase());
-                        folderShit = filePath.replace('modchart-' + difficulty.toLowerCase() + '.json', "customMods/");
-                    #end
+                    filePath = Paths.json(folder + '/modchart-' + difficulty.toLowerCase());
+                    folderShit = filePath.replace('modchart-' + difficulty.toLowerCase() + '.json', "customMods/");
 
                     trace('${difficulty} Modchart FolderShit Found! loading modchart-${difficulty.toLowerCase()}.json');
                 }
                 else
                 {
-                    #if LEATHER
-                        filePath = Paths.json("song data/" + folder + '/modchart');
-                        folderShit = PolymodAssets.getPath(filePath.replace('modchart.json', "customMods/"));
-                    #else 
-                        filePath = Paths.json(folder + '/modchart');
-                        folderShit = filePath.replace('modchart.json', "customMods/");
-                    #end
+                    filePath = Paths.json(folder + '/modchart');
+                    folderShit = filePath.replace('modchart.json', "customMods/");
 
                     trace('${difficulty} Modchart Has No FolderShit Found! loading modchart.json');
                 }
@@ -386,11 +348,11 @@ class ModchartFile
 class CustomModifierScript
 {
     public var interp:Interp = null;
-    var script:Expr;
-    var parser:Parser;
+    var script:hscript.Expr;
+    var parser:hscript.Parser;
     public function new(scriptStr:String)
     {
-        parser = new Parser();
+        parser = new hscript.Parser();
         parser.allowTypes = true;
         parser.allowMetadata = true;
         parser.allowJSON = true;
@@ -408,14 +370,11 @@ class CustomModifierScript
         }
         init();
     }
+
     private function init()
     {
         if (interp == null)
             return;
-
-        #if LEATHER
-        interp.variables.set('mod', Modifier); //the game crashes without this???????? what??????????? -- fue glow
-        #end
 
         interp.variables.set('Math', Math);
         interp.variables.set('PlayfieldRenderer', PlayfieldRenderer);
@@ -433,17 +392,15 @@ class CustomModifierScript
 		interp.variables.set('FlxTimer', flixel.util.FlxTimer);
 		interp.variables.set('FlxTween', flixel.tweens.FlxTween);
 		interp.variables.set('FlxEase', flixel.tweens.FlxEase);
-		interp.variables.set('PlayState', #if (PSYCH && PSYCHVERSION >= "0.7") states.PlayState #else PlayState #end);
-		interp.variables.set('game', #if (PSYCH && PSYCHVERSION >= "0.7") states.PlayState.instance #else PlayState.instance #end);
-		interp.variables.set('Paths', #if (PSYCH && PSYCHVERSION >= "0.7") backend.Paths #else Paths #end);
-		interp.variables.set('Conductor', #if (PSYCH && PSYCHVERSION >= "0.7") backend.Conductor #else Conductor #end);
+		interp.variables.set('PlayState', states.PlayState);
+		interp.variables.set('game', states.PlayState.instance);
+		interp.variables.set('Paths', backend.Paths);
+		interp.variables.set('Conductor', backend.Conductor);
         interp.variables.set('StringTools', StringTools);
-        interp.variables.set('Note', #if (PSYCH && PSYCHVERSION >= "0.7") objects.Note #else Note #end);
+        interp.variables.set('Note', objects.Note);
 
-        #if PSYCH
-        interp.variables.set('ClientPrefs', #if (PSYCHVERSION >= "0.7") backend.ClientPrefs #else ClientPrefs #end);
-        interp.variables.set('ColorSwap', #if (PSYCHVERSION >= "0.7") shaders.ColorSwap #else ColorSwap #end);
-        #end
+        interp.variables.set('ClientPrefs', backend.ClientPrefs);
+        interp.variables.set('ColorSwap', shaders.ColorSwap);
 
         
     }

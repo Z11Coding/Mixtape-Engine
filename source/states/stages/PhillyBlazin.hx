@@ -248,14 +248,14 @@ class PhillyBlazin extends BaseStage
 	// Note functions
 	var picoFight:PicoBlazinHandler = new PicoBlazinHandler();
 	var darnellFight:DarnellBlazinHandler = new DarnellBlazinHandler();
-	override function goodNoteHit(note:Note, field:PlayField)
+	override function goodNoteHit(note:Note)
 	{
 		//trace('hit note! ${note.noteType}');
 		rainTimeScale += 0.7;
 		picoFight.noteHit(note);
 		darnellFight.noteHit(note);
 	}
-	override function noteMiss(note:Note, field:PlayField)
+	override function noteMiss(note:Note)
 	{
 		//trace('missed note!');
 		picoFight.noteMiss(note);
@@ -270,7 +270,7 @@ class PhillyBlazin extends BaseStage
 	}
 
 	// Darnell Note functions
-	override function opponentNoteHit(note:Note, field:PlayField)
+	override function opponentNoteHit(note:Note)
 	{
 		//trace('opponent hit!');
 		picoFight.noteMiss(note);

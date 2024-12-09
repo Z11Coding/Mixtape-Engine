@@ -22,22 +22,9 @@ import managers.*;
 import flixel.system.FlxAssets.FlxShader;
 import modchart.managers.TweenManager;
 
-#if LEATHER
-import states.PlayState;
-import game.Note;
-import game.StrumNote;
-import game.Conductor;
-#elseif (PSYCH && PSYCHVERSION >= "0.7")
 import states.PlayState;
 import objects.Note;
 import objects.StrumNote;
-#else
-import PlayState;
-import Note;
-import StrumNote;
-#end
-
-using StringTools;
 
 //a few todos im gonna leave here:
 
@@ -47,12 +34,7 @@ using StringTools;
 //finish setting up tooltips in editor
 //start documenting more stuff idk
 
-typedef StrumNoteType = 
-#if (PSYCH || LEATHER) StrumNote
-#elseif KADE StaticArrow
-#elseif FOREVER_LEGACY UIStaticArrow
-#elseif ANDROMEDA Receptor
-#else FlxSprite #end;
+typedef StrumNoteType = StrumNote;
 
 class PlayfieldRenderer extends FlxSprite //extending flxsprite just so i can edit draw
 {
@@ -219,13 +201,8 @@ class PlayfieldRenderer extends FlxSprite //extending flxsprite just so i can ed
 
     private function getNoteCurPos(noteIndex:Int, strumTimeOffset:Float = 0)
     {
-        #if PSYCH
         if (notes.members[noteIndex].isSustainNote && ModchartUtil.getDownscroll(instance))
             strumTimeOffset -= Std.int(Conductor.stepCrochet/getCorrectScrollSpeed()); //psych does this to fix its sustains but that breaks the visuals so basically reverse it back to normal
-        #else 
-        if (notes.members[noteIndex].isSustainNote && !ModchartUtil.getDownscroll(instance))
-            strumTimeOffset += Conductor.stepCrochet; //fix upscroll lol
-        #end
         var distance = (Conductor.songPosition - notes.members[noteIndex].strumTime) + strumTimeOffset;
         return distance*getCorrectScrollSpeed();
     }
@@ -262,15 +239,6 @@ class PlayfieldRenderer extends FlxSprite //extending flxsprite just so i can ed
                 noteDist = modifierTable.applyNoteDistMods(noteDist, lane, pf);
 
                 var sustainTimeThingy:Float = 0;
-
-                //just causes too many issues lol, might fix it at some point
-                /*if (notes.members[i].animation.curAnim.name.endsWith('end') && ClientPrefs.downScroll)
-                {
-                    if (noteDist > 0)
-                        sustainTimeThingy = (NoteMovement.getFakeCrochet()/4)/2; //fix stretched sustain ends (downscroll)
-                    //else 
-                        //sustainTimeThingy = (-NoteMovement.getFakeCrochet()/4)/songSpeed;
-                }*/
                     
                 var curPos = getNoteCurPos(i, sustainTimeThingy);
                 curPos = modifierTable.applyCurPosMods(lane, curPos, pf);
@@ -385,13 +353,8 @@ class PlayfieldRenderer extends FlxSprite //extending flxsprite just so i can ed
             timeToNextSustain *= -1; //weird shit that fixes upscroll lol
             // timeToNextSustain = -ModchartUtil.getFakeCrochet()/4; //weird shit that fixes upscroll lol
 
-        #if (PSYCH && !(PSYCHVERSION >= "0.7"))
-        var nextHalfNotePos = getSustainPoint(noteData, timeToNextSustain*0.5);
-        var nextNotePos = getSustainPoint(noteData, timeToNextSustain);
-        #else
         var nextHalfNotePos = ModchartUtil.getDownscroll(instance) ? getSustainPoint(noteData, timeToNextSustain*0.458) : getSustainPoint(noteData, timeToNextSustain*0.548);
         var nextNotePos = ModchartUtil.getDownscroll(instance) ? getSustainPoint(noteData, timeToNextSustain+2.2) : getSustainPoint(noteData, timeToNextSustain-2.2);
-        #end
 
         var flipGraphic = false;
 
@@ -426,7 +389,7 @@ class PlayfieldRenderer extends FlxSprite //extending flxsprite just so i can ed
             else if (!notes.members[noteData.index].isSustainNote) //draw regular note
                 drawNote(noteData);
             else{ //draw sustain
-                #if LEATHER /*disable the funny sustains options for low-end pc lol*/if(utilities.Options.getData("optimizedModcharts")) drawNote(noteData) else #end drawSustainNote(noteData);
+              drawSustainNote(noteData);
             }
 
         }
@@ -491,29 +454,27 @@ class PlayfieldRenderer extends FlxSprite //extending flxsprite just so i can ed
     }
     
     public function createBezierPathTween(Object:Dynamic, Values:Dynamic, Duration:Float, ?Options:TweenOptions):FlxTween
-        {
-            var tween:FlxTween = tweenManager.bezierPathTween(Object, Values, Duration, Options);
-            tween.manager = tweenManager;
-            return tween;
-        }
+    {
+        var tween:FlxTween = tweenManager.bezierPathTween(Object, Values, Duration, Options);
+        tween.manager = tweenManager;
+        return tween;
+    }
     
     public function createBezierPathNumTween(Points:Array<Float>, Duration:Float, ?Options:TweenOptions, ?TweenFunction:Float->Void):FlxTween
-        {
-            var tween:FlxTween = tweenManager.bezierPathNumTween(Points, Duration, Options,TweenFunction);
-            tween.manager = tweenManager;
-            return tween;
-        }
+    {
+        var tween:FlxTween = tweenManager.bezierPathNumTween(Points, Duration, Options,TweenFunction);
+        tween.manager = tweenManager;
+        return tween;
+    }
 
     override public function destroy()
     {
         if (modchart != null)
         {
-            #if hscript
             for (customMod in modchart.customModifiers)
             {
                 customMod.destroy(); //make sure the interps are dead
             }
-            #end
         }
         super.destroy();
     }

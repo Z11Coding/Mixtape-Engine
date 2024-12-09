@@ -4,23 +4,12 @@ import modchart.modcharting.ModchartFile.CustomModifierScript;
 import flixel.tweens.FlxEase;
 import flixel.math.FlxMath;
 import flixel.FlxG;
-#if LEATHER
-import states.PlayState;
-import game.Note;
-import game.StrumNote;
-import game.Conductor;
-import utilities.CoolUtil;
-#elseif (PSYCH && PSYCHVERSION >= "0.7")
 import states.PlayState;
 import objects.Note;
-#else
-import PlayState;
-import Note;
-#end
 import lime.math.Vector4;
 import haxe.ds.List;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import Paths;
+import backend.Paths;
 
 enum ModifierType
 {
@@ -2686,12 +2675,10 @@ class ArrowPath extends Modifier
 	public function loadPath()
 	{
 		var file = null;
-		file = CoolUtil.coolTextFile(Paths #if PSYCH .modFolders #else .txt #end
-			(#if PSYCH "data/" + #end PlayState.SONG.song.toLowerCase() + "/customMods/path" #if PSYCH + ".txt" #end));
+		file = CoolUtil.coolTextFile(Paths.modFolders("data/" + PlayState.SONG.song.toLowerCase() + "/customMods/path" + ".txt"));
 		@:privateAccess
 		var file2 = null;
-		file2 = CoolUtil.coolTextFile(#if (PSYCH && PSYCHVERSION >= "0.7.3") Paths.getSharedPath #else Paths.getPreloadPath #end
-			("data/" + PlayState.SONG.song.toLowerCase() + "/customMods/path.txt"));
+		file2 = CoolUtil.coolTextFile(Paths.getSharedPath("data/" + PlayState.SONG.song.toLowerCase() + "/customMods/path.txt"));
 
 		var filePath = null;
 		if (file != null)

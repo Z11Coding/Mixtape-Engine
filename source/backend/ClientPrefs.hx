@@ -52,6 +52,7 @@ import states.FirstCheckState;
 	public var videoPreload2:Bool = false;
 	public var enableArtemis:Bool = false;
 	public var mixupMode:Bool = false;
+	public var splashSkin:String = 'Psych';
 	public var aiDifficulty:String = 'Average FNF Player';
 	public var arrowHSV:Array<Array<Int>> = [
 		[0, 0, 0], [0, 0, 0], 
@@ -117,6 +118,7 @@ import states.FirstCheckState;
 	public var uiSkin:String = 'Mixtape Engine';
 	public var noteSkin:String = 'Default';
 	public var pauseBPM:Int = 105;
+	public var splashAlpha:Float = 0.6;
 	public var antimash:Bool = true;
 	public var convertEK:Bool = true;
 	public var showKeybindsOnStart:Bool = true;
@@ -396,6 +398,7 @@ class ClientPrefs {
 		
 		'debug_1'		=> [SEVEN, NONE],
 		'debug_2'		=> [EIGHT, NONE],
+		'debug_3'		=> [NINE, NONE],
 
 		'fullscreen'	=> [F11, NONE]
 	];

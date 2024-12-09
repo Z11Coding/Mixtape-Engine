@@ -649,12 +649,20 @@ class ChartingStateOG extends MusicBeatChartingState
 		strumLineNotes = new FlxTypedGroup<StrumNote>();
 		for (i in 0...(Note.ammo[_song.mania] * 2))
 		{
-			var note:StrumNote = new StrumNote(GRID_SIZE * (i + 1), strumLine.y, i % Note.ammo[_song.mania]);
-			note.setGraphicSize(GRID_SIZE, GRID_SIZE);
-			note.updateHitbox();
-			note.playAnim('static', true);
-			strumLineNotes.add(note);
+			var note:StrumNote = new StrumNote(GRID_SIZE * (i + 1), strumLine.y, i % Note.ammo[_song.mania], 0);
 			note.scrollFactor.set(1, 1);
+			note.playAnim('static');
+			note.alpha = 0.4;
+			note.updateHitbox();
+			if(note.width > note.height)
+				note.setGraphicSize(GRID_SIZE);
+			else
+				note.setGraphicSize(0, GRID_SIZE);
+	
+			note.updateHitbox();
+			note.x += GRID_SIZE/2 - note.width/2;
+			note.y += GRID_SIZE/2 - note.height/2;
+			strumLineNotes.add(note);
 		}
 		add(strumLineNotes);
 
@@ -2530,7 +2538,7 @@ class ChartingStateOG extends MusicBeatChartingState
 				playtesting = true;
 				playtestingTime = Conductor.songPosition;
 				playtestingOnComplete = FlxG.sound.music.onComplete;
-				openSubState(new states.editors.EditorPlayState(playbackSpeed));
+				openSubState(new states.editors.EditorPlayState(playtestingTime));
 			}
 			else if (FlxG.keys.justPressed.ENTER)
 			{
@@ -3163,12 +3171,20 @@ class ChartingStateOG extends MusicBeatChartingState
 			strumLineNotes.clear();
 			for (i in 0...(Note.ammo[_song.mania] * 2))
 			{
-				var note:StrumNote = new StrumNote(GRID_SIZE * (i + 1), strumLine.y, i % Note.ammo[_song.mania]);
-				note.setGraphicSize(GRID_SIZE, GRID_SIZE);
-				note.updateHitbox();
-				note.playAnim('static', true);
-				strumLineNotes.add(note);
+				var note:StrumNote = new StrumNote(GRID_SIZE * (i + 1), strumLine.y, i % Note.ammo[_song.mania], 0);
 				note.scrollFactor.set(1, 1);
+				note.playAnim('static');
+				note.alpha = 0.4;
+				note.updateHitbox();
+				if(note.width > note.height)
+					note.setGraphicSize(GRID_SIZE);
+				else
+					note.setGraphicSize(0, GRID_SIZE);
+		
+				note.updateHitbox();
+				note.x += GRID_SIZE/2 - note.width/2;
+				note.y += GRID_SIZE/2 - note.height/2;
+				strumLineNotes.add(note);
 			}
 		}
 

@@ -1,18 +1,7 @@
 package modchart.modcharting;
 
-#if LEATHER
-import states.PlayState;
-import game.Note;
-#elseif (PSYCH && PSYCHVERSION >= "0.7")
 import states.PlayState;
 import objects.Note;
-#else
-import PlayState;
-import Note;
-#end
-
-using StringTools;
-
 class NoteMovement
 {
     public static var keyCount = 4;
@@ -26,9 +15,6 @@ class NoteMovement
     public static var defaultSkewY:Array<Float> = [];
     public static var defaultScale:Array<Float> = [];
     public static var arrowSizes:Array<Float> = [];
-    #if LEATHER
-    public static var leatherEngineOffsetStuff:Map<String, Float> = [];
-    #end
 
     public static function getDefaultStrumPos(game:PlayState)
     {
@@ -38,38 +24,27 @@ class NoteMovement
         defaultSkewY = []; 
         defaultScale = [];
         arrowSizes = [];
-        keyCount = #if (LEATHER || KADE) PlayState.strumLineNotes.length-PlayState.playerStrums.length #else game.strumLineNotes.length-game.playerStrums.length #end; //base game doesnt have opponent strums as group
-        playerKeyCount = #if (LEATHER || KADE) PlayState.playerStrums.length #else game.playerStrums.length #end;
+        keyCount = game.strumLineNotes.length-game.playerStrums.length; //base game doesnt have opponent strums as group
+        playerKeyCount = game.playerStrums.length;
 
-        for (i in #if (LEATHER || KADE) 0...PlayState.strumLineNotes.members.length #else 0...game.strumLineNotes.members.length #end)
+        for (i in 0...game.strumLineNotes.members.length)
         {
-            #if (LEATHER || KADE) 
-            var strum = PlayState.strumLineNotes.members[i];
-            #else 
             var strum = game.strumLineNotes.members[i];
-            #end
             defaultSkewX.push(strum.skew.x);
             defaultSkewY.push(strum.skew.y);
             defaultStrumX.push(strum.x);
             defaultStrumY.push(strum.y);
-            #if LEATHER
-            var localKeyCount = (i < keyCount ? keyCount : playerKeyCount);
-            var s = Std.parseFloat(game.ui_settings[0]) * (Std.parseFloat(game.ui_settings[2]) - (Std.parseFloat(game.mania_size[localKeyCount-1])));
-            #else
             var s = 0.7;
-            #end
 
             defaultScale.push(s);
             arrowSizes.push(160*s);
         }
-        #if LEATHER
-        leatherEngineOffsetStuff.clear();
-        #end
         totalKeyCount = keyCount + playerKeyCount;
     }
+
     public static function getDefaultStrumPosEditor(game:modchart.modcharting.ModchartEditorState)
     {
-        #if ((PSYCH || LEATHER) && !DISABLE_MODCHART_EDITOR)
+        #if (!DISABLE_MODCHART_EDITOR)
         defaultStrumX = []; //reset
         defaultStrumY = []; 
         defaultSkewX = [];
@@ -87,21 +62,13 @@ class NoteMovement
             defaultSkewY.push(strum.skew.y);
             defaultStrumX.push(strum.x);
             defaultStrumY.push(strum.y);
-            #if LEATHER
-            var localKeyCount = (i < keyCount ? keyCount : playerKeyCount);
-            var s = Std.parseFloat(game.ui_settings[0]) * (Std.parseFloat(game.ui_settings[2]) - (Std.parseFloat(game.mania_size[localKeyCount-1])));
-            #else
             var s = 0.7;
-            #end
-
             defaultScale.push(s);
             arrowSizes.push(160*s);
         }
         #end
-        #if LEATHER
-        leatherEngineOffsetStuff.clear();
-        #end
     }
+
     public static function setNotePath(daNote:Note, lane:Int, scrollSpeed:Float, curPos:Float, noteDist:Float, incomingAngleX:Float, incomingAngleY:Float)
     {
         daNote.x = defaultStrumX[lane];
@@ -135,6 +102,4 @@ class NoteMovement
 
         return col;
     }
-
-
 }

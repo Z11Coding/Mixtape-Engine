@@ -136,6 +136,8 @@
 	<haxelib name="flixel-ui" />
 	<haxelib name="flixel-addons" version="3.2.2"/>
 	<haxelib name="tjson" version="1.4.0"/>
+	<haxelib name="hscript" />
+	<define name="hscriptPos" />
 
 	<!--Base Game Stuff-->
 	<haxelib name="grig.audio"/>

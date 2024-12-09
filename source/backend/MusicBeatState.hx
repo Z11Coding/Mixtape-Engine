@@ -2,13 +2,13 @@ package backend;
 
 import backend.window.CppAPI;
 import flixel.addons.transition.FlxTransitionableState;
-import flixel.FlxState;
 import backend.PsychCamera;
 import substates.StickerSubState;
 import backend.Song;
 import flixel.tweens.FlxTween;
+import flixel.FlxState;
 
-class MusicBeatState extends FlxState
+class MusicBeatState extends modchart.modcharting.ModchartMusicBeatState
 {
 	private var curSection:Int = 0;
 	private var stepsToDo:Int = 0;

@@ -634,7 +634,7 @@ class NotesSubState extends MusicBeatSubstate
 			Note.initializeGlobalRGBShader(i);
 			//have to do this cuz strumNote's a lil BABY and cant handle these not being set for some reason
 			PlayState.mania = 8;
-			var newNote:StrumNote = new StrumNote(20 + (680 / dataArray.length * i), 200, i, null);
+			var newNote:StrumNote = new StrumNote(20 + (680 / dataArray.length * i), 200, i, 0);
 			newNote.useRGBShader = true;
 			newNote.setGraphicSize(80);
 			newNote.updateHitbox();

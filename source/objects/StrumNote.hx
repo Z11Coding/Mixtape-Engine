@@ -14,11 +14,7 @@ class StrumNote extends FlxSkewedSprite
 
 	public var rgbShader:RGBShaderReference;
 	public var vec3Cache:Vector3 = new Vector3(); // for vector3 operations in modchart code
-	override function destroy()
-	{
-		defScale.put();
-		super.destroy();
-	}	
+	private var noteData:Int = 0;	
 	public var isQuant:Bool = false;
 	private var colorSwap:ColorSwap;
 	public var resetAnim:Float = 0;
@@ -77,22 +73,8 @@ class StrumNote extends FlxSkewedSprite
 		return value;
 	}
 
-	public function getZIndex(?daZ:Float)
-	{
-		if(daZ==null)daZ = z;
-		var animZOffset:Float = 0;
-		if (animation.curAnim != null && animation.curAnim.name == 'confirm')
-			animZOffset += 1;
-		return z + desiredZIndex + animZOffset;
-	}
-
-	function updateZIndex()
-	{
-		zIndex = getZIndex();
-	}
-	
 	public var useRGBShader:Bool = true;
-	public function new(x:Float, y:Float, leData:Int) {
+	public function new(x:Float, y:Float, leData:Int, player:Int) {
 		FlxG.plugins.add(new FlxMouseControl());
 		animation = new PsychAnimationController(this);
 		
@@ -115,7 +97,7 @@ class StrumNote extends FlxSkewedSprite
 		}
 		else useRGBShader = false;
 		super(x, y);
-		objType = STRUM;
+		this.player = player;
 		noteData = leData;
 		this.noteData = leData;
 		this.ID = noteData;
@@ -129,6 +111,7 @@ class StrumNote extends FlxSkewedSprite
 
 		texture = skin; //Load texture and anims
 		scrollFactor.set();
+		playAnim('static');
 	}
 
 	public function reloadNote()
@@ -176,7 +159,6 @@ class StrumNote extends FlxSkewedSprite
 			animation.addByPrefix('pressed', animationArray[1] + ' press', 24, false);
 			animation.addByPrefix('confirm', animationArray[1] + ' confirm', 24, false);
 		}
-		defScale.copyFrom(scale);
 		updateHitbox();
 
 		if(lastAnim != null)
@@ -192,6 +174,7 @@ class StrumNote extends FlxSkewedSprite
 		x += ((FlxG.width* 0.5) * player);
 		ID = noteData;
 	} */
+
 	public function playerPosition()
 	{
 		playAnim('static');
@@ -205,7 +188,7 @@ class StrumNote extends FlxSkewedSprite
 		x += Note.xtra[PlayState.mania];
 	
 		x += 50;
-		x += ((FlxG.width / 2) * 1);
+		x += ((FlxG.width / 2) * player);
 		x -= Note.posRest[PlayState.mania];
 	}
 
@@ -222,7 +205,6 @@ class StrumNote extends FlxSkewedSprite
 				centerOrigin();
 			
 		}
-		updateZIndex();
 
 		super.update(elapsed);
 	}
@@ -233,7 +215,6 @@ class StrumNote extends FlxSkewedSprite
 		{
 			centerOrigin();
 			centerOffsets();
-			updateZIndex();
 		}
 		if(useRGBShader) rgbShader.enabled = (animation.curAnim != null && animation.curAnim.name != 'static');
 	}

@@ -42,6 +42,7 @@ typedef SwagSong =
 	@:optional var gameOverEnd:String;
 
 	@:optional var disableNoteRGB:Bool;
+	@:optional var blockOpponentMode:Bool;
 
 	@:optional var arrowSkin:String;
 	@:optional var splashSkin:String;
@@ -59,6 +60,7 @@ class Song
 	public var arrowSkin:String;
 	public var splashSkin:String;
 	public var disableNoteRGB:Bool = false;
+	public var blockOpponentMode:Bool = false;
 	public var speed:Float = 1;
 	public var stage:String;
 	public var player1:String = 'bf';

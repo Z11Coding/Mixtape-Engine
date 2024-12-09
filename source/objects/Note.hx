@@ -3,6 +3,7 @@ package objects;
 import states.editors.ChartingStateOG;
 
 import backend.animation.PsychAnimationController;
+import flixel.math.FlxRect;
 
 import shaders.ColorSwap;
 import flixel.addons.effects.FlxSkewedSprite;
@@ -23,6 +24,15 @@ typedef EventNote = {
 	event:String,
 	value1:String,
 	value2:String
+}
+
+typedef NoteSplashData = {
+	disabled:Bool,
+	texture:String,
+	useGlobalShader:Bool, //breaks r/g/b but makes it copy default colors for your custom note
+	useRGBShader:Bool,
+	antialiasing:Bool,
+	a:Float
 }
 
 typedef PreloadedChartNote = {
@@ -280,14 +290,12 @@ class Note extends FlxSkewedSprite
 	
 	// basic stuff
 	public var beat:Float = 0;
-	public var strumTime(default, set):Float = 0;
-    function set_strumTime(val:Float){
-        return strumTime=val;
-    }
+	public var strumTime:Float = 0;
+	public var noteData:Int = 0;
 	public var visualTime:Float = 0;
 	public var mustPress:Bool = false;
+	public var canBeHit:Bool = false;
 	@:isVar
-	public var canBeHit(get, null):Bool = false;
 	public var tooLate:Bool = false;
 	public var wasGoodHit:Bool = false;
 	public var missed:Bool = false;
@@ -297,7 +305,6 @@ class Note extends FlxSkewedSprite
 	public var prevNote:Note;
 	public var nextNote:Note;
 	public var spawned:Bool = false;
-	function get_canBeHit()return true;
 	
 	
 	//note type/customizable shit
@@ -306,6 +313,7 @@ class Note extends FlxSkewedSprite
 	public var causedMiss:Bool = false;
 	public var usesDefaultColours:Bool = true; // whether this note uses the default note colours (lets you change colours in options menu)
 
+	public var lateHitMult:Float = 1;
 	public var blockHit:Bool = false; // whether you can hit this note or not
 	public var lowPriority:Bool = false; // shadowmario's shitty workaround for really bad mine placement, yet still no *real* hitbox customization lol!
 	public var noteSplashDisabled:Bool = false; // disables the notesplash when you hit this note
@@ -343,8 +351,7 @@ class Note extends FlxSkewedSprite
 	// etc
 	public var inEditor:Bool = false;	
 
-	public static var swagWidth:Float = 160 * 0.6;
-	public static var swagWidthAlt:Float = 160; //For ModManager
+	public static var swagWidth:Float = 160 * 0.7;
 	public static var colArray:Array<String> = ['purple', 'blue', 'green', 'red'];
 	public static var colArrayAlt:Array<String> = ['purple', 'blue', 'green', 'red', 'white', 'yellow', 'violet', 'black', 'dark'];
 
@@ -356,6 +363,9 @@ class Note extends FlxSkewedSprite
 	public var tripProgress:Float = 0;
 	public var isHeld:Bool = false;
 	public var multAlpha:Float = 1;
+	public var offsetX:Float = 0;
+	public var offsetY:Float = 0;
+	public var offsetAngle:Float = 0;
 	/** The maximum amount of time you can release a hold before it counts as a miss**/
 	public var maxReleaseTime:Float = 0.25;
 
@@ -409,6 +419,15 @@ class Note extends FlxSkewedSprite
 	public static var globalRgbShaders:Array<RGBPalette> = [];
 	public static var SUSTAIN_SIZE:Int = 44;
 	public static var defaultNoteSkin(default, never):String = 'normalNOTE';
+
+	public var noteSplashData:NoteSplashData = {
+		disabled: false,
+		texture: null,
+		antialiasing: !PlayState.isPixelStage,
+		useGlobalShader: false,
+		useRGBShader: (PlayState.SONG != null) ? !(PlayState.SONG.disableNoteRGB == true) : true,
+		a: ClientPrefs.data.splashAlpha
+	};
 
 	//AI Stuff
 	public var AIStrumTime:Float = 0;
@@ -478,8 +497,10 @@ class Note extends FlxSkewedSprite
 	}
 
 	private function set_noteType(value:String):String {
+		noteSplashData.texture = PlayState.SONG != null ? PlayState.SONG.splashSkin : 'noteSplashes';
 		noteSplashTexture = PlayState.SONG != null ? PlayState.SONG.splashSkin : 'noteSplashes';
-		//defaultRGB();
+		defaultRGB();
+		
 		if(noteData > -1 && noteType != value) {
 			switch(value) {
 				case 'Hurt Note':
@@ -492,6 +513,9 @@ class Note extends FlxSkewedSprite
 					} else {
 						missHealth = 0.3;
 					}
+					hitCausesMiss = true;
+					noteSplashData.texture = 'noteSplashes-electric';
+					lowPriority = true;
 					hitCausesMiss = true;
 
 				case 'No Animation':
@@ -521,8 +545,6 @@ class Note extends FlxSkewedSprite
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inEditor:Bool = false, ?createdFrom:Dynamic = null)
 	{
 		super();
-		objType = NOTE;
-
 		animation = new PsychAnimationController(this);
 
 		mania = PlayState.mania;
@@ -543,7 +565,6 @@ class Note extends FlxSkewedSprite
 		y -= 2000;
 		this.strumTime = strumTime;
 		if(!inEditor) this.strumTime += ClientPrefs.data.noteOffset;
-		if(!inEditor) visualTime = createdFrom.getNoteInitialTime(this.strumTime);
 
 		if (isSustainNote && prevNote != null) {
 			parentNote = prevNote;
@@ -561,8 +582,8 @@ class Note extends FlxSkewedSprite
 			texture = '';
 			if (mania <= 8) 
 			{
-				//rgbShader = new RGBShaderReference(this, initializeGlobalRGBShader(noteData));
-				if (noteType == '' || noteType == null) reloadNote('normal');
+				rgbShader = new RGBShaderReference(this, initializeGlobalRGBShader(noteData));
+				if (noteType == '' || noteType == null) reloadNote('NOTE');
 			}
 			else
 			{
@@ -611,7 +632,6 @@ class Note extends FlxSkewedSprite
 					prevNote.scale.y *= (6 / height); //Auto adjust note size
 				}
 				prevNote.updateHitbox();
-				prevNote.defScale.copyFrom(prevNote.scale);
 				// prevNote.setGraphicSize();
 			}
 
@@ -625,7 +645,6 @@ class Note extends FlxSkewedSprite
 		{
 			earlyHitMult = 1;
 		}
-		defScale.copyFrom(scale);
 		//x += offsetX;
 	}
 
@@ -721,7 +740,6 @@ class Note extends FlxSkewedSprite
 				scale.y *= 0.75;
 			}
 		}
-		defScale.copyFrom(scale);
 		updateHitbox();
 
 		if(animName != null)
@@ -849,11 +867,24 @@ class Note extends FlxSkewedSprite
 
 		mania = PlayState.mania;
 
-		if (hitByOpponent)
-				wasGoodHit = true;
-			var diff = (strumTime - Conductor.songPosition);
-			if (diff < -Conductor.safeZoneOffset && !wasGoodHit)
+		if (mustPress)
+		{
+			canBeHit = (strumTime > Conductor.songPosition - (Conductor.safeZoneOffset * lateHitMult) &&
+						strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * earlyHitMult));
+
+			if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit)
 				tooLate = true;
+		}
+		else
+		{
+			canBeHit = false;
+
+			if (!wasGoodHit && strumTime <= Conductor.songPosition)
+			{
+				if(!isSustainNote || (prevNote.wasGoodHit && !ignoreNote))
+					wasGoodHit = true;
+			}
+		}
 
 		if (isSustainNote && !susActive)
 			multAlpha = 0.2;
@@ -863,5 +894,87 @@ class Note extends FlxSkewedSprite
 			if (alpha > 0.3)
 				alpha = 0.3;
 		}
+	}
+
+	override public function destroy()
+	{
+		super.destroy();
+		_lastValidChecked = '';
+	}
+
+	public function followStrumNote(myStrum:StrumNote, fakeCrochet:Float, songSpeed:Float = 1)
+	{
+		var strumX:Float = myStrum.x;
+		var strumY:Float = myStrum.y;
+		var strumAngle:Float = myStrum.angle;
+		var strumAlpha:Float = myStrum.alpha;
+		var strumDirection:Float = myStrum.direction;
+
+		distance = (0.45 * (Conductor.songPosition - strumTime) * songSpeed * multSpeed);
+		if (!myStrum.downScroll) distance *= -1;
+
+		var angleDir = strumDirection * Math.PI / 180;
+		if (copyAngle)
+			angle = strumDirection - 90 + strumAngle + offsetAngle;
+
+		if(copyAlpha)
+			alpha = strumAlpha * multAlpha;
+
+		if(copyX)
+			if (isSustainNote) 
+				x = strumX + offsetX + 37 + Math.cos(angleDir) * distance;
+			else
+				x = strumX + offsetX + Math.cos(angleDir) * distance;
+
+		if(copyY)
+		{
+			y = strumY + offsetY + correctionOffset + Math.sin(angleDir) * distance;
+			if(myStrum.downScroll && isSustainNote)
+			{
+				if(PlayState.isPixelStage)
+				{
+					y -= PlayState.daPixelZoom * 9.5;
+				}
+				y -= (frameHeight * scale.y) - (Note.swagWidth / 2);
+			}
+		}
+	}
+
+	public function clipToStrumNote(myStrum:StrumNote)
+	{
+		var center:Float = myStrum.y + offsetY + Note.swagWidth / 2;
+		if((mustPress || !ignoreNote) && (wasGoodHit || (prevNote.wasGoodHit && !canBeHit)))
+		{
+			var swagRect:FlxRect = clipRect;
+			if(swagRect == null) swagRect = new FlxRect(0, 0, frameWidth, frameHeight);
+
+			if (myStrum.downScroll)
+			{
+				if(y - offset.y * scale.y + height >= center)
+				{
+					swagRect.width = frameWidth;
+					swagRect.height = (center - y) / scale.y;
+					swagRect.y = frameHeight - swagRect.height;
+				}
+			}
+			else if (y + offset.y * scale.y <= center)
+			{
+				swagRect.y = (center - y) / scale.y;
+				swagRect.width = width / scale.x;
+				swagRect.height = (height / scale.y) - swagRect.y;
+			}
+			clipRect = swagRect;
+		}
+	}
+
+	@:noCompletion
+	override function set_clipRect(rect:FlxRect):FlxRect
+	{
+		clipRect = rect;
+
+		if (frames != null)
+			frame = frames.frames[animation.frameIndex];
+
+		return rect;
 	}
 }
