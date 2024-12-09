@@ -8,7 +8,7 @@ import haxe.ds.Vector;
 import flixel.group.FlxGroup;
 import flixel.group.FlxTypedGroup;
 
-abstract Container<T>(Dynamic) {
+abstract Container<T>(Dynamic) from Dynamic {
     public function new() {
         this = [];
     }

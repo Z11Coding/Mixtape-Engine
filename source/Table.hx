@@ -4,7 +4,7 @@ class DTable<T>
 	private var rows:Int;
 	private var cols:Int;
 
-	public function new(rows:Int, cols:Int)
+	public inline function new(rows:Int, cols:Int)
 	{
 		this.rows = rows;
 		this.cols = cols;
@@ -58,15 +58,43 @@ class DTable<T>
 		return column;
 	}
 
-	public function toString():String
-	{
-		var result = "";
-		for (row in table)
-		{
-			result += row.join(", ") + "\n";
-		}
-		return result;
-	}
+    private function formatCell(value:T):String
+    {
+        var str = Std.string(value);
+        if (str.length > 5) {
+            str = str.substr(0, 2) + "..." + str.substr(str.length - 1, 1);
+        }
+        return StringTools.lpad(str, " ", 5);
+    }
+
+    public function toString():String
+    {
+        var result = "";
+        result = "[" + "Rows: " + rows + ", Cols: " + cols + "]" + "\n";
+        for (row in table)
+        {
+            for (cell in row)
+            {
+                result += formatCell(cell) + " ";
+            }
+            result = result.substr(0, result.length - 1) + "\n";
+        }
+        return result.replace("null", "-");
+    }
+
+	// public function toString():String
+	// {
+	// 	var result = "";
+
+    //     result = "["+ "Rows: " + rows + ", Cols: " + cols + "]"+ "\n";
+	// 	for (row in table)
+	// 	{
+	// 		result += row.join(", ") + "\n";
+	// 	}
+
+    //     // result.replace("null", "-");
+	// 	return result.replace("null", "-");
+	// }
 
 	public function fromString(str:String):Void
 	{
@@ -170,7 +198,7 @@ class HTable<T>
 	private var rows:Int;
 	private var cols:Int;
 
-	public function new(rows:Int, cols:Int)
+	public inline function new(rows:Int, cols:Int)
 	{
 		this.rows = rows;
 		this.cols = cols;
@@ -242,6 +270,15 @@ class HTable<T>
 	public function toString():String
 	{
 		var result = "";
+            
+            result = "["+ "Rows: " + rows + ", Cols: " + cols + "]"+ "\n";
+            result += "Type: " + Type.getClassName(Type.getClass(table[0][0].getValue())) + "\n";
+            result += "Raw Info: " + table[0][0].rawInfo + "\n";
+            result += "Byte Data: " + table[0][0].byteData + "\n";
+            result += "Address Info: " + table[0][0].addressInfo + "\n";
+            result += "Internal Vars: " + Std.string(table[0][0].internalVars) + "\n";
+            result += "[" + "\n";
+
 		for (row in table)
 		{
 			for (cell in row)
@@ -250,7 +287,10 @@ class HTable<T>
 			}
 			result = result.substr(0, result.length - 2) + "\n";
 		}
-		return result;
+
+        // result = result.substr(0, result.length - 1);
+
+		return result.replace("null", "-");
 	}
 
 	public function fromString(str:String):Void

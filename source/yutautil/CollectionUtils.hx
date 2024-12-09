@@ -1,11 +1,156 @@
 package yutautil;
 
 // import haxe.Random;
+import cpp.abi.Abi;
 import haxe.Constraints.IMap;
 import haxe.ds.StringMap;
 
 // @:inline
 class CollectionUtils {
+
+    public static inline function isIterable<T>(input:Dynamic):Bool {
+        return Std.is(input, Array) || Std.is(input, IMap) || (Reflect.hasField(input, "iterator") || (Reflect.hasField(input, "hasNext") && Reflect.hasField(input, "next")));
+    }
+
+    private static function list<T>(l:List<T>):List<T> {
+        return l;
+    }
+
+    public static extern overload inline function addAndReturn<T>(l:List<T>, item:T):List<T> {
+        l.add(item);
+        return l;
+    }
+
+    public static extern overload inline function addAndReturn<K, V>(m:Map<K, V>, key:K, value:V):Map<K, V> {
+        m.set(key, value);
+        return m;
+    }
+
+    public static extern overload inline function addAndReturn<T>(a:Array<T>, item:T):Array<T> {
+        a.push(item);
+        return a;
+    }
+
+    public static inline function funcAndReturn<T>(func:T -> Void, item:T):T {
+        func(item);
+        return item;
+    }
+
+
+
+    public static inline function toList<T>(input:Dynamic):List<Any>
+    {
+        if (Std.is(input, Array)) {
+        var list = new List<T>();
+    for (item in (input: Array<T>)) {
+        list.add(item);
+    }
+    return list;
+        } else if (Std.is(input, IMap)) {
+            var list = new List<Any>();
+            for (key in (input: Map<Dynamic, T>).keys()) {
+                list.add({key: key, value: input.get(key)});
+            }
+            return list;
+        } else if (Reflect.hasField(input, "iterator") || (Reflect.hasField(input, "hasNext") && Reflect.hasField(input, "next"))) {
+            var list = new List<T>();
+            for (item in (input: Iterable<T>)) {
+                list.add(item);
+            }
+            return list;
+        } else {
+            return new List<T>().addAndReturn(input);
+        }
+    }
+
+    public static inline function toArray<T>(input:Dynamic):Array<Any>
+    {
+        if (Std.is(input, Array)) {
+            return input;
+        } else if (Std.is(input, IMap)) {
+            var result = [];
+            for (key in (input: Map<Dynamic, T>).keys()) {
+                result.push({key: key, value: input.get(key)});
+            }
+            return result;
+        } else if (Reflect.hasField(input, "iterator") || (Reflect.hasField(input, "hasNext") && Reflect.hasField(input, "next"))) {
+            var result = [];
+            for (item in (input: Iterable<T>)) {
+                result.push(item);
+            }
+            return result;
+        } else {
+            return [input];
+        }
+    }
+
+    public static inline function listIndexOf<T>(list:List<T>, item:T):Int {
+        var index = 0;
+        for (current in list) {
+            if (current == item) {
+                return index;
+            }
+            index++;
+        }
+        return -1;
+    }
+
+    public static inline function listIndex<T>(list:List<T>, index:Int):T {
+        var i = 0;
+        for (item in list) {
+            if (i == index) {
+                return item;
+            }
+            i++;
+        }
+        return null;
+    }
+
+    public static inline function mapIndexOf<T>(map:Map<Dynamic, T>, item:T):Dynamic {
+        for (key in map.keys()) {
+            if (map.get(key) == item) {
+                return key;
+            }
+        }
+        return null;
+    }
+
+    public static inline function mapIndex<T>(map:Map<Dynamic, T>, index:Int):Dynamic {
+        var i = 0;
+        for (key in map.keys()) {
+            if (i == index) {
+                return key;
+            }
+            i++;
+        }
+        return null;
+    }
+
+    public static inline function mapKYIndexOf<K, V>(map:Map<K, V>, key:K, value:V):Int {
+        var index = 0;
+        for (k in map.keys()) {
+            if (k == key && map.get(k) == value) {
+                return index;
+            }
+            index++;
+        }
+        return -1;
+    }
+
+    public static inline function mapKYIndex<K, V>(map:Map<K, V>, index:Int):{key:K, value:V} {
+        var i = 0;
+        for (key in map.keys()) {
+            if (i == index) {
+                return {key: key, value: map.get(key)};
+            }
+            i++;
+        }
+        return null;
+    }
+
+
+
+
     public static inline function mapT<T, R>(input:Dynamic, func:T -> R):Dynamic {
         if (Std.is(input, Array)) {
             return (input: Array<T>).map(func);

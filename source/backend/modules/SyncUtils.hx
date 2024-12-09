@@ -3,6 +3,8 @@ package backend.modules;
 import haxe.Timer;
 import haxe.Http;
 import flixel.util.FlxTimer;
+import haxe.macro.Expr;
+import haxe.macro.Context;
 
 class SyncUtils
 {
@@ -60,6 +62,19 @@ class SyncUtils
 		}
 		trace("Done!");
 	}
+
+	/**
+	 * ! YOU WILL FAIL TO COMPILE WITHOUT A LAMBDA CONDITIONAL!
+	 */
+
+	public static overload extern macro function wait(expr:Expr, ?conD:Expr):Expr {
+        var condition = macro () -> $expr;
+        var conDExpr = conD != null ? conD : macro null;
+		Context.warning("You didn't use a lambda function for the condition. This may cause unexpected behavior.", expr.pos);
+        return macro {
+            backend.modules.SyncUtils.wait($condition, $conDExpr);
+        };
+    }
 
 	// Example of a synchronous version of an async function (e.g., HTTP request)
 	public static inline function syncHttpRequest(url:String, ?post:Bool = false, ?data:Dynamic = null):String

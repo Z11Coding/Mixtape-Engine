@@ -1,5 +1,7 @@
 package;
 
+import backend.modules.SyncUtils;
+import states.editors.content.Prompt;
 import flixel.graphics.FlxGraphic;
 import flixel.FlxGame;
 import flixel.FlxState;
@@ -224,9 +226,9 @@ class Main extends Sprite
 		AudioSwitchFix.init();
 		WindowUtils.onClosing = function()
 		{
-			if (commandPrompt != null)
-				commandPrompt.active = false;
-			commandPrompt = null;
+			// if (commandPrompt != null)
+			// 	commandPrompt.active = false;
+			// commandPrompt = null;
 			handleStateBasedClosing();
 		}
 		FlxG.signals.preStateSwitch.add(onStateSwitch);
@@ -303,6 +305,12 @@ class Main extends Sprite
 		eDate = ExtendedDate.fromDate(dummyDate);
 		trace("Extended Date: " + eDate);
 		trace("Extended Date: " + eDate.asString());
+		var test = new HTable<String>(4, 4);
+		var test2:Array<HTable<String>> = [];
+		test2.push(test);
+		trace("Table: " + test2);
+		var test3:Map<String, HTable<String>> = new Map<String, HTable<String>>();
+		test3.set("test", test);
 	}
 
 	public static function dummy():Void
@@ -349,9 +357,11 @@ class Main extends Sprite
 		if (!closing) {
 		trace("Closing game...");
 		closing = true;
+		pressedOnce = true;
 		trace("Disabling command prompt hook...");
 		}
-		WindowUtils.preventClosing = false;
+		WindowUtils.preventClosing = false; 
+
 		Lib.application.window.close();
 
 		closeGame();
@@ -359,40 +369,66 @@ class Main extends Sprite
 
 	public static var pressedOnce:Bool = false;
 
-	public static function currentState():String {
-        var classNameParts = Type.getClassName(Type.getClass(FlxG.state)).split(".");
-        return classNameParts[Lambda.count(classNameParts) - 1];
-    }
+	public static function currentState(?asStateClass:Bool):Dynamic {
+		return asStateClass == true ? Type.getClass(FlxG.state) : Type.getClassName(Type.getClass(FlxG.state)).split(".")[Lambda.count(Type.getClassName(Type.getClass(FlxG.state)).split(".")) - 1];
+	}
 
 	public static inline function handleStateBasedClosing()
 	{
 		if (!pressedOnce)
 		{
+			SyncUtils.wait(() -> TransitionState.currenttransition == null);
 			if (WindowUtils.__triedClosing)
 			{
+				WindowUtils.preventClosing = true;
 				pressedOnce = true;
 				switch (Type.getClassName(Type.getClass(FlxG.state)).split(".")[Lambda.count(Type.getClassName(Type.getClass(FlxG.state)).split(".")) - 1])
 				{
 					case "ChartingStateOG", "ChartingStatePsych":
-						// new Prompt("Are you sure you want to exit? Your progress will not be saved.", function (result:Bool) {
+						if (currentState() == "ChartingStateOGfhandle") {
+						FlxG.state.openSubState(new substates.Prompt("Are you sure you want to exit? Your progress will not be saved.", function()
+						{
+							TransitionState.transitionState(ExitState, {transitionType: "fallRandom", onComplete: function()
+							{
 
+							}});
+						}, function()
+						{
+							pressedOnce = false;
+						})); 
+						}
+						if (currentState() == "ChartingStatePsych") {
+							FlxG.state.openSubState(new states.editors.content.Prompt("Are you sure you want to exit? Your progress will not be saved.", function()
+							{
+								TransitionState.transitionState(ExitState, {transitionType: "fallRandom", onComplete: function()
+								{
+
+								}});
+							}, function()
+							{
+								pressedOnce = false;
+							})); }
+					case "PlayState":
+						{
+							TransitionState.transitionState(ExitState, {transitionType: "fallRandom", onComplete: function()
+							{
+
+						}});
+						}
 					default:
 						// Default behavior: close the window
 						FlxG.autoPause = false;
 						TransitionState.transitionState(ExitState, {transitionType: "transparent close"});
 				}
 			}
-			else
-			{
-				Main.closeGame();
-			}
+			// Main.closeGame();
 		}
-		else
-		{
-			Main.closeGame();
-		}
-		//WindowUtils.__triedClosing = false;
+		// Main.closeGame();
+		WindowUtils.__triedClosing = false;
+		WindowUtils.preventClosing = true;
+		pressedOnce = false;
 	}
+	
 
 	// Code was entirely made by sqirra-rng for their fnf engine named "Izzy Engine", big props to them!!!
 	// very cool person for real they don't get enough credit for their work
@@ -895,7 +931,7 @@ class CommandPrompt
 			// 		print("Error: stopThread requires exactly one argument.");
 			// 	}
 			// case "listThreads":
-			// 	var threads:Array<String> = Threader.listThreads();
+			// 	var threads:Array<String> = Threader.listThreads();f
 			// 	for (thread in threads) {
 			// 		print("Thread: " + thread);
 			// 	}
