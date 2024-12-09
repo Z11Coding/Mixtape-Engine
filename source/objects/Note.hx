@@ -590,9 +590,7 @@ class Note extends NoteObject
 				animation.play(animToPlay);
 			}
 		}
-
 		// trace(prevNote);
-
 		if(prevNote!=null)
 			prevNote.nextNote = this;
 

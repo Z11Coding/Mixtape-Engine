@@ -292,11 +292,31 @@ class ChanceExtensions {
             for (i in min...max+1) {
                 options.push({item: i, chance: 100});
             }
-            trace("Options: " + options);
+            // trace("Options: " + options);
     
             var selectedOption = ChanceSelector.selectFromOptions(options);
             trace("Selected option: " , selectedOption);
     
+            return selectedOption;
+        }
+
+        public static function chanceFloat(min:Float, max:Float, floatingPoint:Int):Float {
+            trace("Entering chanceFloat function");
+            trace("Input min: " + min);
+            trace("Input max: " + max);
+            trace("Input floatingPoint: " + floatingPoint);
+
+            var factor = Math.pow(10, floatingPoint);
+            var options:Array<Chance> = [];
+            for (i in 0...Math.round((max - min) * factor) + 1) {
+            var value = min + i / factor;
+            options.push({item: value, chance: 100});
+            }
+            // trace("Options: " + options);
+
+            var selectedOption = ChanceSelector.selectFromOptions(options);
+            trace("Selected option: " , selectedOption);
+
             return selectedOption;
         }
 

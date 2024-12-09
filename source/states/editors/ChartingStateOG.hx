@@ -1402,10 +1402,7 @@ class ChartingStateOG extends MusicBeatChartingState
 			}
 		}
 
-		for (noteType in curNoteTypes)
-		{
-			curNoteTypes.push(noteType);
-		}
+		curNoteTypes.mapT(noteType -> this.curNoteTypes.push(noteType));
 	}
 
 	function addNoteUI():Void

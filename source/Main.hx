@@ -63,6 +63,7 @@ class Main extends Sprite
 	public static var playTest:Bool = false;
 	public static var forceGPUOnlyBitmapsOff:Bool = #if windows false #else true #end;
 	public static var closing:Bool = false;
+	public static var eDate:ExtendedDate;
 
 	// public var initStuff = game;
 	public static var fpsVar:FPSCounter;
@@ -298,6 +299,10 @@ class Main extends Sprite
 		backend.modules.EvacuateDebugPlugin.initialize();
 		backend.modules.ForceCrashPlugin.initialize();
 		backend.modules.MemoryGCPlugin.initialize();
+		var dummyDate = Date.now();
+		eDate = ExtendedDate.fromDate(dummyDate);
+		trace("Extended Date: " + eDate);
+		trace("Extended Date: " + eDate.asString());
 	}
 
 	public static function dummy():Void
