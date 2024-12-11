@@ -8,7 +8,7 @@ import backend.Song;
 import flixel.tweens.FlxTween;
 import flixel.FlxState;
 
-class MusicBeatState extends modchart.modcharting.ModchartMusicBeatState
+class MusicBeatState extends FlxState
 {
 	private var curSection:Int = 0;
 	private var stepsToDo:Int = 0;

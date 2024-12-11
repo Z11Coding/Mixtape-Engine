@@ -58,12 +58,6 @@ import shaders.Shaders.ShaderEffect;
 import backend.Section.SwagSection;
 import openfl.media.Sound;
 
-// modchart bullshit
-import modchart.modcharting.ModchartFuncs;
-import modchart.modcharting.NoteMovement;
-import modchart.modcharting.PlayfieldRenderer;
-import modchart.modcharting.ModchartEditorState;
-
 /**
  * This is where all the Gameplay stuff happens and is managed
  *
@@ -1560,13 +1554,6 @@ class PlayState extends MusicBeatState
 
 		// startCountdown();
 
-		if (ClientPrefs.data.modcharts)
-		{
-			playfieldRenderer = new PlayfieldRenderer(strumLineNotes, notes, this);
-			playfieldRenderer.cameras = [camHUD];
-			noteGroup.add(playfieldRenderer);
-		}
-
 		if (!playAsGF) strumLineNotes.cameras = [camHUD];
 		return true;
 	}
@@ -2409,7 +2396,6 @@ class PlayState extends MusicBeatState
 			canPause = true;
 			generateStaticArrows(0);
 			generateStaticArrows(1);
-			NoteMovement.getDefaultStrumPos(this);
 			for (i in 0...playerStrums.length) {
 				setOnScripts('defaultPlayerStrumX' + i, playerStrums.members[i].x);
 				setOnScripts('defaultPlayerStrumY' + i, playerStrums.members[i].y);
@@ -5869,8 +5855,6 @@ class PlayState extends MusicBeatState
 				openChartEditor();
 			else if (FlxG.keys.justPressed.EIGHT)
 				openCharacterEditor();
-			else if (FlxG.keys.justPressed.SIX)
-				openModchartEditor();
 		}
 
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
@@ -6589,20 +6573,6 @@ class PlayState extends MusicBeatState
 			FlxG.sound.music.stop();
 		#if DISCORD_ALLOWED DiscordClient.resetClientID(); #end
 		FlxG.switchState(new CharacterEditorState());
-	}
-
-	function openModchartEditor()
-	{
-		FlxG.camera.followLerp = 0;
-		paused = true;
-		if (FlxG.sound.music != null)
-			FlxG.sound.music.stop();
-		FlxG.switchState(new ModchartEditorState());
-		modchartingMode = true;
-
-		#if desktop
-		DiscordClient.changePresence("Modchart Editor", null, null, true);
-		#end
 	}
 
 	var songAboutToLoop:Bool = false;
@@ -8123,12 +8093,6 @@ class PlayState extends MusicBeatState
 			if (chartingMode)
 			{
 				openChartEditor();
-				return false;
-			}
-
-			if (modchartingMode)
-			{
-				openModchartEditor();
 				return false;
 			}
 
