@@ -1,9 +1,5 @@
 package modchart.modcharting;
 
-#if LEATHER
-import game.Conductor;
-#end
-
 class ModchartEventManager
 {
     private var renderer:PlayfieldRenderer;

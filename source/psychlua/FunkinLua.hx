@@ -1568,6 +1568,7 @@ class FunkinLua {
 		ShaderFunctions.implement(this);
 		DeprecatedFunctions.implement(this);
 		WindowFunctions.implement(this);
+		modchart.modcharting.ModchartFuncs.loadLuaFunctions(this);
 
 		try{
 			var isString:Bool = !FileSystem.exists(scriptName);

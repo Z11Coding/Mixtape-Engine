@@ -3,9 +3,6 @@ package modchart.modcharting;
 import flixel.math.FlxMath;
 import flixel.tweens.FlxTween;
 import modchart.modcharting.Modifier;
-#if LEATHER
-import game.Conductor;
-#end
 
 class ModTable
 {
@@ -173,13 +170,7 @@ class ModTable
             var tween = renderer.createTween(modifiers.get(modifier), {currentValue: val}, time, {ease: easefunc,
                 onComplete: function(twn:FlxTween) {
                     var modifierTag:String = (tag != null ? tag : modifier);
-                    #if PSYCH
-                        #if (PSYCHVERSION >= "0.7")
-                        PlayState.instance.callOnScripts("onModifierComplete", [modifierTag]);
-                        #else
-                        PlayState.instance.callOnLuas("onModifierComplete", [modifierTag]);
-                        #end
-                    #end
+                    PlayState.instance.callOnScripts("onModifierComplete", [modifierTag]);
                 }
             });
             if (Conductor.songPosition > ModchartUtil.getTimeFromBeat(beat)) //skip to where it should be i guess??
@@ -217,13 +208,7 @@ class ModTable
                         if (modifiers.exists(modifier))
                             modifiers.get(modifier).subValues.get(subValue).value = val;
                         var modifierTag:String = (tag != null ? tag : '$modifier-$subValue');
-                        #if PSYCH
-                            #if (PSYCHVERSION >= "0.7")
-                            PlayState.instance.callOnScripts("onModifierComplete", [modifier, subValue]);
-                            #else
-                            PlayState.instance.callOnLuas("onModifierComplete", [modifier, subValue]);
-                            #end
-                        #end
+                        PlayState.instance.callOnScripts("onModifierComplete", [modifier, subValue]);
                     },
                     onUpdate: function(twn:FlxTween) {
                         //need to update like this because its inside a map

@@ -2641,11 +2641,7 @@ class ArrowPath extends Modifier
 
 	override public function noteMath(noteData:NotePositionData, lane:Int, curPos:Float, pf:Int)
 	{
-		#if PSYCH
-		if (Paths.fileExists("data/" + Paths.formatToSongPath(PlayState.SONG.song) + "/customMods/path.txt", TEXT))
-		#elseif LEATHER
-		if (openfl.utils.Assets.exists(Paths.txt(PlayState.SONG.song.toLowerCase() + "/customMods/path")))
-		#end
+		if (Paths.fileExists("data/" + Paths.formatToSongPath(PlayState.SONG.song) + "/customMods/0", TEXT))
 		{
 			var newPosition = executePath(0, curPos, lane, lane < 4 ? 0 : 1, new Vector4(noteData.x, noteData.y, noteData.z, 0));
 			noteData.x = newPosition.x;

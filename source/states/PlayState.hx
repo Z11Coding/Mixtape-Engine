@@ -1192,7 +1192,6 @@ class PlayState extends MusicBeatState
 		uiGroup.add(timeBar);
 		uiGroup.add(timeTxt);
 		// backend.Threader.runInThread(strumInit(), 3, "playfieldCreation");
-		strumInit();
 		if (!CacheMode)
 		{
 			if (chartModifier == "Normal")
@@ -1224,6 +1223,9 @@ class PlayState extends MusicBeatState
 				generateSong(SONG.song);
 			}
 		}
+
+		strumInit();
+
 		var fuckery:Anomoly = new Anomoly();
 
 		fuckery.randomizeFields(instance, true);
@@ -1429,11 +1431,6 @@ class PlayState extends MusicBeatState
 			uiGroup.cameras = [camHUD];
 			noteGroup.cameras = [camHUD];
 			comboGroup.cameras = [camHUD];
-			if (!playAsGF)
-			{
-				strumLineNotes.cameras = [camHUD];
-				if (notes != null) notes.cameras = [camHUD];
-			}
 		}
 		// if (SONG.song == 'South')
 		// FlxG.camera.alpha = 0.7;
@@ -1567,13 +1564,10 @@ class PlayState extends MusicBeatState
 		{
 			playfieldRenderer = new PlayfieldRenderer(strumLineNotes, notes, this);
 			playfieldRenderer.cameras = [camHUD];
-			add(playfieldRenderer);
+			noteGroup.add(playfieldRenderer);
 		}
 
-		if (!playAsGF)
-		{
-			strumLineNotes.cameras = [camHUD];
-		}
+		if (!playAsGF) strumLineNotes.cameras = [camHUD];
 		return true;
 	}
 
@@ -2415,6 +2409,7 @@ class PlayState extends MusicBeatState
 			canPause = true;
 			generateStaticArrows(0);
 			generateStaticArrows(1);
+			NoteMovement.getDefaultStrumPos(this);
 			for (i in 0...playerStrums.length) {
 				setOnScripts('defaultPlayerStrumX' + i, playerStrums.members[i].x);
 				setOnScripts('defaultPlayerStrumY' + i, playerStrums.members[i].y);
@@ -3335,8 +3330,8 @@ class PlayState extends MusicBeatState
 	{
 		notes = new FlxTypedGroup<Note>();
 		add(notes);
-		if (notes != null)
-			notes.cameras = [camHUD];
+		//trust me it's like this on purpose
+		if (notes != null) notes.cameras = [camHUD];
 
 		var noteData:Array<SwagSection>;
 
@@ -5145,16 +5140,7 @@ class PlayState extends MusicBeatState
 
 			var babyArrow:StrumNote = new StrumNote(ClientPrefs.data.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X, strumLine.y, i, player);
 			babyArrow.downScroll = ClientPrefs.data.downScroll;
-			if (!isStoryMode && !skipArrowStartTween)
-			{
-				// babyArrow.y -= 10;
-				babyArrow.alpha = 0;
-				FlxTween.tween(babyArrow, {/*y: babyArrow.y + 10,*/ alpha: targetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
-			}
-			else
-			{
-				babyArrow.alpha = targetAlpha;
-			}
+			
 
 			if (player == 1)
 			{
@@ -6287,6 +6273,14 @@ class PlayState extends MusicBeatState
 								if(cpuControlled && !daNote.blockHit && daNote.canBeHit && (daNote.isSustainNote || daNote.strumTime <= Conductor.songPosition))
 									goodNoteHit(daNote);
 							}
+							else if (daNote.AIStrumTime != 0 && !daNote.AIMiss)
+							{
+								if (Math.abs(daNote.strumTime - daNote.AIStrumTime) > Conductor.safeZoneOffset)
+								{
+									if (daNote.strumTime - daNote.AIStrumTime <= Conductor.songPosition)
+										opponentNoteHit(daNote);
+								}
+							}
 							else if (daNote.wasGoodHit && !daNote.hitByOpponent && !daNote.ignoreNote)
 								opponentNoteHit(daNote);
 
@@ -6297,6 +6291,8 @@ class PlayState extends MusicBeatState
 							{
 								if (daNote.mustPress && !cpuControlled && !daNote.ignoreNote && !endingSong && (daNote.tooLate || !daNote.wasGoodHit))
 									noteMiss(daNote);
+								else if (!daNote.mustPress && !cpuControlled  && ((daNote.AIMiss && daNote.ignoreNote) || !daNote.ignoreNote))
+									opponentMiss(daNote);
 
 								daNote.active = daNote.visible = false;
 								invalidateNote(daNote);
@@ -9735,7 +9731,11 @@ class PlayState extends MusicBeatState
 			if(combo > 9) showCombo = true;
 			// if(combo > 9999) combo = 9999;
 		}
-		health += note.hitHealth * healthGain;
+
+		var gainHealth:Bool = true; // prevent health gain, *if* sustains are treated as a singular note
+		if (guitarHeroSustains && note.isSustainNote) gainHealth = false;
+		if (gainHealth) health += note.hitHealth * healthGain;
+
 		#if sys
 		ArtemisIntegration.sendBoyfriendHealth(health);
 		#end
@@ -10112,6 +10112,9 @@ class PlayState extends MusicBeatState
 		ArtemisIntegration.setBeat(curBeat);
 		ArtemisIntegration.setSongProgress((Conductor.songPosition - ClientPrefs.data.noteOffset) / songLength * 100);
 		#end
+
+		if (generatedMusic)
+			notes.sort(FlxSort.byY, ClientPrefs.data.downScroll ? FlxSort.ASCENDING : FlxSort.DESCENDING);
 
 		/*if (generatedMusic)
 			{

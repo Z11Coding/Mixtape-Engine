@@ -67,6 +67,9 @@
 	<define name="test"/>
 	<!-- <define name="UNDERTALE"/> -->
 
+	<define name="PSYCH" />
+	<define name="PSYCHVERSION" value="1.0.0"/>
+
 	<section if="officialBuild">
 		<define name="TITLE_SCREEN_EASTER_EGG"/>
 		<define name="BASE_GAME_FILES" />

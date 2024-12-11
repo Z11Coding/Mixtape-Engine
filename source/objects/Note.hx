@@ -321,7 +321,8 @@ class Note extends FlxSkewedSprite
 	public var noteSplashHue:Float = 0; // hueshift for the notesplash, can be changed in note-type but otherwise its whatever the user sets in options
 	public var noteSplashSat:Float = 0; // ditto, but for saturation
 	public var noteSplashBrt:Float = 0; // ditto, but for brightness
-	public var missHealth:Float = 0.0475; // health when you miss this note
+	public var hitHealth:Float = 0.02;
+	public var missHealth:Float = 0.1; // health when you miss this note
 	public var texture(default, set):String = null; // texture for the note
 	public var noAnimation:Bool = false; // disables the animation for hitting this note
 	public var noMissAnimation:Bool = false; // disables the animation for missing this note
@@ -403,7 +404,6 @@ class Note extends FlxSkewedSprite
 	public var childs:Array<Note> = [];
 	public var spotInLine:Int = 0;
 	public var ratingDisabled:Bool = false;
-	public var hitHealth:Float = 0.023;
 	public var susActive:Bool = true;
 	public var scrollSpeed(default, set):Float = 0;
 	public var customHealthHit:Bool = false;
@@ -929,7 +929,7 @@ class Note extends FlxSkewedSprite
 		if(copyY)
 		{
 			y = strumY + offsetY + correctionOffset + Math.sin(angleDir) * distance;
-			if(myStrum.downScroll && isSustainNote)
+			if(myStrum.downScroll && isSustainNote && animation.curAnim != null && !animation.curAnim.name.endsWith('tail'))
 			{
 				if(PlayState.isPixelStage)
 				{

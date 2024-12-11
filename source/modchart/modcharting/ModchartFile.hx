@@ -58,7 +58,7 @@ class ModchartFile
     
     public function new(renderer:PlayfieldRenderer)
     {
-        data = loadFromJson(PlayState.SONG.song.toLowerCase(), Difficulty.getString().toLowerCase() == null ? Difficulty.defaultList[PlayState.storyDifficulty] : Difficulty.getString().toLowerCase());
+        data = loadFromJson(Paths.formatToSongPath(PlayState.SONG.song.toLowerCase()), Difficulty.getString().toLowerCase() == null ? Difficulty.defaultList[PlayState.storyDifficulty] : Difficulty.getString().toLowerCase());
         this.renderer = renderer;
         renderer.modchart = this;
         loadPlayfields();
@@ -73,12 +73,12 @@ class ModchartFile
 
         var folderShit:String = "";
         
-        var moddyFile:String = Paths.json(Paths.formatToSongPath(folder) + '/modchart-' + difficulty.toLowerCase());
-        var moddyFile2:String = Paths.json(Paths.formatToSongPath(folder) + '/modchart');
+        var moddyFile:String = Paths.json(folder + '/modchart-' + difficulty.toLowerCase());
+        var moddyFile2:String = Paths.json(folder + '/modchart');
 
         #if MODS_ALLOWED
-        var moddyFileMods:String = Paths.modsJson(Paths.formatToSongPath(folder) + '/modchart-' + difficulty.toLowerCase());
-        var moddyFileMods2:String = Paths.modsJson(Paths.formatToSongPath(folder) + '/modchart');
+        var moddyFileMods:String = Paths.modsJson(folder + '/modchart-' + difficulty.toLowerCase());
+        var moddyFileMods2:String = Paths.modsJson(folder + '/modchart');
         #end
 
         try 
@@ -265,6 +265,7 @@ class ModchartFile
         else 
         {
             json = {modifiers: [], events: [], playfields: 1};
+            trace("JSON WAS NULL!");
         }
         return json;
     }

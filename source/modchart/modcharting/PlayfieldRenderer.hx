@@ -1,25 +1,12 @@
 package modchart.modcharting;
 
-import modchart.flixel.tweens.misc.BezierPathTween;
-import modchart.flixel.tweens.misc.BezierPathNumTween;
 import flixel.util.FlxTimer.FlxTimerManager;
-import flixel.math.FlxMath;
 import flixel.tweens.FlxTween;
-import flixel.tweens.FlxEase;
-import flixel.graphics.FlxGraphic;
-import flixel.util.FlxColor;
-import flixel.FlxStrip;
-import flixel.graphics.tile.FlxDrawTrianglesItem.DrawData;
 import openfl.geom.Vector3D;
-import flixel.util.FlxSpriteUtil;
-import flixel.graphics.frames.FlxFrame;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.FlxSprite;
 
-import flixel.FlxG;
 import modchart.modcharting.Modifier;
-import managers.*;
-import flixel.system.FlxAssets.FlxShader;
 import modchart.managers.TweenManager;
 
 import states.PlayState;
@@ -183,7 +170,7 @@ class PlayfieldRenderer extends FlxSprite //extending flxsprite just so i can ed
         var noteSkewX = notes.members[noteIndex].skew.x;
         var noteSkewY = notes.members[noteIndex].skew.y;
 
-        var noteAlpha:Float = #if PSYCH notes.members[noteIndex].multAlpha; #else notes.members[noteIndex].isSustainNote ? 0.6 : 1; #end
+        var noteAlpha:Float = notes.members[noteIndex].multAlpha;
 
         if (ModchartUtil.getIsPixelStage(instance))
         {
