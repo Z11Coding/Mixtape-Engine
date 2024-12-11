@@ -47,6 +47,8 @@ import backend.util.ColorUtil; //Thanks, Jack Bass. Very Cool
 import backend.ui.*; //Psych-UI
 import backend.*; //Everything Else
 
+import schmovin.SchmovinStandalone;
+
 
 import objects.Note;
 import objects.Alphabet;

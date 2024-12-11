@@ -2,7 +2,7 @@
  * @ Author: 4mbr0s3 2
  * @ Create Time: 2021-07-15 16:29:37
  * @ Modified by: 4mbr0s3 2
- * @ Modified time: 2021-11-14 10:35:42
+ * @ Modified time: 2022-02-10 23:49:29
  */
 
 package schmovin.note_mods;
@@ -17,23 +17,23 @@ using schmovin.SchmovinUtil;
 
 class NoteModReverse extends NoteModBase
 {
-	function GetPercentReverse(column, player)
+	private inline function getPercentReverse(column, playfield)
 	{
-		var percentReverse = GetPercent(player);
+		var percentReverse = getPercent(playfield);
 		var playerColumn = column % 4;
 		if (playerColumn > 1)
 		{
-			percentReverse += GetOtherPercent('split', player);
+			percentReverse += getOtherPercent('split', playfield);
 		}
 		if (playerColumn > 0 && playerColumn < 3)
 		{
-			percentReverse += GetOtherPercent('cross', player);
+			percentReverse += getOtherPercent('cross', playfield);
 		}
 		for (i in 0...4)
 		{
 			if (playerColumn == i)
 			{
-				percentReverse += GetOtherPercent('reverse' + i, player);
+				percentReverse += getOtherPercent('reverse' + i, playfield);
 			}
 		}
 		percentReverse %= 2;
@@ -41,7 +41,7 @@ class NoteModReverse extends NoteModBase
 		{
 			percentReverse = 2 - percentReverse;
 		}
-		var reverse = SchmovinAdapter.GetInstance().GrabReverse();
+		var reverse = SchmovinAdapter.getInstance().grabReverse();
 		if (reverse)
 		{
 			percentReverse = 1 - percentReverse;
@@ -49,19 +49,19 @@ class NoteModReverse extends NoteModBase
 		return percentReverse;
 	}
 
-	override function MustExecute():Bool
+	override function alwaysExecute():Bool
 	{
 		return true;
 	}
 
-	function IsSustainEnd(note:Note)
+	private function isSustainEnd(note:Note)
 	{
 		return note.animation.name.contains("end");
 	}
 
-	function PolishNote(reverse:Float, note:Note, strumLine:Float)
+	private function polishNote(reverse:Float, note:Note, strumLine:Float)
 	{
-		if (note.prevNote.exists && note.prevNote.isSustainNote && !IsSustainEnd(note.prevNote))
+		if (note.prevNote.exists && note.prevNote.isSustainNote && !isSustainEnd(note.prevNote))
 		{
 			note.prevNote.scale.set(note.prevNote.scale.x, Math.abs(note.prevNote.y - note.y) / (note.prevNote.frameHeight - 2));
 			note.prevNote.updateHitbox();
@@ -83,61 +83,72 @@ class NoteModReverse extends NoteModBase
 		// GroovinInput.ClipRect(note, strumLine);
 	}
 
-	override function ExecutePath(currentBeat:Float, strumTimeDiff:Float, column:Int, player:Int, pos:Vector4):Vector4
+	private function getNoteX(column:Int, player:Int)
+	{
+		return SchmovinAdapter.getInstance().getDefaultNoteX(column, player);
+	}
+
+	override function executePath(currentBeat:Float, strumTime:Float, column:Int, player:Int, pos:Vector4, playfield:SchmovinPlayfield):Vector4
 	{
 		var playerColumn = column % 4;
-		var reverse = GetPercentReverse(column, player);
+		var reverse = getPercentReverse(column, playfield);
 
 		var strumLineY = FlxMath.lerp(50, FlxG.height - 165, reverse);
-		var outX = SchmovinUtil.NoteWidthHalf() + 50 + playerColumn * Note.swagWidth + FlxG.width / 2 * player;
+		var outX = getNoteX(column, player);
 
-		var xmod = GetOtherPercent('xmod', player) + GetOtherPercent('xmod${playerColumn}', player) + 1;
-		var forced = GetOtherPercent('forcexmod', player) + GetOtherPercent('forcexmod${playerColumn}', player);
+		var xmod = getOtherPercent('xmod', playfield) + getOtherPercent('xmod${playerColumn}', playfield) + 1;
+		var forced = getOtherPercent('forcexmod', playfield) + getOtherPercent('forcexmod${playerColumn}', playfield);
 
-		var scrollSpeed = FlxMath.lerp(SchmovinAdapter.GetInstance().GrabScrollSpeed() * xmod, xmod, forced);
-		var upscrollY = SchmovinUtil.NoteWidthHalf() + strumLineY - 0.45 * strumTimeDiff * scrollSpeed;
-		var downscrollY = SchmovinUtil.NoteWidthHalf() + strumLineY + 0.45 * strumTimeDiff * scrollSpeed;
+		var scrollSpeed = FlxMath.lerp(SchmovinAdapter.getInstance().grabScrollSpeed() * xmod, xmod, forced);
+		var upscrollY = SchmovinUtil.getNoteWidthHalf() + strumLineY - 0.45 * strumTime * scrollSpeed;
+		var downscrollY = SchmovinUtil.getNoteWidthHalf() + strumLineY + 0.45 * strumTime * scrollSpeed;
 		var outY = FlxMath.lerp(upscrollY, downscrollY, reverse);
 
 		return new Vector4(outX, outY, 0, 0);
 	}
 
-	function SetDefaultScale(s:FlxSprite)
+	private function setDefaultScale(s:FlxSprite)
 	{
-		if (SchmovinInstance.IsPixelStage())
+		if (SchmovinInstance.isPixelStage())
 			s.scale.set(PlayState.daPixelZoom, PlayState.daPixelZoom);
 		else
 			s.scale.set(0.7, 0.7);
 	}
 
-	override function ExecuteReceptor(currentBeat:Float, receptor:Receptor, player:Int, pos:Vector4)
+	override function executeReceptor(currentBeat:Float, receptor:Receptor, player:Int, pos:Vector4, playfield:SchmovinPlayfield)
 	{
 		receptor.angle = 0;
-		SetDefaultScale(receptor.wrappee);
-		super.ExecuteReceptor(currentBeat, receptor, player, pos);
+
+		// Hide for rendering
+		receptor.visible = false;
+
+		setDefaultScale(receptor.wrappee);
+		super.executeReceptor(currentBeat, receptor, player, pos, playfield);
 	}
 
-	public override function ExecuteNote(currentBeat:Float, note:Note, player:Int, pos:Vector4)
+	public override function executeNote(currentBeat:Float, note:Note, player:Int, pos:Vector4, playfield:SchmovinPlayfield)
 	{
 		if (note.shader != null)
 			note.shader.hasColorTransform.value = [true];
 
-		var receptorPos = ExecutePath(currentBeat, 0, note.noteData, player, pos).subtract(SchmovinUtil.PosNoteWidthHalf());
+		var receptorPos = executePath(currentBeat, 0, note.noteData, player, pos, playfield).subtract(SchmovinUtil.posGetNoteWidthHalf());
 
 		note.angle = 0;
-		SetDefaultScale(note);
-		super.ExecuteNote(currentBeat, note, player, pos);
+		setDefaultScale(note);
+		super.executeNote(currentBeat, note, player, pos, playfield);
 
-		if (note.isSustainNote)
-		{
-			note.visible = false;
-			var time = note.strumTime - SchmovinAdapter.GetInstance().GetSongPosition();
-			note.alpha = FlxMath.bound((1400 - time) / 100, 0, 0.6);
-		}
+		// Hide for rendering
+		note.visible = false;
+
+		// if (note.isSustainNote)
+		// {
+		// 	var time = note.strumTime - SchmovinAdapter.getInstance().getSongPosition();
+		// 	note.alpha = FlxMath.bound((1400 - time) / 100, 0, 0.6);
+		// }
 
 		// else
 		// 	note.extraData.set('dirtyFrame', false);
 
-		PolishNote(GetPercentReverse(note.GetTotalColumn(), player), note, receptorPos.y);
+		polishNote(getPercentReverse(note.getTotalColumn(), playfield), note, receptorPos.y);
 	}
 }

@@ -1,5 +1,7 @@
 package;
 
+import schmovin.SchmovinAdapter;
+import schmovin.SchmovinStandalone;
 import flixel.graphics.FlxGraphic;
 import flixel.FlxGame;
 import flixel.FlxState;
@@ -63,6 +65,7 @@ class Main extends Sprite
 	public static var playTest:Bool = false;
 	public static var forceGPUOnlyBitmapsOff:Bool = #if windows false #else true #end;
 	public static var closing:Bool = false;
+	public static var schmovin:SchmovinStandalone;
 
 	// public var initStuff = game;
 	public static var fpsVar:FPSCounter;
@@ -241,11 +244,10 @@ class Main extends Sprite
 		{
 			fpsVar.visible = ClientPrefs.data.showFPS;
 		}
-		/*if (memoryCounter != null)
-			{
-				memoryCounter.visible = ClientPrefs.data.showFPS;
-		}*/
 		#end
+
+		SchmovinAdapter.setInstance(new PsychSchmovinAdapter());
+		schmovin = new SchmovinStandalone();
 
 		FlxG.scaleMode = scaleMode = new FunkinRatioScaleMode();
 

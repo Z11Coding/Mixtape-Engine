@@ -2,64 +2,72 @@
  * @ Author: 4mbr0s3 2
  * @ Create Time: 2021-07-19 13:51:43
  * @ Modified by: 4mbr0s3 2
- * @ Modified time: 2021-08-29 15:08:49
+ * @ Modified time: 2022-05-26 21:30:43
  */
 
 package schmovin.note_mods;
 
 import flixel.FlxG;
-import flixel.math.FlxMath;
 import lime.math.Vector4;
+import schmovin.util.Camera3DTransforms;
 
 using schmovin.SchmovinUtil;
 
 class NoteModPerspective extends NoteModBase
 {
-	function FastTan(rad:Float)
+	override function alwaysExecute():Bool
 	{
-		return FlxMath.fastSin(rad) / FlxMath.fastCos(rad);
+		return false;
 	}
 
-	override function MustExecute():Bool
+	private function view(pos:Vector4, playfield:SchmovinPlayfield)
+	{
+		var props = new Map<String, Float>();
+		props.set('camx', getOtherPercent('camx', playfield));
+		props.set('camy', getOtherPercent('camy', playfield));
+		props.set('camz', getOtherPercent('camz', playfield));
+		return Camera3DTransforms.view(pos, props);
+	}
+
+	private function projection(pos:Vector4, playfield:SchmovinPlayfield)
+	{
+		var camfov = getOtherPercent('camfov', playfield);
+		return Camera3DTransforms.projection(pos, camfov);
+	}
+
+	// https://www.youtube.com/watch?v=dul0mui292Q Quick mafs
+	// Nooooo broken link :(
+	override function executePath(currentBeat:Float, strumTime:Float, column:Int, player:Int, pos:Vector4, playfield:SchmovinPlayfield):Vector4
+	{
+		var halfScreenOffset = new Vector4(FlxG.width / 2, FlxG.height / 2);
+
+		var modelCoords = pos.subtract(halfScreenOffset); // Center to origin
+		modelCoords = Camera3DTransforms.rotateVector4(modelCoords, getOtherPercent('campitch', playfield), getOtherPercent('camyaw', playfield),
+			getOtherPercent('camroll', playfield));
+		var viewCoords = view(modelCoords, playfield);
+
+		var clipCoords = projection(viewCoords, playfield);
+
+		return clipCoords.add(halfScreenOffset); // Recenter to viewport
+	}
+
+	override function isVertexModifier():Bool
 	{
 		return true;
 	}
 
-	// https://www.youtube.com/watch?v=dul0mui292Q Quick mafs
-	override function ExecutePath(currentBeat:Float, strumTimeDiff:Float, column:Int, player:Int, pos:Vector4):Vector4
+	override function executeNoteVertex(currentBeat:Float, strumTime:Float, column:Int, player:Int, vert:Vector4, vertIndex:Int, pos:Vector4,
+			playfield:SchmovinPlayfield):Vector4
 	{
-		var outPos = pos.clone();
-
 		var halfScreenOffset = new Vector4(FlxG.width / 2, FlxG.height / 2);
-		outPos = outPos.subtract(halfScreenOffset);
 
-		var fov = Math.PI / 2;
-		var screenRatio = 1;
-		var near = 0;
-		var far = 2;
+		var modelCoords = vert.add(pos).subtract(halfScreenOffset); // Center to origin
+		modelCoords = Camera3DTransforms.rotateVector4(modelCoords, getOtherPercent('campitch', playfield), getOtherPercent('camyaw', playfield),
+			getOtherPercent('camroll', playfield));
+		var viewCoords = view(modelCoords, playfield);
 
-		var perspectiveZ = outPos.z - 1;
-		if (perspectiveZ > 0)
-			perspectiveZ = 0; // To prevent coordinate overflow :/
+		var clipCoords = projection(viewCoords, playfield);
 
-		var x = outPos.x / FastTan(fov / 2);
-		var y = outPos.y * screenRatio / FastTan(fov / 2);
-
-		var a = (near + far) / (near - far);
-		var b = 2 * near * far / (near - far);
-		var z = a * perspectiveZ + b;
-
-		return new Vector4(x / z, y / z, z, outPos.w).add(halfScreenOffset);
-	}
-
-	override function ExecuteNote(currentBeat:Float, note:Note, player:Int, pos:Vector4)
-	{
-		note.scale.scale(1 / pos.z);
-	}
-
-	override function ExecuteReceptor(currentBeat:Float, receptor:Receptor, player:Int, pos:Vector4)
-	{
-		// receptor.scale.scale(2 - path.w); // Guys how do I make the scale consistent??
-		receptor.scale.scale(1 / pos.z); // NVM figured it out
+		return clipCoords.subtract(pos).add(halfScreenOffset); // Recenter to viewport
 	}
 }

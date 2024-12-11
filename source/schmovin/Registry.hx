@@ -51,14 +51,14 @@ class Registry
 	{
 		AddNoteSubMod('xmod');
 		AddNoteSubMod('forcexmod');
-		for (i in 0...4)
+		for (i in 0...Note.ammo[PlayState.mania])
 		{
 			AddNoteSubMod('xmod${i}');
 			AddNoteSubMod('forcexmod${i}');
 		}
 		AddNoteSubMod('split');
 		AddNoteSubMod('cross');
-		for (i in 0...4)
+		for (i in 0...Note.ammo[PlayState.mania])
 			AddNoteSubMod('reverse${i}');
 		AddNoteMod('reverse', new NoteModReverse(_state, _modList));
 
@@ -74,18 +74,18 @@ class Registry
 		AddNoteMod('beat', new NoteModBeat(_state, _modList));
 
 		AddNoteSubMod('arrowpath');
-		for (i in 0...4)
+		for (i in 0...Note.ammo[PlayState.mania])
 			AddNoteSubMod('arrowpath${i}');
 		AddNoteSubMod('arrowpathsize');
-		for (i in 0...4)
+		for (i in 0...Note.ammo[PlayState.mania])
 			AddNoteSubMod('arrowpathsize${i}');
 
 		AddNoteSubMod('confusionzoffset');
-		for (i in 0...4)
+		for (i in 0...Note.ammo[PlayState.mania])
 			AddNoteSubMod('confusionzoffset${i}');
 		AddNoteMod('confusion', new NoteModConfusion(_state, _modList));
 
-		for (i in 0...4)
+		for (i in 0...Note.ammo[PlayState.mania])
 		{
 			AddNoteSubMod('tiny${i}');
 			AddNoteSubMod('tinyx${i}');

@@ -2,7 +2,7 @@
  * @ Author: 4mbr0s3 2
  * @ Create Time: 2021-07-16 13:18:59
  * @ Modified by: 4mbr0s3 2
- * @ Modified time: 2021-08-29 15:08:57
+ * @ Modified time: 2022-01-17 23:29:48
  */
 
 package schmovin.note_mods;
@@ -14,35 +14,31 @@ using schmovin.SchmovinUtil;
 
 class NoteModTiny extends NoteModBase
 {
-	override function MustExecute():Bool
+	private function getScale(column:Int, playfield:SchmovinPlayfield)
+	{
+		var playerColumn = column % 4;
+		var scale = new FlxPoint(1, 1);
+		scale.scale(1 - getPercent(playfield) * 0.5);
+		scale.scale(1 - getOtherPercent('tiny${playerColumn}', playfield) * 0.5);
+		scale.x *= 1 - getOtherPercent('tinyx${playerColumn}', playfield) * 0.5;
+		scale.y *= 1 - getOtherPercent('tinyy${playerColumn}', playfield) * 0.5;
+		scale.x *= 1 - getOtherPercent('tinyx', playfield) * 0.5;
+		scale.y *= 1 - getOtherPercent('tinyy', playfield) * 0.5;
+		return scale;
+	}
+
+	override function isVertexModifier():Bool
 	{
 		return true;
 	}
 
-	function GetScale(column:Int, player:Int)
+	override function executeNoteVertex(currentBeat:Float, strumTime:Float, column:Int, player:Int, vert:Vector4, vertIndex:Int, pos:Vector4,
+			playfield:SchmovinPlayfield):Vector4
 	{
-		var playerColumn = column % 4;
-		var scale = new FlxPoint(1, 1);
-		scale.scale(1 - GetPercent(player) * 0.5);
-		scale.scale(1 - GetOtherPercent('tiny${playerColumn}', player) * 0.5);
-		scale.x *= 1 - GetOtherPercent('tinyx${playerColumn}', player) * 0.5;
-		scale.y *= 1 - GetOtherPercent('tinyy${playerColumn}', player) * 0.5;
-		scale.x *= 1 - GetOtherPercent('tinyx', player) * 0.5;
-		scale.y *= 1 - GetOtherPercent('tinyy', player) * 0.5;
-		return scale;
-	}
-
-	override function ExecuteNote(currentBeat:Float, note:Note, player:Int, pos:Vector4)
-	{
-		var scale = GetScale(note.noteData, player);
-		note.scale.x *= scale.x;
-		note.scale.y *= scale.y;
-	}
-
-	override function ExecuteReceptor(currentBeat:Float, receptor:Receptor, player:Int, pos:Vector4)
-	{
-		var scale = GetScale(receptor.column, player);
-		receptor.scale.x *= scale.x;
-		receptor.scale.y *= scale.y;
+		var scale = getScale(column, playfield);
+		var outVert = vert.clone();
+		outVert.x *= scale.x;
+		outVert.y *= scale.y;
+		return outVert;
 	}
 }

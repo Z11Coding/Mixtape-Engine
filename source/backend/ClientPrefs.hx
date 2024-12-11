@@ -43,7 +43,7 @@ import states.FirstCheckState;
 	public var gimmicksAllowed:Bool = true;
 	public var opponentStrums:Bool = true;
 	public var drawDistanceModifier:Float = 1;
-	public var holdSubdivs:Float = 2;
+	public var holdSubdivs:Int = 2;
 	public var optimizeHolds:Bool = true;
 	public var gotit:Bool = false;
 	public var inGameRatings:Bool = false;

@@ -417,9 +417,15 @@ class PauseSubState extends MusicBeatSubstate
 
 					Mods.loadTopMod();
 					if(PlayState.isStoryMode)
+					{
+						PlayState.instance.schmovin.OnExitPlayState(new StoryMenuState());
 						FlxG.switchState(new StoryMenuState());
+					}
 					else
+					{
+						PlayState.instance.schmovin.OnExitPlayState(new FreeplayState());
 						FlxG.switchState(new FreeplayState());
+					}
 
 					
 					FlxG.sound.playMusic(Paths.music('panixPress'));

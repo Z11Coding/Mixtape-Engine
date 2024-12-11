@@ -212,7 +212,7 @@ class PlayState extends MusicBeatState
 	public var eventNotes:Array<EventNote> = [];
 	public var curEvents:Array<EventNote> = [];
 
-	public static var strumLine:FlxSprite;
+	public var strumLine:FlxSprite;
 
 	// Handles the new epic mega sexy cam code that i've done
 	public var camFollow:FlxObject;
@@ -546,6 +546,10 @@ class PlayState extends MusicBeatState
 	public var uiGroup:FlxSpriteGroup;
 	// Stores Note Objects in a Group
 	public var noteGroup:FlxTypedGroup<FlxBasic>;
+
+
+	//A dream come true
+	public var schmovin:SchmovinStandalone;
 	override public function create()
 	{
 		try
@@ -724,8 +728,8 @@ class PlayState extends MusicBeatState
 			case 'Dont':
 				AIPlayer.diff = 6;
 		}
-
-		// var gameCam:FlxCamera = FlxG.camera;
+		
+		var gameCam:FlxCamera; // camGame copy so cam movement can work idk why lol
 		camGame = initPsychCamera();
 		camHUD = new FlxCamera();
 		camVisual = new FlxCamera();
@@ -738,6 +742,7 @@ class PlayState extends MusicBeatState
 		camOther.bgColor.alpha = 0;
 		camDialogue.bgColor.alpha = 0;
 
+		Main.schmovin.afterCameras(camGame, camHUD);
 		FlxG.cameras.add(camHUD, false);
 		FlxG.cameras.add(camVisual, false);
 		FlxG.cameras.add(camCredit, false);
@@ -745,6 +750,9 @@ class PlayState extends MusicBeatState
 		FlxG.cameras.add(camOther, false);
 		if (ClientPrefs.data.starHidden)
 			camHUD.alpha = 0;
+
+		@:privateAccess
+		gameCam = Main.schmovin.instance.camGame;
 
 		if (ClientPrefs.data.shaders)
 		{
@@ -1504,7 +1512,10 @@ class PlayState extends MusicBeatState
 		#if sys
 		ArtemisIntegration.autoUpdateControls();
 		#end
+
 		super.create();
+		Main.schmovin.postUI(this);
+
 		add(blackOverlay);
 		lyrics = new FlxText(0, 100, 1280, "", 32, true);
 		lyrics.scrollFactor.set();
@@ -1524,12 +1535,20 @@ class PlayState extends MusicBeatState
 		daStatic.cameras = [camOther];
 		daStatic.alpha = 0;
 		add(daStatic);
+
 		Paths.clearUnusedMemory();
 		MemoryUtil.clearMajor();
 		cacheCountdown();
 		cachePopUpScore();
 		if (eventNotes.length < 1)
 			checkEventNote();
+	}
+
+	override public function draw():Void
+	{
+		Main.schmovin.preDraw(this);
+		super.draw();
+		Main.schmovin.postDraw(this);
 	}
 
 	function setupScale(spr:BGSprite)
@@ -2429,6 +2448,8 @@ class PlayState extends MusicBeatState
 				setSongTime(0);
 				return true;
 			}
+
+			Main.schmovin.onCountdown(this);
 
 			startTimer = new FlxTimer().start(Conductor.crochet / 1000 / playbackRate, function(tmr:FlxTimer)
 			{
@@ -3892,6 +3913,8 @@ class PlayState extends MusicBeatState
 						sustainNote.parent = swagNote;
 						// allNotes.push(sustainNote);
 						allNotes.push(sustainNote);
+
+						Main.schmovin.postNotePosition(this, strumLine, swagNote, SONG);
 
 						if (sustainNote.mustPress)
 						{
@@ -5362,6 +5385,7 @@ class PlayState extends MusicBeatState
 
 	override public function update(elapsed:Float)
 	{
+		Main.schmovin.update(this, elapsed);
 		specialOverlays.forEachAlive(function(sprite:FlxSprite)
 		{
 			sprite.screenCenter();
@@ -6205,6 +6229,7 @@ class PlayState extends MusicBeatState
 		}
 		doDeathCheck();
 
+		schmovin.PreDraw(this);
 		if (unspawnNotes[0] != null)
 		{
 			var time:Float = spawnTime * playbackRate;
@@ -6224,6 +6249,7 @@ class PlayState extends MusicBeatState
 				unspawnNotes.splice(index, 1);
 			}
 		}
+		schmovin.PostDraw(this);
 
 		if (generatedMusic && controlArray.length > 0)
 		{
@@ -6662,6 +6688,8 @@ class PlayState extends MusicBeatState
 				{
 					Highscore.saveEndlessScore(SONG.song.toLowerCase(), songScore);
 				}
+
+				schmovin.OnGameOver(this);
 
 				paused = true;
 				canResync = false;

@@ -16,7 +16,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 
-using schmovin.SchmovinUtil.SchmovinUtil;
+using SchmovinUtil.SchmovinUtil;
 
 /**
  * Version of Schmovin without any dependencies on Groovin'.
@@ -29,11 +29,11 @@ class SchmovinStandalone
 
 	private var instance:SchmovinInstance;
 
-	public static var holdNoteSubdivisions:Int = 4;
+	public static var holdNoteSubdivisions:Int = ClientPrefs.data.holdSubdivs;
 
-	function ShouldRun():Bool
+	private function shouldRun():Bool
 	{
-		if (Std.is(FlxG.state.subState, PauseSubState))
+		if (Std.is(FlxG.state.subState, substates.PauseSubState))
 			return true;
 		return FlxG.state.subState == null;
 	}
@@ -44,9 +44,9 @@ class SchmovinStandalone
 	 * openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 	 * @param state 
 	 */
-	public function OnGameOver(state:PlayState)
+	public function onGameOver(state:PlayState)
 	{
-		instance.Destroy();
+		instance.destroy();
 	}
 
 	/**
@@ -58,20 +58,13 @@ class SchmovinStandalone
 	 * @param camGame 
 	 * @param camHUD 
 	 */
-	public function AfterCameras(camGame:FlxCamera, camHUD:FlxCamera)
+	public function afterCameras(camGame:FlxCamera, camHUD:FlxCamera)
 	{
-		instance = SchmovinInstance.Create();
-		instance.state = cast FlxG.state;
-
-		instance.camHUD = camHUD;
-		instance.camGame = camGame;
-		InitializeCamBelowGame();
-
-		instance.InitializeCameras();
-		instance.InitializeSchmovin();
+		instance = SchmovinInstance.create(cast FlxG.state, camGame, camHUD);
+		instance.initialize();
 	}
 
-	function InitializeCamBelowGame()
+	private function initializeCamBelowGame()
 	{
 		instance.camBelowGame = new FlxCamera();
 		instance.camBelowGame.bgColor = FlxColor.TRANSPARENT;
@@ -85,12 +78,12 @@ class SchmovinStandalone
 	 * Call this when exiting the PlayState.
 	 * @param nextState 
 	 */
-	public function OnExitPlayState(nextState:FlxState)
+	public function onExitPlayState(nextState:FlxState)
 	{
-		instance.Destroy();
+		instance.destroy();
 	}
 
-	function InitializeAboveHUD()
+	private function initializeAboveHUD()
 	{
 		instance.layerAboveHUD = new FlxTypedGroup<FlxBasic>();
 		instance.layerAboveHUD.cameras = [instance.camHUD];
@@ -101,76 +94,72 @@ class SchmovinStandalone
 	 * Call this after all UI elements have their cameras set to camHUD in PlayState.create().
 	 * @param state 
 	 */
-	public function PostUI(state:PlayState)
+	public function postUI(state:PlayState)
 	{
 		state.strumLineNotes.cameras = [instance.camNotes];
 		state.notes.cameras = [instance.camNotes];
 
 		FlxCamera.defaultCameras = [instance.camGameCopy];
-		InitializeAboveHUD();
+		initializeAboveHUD();
 	}
 
 	/**
 	 * Call this from the PlayState's draw method before calling the superclass method.
 	 * @param state 
 	 */
-	public function PreDraw(state:PlayState)
+	public function preDraw(state:PlayState)
 	{
-		if (instance.camPath == null)
-			return;
-		instance.notePathRenderer.PreDraw();
+		instance.preDraw();
 	}
 
 	/**
 	 * Call this from the PlayState's draw method after calling the superclass method.
 	 * @param state 
 	 */
-	public function PostDraw(state:PlayState)
+	public function postDraw(state:PlayState)
 	{
-		if (instance.camPath == null)
-			return;
-		instance.holdNoteRenderer.PreDraw();
+		instance.postDraw();
 	}
 
 	/**
 	 * Call this before startTimer in PlayState.startCountdown().
 	 * @param state 
 	 */
-	public function OnCountdown(state:PlayState)
+	public function onCountdown(state:PlayState)
 	{
-		instance.InitializeFakeExplosionReceptors();
+		// instance.initializeFakeExplosionReceptors();
 	}
 
 	/**
-	 * Call this at the start of PlayState.Update().
+	 * Call this at the start of PlayState.update().
 	 * @param state 
 	 * @param elapsed 
 	 */
-	public function Update(state:PlayState, elapsed:Float)
+	public function update(state:PlayState, elapsed:Float)
 	{
-		instance.Update(elapsed);
-		UpdateReceptors();
+		instance.update(elapsed);
+		hideReceptors();
 	}
 
-	function UpdateReceptors()
+	private function hideReceptors()
 	{
-		var currentBeat = GetCurrentBeat();
 		for (receptorIndex in 0...instance.state.strumLineNotes.length)
 		{
+			// Note positioning moved to SchmovinRenderers for multiple playfield support
+			// This is for updating receptor positions...
 			var receptor = instance.state.strumLineNotes.members[receptorIndex];
-			instance.timeline.UpdateNotes(currentBeat, receptor, SchmovinUtil.GetPlayerOfTotalColumn(receptorIndex), receptorIndex);
+			receptor.visible = false;
 		}
-		instance.UpdateFakeExplosionReceptors();
 	}
 
 	// Taken from GroovinConductor
-	public static function HasBPMChanges()
+	public static function hasBPMChanges()
 	{
 		return Conductor.bpmChangeMap.length > 0;
 	}
 
 	// Taken from GroovinConductor
-	public static function GetSortedBPMChanges()
+	public static function getSortedBPMChanges()
 	{
 		var sortedChanges = Conductor.bpmChangeMap.copy();
 		sortedChanges.sort((e1, e2) ->
@@ -182,13 +171,13 @@ class SchmovinStandalone
 	}
 
 	// Taken from GroovinConductor
-	public static function GetCurrentBeat()
+	public static function getCurrentBeat()
 	{
-		return SchmovinAdapter.GetInstance().GetCurrentBeat();
+		return SchmovinAdapter.getInstance().getCurrentBeat();
 	}
 
 	// Taken from GroovinConductor
-	public static function GetCrotchetFromBPM(bpm:Float)
+	public static function getCrotchetFromBPM(bpm:Float)
 	{
 		return 60000.0 / bpm;
 	}
@@ -204,10 +193,13 @@ class SchmovinStandalone
 	 * @param SONG 
 	 * @return Bool
 	 */
-	public function PostNotePosition(state:PlayState, strumLine:FlxSprite, daNote:Note, SONG:SwagSong):Bool
+	public function postNotePosition(state:PlayState, strumLine:FlxSprite, daNote:Note, SONG:SwagSong):Bool
 	{
-		if (daNote.alive && daNote.visible)
-			instance.timeline.UpdateNotes(GetCurrentBeat(), daNote, daNote.GetPlayer());
+		if (daNote.alive)
+			{
+				daNote.visible = false;
+				daNote.cameras = [];
+			}
 		return true;
 	}
 }

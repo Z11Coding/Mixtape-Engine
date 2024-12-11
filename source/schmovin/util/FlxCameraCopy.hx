@@ -15,7 +15,6 @@ class FlxCameraCopy extends FlxCamera
 {
 	var _target:FlxCamera;
 
-	public var scrollOffset:FlxPoint = new FlxPoint();
 	public var scrollOverrideTarget:FlxPoint = new FlxPoint();
 	public var scrollOverride:Float = 0;
 	public var zoomOffset:Float = 0;
@@ -47,7 +46,7 @@ class FlxCameraCopy extends FlxCamera
 		this.height = _target.height;
 	}
 
-	public static function ElapsedFactor():Float
+	private static function elapsedFactor():Float
 	{
 		return 1 / (60 * FlxG.elapsed);
 	}
@@ -58,7 +57,7 @@ class FlxCameraCopy extends FlxCamera
 		scroll.x -= (_scrollTarget.x - scroll.x) * followLerp * FlxG.updateFramerate / 60;
 		scroll.y -= (_scrollTarget.y - scroll.y) * followLerp * FlxG.updateFramerate / 60;
 
-		scroll.x += (_scrollTarget.x - scroll.x) * followLerp * FlxG.updateFramerate / 60 / ElapsedFactor();
-		scroll.y += (_scrollTarget.y - scroll.y) * followLerp * FlxG.updateFramerate / 60 / ElapsedFactor();
+		scroll.x += (_scrollTarget.x - scroll.x) * followLerp * FlxG.updateFramerate / 60 / elapsedFactor();
+		scroll.y += (_scrollTarget.y - scroll.y) * followLerp * FlxG.updateFramerate / 60 / elapsedFactor();
 	}
 }

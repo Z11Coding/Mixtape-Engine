@@ -2,7 +2,7 @@
  * @ Author: 4mbr0s3 2
  * @ Create Time: 2021-08-22 19:49:42
  * @ Modified by: 4mbr0s3 2
- * @ Modified time: 2021-11-14 10:30:11
+ * @ Modified time: 2022-07-30 20:25:36
  */
 
 package schmovin;
@@ -17,6 +17,7 @@ import openfl.filters.ShaderFilter;
 import schmovin.SchmovinRenderers.ISchmovinRenderer;
 import schmovin.SchmovinRenderers.SchmovinHoldNoteRenderer;
 import schmovin.SchmovinRenderers.SchmovinNotePathRenderer;
+import schmovin.SchmovinRenderers.SchmovinTapNoteRenderer;
 import schmovin.shaders.PlaneRaymarcher;
 import schmovin.util.FlxCameraCopy;
 
@@ -28,7 +29,7 @@ class SchmovinInstance
 	public var camGame:FlxCamera;
 
 	public var camBelowGame:FlxCamera;
-	public var camGameCopy:FlxCameraCopy;
+	public var camGameCopy:FlxCamera;
 	public var camAboveGame:FlxCamera;
 	public var camPath:FlxCameraCopy;
 	public var camNotes:FlxCameraCopy;
@@ -37,9 +38,11 @@ class SchmovinInstance
 	public var planeRaymarcherFilter:ShaderFilter;
 
 	public var timeline:SchmovinTimeline;
+	public var playfields:SchmovinPlayfieldManager;
 
 	private var _client:SchmovinClient;
 
+	public var tapNoteRenderer:ISchmovinRenderer;
 	public var holdNoteRenderer:ISchmovinRenderer;
 	public var notePathRenderer:ISchmovinRenderer;
 
@@ -49,34 +52,37 @@ class SchmovinInstance
 	public var layerAboveGame:FlxTypedGroup<FlxBasic>;
 	public var layerAboveHUD:FlxTypedGroup<FlxBasic>;
 
+	private var _destroyed:Bool = false;
+
 	public var fakeExplosionReceptors:FlxTypedGroup<FlxSprite>;
 
-	public function SetClient(client:SchmovinClient)
+	public function setClient(client:SchmovinClient)
 	{
-		_client.Destroy();
+		_client.destroy();
 		_client = client;
 	}
 
 	private function new() {}
 
-	public static function IsPixelStage()
+	public static function isPixelStage()
 	{
 		return PlayState.curStage.startsWith('school');
 	}
 
-	public function InitializeFakeExplosionReceptors()
+	@:deprecated('Explosions are already automatically centered by receptor renderer')
+	public function initializeFakeExplosionReceptors()
 	{
 		fakeExplosionReceptors = new FlxTypedGroup<FlxSprite>();
-		SchmovinAdapter.GetInstance().Log('Initialized fake explosion receptors');
+		SchmovinAdapter.getInstance().log('Initialized fake explosion receptors');
 		fakeExplosionReceptors.cameras = [camNotes];
-		if (IsPixelStage())
-			CreatePixelExplosionReceptors();
+		if (isPixelStage())
+			createPixelExplosionReceptors();
 		else
-			CreateNormalExplosionReceptors();
+			createNormalExplosionReceptors();
 		state.add(fakeExplosionReceptors);
 	}
 
-	function CreatePixelExplosionReceptors()
+	private function createPixelExplosionReceptors()
 	{
 		for (i in 0...state.strumLineNotes.length)
 		{
@@ -95,7 +101,7 @@ class SchmovinInstance
 		}
 	}
 
-	function CreateNormalExplosionReceptors()
+	private function createNormalExplosionReceptors()
 	{
 		for (i in 0...state.strumLineNotes.length)
 		{
@@ -113,7 +119,14 @@ class SchmovinInstance
 		}
 	}
 
-	public function UpdateFakeExplosionReceptors()
+	private function initializePlayfields()
+	{
+		playfields.addPlayfield(new SchmovinPlayfield('dad', 0, timeline.getModList()));
+		playfields.addPlayfield(new SchmovinPlayfield('bf', 1, timeline.getModList()));
+	}
+
+	@:deprecated
+	public function updateFakeExplosionReceptors()
 	{
 		if (fakeExplosionReceptors == null)
 			return;
@@ -121,8 +134,13 @@ class SchmovinInstance
 		{
 			var explosion = fakeExplosionReceptors.members[index];
 			var target = state.strumLineNotes.members[index];
-			target.visible = target.animation.name != 'confirm';
-			explosion.visible = !target.visible;
+			// target.alpha = target.animation.name != 'confirm' ? 1 : 0;
+			// explosion.visible = target.alpha != 1;
+			explosion.visible = false;
+
+			// Obsolete due to tap note and receptor rendering
+			// Keeping this code just in case the rendering's too laggy...
+
 			if (!explosion.visible)
 				continue;
 
@@ -143,8 +161,34 @@ class SchmovinInstance
 		}
 	}
 
-	public function InitializeCameras()
+	private function initializeCamBelowGame()
 	{
+		camBelowGame = new FlxCamera();
+		camBelowGame.bgColor = FlxColor.TRANSPARENT;
+		FlxG.cameras.add(camBelowGame);
+
+		layerBelowGame = new FlxTypedGroup<FlxBasic>();
+		layerBelowGame.cameras = [camBelowGame];
+		state.add(layerBelowGame);
+	}
+
+	public function initializeAboveHUD()
+	{
+		layerAboveHUD = new FlxTypedGroup<FlxBasic>();
+		layerAboveHUD.cameras = [camHUD];
+		state.add(layerAboveHUD);
+	}
+
+	public function initialize()
+	{
+		initializeCameras();
+		initializeSchmovin();
+	}
+
+	private function initializeCameras()
+	{
+		initializeCamBelowGame();
+
 		camGameCopy = new FlxCameraCopy(camGame);
 		camGameCopy.bgColor = FlxColor.TRANSPARENT;
 		FlxG.cameras.add(camGameCopy);
@@ -169,43 +213,70 @@ class SchmovinInstance
 		FlxG.cameras.add(camNotes);
 	}
 
-	public function InitializeSchmovin()
+	private function initializeSchmovin()
 	{
-		timeline = SchmovinTimeline.Create(state, this);
-		SwitchClient();
-		InitializeRenderers();
+		playfields = new SchmovinPlayfieldManager();
+		timeline = SchmovinTimeline.create(state, this, playfields);
+		initializePlayfields();
+		switchClient();
+		initializeRenderers();
 	}
 
-	public function IsClientNull()
+	public function isClientNull()
 	{
 		return Std.is(_client, SchmovinClientNull);
 	}
 
-	function SwitchClient()
+	private function switchClient()
 	{
-		_client = new SchmovinClientNull(this, timeline, state);
-		SchmovinAdapter.GetInstance().ForEveryMod([this, timeline, state]);
+		_client = new SchmovinClientWithDebugger(this, timeline, state);
+		// _client = new SchmovinClientNull(this, timeline, state);
+		SchmovinAdapter.getInstance().forEveryMod([this, timeline, state]);
 	}
 
-	public function InitializeRenderers()
+	private function initializeRenderers()
 	{
 		holdNoteRenderer = new SchmovinHoldNoteRenderer(state, [camNotes], timeline, this);
+		tapNoteRenderer = new SchmovinTapNoteRenderer(state, [camNotes], timeline, this);
 		notePathRenderer = new SchmovinNotePathRenderer(state, [camPath], timeline, this);
 	}
 
-	public static function Create()
+	public function preDraw()
 	{
-		return new SchmovinInstance();
+		if (camPath == null)
+			return;
+		notePathRenderer.preDraw();
 	}
 
-	public function Destroy()
+	public function postDraw()
 	{
-		_client.Destroy();
+		if (_destroyed)
+			return;
+		holdNoteRenderer.preDraw();
+		tapNoteRenderer.preDraw();
 	}
 
-	public function Update(elapsed:Float)
+	public static function create(state:PlayState, camHUD:FlxCamera, camGame:FlxCamera)
 	{
-		_client.Update(elapsed);
-		timeline.Update(SchmovinAdapter.GetInstance().GetCurrentBeat());
+		var instance = new SchmovinInstance();
+		instance.state = state;
+		instance.camHUD = camHUD;
+		instance.camGame = camGame;
+		return instance;
+	}
+
+	public function destroy()
+	{
+		_destroyed = true;
+		_client.destroy();
+		tapNoteRenderer.destroy();
+		holdNoteRenderer.destroy();
+		notePathRenderer.destroy();
+	}
+
+	public function update(elapsed:Float)
+	{
+		_client.update(elapsed);
+		timeline.update(SchmovinAdapter.getInstance().getCurrentBeat());
 	}
 }
