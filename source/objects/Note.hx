@@ -467,6 +467,11 @@ class Note extends FlxSkewedSprite
 			scale.y *= ratio;
 			updateHitbox();
 		}
+		if(isSustainNote && animation.curAnim != null && animation.curAnim.name.endsWith('tail'))
+		{
+			scale.y *= ratio * 0.5;
+			updateHitbox();
+		}
 	}
 
 	private function set_texture(value:String):String
@@ -918,7 +923,7 @@ class Note extends FlxSkewedSprite
 
 		if(copyX)
 			if (isSustainNote) 
-				x = strumX + offsetX + 37 + Math.cos(angleDir) * distance;
+				x = strumX + offsetX + 30 + Math.cos(angleDir) * distance;
 			else
 				x = strumX + offsetX + Math.cos(angleDir) * distance;
 

@@ -418,12 +418,12 @@ class PauseSubState extends MusicBeatSubstate
 					Mods.loadTopMod();
 					if(PlayState.isStoryMode)
 					{
-						PlayState.instance.schmovin.OnExitPlayState(new StoryMenuState());
+						Main.schmovin.onExitPlayState(new states.StoryMenuState());
 						FlxG.switchState(new StoryMenuState());
 					}
 					else
 					{
-						PlayState.instance.schmovin.OnExitPlayState(new FreeplayState());
+						Main.schmovin.onExitPlayState(new states.FreeplayState());
 						FlxG.switchState(new FreeplayState());
 					}
 

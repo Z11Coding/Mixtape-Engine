@@ -246,7 +246,7 @@ class Main extends Sprite
 		}
 		#end
 
-		SchmovinAdapter.setInstance(new PsychSchmovinAdapter());
+		SchmovinAdapter.setInstance(new schmovin.PsychSchmovinAdapter());
 		schmovin = new SchmovinStandalone();
 
 		FlxG.scaleMode = scaleMode = new FunkinRatioScaleMode();

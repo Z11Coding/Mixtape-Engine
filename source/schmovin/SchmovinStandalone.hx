@@ -196,10 +196,10 @@ class SchmovinStandalone
 	public function postNotePosition(state:PlayState, strumLine:FlxSprite, daNote:Note, SONG:SwagSong):Bool
 	{
 		if (daNote.alive)
-			{
-				daNote.visible = false;
-				daNote.cameras = [];
-			}
+		{
+			daNote.visible = false;
+			daNote.cameras = [];
+		}
 		return true;
 	}
 }
