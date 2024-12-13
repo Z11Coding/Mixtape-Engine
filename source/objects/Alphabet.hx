@@ -331,14 +331,15 @@ class ColoredAlphabet extends Alphabet
 		}
 	}
 
-	public function rainbowify()
-	{
+	public function rainbowify(?jump:Int = 1)
+	{ var index:Int = 0;
 		var numLetters = letters.length;
 		for (i in 0...numLetters)
 		{
-			var hue = (i / numLetters) * 360;
-			var rainbow:FlxColor = FlxColor.getHSBColorWheel(hue, 1, 1);
-			letters[i].color = rainbow;
+			var hue = (i / numLetters) * 360; // I dunno.
+			var rainbow:Array<FlxColor> = FlxColor.getHSBColorWheel();
+			letters[i].color = rainbow[(index) % rainbow.length];
+			index = i + jump;
 		}
 	}
 }
