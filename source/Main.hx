@@ -373,52 +373,57 @@ class Main extends Sprite
 		return asStateClass == true ? Type.getClass(FlxG.state) : Type.getClassName(Type.getClass(FlxG.state)).split(".")[Lambda.count(Type.getClassName(Type.getClass(FlxG.state)).split(".")) - 1];
 	}
 
-	public static inline function handleStateBasedClosing()
-	{
-		if (!pressedOnce)
-		{
+	public static inline function handleStateBasedClosing() {
+		if (!pressedOnce) {
 			SyncUtils.wait(() -> TransitionState.currenttransition == null);
-			if (WindowUtils.__triedClosing)
-			{
+			if (WindowUtils.__triedClosing) {
 				WindowUtils.preventClosing = true;
 				pressedOnce = true;
-				switch (Type.getClassName(Type.getClass(FlxG.state)).split(".")[Lambda.count(Type.getClassName(Type.getClass(FlxG.state)).split(".")) - 1])
-				{
-					case "ChartingStateOG", "ChartingStatePsych":
-						if (currentState() == "ChartingStateOGfhandle") {
-						FlxG.state.openSubState(new substates.Prompt("Are you sure you want to exit? Your progress will not be saved.", function()
-						{
-							TransitionState.transitionState(ExitState, {transitionType: "fallRandom", onComplete: function()
-							{
 
-							}});
-						}, function()
-						{
-							pressedOnce = false;
-						})); 
+
+	
+				switch (Type.getClassName(Type.getClass(FlxG.state)).split(".")[Lambda.count(Type.getClassName(Type.getClass(FlxG.state)).split(".")) - 1]) {
+					case "ChartingStateOG", "ChartingStatePsych":
+						if (currentState() == "ChartingStateOG") {
+							FlxG.state.openSubState(new substates.Prompt("Are you sure you want to exit? Your progress will not be saved.", function() {
+								new FlxTimer().start(10, function(timer:FlxTimer) {
+									if (pressedOnce) {
+										MusicBeatState.switchState(new ExitState());
+									}
+								});
+								TransitionState.transitionState(ExitState, {transitionType: "fallRandom", onComplete: function() {}});
+							}, function() {
+								pressedOnce = false;
+							}));
 						}
 						if (currentState() == "ChartingStatePsych") {
-							FlxG.state.openSubState(new states.editors.content.Prompt("Are you sure you want to exit? Your progress will not be saved.", function()
-							{
-								TransitionState.transitionState(ExitState, {transitionType: "fallRandom", onComplete: function()
-								{
-
-								}});
-							}, function()
-							{
+							FlxG.state.openSubState(new states.editors.content.Prompt("Are you sure you want to exit? Your progress will not be saved.", function() {
+								new FlxTimer().start(10, function(timer:FlxTimer) {
+									if (pressedOnce) {
+										MusicBeatState.switchState(new ExitState());
+									}
+								});
+								TransitionState.transitionState(ExitState, {transitionType: "fallRandom", onComplete: function() {}});
+							}, function() {
 								pressedOnce = false;
-							})); }
-					case "PlayState":
-						{
-							TransitionState.transitionState(ExitState, {transitionType: "fallRandom", onComplete: function()
-							{
-
-						}});
+							}));
 						}
+					case "PlayState":
+						TransitionState.transitionState(ExitState, {transitionType: "fallRandom", onComplete: function() {}});
+						new FlxTimer().start(10, function(timer:FlxTimer) {
+							if (pressedOnce) {
+								MusicBeatState.switchState(new ExitState());
+							}
+						});
 					default:
 						// Default behavior: close the window
 						FlxG.autoPause = false;
 						TransitionState.transitionState(ExitState, {transitionType: "transparent close"});
+						new FlxTimer().start(10, function(timer:FlxTimer) {
+							if (pressedOnce) {
+								MusicBeatState.switchState(new ExitState());
+							}
+						});
 				}
 			}
 			// Main.closeGame();

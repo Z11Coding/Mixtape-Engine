@@ -575,7 +575,7 @@ class Note extends NoteObject
 			texture = '';
 			if (mania <= 8) 
 			{
-				//rgbShader = new RGBShaderReference(this, initializeGlobalRGBShader(noteData));
+				rgbShader = new RGBShaderReference(this, initializeGlobalRGBShader(noteData));
 				if (noteType == '' || noteType == null) reloadNote('normal');
 			}
 			else

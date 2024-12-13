@@ -10,11 +10,16 @@ class CategoryState extends MusicBeatState
 	public static var menuItems:Array<String> = [
 		"All", "Base"
 	];
+	private var showMods:Bool = true;
+	private var showSecrets:Bool = true;
+	private var showAll:Bool = true;
 
 	//I'll softcode this eventually
 	public static var menuLocks:Array<Bool> = [
 		false, false
 	];
+
+	private var hhhhhh:Bool = true;
 
 	public static var loadWeekForce:String = 'All';
 
@@ -25,6 +30,40 @@ class CategoryState extends MusicBeatState
 	var easterEggKeys:Array<String> = [];
 	var allowedKeys:String = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 	var easterEggKeysBuffer:String = '';
+
+	public function new(?categories:Array<String>, ?showmods:Bool = true, ?showsecrets:Bool = true, ?showall:Bool = true, ?h:Bool = true)
+	{
+		super();
+		if (categories != null) {
+			menuItems = categories;
+		}
+		this.showMods = showmods;
+		this.showSecrets = showsecrets;
+		this.showAll = showall;
+		this.hhhhhh = h;
+
+		if (menuItems.contains("All") && !showAll) {
+			throw "CategoryState: 'All' category is disabled, yet it's in the menuItems array!";
+		}
+		if (menuItems.contains("Mods") && !showMods) {
+			throw "CategoryState: 'Mods' category is disabled, yet it's in the menuItems array!";
+		}
+		if (menuItems.contains("Secrets") && !showSecrets) {
+			throw "CategoryState: 'Secrets' category is disabled, yet it's in the menuItems array!";
+		}
+		if (menuItems.contains(" ") || menuItems.contains("")) {
+			throw "CategoryState: Empty strings are not allowed in the menuItems array!";
+		}
+		if (menuItems.contains("h?")) {
+			if (h) {
+			throw "CategoryState: 'h?' category is reserved for a secret!"; } else {
+				throw "CategoryState: 'h?' category is disabled, yet it's in the menuItems array!";
+			}
+		}
+	
+	
+		super();
+	}
 
 	override function create()
 	{
@@ -55,7 +94,7 @@ class CategoryState extends MusicBeatState
 				leChars.push(leWeek.songs[j][1]);
 			}
 
-			if (leWeek.category == null) {
+			if (leWeek.category == null && showMods) {
 				mods = true;
 				if (!menuItems.contains("Mods")) {
 					menuItems.push("Mods");
@@ -86,10 +125,11 @@ class CategoryState extends MusicBeatState
 		menuItems = filteredItems;
 
 		// Move "All" to the front of menuItems
-		if (menuItems.contains("All")) {
+		if (menuItems.contains("All") && showAll) {
 			menuItems.remove("All");				
 			menuItems.insert(0, "All");
-		}
+		} else
+		{ if (menuItems.contains("All")) menuItems.remove("All"); }
 
 
 		// Main.simulateIntenseMaps();

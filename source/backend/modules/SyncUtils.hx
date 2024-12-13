@@ -67,9 +67,9 @@ class SyncUtils
 	 * ! YOU WILL FAIL TO COMPILE WITHOUT A LAMBDA CONDITIONAL!
 	 */
 
-	public static overload extern macro function wait(expr:Expr, ?conD:Expr):Expr {
+	public static overload extern macro function wait(expr:Expr, ?conD:String):Expr {
         var condition = macro () -> $expr;
-        var conDExpr = conD != null ? conD : macro null;
+        var conDExpr = conD != null ? Context.makeExpr(conD, Context.currentPos()) : macro null;
 		Context.warning("You didn't use a lambda function for the condition. This may cause unexpected behavior.", expr.pos);
         return macro {
             backend.modules.SyncUtils.wait($condition, $conDExpr);
