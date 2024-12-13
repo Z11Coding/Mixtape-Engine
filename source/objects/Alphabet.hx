@@ -298,6 +298,39 @@ class ColoredAlphabet extends Alphabet {
             letter.color = colour;
         }
     }
+	public function changeLetterColor(newColor:FlxColor, ?index:Int = null, ?letter:String = null)
+	{
+		if (index != null && index >= 0 && index < letters.length)
+		{
+			letters[index].color = newColor;
+		}
+		else if (letter != null)
+		{
+			for (l in letters)
+			{
+				if (l.character == letter)
+				{
+					l.color = newColor;
+				}
+			}
+		}
+		else
+		{
+			colour = newColor;
+			SetColor();
+		}
+	public function rainbowify()
+	{
+		var numLetters = letters.length;
+		for (i in 0...numLetters)
+		{
+			var hue = (i / numLetters) * 360;
+			var rainbow:FlxColor = FlxColor.getHSBColorWheel(hue, 1, 1);
+			letters[i].color = rainbow;
+		}
+	}
+
+
 }
 class DynamicAlphabet extends Alphabet {
     private var originalText:String;
