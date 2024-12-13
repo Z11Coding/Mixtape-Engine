@@ -341,6 +341,7 @@ class ColoredAlphabet extends Alphabet
 			letters[i].color = rainbow;
 		}
 	}
+}
 
 	class DynamicAlphabet extends Alphabet
 	{
