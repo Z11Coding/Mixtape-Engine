@@ -434,6 +434,8 @@ class ColoredAlphabet extends Alphabet
 	{
 		private var originalText:String;
 		private var preserveType:Bool;
+		public var dynamicRainbow:Bool;
+		private var rainbowSettings = { index: 0, jump: 1 };
 
 		public function new(x:Float, y:Float, text:String = "", ?bold:Bool = true, ?color:FlxColor = 0xFFFFFF, PreserveType:Bool = false)
 		{
@@ -446,6 +448,33 @@ class ColoredAlphabet extends Alphabet
 		{
 			super.update(elapsed);
 			this.text = getRandomizedText();
+			if (dynamicRainbow)
+			{
+				dynamicRainbowify(rainbowSettings.jump, rainbowSettings.index);
+				rainbowSettings.index += rainbowSettings.jump;
+			}
+		}
+
+		public function setDynamicRainbow(?on:Bool, ?jump):Void
+		{
+			if (on != null)
+				dynamicRainbow = on;
+			if (jump != null)
+				rainbowSettings.jump = jump;
+			}
+	
+
+		private function dynamicRainbowify(jump:Int = 1, ?startIndex:Int = 0):Void
+		{
+			var index:Int = 0;
+			var numLetters = letters.length;
+			for (i in 0...numLetters)
+			{
+				var hue = (i / numLetters) * 360; // I dunno.
+				var rainbow:Array<FlxColor> = FlxColor.getHSBColorWheel();
+				letters[i].color = rainbow[(index) % rainbow.length];
+				index = i + jump;
+			}
 		}
 
 		private function getRandomizedText():String
