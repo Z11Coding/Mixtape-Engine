@@ -31,6 +31,22 @@ typedef CharacterFile = {
 	@:optional var _editor_isPlayer:Null<Bool>;
 }
 
+typedef SpritePart = {
+	var animations:Array<AnimArray>;
+	var image:String;
+	var scale:Float;
+	var sing_duration:Float;
+	var position:Array<Float>;
+
+	var flip_x:Bool;
+	var no_antialiasing:Bool;
+}
+
+typedef AnimCallback = {
+	var anim:String;
+	var callback:Void->Dynamic;
+}
+
 typedef AnimArray = {
 	var anim:String;
 	var name:String;
@@ -70,6 +86,7 @@ class Character extends FlxSprite
 
 	public var healthIcon:String = 'face';
 	public var animationsArray:Array<AnimArray> = [];
+	public var animationsCallback:Array<AnimCallback> = [];
 
 	public var positionArray:Array<Float> = [0, 0];
 	public var cameraPosition:Array<Float> = [0, 0];

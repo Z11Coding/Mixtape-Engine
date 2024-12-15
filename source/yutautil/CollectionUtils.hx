@@ -6,6 +6,11 @@ import haxe.Constraints.IMap;
 import haxe.ds.StringMap;
 
 // @:inline
+
+// enum ListFunc {
+//     pop;
+//     get(item:T):Bool;
+// }
 class CollectionUtils {
 
     public static inline function isIterable<T>(input:Dynamic):Bool {
@@ -105,6 +110,19 @@ class CollectionUtils {
         }
         return null;
     }
+
+
+
+
+    // public static inline function getFromList<T>(list:List<T>, func:ListFunc):Dynamic {
+    //     switch (func) {
+    //         case ListFunc.pop:
+    //             return list.pop();
+    //         case ListFunc.get(item):
+    //             return list.filter(function(i) return i == item).first();
+    //     }
+    //     return null;
+    // }
 
     public static inline function mapIndexOf<T>(map:Map<Dynamic, T>, item:T):Dynamic {
         for (key in map.keys()) {

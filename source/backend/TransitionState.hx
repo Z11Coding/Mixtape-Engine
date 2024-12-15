@@ -84,7 +84,7 @@ class TransitionState {
                     transitionState(requiredTransition == null ? targetState : requiredTransition.targetState, requiredTransition == null ? options : requiredTransition.options, requiredTransition == null ? args : requiredTransition.args, requiredTransition != null);
                 }
             }, 1);
-            // return;
+            return;
         }
         isTransitioning = true;
         //trace("Transitioning to state: " + Type.getClassName(targetState));

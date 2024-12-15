@@ -901,6 +901,23 @@ class CommandPrompt
 					print("Warning: exit command only accepts 'forced' as an argument. Closing game...");
 					this.switchState("ExitState");
 				}
+			case "stopTransition":
+				if (args.length == 0)
+				{
+					if (TransitionState.currenttransition != null)
+					FlxG.switchState(TransitionState.currenttransition.targetState);
+					TransitionState.currenttransition = null;
+					while (TransitionState.currenttransition != null)
+					{
+						print("Forcing transition to stop...");
+						TransitionState.currenttransition = null;
+					}
+
+				}
+				else
+				{
+					print("Error: stopTransition does not accept any arguments.");
+				}
 			case "resetState":
 				if (args.length == 0)
 				{
