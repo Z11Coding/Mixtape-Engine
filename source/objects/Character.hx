@@ -91,6 +91,7 @@ class Character extends FlxSprite
 	public var positionArray:Array<Float> = [0, 0];
 	public var cameraPosition:Array<Float> = [0, 0];
 	public var healthColorArray:Array<Int> = [0, 0, 0];
+	public var parts:Array<SpritePart> = [];
 
 	public var missingCharacter:Bool = false;
 	public var missingText:FlxText;

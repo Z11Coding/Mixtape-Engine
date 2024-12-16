@@ -75,6 +75,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 		optionsArray.push(new GameplayOption('Instakill on Miss', 'instakill', 'bool', false));
 		optionsArray.push(new GameplayOption('Practice Mode', 'practice', 'bool', false));
 		optionsArray.push(new GameplayOption('Botplay', 'botplay', 'bool', false));
+		optionsArray.push(new GameplayOption('Showcase Mode', 'showcase', 'bool', false));
 		optionsArray.push(new GameplayOption('GF Mode', 'gfMode', 'bool', false));
 		optionsArray.push(new GameplayOption('Opponent Mode', 'opponentplay', 'bool', false));
 		optionsArray.push(new GameplayOption('Play Both Sides', 'bothMode', 'bool', false));

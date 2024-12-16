@@ -5811,7 +5811,7 @@ class PlayState extends MusicBeatState
 		for (playfield in playfields.members)
 		{
 			if (playfield.isPlayer)
-				playfield.autoPlayed = cpuControlled;
+				playfield.autoPlayed = cpuControlled || ClientPrefs.getGameplaySetting('showcase', false);
 		}
 
 		if (dad.color == 0xFF003BB9 && (dad.animation.curAnim.name == 'idle' || dad.animation.curAnim.name.startsWith('dance')))

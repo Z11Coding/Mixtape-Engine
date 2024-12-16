@@ -152,6 +152,7 @@ import states.FirstCheckState;
 		'instakill' => false,
 		'practice' => false,
 		'botplay' => false,
+		'showcase' => false,
 		'gfMode' => false,
 		'opponentplay' => false,
 		'aiMode' => false,
