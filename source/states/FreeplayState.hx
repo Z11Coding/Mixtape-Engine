@@ -794,12 +794,16 @@ class FreeplayState extends MusicBeatState
 				FlxTransitionableState.skipNextTransOut = false;
 				if (!multisong)
 				{
+					//I'll make it look pretty later
 					if(ClientPrefs.getGameplaySetting('bothMode', false) && (ClientPrefs.getGameplaySetting('opponentplay', false) || ClientPrefs.getGameplaySetting('gfMode', false)))
 						mismatched = "you can't have \"Play Both Sides\" and \"GF Mode\" or \"Opponent Mode\" on at the same time!";
+					else mismatched = "";
 					if(ClientPrefs.getGameplaySetting('opponentplay', false) && ClientPrefs.getGameplaySetting('gfMode', false))
 						mismatched = "you can't have \"GF Mode\" and \"Opponent Mode\" on at the same time!";
+					else mismatched = "";
 					if(ClientPrefs.getGameplaySetting('loopMode', false) && ClientPrefs.getGameplaySetting('loopModeC', false))
 						mismatched = "you can't have \"Loop Mode\" and \"Loop Challenge Mode\" on at the same time!";
+					else mismatched = "";
 					try
 					{
 						if (songLowercase == "song-not-found")

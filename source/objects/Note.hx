@@ -576,7 +576,7 @@ class Note extends NoteObject
 			if (mania <= 8) 
 			{
 				rgbShader = new RGBShaderReference(this, initializeGlobalRGBShader(noteData));
-				if (noteType == '' || noteType == null) reloadNote('normal');
+				if (noteType == '' || noteType == null) reloadNote('NOTE');
 			}
 			else
 			{
