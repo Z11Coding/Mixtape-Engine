@@ -1,5 +1,5 @@
 package psychlua;
-
+import llua.State;
 import openfl.utils.Assets;
 
 #if (LUA_ALLOWED && flxanimate)

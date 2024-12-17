@@ -1,5 +1,5 @@
 package psychlua;
-
+import llua.State;
 import backend.WeekData;
 import objects.Character;
 

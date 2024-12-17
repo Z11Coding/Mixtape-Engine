@@ -59,6 +59,7 @@ class FreeplayState extends MusicBeatState
 	public static var SONG:SwagSong = null;
 
 	public static var lastCategory:String;
+	public static var giveSong:Bool = false;
 
 	var missingTextBG:FlxSprite;
 	var missingText:FlxText;
@@ -125,6 +126,26 @@ class FreeplayState extends MusicBeatState
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
 		#end
+
+		if (APEntryState.inArchipelagoMode)
+		{
+
+			if (!FlxG.save.data.doOnce)
+			{
+				for (i in 0...WeekData.weeksList.length) {
+					var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
+					
+					for (song in leWeek.songs)
+					{
+						APEntryState.unlockable.remove(song[0]); // To remove dups
+						APEntryState.unlockable.push(song[0]);
+						APEntryState.unlockable.remove('Tutorial'); // To remove Tutorial because it keeps re-adding itself
+					}
+				}
+				FlxG.save.data.doOnce = true;
+				FlxG.save.flush();
+			}
+		}
 
 		#if sys
 		ArtemisIntegration.setGameState ("menu");
@@ -343,7 +364,7 @@ class FreeplayState extends MusicBeatState
 		if (APEntryState.unlockable.length > 0)
 		{
 			var daSong = APEntryState.unlockable[FlxG.random.int(0, APEntryState.unlockable.length - 1)];
-			ArchPopup.startPopupSong(daSong, 'Color');
+			ArchPopup.startPopupSong(daSong, 'archColor');
 			reloadSongs();
 		}
 		trace(APEntryState.unlockable);
@@ -414,7 +435,15 @@ class FreeplayState extends MusicBeatState
 						{
 							colors = [146, 113, 253];
 						}
-						addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
+						if (APEntryState.inArchipelagoMode)
+						{
+							for (ii in 0...curUnlocked.length)
+							{
+								if (song[0] == curUnlocked[ii])
+									addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
+							}
+						}
+						else addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
 					}
 
 					if (Std.string('Small Argument').toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()) && FlxG.save.data.gotIntoAnArgument && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 

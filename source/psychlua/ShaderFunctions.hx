@@ -1,5 +1,5 @@
 package psychlua;
-
+import llua.State;
 #if (!flash && sys)
 import flixel.addons.display.FlxRuntimeShader;
 #end

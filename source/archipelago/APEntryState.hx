@@ -10,7 +10,6 @@ import haxe.DynamicAccess;
 import haxe.Timer;
 import archipelago.Client;
 import substates.Prompt;
-import archipelago.GameState;
 import flixel.FlxG;
 import flixel.FlxState;
 import flixel.addons.ui.FlxInputText;
@@ -54,6 +53,7 @@ class APEntryState extends FlxState
 	var gradientBar:FlxSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, 300, 0x83B700FF);
 	var swagShader:ColorSwap = null;
 	var titleText:FlxText;
+	public var pubAP:Client;
 
 	public static var unlockable:Array<String> = [];
 	public static var inArchipelagoMode:Bool = false;
@@ -217,10 +217,67 @@ class APEntryState extends FlxState
         return daReason;
     }
 
+	function onRoomInfo():Void {
+		trace("Got room info - sending connect packet");
+
+		#if debug
+		var tags = ["AP", "Testing"];
+		#else
+		var tags = ["AP", "Testing"];
+		#end
+		pubAP.ConnectSlot(_slotInput.text, _pwInput.text.length > 0 ? _pwInput.text : null, 0x7, tags, {major: 0, minor: 5, build: 0});
+	}
+
+	function onSlotRefused(errors:Array<String>):Void {
+		inArchipelagoMode = false;
+		trace("Slot refused", errors);
+		closeSubState();
+		switch (errors[0])
+		{
+			case x = "InvalidSlot" | "InvalidGame": postError(x, ["name" => _slotInput.text]);
+			case x = "IncompatibleVersion" | "InvalidPassword" | "InvalidItemsHandling": postError(x);
+			case x: postError("default", ["error" => x]);
+		}
+	}
+
+	function onSocketDisconnected():Void
+	{
+		inArchipelagoMode = false;
+		polltimer.stop();
+		trace("Disconnected");
+		closeSubState();
+		postError("connectionReset");
+	}
+
+	function onSlotConnected(slotData:Dynamic):Void
+	{
+		trace("Connected - switching to game state");
+			polltimer.stop();
+			pubAP.onRoomInfo.remove(onRoomInfo);
+			pubAP.onSlotRefused.remove(onSlotRefused);
+			pubAP.onSocketDisconnected.remove(onSocketDisconnected);
+			pubAP.onSlotConnected.remove(onSlotConnected);
+			closeSubState();
+			inArchipelagoMode = true;
+			var FNF = new FlxSave();
+			FNF.bind("FNF");
+			FNF.data.lastGame = {
+				server: _hostInput.text,
+				port: _portInput.text,
+				slot: _slotInput.text
+			};
+			FNF.close();
+
+			//FlxG.switchState(new APGameState(ap, slotData));
+			FlxG.switchState(new states.MainMenuState());
+	}
+
+	inline function postError(str:String, ?vars:Map<String, Dynamic>)
+		openSubState(new Prompt("Error: " + errDesc(str), 0, null, null, false));
+
+	var polltimer = new Timer(50);
 	function onPlay()
 	{
-		inline function postError(str:String, ?vars:Map<String, Dynamic>)
-			openSubState(new Prompt("Error: " + errDesc(str), 0, null, null, false));
 
 		var port = Std.parseInt(_portInput.text);
 		if (_hostInput.text == "")
@@ -249,73 +306,19 @@ class APEntryState extends FlxState
 
 			var ap = new Client('FNF-${_slotInput.text}', "Friday Night Funkin", uri);
 
-			ap._hOnRoomInfo = () ->
-			{
-				trace("Got room info - sending connect packet");
-
-				#if debug
-				var tags = ["AP", "Testing"];
-				#else
-				var tags = ["AP", "Testing"];
-				#end
-				ap.ConnectSlot(_slotInput.text, _pwInput.text.length > 0 ? _pwInput.text : null, 0x7, tags, {major: 0, minor: 5, build: 0});
-			};
-
-			ap._hOnSlotRefused = (errors:Array<String>) ->
-			{
-				inArchipelagoMode = false;
-				trace("Slot refused", errors);
-				closeSubState();
-				switch (errors[0])
-				{
-					case x = "InvalidSlot" | "InvalidGame": postError(x, ["name" => _slotInput.text]);
-					case x = "IncompatibleVersion" | "InvalidPassword" | "InvalidItemsHandling": postError(x);
-					case x: postError("default", ["error" => x]);
-				}
-			}
-
-			var polltimer = new Timer(50);
+			ap.onRoomInfo.add(onRoomInfo);
+			ap.onSlotRefused.add(onSlotRefused);
 			polltimer.run = ap.poll;
-
-			ap._hOnSocketDisconnected = () ->
-			{
-				inArchipelagoMode = false;
-				polltimer.stop();
-				trace("Disconnected");
-				closeSubState();
-				postError("connectionReset");
-			};
-
-			ap._hOnSlotConnected = (slotData:Dynamic) ->
-			{
-				trace("Connected - switching to game state");
-				polltimer.stop();
-				ap._hOnRoomInfo = () -> {};
-				ap._hOnSlotRefused = (_) -> {};
-				ap._hOnSocketDisconnected = () -> {};
-				ap._hOnSlotConnected = (_) -> {};
-				closeSubState();
-				inArchipelagoMode = true;
-				var FNF = new FlxSave();
-				FNF.bind("FNF");
-				FNF.data.lastGame = {
-					server: _hostInput.text,
-					port: _portInput.text,
-					slot: _slotInput.text
-				};
-				FNF.close();
-
-				//FlxG.switchState(new APGameState(ap, slotData));
-                FlxG.switchState(new states.MainMenuState());
-			}
+			ap.onSocketDisconnected.add(onSocketDisconnected);
+			ap.onSlotConnected.add(onSlotConnected);
 
 			connectSubState.onCancel.add(() ->
 			{
 				inArchipelagoMode = false;
 				polltimer.stop();
-				ap._hOnSlotConnected = null;
 				ap.disconnect_socket();
 			});
+			pubAP = ap;
 		}
 	}
 
