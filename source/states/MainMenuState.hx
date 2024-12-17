@@ -20,6 +20,7 @@ import flixel.input.keyboard.FlxKey;
 import flixel.effects.FlxFlicker;
 import shaders.ChromaticAberration;
 import flixel.addons.effects.FlxTrail;
+import flixel.ui.FlxButton;
 
 using StringTools;
 
@@ -50,6 +51,7 @@ class MainMenuState extends MusicBeatState
 	public var iconBG:FlxSprite;
 	var leftItem:FlxSprite;
 	var rightItem:FlxSprite;
+	var archButton:FlxButton;
 
 	var leftOption:String = #if ACHIEVEMENTS_ALLOWED 'achievements' #else null #end;
 	var rightOption:String = 'options';
@@ -231,6 +233,10 @@ class MainMenuState extends MusicBeatState
 		#end
 
 		super.create();
+
+		archButton = new FlxButton(versionShit.x, versionShit.y - 300, 'Archipelago Login', function(){FlxG.switchState(new archipelago.APEntryState());});
+		archButton.scrollFactor.set();
+		add(archButton);
 
 		FlxG.camera.follow(camFollow, null, 9);
 	}

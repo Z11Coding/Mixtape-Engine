@@ -1,0 +1,52 @@
+/************************************************************************
+** RANGE
+*************************************************************************/
+.range {
+    border: 1px solid $normal-border-color;
+    padding: 1px;
+    border-radius: 2px;
+    filter: $normal-inner-shadow;
+}
+
+.range-value {
+    border: none;
+    border-radius: 1px;
+}
+
+.horizontal-range {
+    background: $normal-background-color-end $normal-background-color-start vertical;
+    initial-width: 150px;
+    initial-height: 8px;
+}    
+
+.horizontal-range .range-value {
+    background:$accent-gradient-start $accent-gradient-end vertical;
+    height: 100%;
+}
+
+.horizontal-range:disabled {
+    border-color: $disabled-border-color;
+}
+
+.horizontal-range:disabled .range-value {
+    background: $disabled-background-color-start $disabled-background-color-end vertical;
+}
+
+.vertical-range {
+    background: $normal-background-color-end $normal-background-color-start horizontal;
+    initial-width: 8px;
+    initial-height: 150px;
+}
+
+.vertical-range .range-value {
+    background: $accent-gradient-start $accent-gradient-end horizontal;
+    width: 100%;
+}
+
+.vertical-range:disabled .range-value {
+    background: $disabled-background-color-start $disabled-background-color-end horizontal;
+}
+
+.vertical-range:disabled {
+    border-color: $disabled-border-color;
+}

@@ -1,0 +1,119 @@
+.sidebar-modal-background {
+    background-color: $modal-background-color;
+    opacity: 0.60;
+}
+
+.sidebar {
+    margin: 50px;
+    background-color: $solid-background-color;
+    padding: 5px;
+    filter: drop-shadow(1, 45, #000000, 0.1, 30, 2, 1, 3, false);
+}
+
+.sidebar.no-background {
+    background-color: none;
+}
+
+.sidebar.no-padding {
+    padding: 0;
+}
+    
+.sidebar:left {
+    border-right: 1px solid $normal-border-color;
+}
+
+.sidebar:right {
+    border-left: 1px solid $normal-border-color;
+}
+
+.sidebar:top {
+    border-bottom: 1px solid $normal-border-color;
+}
+
+.sidebar:bottom {
+    border-top: 1px solid $normal-border-color;
+}
+
+/****************************************************************************/
+/* ANIMATIONS                                                               */
+/****************************************************************************/
+
+.sideBarModifyContent {
+    animation: sideBarModifyContent 0.3s ease 0s 1;
+}
+
+.sideBarRestoreContent {
+    animation: sideBarRestoreContent 0.3s ease 0s 1;
+}
+
+    
+@keyframes sideBarModifyContent {
+    0% {
+    }
+    100% {
+    }
+}
+    
+@keyframes sideBarRestoreContent {
+    0% {
+    }
+    100% {
+    }
+}
+    
+.showSideBarLeft {
+    animation: showSideBarLeft 0.3s ease 0s 1;
+}
+.hideSideBarLeft {
+    animation: showSideBarLeft 0.3s ease 0s 1 reverse backwards;
+}
+    
+@keyframes showSideBarLeft {
+    0% {
+    }
+    100% {
+    }
+}
+
+.showSideBarRight {
+    animation: showSideBarRight 0.3s ease 0s 1;
+}
+
+.hideSideBarRight {
+    animation: showSideBarRight 0.3s ease 0s 1 reverse backwards;
+}
+    
+@keyframes showSideBarRight {
+    0% {
+    }
+    100% {
+    }
+}
+    
+.showSideBarTop {
+    animation: showSideBarTop 0.3s ease 0s 1;
+}
+.hideSideBarTop {
+    animation: showSideBarTop 0.3s ease 0s 1 reverse backwards;
+}
+    
+@keyframes showSideBarTop {
+    0% {
+    }
+    100% {
+    }
+}
+    
+.showSideBarBottom {
+    animation: showSideBarBottom 0.3s ease 0s 1;
+}
+.hideSideBarBottom {
+    animation: showSideBarBottom 0.3s ease 0s 1 reverse backwards;
+}
+    
+@keyframes showSideBarBottom {
+    0% {
+    }
+    100% {
+    }
+}

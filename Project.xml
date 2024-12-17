@@ -137,6 +137,11 @@
 	<haxelib name="flixel-addons" version="3.2.2"/>
 	<haxelib name="tjson" version="1.4.0"/>
 
+	<!-- Archipelago Stuff-->
+	<haxelib name="hxArchipelago"/>
+	<haxelib name="helder.set" />
+	<haxelib name="yaml" />
+
 	<!--Base Game Stuff-->
 	<haxelib name="grig.audio"/>
 	<haxelib name="funkin.vis"/>
@@ -196,6 +201,8 @@
 
 	<!--Allow working memory greater than 1 Gig-->
 	<haxedef name="HXCPP_GC_BIG_BLOCKS"/>
+	<define name="HXCPP_GC_MOVING"/>
+	<define name="HXCPP_GC_SUMMARY"/>
 
 	<!-- Enables a terminal log prompt on debug builds -->
 	<haxelib name="hxcpp-debug-server" if="debug"/>

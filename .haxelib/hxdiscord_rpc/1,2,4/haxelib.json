@@ -1,0 +1,20 @@
+{
+	"name": "hxdiscord_rpc",
+	"url": "https://github.com/MAJigsaw77/hxdiscord_rpc",
+	"license": "MIT",
+	"tags": [
+		"cpp",
+		"discord",
+		"haxe",
+		"rpc"
+	],
+	"description": "Haxe/hxcpp @:native bindings for Discord RPC.",
+	"version": "1.2.4",
+	"releasenote": "Improve executable path retrieval and it's error handling on linux.",
+	"contributors": [
+		"MAJigsaw77"
+	],
+	"dependencies": {
+		"hxcpp": ""
+	}
+}

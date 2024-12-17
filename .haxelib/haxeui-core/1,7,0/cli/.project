@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>cli</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>org.haxe4e.builder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>org.haxe4e.project.nature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>!!!haxestdlib</name>
+			<type>2</type>
+			<location>//C:/SDK/haxe/std/</location>
+		</link>
+		<link>
+			<name>!!haxedeps</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>!!haxedeps/json2object [3.9.0]</name>
+			<type>2</type>
+			<location>//C:/SDK/haxe/lib/json2object/3,9,0/</location>
+		</link>
+	</linkedResources>
+</projectDescription>

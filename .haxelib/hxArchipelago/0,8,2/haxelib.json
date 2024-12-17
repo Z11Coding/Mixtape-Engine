@@ -1,0 +1,17 @@
+{
+  "name": "hxArchipelago",
+  "url": "https://github.com/FelicitusNeko/hxArchipelago/",
+  "license": "MIT",
+  "tags": ["ws", "archipelago"],
+  "description": "Haxe client for Archipelago Multiworld",
+  "version": "0.8.2",
+  "releasenote": "fixes reconnect bug, fixes html5 freeze, auto WS↔WSS as needed",
+  "contributors": ["FelicitusNeko"],
+  "dependencies": {
+    "hxWebSockets": "",
+    "helder.set": "",
+    "tink_json": "",
+    "haxe-concurrent": ""
+  },
+  "classPath": "src"
+}

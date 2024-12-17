@@ -1,0 +1,66 @@
+/************************************************************************
+** OPTIONBOX
+*************************************************************************/
+.optionbox {
+    width: auto;
+    height: auto;
+    horizontal-spacing: 4px;
+    cursor: pointer;
+    color: $normal-text-color;
+}
+
+.optionbox:hover {
+}
+
+.optionbox:disabled {
+    cursor: default;
+    color: $disabled-text-color;
+    border-color: $disabled-border-color;
+}
+
+.optionbox-value {
+    border: 1px solid $normal-border-color;
+    background-color: $tertiary-background-color;
+    width: 18px;
+    height: 18px;
+    vertical-align: top;
+    border-radius: 9px;
+    icon: none;
+    filter: $normal-inner-shadow;
+    cursor: pointer;
+}
+
+.optionbox-value:hover {
+    border: 1px solid $accent-color;
+}
+
+.optionbox-value:active {
+    border: 1px solid $accent-color;
+}
+
+.optionbox-value:selected {
+    icon: $option-selected;
+}
+
+.optionbox-value:disabled {
+    background-color: $solid-background-color-disabled;
+    border-color: $disabled-border-color;
+    cursor: default;
+}
+
+.optionbox-label {
+    vertical-align: center;
+    cursor: pointer;
+}
+
+.optionbox-icon {
+    horizontal-align: center;
+    vertical-align: center;
+    cursor: pointer;
+    opacity: 1;
+}
+
+.optionbox-icon:disabled {
+    cursor: default;
+    opacity: 0.5;
+}

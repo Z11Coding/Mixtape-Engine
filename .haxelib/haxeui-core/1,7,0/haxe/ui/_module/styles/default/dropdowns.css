@@ -1,0 +1,110 @@
+/************************************************************************
+** DROPDOWNS
+*************************************************************************/
+.dropdown {
+    icon: $arrow-up-down;
+    icon-position: far-right;
+    text-align: left;
+    padding: 6px 8px;
+}
+
+.dropdown .itemrenderer .label {
+    color: $normal-text-color;
+    cursor: pointer;
+}
+
+.dropdown .itemrenderer {
+    vertical-align: center;
+}
+
+.dropdown.required-value {
+    background: $warning-background-color-start $warning-background-color-end;
+    border-color: $warning-border-color;
+}
+
+.dropdown.required-value:down {
+    background-color: $warning-background-color-end;
+}
+
+.dropdown.invalid-value {
+    background: $error-background-color-start $error-background-color-end;
+    border-color: $error-border-color;
+}
+
+.dropdown.invalid-value:down {
+    background-color: $error-background-color-end;
+}
+
+.dropdown.valid-value {
+    background: $success-background-color-start $success-background-color-end;
+    border-color: $success-border-color;
+}
+
+.dropdown.valid-value:down {
+    background-color: $success-background-color-end;
+}
+
+.dropdown:down {
+    border-color: $accent-color;
+}
+
+.dropdown-popup {
+    background-color: $default-background-color;
+    border: 1px solid $accent-color;
+    border-top-color: $down-border-color;
+    padding: 1px;
+}
+
+.dropdown-popup.popup-from-bottom {
+    border: 1px solid $accent-color;
+    border-bottom-color: $down-border-color;
+}
+
+.dropdown-popup .listview .itemrenderer {
+    padding: 6px 8px;
+}
+
+.dropdown-popup > .scrollview,
+.dropdown-popup > .scrollview:active,
+.dropdown-popup > .dropdown-search-container > .scrollview,
+.dropdown-popup > .dropdown-search-container > .scrollview:active  {
+    border: none;
+    border-radius: 0px;
+}
+
+.dropdown-filler {
+    background-color: $accent-color;
+    height: 1px;
+}
+
+.dropdown-search-container {
+    spacing: 0;
+}
+
+.dropdown-search-field-container {
+    width: 100%;
+    padding: 0px;
+}
+
+.dropdown-search-field {
+    width: 100%;
+    border: none;
+    border-radius: 0px;
+    icon: $search;
+}
+
+.dropdown-search-field-separator {
+    height: 1px;
+    width: 100%;
+    background-color: $down-border-color;
+}
+/************************************************************************
+** MOBILE VARIANTS
+*************************************************************************/
+.dropdown:mobile {
+    mode: mobile;
+}
+
+.dropdown-popup:mobile {
+    width: 75%;
+}

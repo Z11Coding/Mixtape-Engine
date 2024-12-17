@@ -1,0 +1,45 @@
+.splitter {
+    spacing: 0;
+}
+
+.vertical-splitter-gripper {
+    width: 100%;
+    height: 6px;
+    cursor: row-resize;
+    pointer-events: true;
+}
+
+.vertical-splitter-gripper:hover {
+    background-color: $solid-background-color;
+}
+
+.vertical-splitter-gripper:down {
+    background-color: $solid-background-color-down;
+}
+
+.vertical-splitter-gripper .image {
+    resource: $gripper-horizontal;
+    horizontal-align: center;
+    vertical-align: center;
+}
+
+.horizontal-splitter-gripper {
+    width: 6px;
+    height: 100%;
+    cursor: col-resize;
+    pointer-events: true;
+}
+
+.horizontal-splitter-gripper:hover {
+    background-color: $solid-background-color;
+}
+
+.horizontal-splitter-gripper:down {
+    background-color: $solid-background-color-down;
+}
+
+.horizontal-splitter-gripper .image {
+    resource: $gripper-vertical;
+    horizontal-align: center;
+    vertical-align: center;
+}

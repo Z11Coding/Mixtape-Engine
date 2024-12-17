@@ -1,0 +1,64 @@
+/************************************************************************
+** PROGRESS
+*************************************************************************/
+@keyframes indeterminate {
+    0% {
+        start: 0;
+        end: 25;
+    }
+    50% {
+        start: 75;
+        end: 100;
+    }
+    100% {
+        start: 0;
+        end: 25;
+    }
+}
+
+.progress:indeterminate {
+    animation: indeterminate 1s ease 0s infinite;
+}
+
+.progress-value {
+    border: none;
+    border-radius: 1px;
+}
+
+.horizontal-progress {
+    background: $normal-background-color-end $normal-background-color-start vertical;
+    initial-width: 150px;
+    initial-height: 8px;
+}
+
+.horizontal-progress .progress-value {
+    background: $accent-gradient-start $accent-gradient-end vertical;
+    height: 100%;
+}
+
+.horizontal-progress:disabled {
+    border-color: $disabled-border-color;
+}
+
+.horizontal-progress:disabled .progress-value {
+    background: $disabled-background-color-start $disabled-background-color-end vertical;
+}
+
+.vertical-progress {
+    background: $normal-background-color-end $normal-background-color-start horizontal;
+    initial-width: 8px;
+    initial-height: 150px;
+}
+
+.vertical-progress .progress-value {
+    background: $accent-gradient-start $accent-gradient-end horizontal;
+    width: 100%;
+}
+
+.vertical-progress:disabled .progress-value {
+    background: $disabled-background-color-start $disabled-background-color-end horizontal;
+}
+
+.vertical-progress:disabled {
+    border-color: $disabled-border-color;
+}

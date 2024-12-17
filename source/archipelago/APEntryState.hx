@@ -9,7 +9,8 @@ import flixel.FlxSprite;
 import haxe.DynamicAccess;
 import haxe.Timer;
 import ap.Client;
-//import archipelago.GameState;
+import substates.Prompt;
+import archipelago.GameState;
 import flixel.FlxG;
 import flixel.FlxState;
 import flixel.addons.ui.FlxInputText;
@@ -66,7 +67,9 @@ class APEntryState extends FlxState
 	 'Satin Panties', 'High', 'Milf',
 	 'Cocoa', 'Eggnog', 'Winter Horrorland',
 	 'Senpai', 'Roses', 'Thorns',
-	 'Ugh', 'Guns', 'Stress'];
+	 'Ugh', 'Guns', 'Stress',
+	 'Darnell', 'Lit Up', '2Hot', 'Blazin',
+	 'Small Argument', 'Beat Battle', 'Beat Battle 2'];
 
 	public static var gameSettings:APSettings = {
 		mod_songs: false,
@@ -103,7 +106,7 @@ class APEntryState extends FlxState
 		bg.screenCenter();
 		add(bg);
 
-		if (!ClientPrefs.lowQuality)
+		if (!ClientPrefs.data.lowQuality)
 		{
 			gradientBar = FlxGradient.createGradientFlxSprite(Math.round(FlxG.width), 512, [0x00ff0000, 0x675967E4, 0xFD62FF19], 1, 90, true);
 			gradientBar.y = FlxG.height - gradientBar.height;
@@ -257,7 +260,7 @@ class APEntryState extends FlxState
 				#else
 				var tags = ["AP", "Testing"];
 				#end
-				ap.ConnectSlot(_slotInput.text, _pwInput.text.length > 0 ? _pwInput.text : null, 0x7, tags, {major: 0, minor: 4, build: 3});
+				ap.ConnectSlot(_slotInput.text, _pwInput.text.length > 0 ? _pwInput.text : null, 0x7, tags, {major: 0, minor: 5, build: 0});
 			};
 
 			ap._hOnSlotRefused = (errors:Array<String>) ->
@@ -303,7 +306,7 @@ class APEntryState extends FlxState
 				FNF.close();
 
 				//FlxG.switchState(new APGameState(ap, slotData));
-                FlxG.switchState(new MainMenuState());
+                FlxG.switchState(new states.MainMenuState());
 			}
 
 			connectSubState.onCancel.add(() ->
@@ -317,7 +320,7 @@ class APEntryState extends FlxState
 
 	function onBack()
 	{
-		FlxG.switchState(new MainMenuState());
+		FlxG.switchState(new states.MainMenuState());
 	}
 
 	function onGenYaml()
@@ -340,10 +343,10 @@ class APEntryState extends FlxState
 	override function update(elapsed:Float)
 	{
 		if(swagShader != null) swagShader.hue += elapsed * 0.1;
-		if (!ClientPrefs.lowQuality)
+		if (!ClientPrefs.data.lowQuality)
 		{
-			checker.x -= 0.45 / (ClientPrefs.framerate / 60);
-			checker.y -= 0.16 / (ClientPrefs.framerate / 60);
+			checker.x -= 0.45 / (ClientPrefs.data.framerate / 60);
+			checker.y -= 0.16 / (ClientPrefs.data.framerate / 60);
 		}
 		super.update(elapsed);
 	}

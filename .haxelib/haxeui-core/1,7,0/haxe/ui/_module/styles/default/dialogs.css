@@ -1,0 +1,124 @@
+/************************************************************************
+** DIALOGS
+*************************************************************************/
+.dialog {
+    border: 1px solid $normal-border-color;
+    filter: $dialog-shadow;
+    border-radius: 4px;
+    width: auto;
+    height: auto;
+    background-color: $default-background-color;
+    padding: 2px;
+}
+
+.dialog-container {
+    spacing: 0;
+}
+
+.dialog-title {
+    background-color: none;
+    padding: 10px;
+    background-color: $solid-background-color;
+    border: none;
+}
+
+.dialog.no-title .dialog-title {
+    hidden: true;
+}
+
+.dialog-title-label {
+    width: 100%;
+    vertical-align: center;
+    color: $dialog-title-color;
+    vertical-align: "center";
+}
+
+.dialog-content {
+    padding: 10px;
+}
+
+.dialog-content-padding {
+    padding: 10px;
+}
+
+.dialog.no-padding .dialog-content {
+    padding: 0px;
+}
+
+.dialog-footer-container {
+    padding: 5px;
+    border: none;
+    background-color: none;
+    background-color: $solid-background-color;
+}
+
+.dialog-footer {
+    padding: 5px;
+    horizontal-align: right;
+}
+
+.dialog-close-button {
+    resource: $close;
+    vertical-align: "center";
+    cursor: "pointer";
+    pointer-events: true;
+    padding: 3px;
+    border-radius: 2px;
+}
+
+.dialog-close-button:hover {
+    resource: $close-hover;
+    background-color: $selection-background-color;
+}
+
+.dialog-minimize-button {
+    resource: $collapse;
+    vertical-align: "center";
+    cursor: "pointer";
+    pointer-events: true;
+    padding: 3px;
+    border-radius: 2px;
+}
+
+.dialog-minimize-button:hover {
+    resource: $collapse-hover;
+    background-color: $selection-background-color;
+}
+
+.dialog-maximize-button {
+    resource: $expand;
+    vertical-align: "center";
+    cursor: "pointer";
+    pointer-events: true;
+    padding: 3px;
+    border-radius: 2px;
+}
+
+.dialog-maximize-button:hover {
+    resource: $expand-hover;
+    background-color: $selection-background-color;
+}
+
+.dialog #iconImage.info {
+    resource: $info-large;
+}
+
+.dialog #iconImage.question {
+    resource: $question-large;
+}
+
+.dialog #iconImage.yesno {
+    resource: $question-large;
+}
+
+.dialog #iconImage.warning {
+    resource: $warning-large;
+}
+
+.dialog #iconImage.error {
+    resource: $error-large;
+}
+
+.messagebox {
+    initial-width: 300px;
+}

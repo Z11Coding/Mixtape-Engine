@@ -1,0 +1,23 @@
+{
+	"name": "tink_core",
+	"description": "Tinkerbell Core",
+	"classPath": "src",
+	"url": "https://haxetink.github.io/tink_core/",
+	"contributors": [
+		"back2dos"
+	],
+	"version": "2.1.1",
+	"releasenote": "Improve Lazy for Haxe 4.3.",
+	"tags": [
+		"tink",
+		"cross",
+		"utility",
+		"reactive",
+		"functional",
+		"async",
+		"lazy",
+		"signal",
+		"event"
+	],
+	"license": "MIT"
+}
