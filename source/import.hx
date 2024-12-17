@@ -30,12 +30,12 @@ import js.html.*;
 import archipelago.APConnectingSubState;
 import archipelago.APDisconnectSubstate;
 import archipelago.APEntryState;
-import archipelago.APDisconnectSubState;
-import archipelago.APDisconnectSubState;
-import archipelago.APDisconnectSubState;
-import archipelago.APDisconnectSubState;
-import archipelago.APDisconnectSubState;
-import archipelago.APDisconnectSubState;
+import archipelago.ArchPopup;
+import archipelago.Bitsets;
+import archipelago.Client;
+import archipelago.Definitions;
+//import archipelago.GameState;
+import archipelago.PacketTypes;
 
 import backend.Mods;
 import backend.Paths;

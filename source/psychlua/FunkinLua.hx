@@ -42,6 +42,7 @@ import flixel.input.keyboard.FlxKey;
 import flixel.input.gamepad.FlxGamepadInputID;
 
 import haxe.Json;
+import llua.State;
 
 import backend.modchart.SubModifier;
 

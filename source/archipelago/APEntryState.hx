@@ -8,7 +8,7 @@ import sys.io.File;
 import flixel.FlxSprite;
 import haxe.DynamicAccess;
 import haxe.Timer;
-import ap.Client;
+import archipelago.Client;
 import substates.Prompt;
 import archipelago.GameState;
 import flixel.FlxG;

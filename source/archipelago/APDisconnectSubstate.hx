@@ -1,6 +1,6 @@
 package archipelago;
 
-import ap.Client;
+import archipelago.Client;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
 import flixel.math.FlxPoint;
@@ -83,7 +83,7 @@ class APDisconnectSubstate extends FlxSubState
 		cancelButton.scrollFactor.set(1, 1);
 
         var backdrop = new FlxSprite(-11, -11);
-		backdrop.makeGraphic(Math.round(connectingText.width + 22), Math.round(connectingText.height + cancelButton.height + 27), FlxColor.TRANSPARENT);
+		backdrop.makeGraphic(Math.round(dcText.width + 22), Math.round(dcText.height + cancelButton.height + 27), FlxColor.TRANSPARENT);
 		backdrop.drawRoundRect(1, 1, backdrop.width - 2, backdrop.height - 2, 20, 20, FlxColor.BLACK, {color: FlxColor.WHITE, thickness: 3});
 		backdrop.screenCenter();
 		for (item in [dcText, dcCaption, cancelButton])

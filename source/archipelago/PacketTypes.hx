@@ -759,7 +759,7 @@ enum OutgoingPacket {
 	**/
 	// TODO: handle changing "dflt" to "default" (I have no reason to believe this method will work 'cause jsonStringify is not working for NetworkVersion)
 	// @:json({cmd: "Set"})
-	@:jsonStringify((data:ap.PacketTypes.OutgoingPacket) -> {
+	@:jsonStringify((data:archipelago.PacketTypes.OutgoingPacket) -> {
 		return switch (data) {
 			case Set(key, dflt, want_reply, operations): {
 					cmd: "Set",
