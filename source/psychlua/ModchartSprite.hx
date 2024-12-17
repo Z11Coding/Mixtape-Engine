@@ -1,5 +1,5 @@
 package psychlua;
-
+import llua.State;
 class ModchartSprite extends FlxSprite
 {
 	public var animOffsets:Map<String, Array<Float>> = new Map<String, Array<Float>>();

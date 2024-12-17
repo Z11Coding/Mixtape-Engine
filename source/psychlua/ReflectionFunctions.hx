@@ -1,5 +1,5 @@
 package psychlua;
-
+import llua.State;
 import Type.ValueType;
 import haxe.Constraints;
 

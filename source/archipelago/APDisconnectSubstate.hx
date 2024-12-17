@@ -25,43 +25,50 @@ class APDisconnectSubstate extends FlxSubState
 		_ap = ap;
 		_seed = _ap.seed;
 
-		_ap._hOnRoomInfo = () ->
-		{
-			if (_seed != _ap.seed)
-			{
-				trace("Seed mismatch; aborting connection");
-				_ap.disconnect_socket();
-				onCancel.dispatch();
-				close();
-			}
-			else
-			{
-				trace("Got room info - sending connect packet");
-
-				#if debug
-				var tags = ["AP", "Testing"];
-				#else
-				var tags = ["AP"];
-				#end
-				ap.ConnectSlot(_ap.slot, null, 0x7, tags, {major: 0, minor: 3, build: 8}); // HACK: this is not retransmitting the password
-			}
-		};
-
-		_ap._hOnSlotRefused = (_) -> onCancel.dispatch();
-
-		_ap._hOnSocketDisconnected = onCancel.dispatch;
-
-		_ap._hOnSlotConnected = (slotData:Dynamic) ->
-		{
-			trace("Connected - returning to game state");
-			ap._hOnRoomInfo = () -> {};
-			ap._hOnSlotRefused = (_) -> {};
-			ap._hOnSocketDisconnected = () -> {};
-			ap._hOnSlotConnected = (_) -> {};
-			onReconnect.dispatch();
-			close();
-		}
+		_ap.onRoomInfo.add(onRoomInfo);
+		_ap.onSlotRefused.add(onSlotRefused);
+		_ap.onSocketDisconnected.add(onSocketDisconnected);
+		_ap.onSlotConnected.add(onSlotConnected);
 	}
+
+    function onSlotConnected(slotData:Dynamic):Void
+    {
+        trace("Connected - returning to game state");
+        _ap.onRoomInfo.remove(onRoomInfo);
+        _ap.onSlotRefused.remove(onSlotRefused);
+        _ap.onSocketDisconnected.remove(onSocketDisconnected);
+        _ap.onSlotConnected.remove(onSlotConnected);
+        onReconnect.dispatch();
+        close();
+    }
+
+    function onSocketDisconnected():Void
+        onCancel.dispatch;
+
+    function onSlotRefused(a:Array<String>):Void
+        onCancel.dispatch();
+
+    function onRoomInfo():Void
+    {
+        if (_seed != _ap.seed)
+        {
+            trace("Seed mismatch; aborting connection");
+            _ap.disconnect_socket();
+            onCancel.dispatch();
+            close();
+        }
+        else
+        {
+            trace("Got room info - sending connect packet");
+
+            #if debug
+            var tags = ["AP", "Testing"];
+            #else
+            var tags = ["AP"];
+            #end
+            _ap.ConnectSlot(_ap.slot, null, 0x7, tags, {major: 0, minor: 3, build: 8}); // HACK: this is not retransmitting the password
+        }
+    }
 
 	override function create()
 	{

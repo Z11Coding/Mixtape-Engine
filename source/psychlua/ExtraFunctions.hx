@@ -1,5 +1,5 @@
 package psychlua;
-
+import llua.State;
 import flixel.util.FlxSave;
 import openfl.utils.Assets;
 

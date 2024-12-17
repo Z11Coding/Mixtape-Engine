@@ -320,7 +320,7 @@ class Client {
 		Write-only. Called when the client connects to the slot.
 		@param slot_data The custom data sent from the server pertaining to the game, if any.
 	**/
-	public var _hOnSlotConnected(null, default):Dynamic->Void = (_) -> {};
+	dynamic public var _hOnSlotConnected(null, default):Dynamic->Void = (_) -> {};
 
 	/** Write-only. Called if slot authentication fails. **/
 	public var _hOnSlotRefused(null, default):Array<String>->Void = (_) -> {};
@@ -329,7 +329,7 @@ class Client {
 	public var _hOnSlotDisconnected(null, default):Void->Void = () -> {};
 
 	/** Write-only. Called when a RoomInfo packet is received. **/
-	public var _hOnRoomInfo(null, default):Void->Void = () -> {};
+	public dynamic var _hOnRoomInfo(null, default):Void->Void = () -> {};
 
 	/** Write-only. Called when an ItemsReceived packet is received. **/
 	public var _hOnItemsReceived(null, default):Array<NetworkItem>->Void = (_) -> {};

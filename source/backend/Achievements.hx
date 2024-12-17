@@ -4,6 +4,7 @@ package backend;
 import objects.AchievementPopup;
 import haxe.Exception;
 import haxe.Json;
+import llua.State;
 
 #if LUA_ALLOWED
 import psychlua.FunkinLua;

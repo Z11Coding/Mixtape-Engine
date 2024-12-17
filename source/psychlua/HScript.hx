@@ -1,5 +1,5 @@
 package psychlua;
-
+import llua.State;
 import flixel.FlxBasic;
 import objects.Character;
 import psychlua.LuaUtils;

@@ -1,5 +1,5 @@
 package psychlua;
-
+import llua.State;
 class TextFunctions
 {
 	public static function implement(funk:FunkinLua)

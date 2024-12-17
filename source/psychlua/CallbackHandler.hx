@@ -1,6 +1,6 @@
 #if LUA_ALLOWED
 package psychlua;
-
+import llua.State;
 class CallbackHandler
 {
 	public static inline function call(l:State, fname:String):Int
