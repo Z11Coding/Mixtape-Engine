@@ -27,14 +27,14 @@ class ArchPopup extends openfl.display.Sprite {
 
 		// achievement icon
 		var graphic = null;
-		var hasAntialias:Bool = ClientPrefs.globalAntialiasing;
-		var image:String = 'achievements/arch$image';
+		var hasAntialias:Bool = ClientPrefs.data.globalAntialiasing;
+		var image:String = 'globalIcons/$image';
 		
 		unlockSong(song);
 
 		graphic = Paths.image(image);
 
-		if(graphic == null) graphic = Paths.image('unknownMod');
+		if(graphic == null) graphic = Paths.image('globalIcons/unknownMod');
 
 		var sizeX = 100;
 		var sizeY = 100;
@@ -75,7 +75,7 @@ class ArchPopup extends openfl.display.Sprite {
 
     function unlockSong(daSong:String)
     {
-        FreeplayState.curUnlocked.push(daSong);
+        states.FreeplayState.curUnlocked.push(daSong);
         APEntryState.unlockable.remove(daSong);
     }
 

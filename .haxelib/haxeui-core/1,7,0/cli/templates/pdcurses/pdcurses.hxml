@@ -1,7 +1,0 @@
--cp src
--main ::fullMain::
-
--lib haxeui-core
--lib haxeui-pdcurses
-
--cpp build/pdcurses

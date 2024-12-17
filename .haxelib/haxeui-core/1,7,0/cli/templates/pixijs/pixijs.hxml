@@ -1,8 +1,0 @@
--cp src
--main ::fullMain::
-
--lib haxeui-core
--lib haxeui-pixijs
--lib pixijs
-
--js build/pixijs/::output::.js

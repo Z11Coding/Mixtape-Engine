@@ -228,6 +228,26 @@ class WindowsData
 		return alpha;
 	}
 
+	@:functionCode('
+        HWND window = GetActiveWindow();
+        BYTE alpha;
+        DWORD flags;
+
+        if (GetLayeredWindowAttributes(window, NULL, &alpha, &flags)) {
+            return (float)alpha / 255.0f;
+        } else {
+            return -1.0f; // Indicate an error
+        }
+    ')
+	/**
+	 * Get Whole Window's Opacity
+	 * @return 
+	 */
+	public static function getWindowAlpha():Float
+	{
+		return 0;
+	}
+
 	@:functionCode('SetProcessDPIAware();')
 	public static function registerHighDpi() {}
 	#end

@@ -1,7 +1,0 @@
-{
-    "name": "winforms-shared",
-    "type": "template",
-    "templates": [
-        { "src": "haxeui-winforms.properties", "dst": "${target}/src/haxeui-winforms.properties"}
-    ]
-}

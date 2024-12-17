@@ -138,9 +138,10 @@
 	<haxelib name="tjson" version="1.4.0"/>
 
 	<!-- Archipelago Stuff-->
-	<haxelib name="hxArchipelago"/>
 	<haxelib name="helder.set" />
 	<haxelib name="yaml" />
+	<haxelib name="hxWebSockets" />
+	<haxelib name="haxe-concurrent" />
 
 	<!--Base Game Stuff-->
 	<haxelib name="grig.audio"/>

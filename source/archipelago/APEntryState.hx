@@ -51,14 +51,12 @@ class APEntryState extends FlxState
 	private var _tabOrder:Array<FlxInputText> = [];
 
 	var checker:FlxBackdrop = new FlxBackdrop(Paths.image('Main_Checker'), XY, Std.int(0.2), Std.int(0.2));
-
 	var gradientBar:FlxSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, 300, 0x83B700FF);
-
 	var swagShader:ColorSwap = null;
-
 	var titleText:FlxText;
 
 	public static var unlockable:Array<String> = [];
+	public static var inArchipelagoMode:Bool = false;
 
 	public static var baseGame:Array<String> = 
 	['Bopeebo', 'Fresh', 'Dad Battle',
@@ -265,6 +263,7 @@ class APEntryState extends FlxState
 
 			ap._hOnSlotRefused = (errors:Array<String>) ->
 			{
+				inArchipelagoMode = false;
 				trace("Slot refused", errors);
 				closeSubState();
 				switch (errors[0])
@@ -280,6 +279,7 @@ class APEntryState extends FlxState
 
 			ap._hOnSocketDisconnected = () ->
 			{
+				inArchipelagoMode = false;
 				polltimer.stop();
 				trace("Disconnected");
 				closeSubState();
@@ -295,7 +295,7 @@ class APEntryState extends FlxState
 				ap._hOnSocketDisconnected = () -> {};
 				ap._hOnSlotConnected = (_) -> {};
 				closeSubState();
-
+				inArchipelagoMode = true;
 				var FNF = new FlxSave();
 				FNF.bind("FNF");
 				FNF.data.lastGame = {
@@ -311,6 +311,7 @@ class APEntryState extends FlxState
 
 			connectSubState.onCancel.add(() ->
 			{
+				inArchipelagoMode = false;
 				polltimer.stop();
 				ap._hOnSlotConnected = null;
 				ap.disconnect_socket();
