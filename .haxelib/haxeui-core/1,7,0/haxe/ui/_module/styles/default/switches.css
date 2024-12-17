@@ -1,0 +1,186 @@
+/************************************************************************
+** SWITCH (DEFAULT)
+*************************************************************************/
+.switch {
+    width: auto;
+    height: auto;
+    horizontal-spacing: 5px;
+}
+
+.switch-label {
+    vertical-align: center;
+}
+
+.switch-button-sub {
+    background-color: $default-background-color;
+    border: 1px solid $normal-border-color;
+    border-radius: 2px;
+    cursor: pointer;
+    padding: 0px;
+    initial-width: 40px;
+    initial-height: 20px;
+}
+
+.switch-button-sub:disabled {
+    border-color: $disabled-border-color;
+}
+
+.switch-button-sub .button {
+    height: 100%;
+    width: 50%;
+    border-radius: 2px;
+    filter: none;
+}
+
+.switch-button-sub .button:disabled {
+    background: $disabled-background-color-start $disabled-background-color-end vertical;
+    border-color: $disabled-border-color;
+}
+
+.switch-button-sub-extra {
+    height: 0;
+    width: 0;
+    background-color: none;
+    border: none;
+    filter: none;
+}
+
+@keyframes switchAnimateSelected {
+    0% {
+        pos: 0;
+        background-color: $default-background-color;
+    }
+    100% {
+        pos: 100;
+        background-color: $selection-background-color-hover;
+    }
+}
+
+.switch-button-sub:selected {
+    animation: switchAnimateSelected 0.2s ease 0s 1;
+}
+
+.switch-button-sub:unselected {
+    animation: switchAnimateSelected 0.2s ease 0s 1 reverse backwards;
+}
+
+/************************************************************************
+** SWITCH (CIRCLE)
+*************************************************************************/
+.circle-switch .switch-button-sub {
+    border: none;
+    filter: none;
+    background-color: none;
+    border-radius: 2px;
+    cursor: pointer;
+    padding: 0px;
+    initial-height: 20px;
+    initial-width: 40px;
+}
+
+.circle-switch .switch-button-sub-extra {
+    height: 14px;
+    width: 100%;
+    background-color: $default-background-color;
+    border: 1px solid $normal-border-color;
+    vertical-align: center;
+    border-radius: 10px;
+    filter: $normal-inner-shadow;
+}
+
+.circle-switch .switch-button-sub-extra:disabled {
+    border-color: $disabled-border-color;    
+}
+
+.circle-switch .switch-button-sub .button {
+    width: 20px;
+    height: 20px;
+    border-radius: 50px;
+}
+
+@keyframes switchAnimateSelectedCircle {
+    0% {
+        pos: 0;
+    }
+    100% {
+        pos: 100;
+    }
+}
+
+.circle-switch .switch-button-sub:selected {
+    animation: switchAnimateSelectedCircle 0.2s ease 0s 1;
+}
+ 
+.circle-switch .switch-button-sub:unselected {
+    animation: switchAnimateSelectedCircle 0.2s ease 0s 1 reverse backwards;
+}
+
+
+@keyframes switchAnimateExtraSelectedCircle {
+    0% {
+        background-color: $default-background-color;
+    }
+    100% {
+        background-color: $selection-background-color;
+    }
+}
+
+.circle-switch .switch-button-sub-extra:selected {
+    animation: switchAnimateExtraSelectedCircle 0.2s ease 0s 1;
+}
+
+.circle-switch .switch-button-sub-extra:unselected {
+    animation: switchAnimateExtraSelectedCircle 0.2s ease 0s 1 reverse backwards;
+}
+
+/************************************************************************
+** SWITCH (PILL)
+*************************************************************************/
+.pill-switch .switch-button-sub {
+    border-radius: 20px;
+    initial-width: 40px;
+    initial-height: 20px;
+    padding: 0px;
+    background-color: $default-background-color;
+    border: 1px solid $normal-border-color;
+    cursor: pointer;
+    filter: $normal-inner-shadow;
+}
+
+.pill-switch .switch-button-sub:disabled {
+    border-color: $disabled-border-color; 
+}
+
+.pill-switch .switch-button-sub .button {
+    border-radius: 50px;
+    width: 20px;
+    height: 20px;
+    filter: none;
+}
+
+.pill-switch .switch-button-sub-extra {
+    height: 0;
+    width: 0;
+    background-color: none;
+    border: none;
+    filter: none;
+}
+
+@keyframes switchAnimateSelectedPill {
+    0% {
+        pos: 0;
+        background-color: $default-background-color;
+    }
+    100% {
+        pos: 100;
+        background-color: $selection-background-color;
+    }
+}
+
+.pill-switch .switch-button-sub:selected {
+    animation: switchAnimateSelectedPill 0.2s ease 0s 1;
+}
+
+.pill-switch .switch-button-sub:unselected {
+    animation: switchAnimateSelectedPill 0.2s ease 0s 1 reverse backwards;
+}

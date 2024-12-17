@@ -1,0 +1,128 @@
+.property-grid {
+}
+
+.property-grid .scrollview-contents {
+    padding: 0;
+    width: 100%;
+    spacing: 0;
+}
+
+.property-group {
+    width: 100%;
+    spacing: 0;
+}
+
+.property-group-header {
+    background-color: $solid-background-color;
+    pointer-events: true;
+    width: 100%;
+    padding: 5px;
+    border-color: $normal-border-color;
+    border-bottom-width: 1px;
+    border-bottom-size: 1px;
+    cursor: pointer;
+}
+
+.property-group-header.scrolling {
+    border-right-width: 0px;
+    border-right-size: 0px;
+}
+
+.property-group-header:hover {
+    background-color: $solid-background-color-hover;
+}
+
+.property-group-header-icon {
+    vertical-align: center;
+}
+
+.property-group-header:expanded .property-group-header-icon {
+    resource: $arrow-down-square;
+}
+
+.property-group-header:collapsed .property-group-header-icon {
+    resource: $arrow-right-square;
+}
+
+.property-group-header-label {
+    vertical-align: center;
+    width: 100%;
+}
+
+.property-group-contents {
+    width: 100%;
+    spacing: 1;
+    background-color: $normal-border-color;
+    padding-bottom: 1px;
+}
+
+.property-group.last .property-group-contents.scrolling {
+    padding-bottom: 0px;
+}
+
+.property-group-contents.scrolling {
+    padding-right: 0px;
+}
+
+.property-group-item-label-container {
+    width: 50%;
+    background-color: $secondary-background-color;
+    height: 100%;
+    padding-left: 5px;
+}
+
+.property-group-item-editor-container {
+    width: 50%;
+    background-color: $secondary-background-color;
+}        
+
+.property-group-item-label {
+    vertical-align: center;
+}
+
+.property-group-item-editor {
+    width: 100%;
+}
+
+.property-group .textfield {
+    border: none;
+    filter: none;
+    border-radius: 0;
+}
+
+.property-group .checkbox {
+    padding: 5px;
+    padding-left: 4px;
+    width: auto;
+    horizontal-align: center;
+}
+
+.property-group .checkbox .checkbox-value {
+}
+
+.property-group .number-stepper {
+    padding: 0;
+    border: none;
+}
+
+.property-group .number-stepper .stepper-value {
+    filter: none;
+}
+
+.property-group .number-stepper .stepper-deinc {
+    border-right: 1px solid $normal-border-color;
+}
+
+.property-group .number-stepper .stepper-inc {
+    border-left: 1px solid $normal-border-color;
+}
+
+.property-group .dropdown {
+    border: none;
+    border-radius: none;
+}
+
+.property-group .button {
+    border: none;
+    border-radius: none;
+}

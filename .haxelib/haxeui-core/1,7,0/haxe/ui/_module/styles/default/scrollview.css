@@ -1,0 +1,45 @@
+/************************************************************************
+** SCROLLVIEW
+*************************************************************************/
+.scrollview {
+    border: 1px solid $normal-border-color;
+    border-radius: 2px;
+    padding: 0px;
+    width: auto;
+    height: auto;
+    background-color: $tertiary-background-color;
+}
+
+.scrollview .scrollview-contents {
+    height: auto;
+    spacing: 5px;
+    padding: 5px;
+    border: none;
+}
+
+.scrollview.no-padding .scrollview-contents {
+    padding: 0px;
+}
+
+.scrollview.no-border {
+    border: none;
+}
+
+.scrollview.no-background {
+    background-color: none;
+}
+
+.scrollview.no-border .scroll {
+    border: none;
+}
+
+.scrollview:active {
+    border: 1px solid $accent-color;
+}
+
+/************************************************************************
+** MOBILE VARIANTS
+*************************************************************************/
+.scrollview:mobile {
+    mode: mobile;
+}

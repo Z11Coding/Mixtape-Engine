@@ -1,0 +1,22 @@
+package haxe.ui.util;
+
+import haxe.ui.backend.TimerImpl;
+
+class Timer extends TimerImpl {
+    public static function delay( f : Void -> Void, timeMs : Int ):Timer {
+        var t:Timer = null;
+        t = new Timer(timeMs, function() {
+            t.stop();
+            f();
+        });
+        return t;
+    }
+
+    public function new(delay:Int, callback:Void->Void) {
+        super(delay, callback);
+    }
+
+    public override function stop() {
+        super.stop();
+    }
+}

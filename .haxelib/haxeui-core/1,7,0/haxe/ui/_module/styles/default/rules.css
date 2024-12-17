@@ -1,0 +1,17 @@
+/************************************************************************
+** RULE
+*************************************************************************/
+.rule {
+    background-color: $normal-border-color;
+}
+
+.horizontal-rule {
+    height: 1px;
+    width: 100%;
+    horizontal-align: "center";
+}
+
+.vertical-rule {
+    width: 1px;
+    vertical-align: "center";
+}

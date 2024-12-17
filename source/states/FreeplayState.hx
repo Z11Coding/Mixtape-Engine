@@ -7,6 +7,9 @@ import backend.Song;
 import objects.HealthIcon;
 import objects.MusicPlayer;
 
+import archipelago.ArchPopup;
+import archipelago.APEntryState;
+
 import states.editors.ChartingStateOG;
 
 import flixel.addons.ui.FlxUIInputText;
@@ -162,7 +165,15 @@ class FreeplayState extends MusicBeatState
 				}
 				if (categoryWhaat.toLowerCase() == CategoryState.loadWeekForce || (CategoryState.loadWeekForce == "mods" && categoryWhaat == null) || CategoryState.loadWeekForce == "all")
 				{
-					addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
+					if (ClientPrefs.getGameplaySetting('archMode', false))
+					{
+						for (ii in 0...curUnlocked.length)
+						{
+							if (song[0] == curUnlocked[ii])
+								addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
+						}
+					}
+					else addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
 				}
 			}
 		}
@@ -310,6 +321,32 @@ class FreeplayState extends MusicBeatState
 
 		// Main.simulateIntenseMaps();
 		trace(hh);
+
+		if (ClientPrefs.getGameplaySetting('archMode', false))
+		{
+			var playButton = new FlxButton(0, 0, "Get Random Song", onAddSong);
+			//playButton.onUp.sound = FlxG.sound.load(Paths.sound('confirmMenu'));
+			playButton.x = (FlxG.width / 2) - 10 - playButton.width;
+			playButton.y = FlxG.height - playButton.height - 10;
+			add(playButton);
+
+			if (giveSong)
+			{
+				onAddSong();
+				giveSong = false;
+			}
+		}
+	}
+
+	function onAddSong()
+	{	
+		if (APEntryState.unlockable.length > 0)
+		{
+			var daSong = APEntryState.unlockable[FlxG.random.int(0, APEntryState.unlockable.length - 1)];
+			ArchPopup.startPopupSong(daSong, 'Color');
+			reloadSongs();
+		}
+		trace(APEntryState.unlockable);
 	}
 
 	override function closeSubState() {

@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  repository_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        haxe-version: ["4.2.5", "4.3.3", latest]
+        target: [html5, hl, neko, flash, cpp]
+      fail-fast: false
+    runs-on: ubuntu-latest
+    steps:
+    - run: sudo apt-get update
+    
+    - uses: actions/checkout@v3
+    
+    - uses: krdlab/setup-haxe@v1
+      with:
+        haxe-version: ${{matrix.haxe-version}}
+    
+    - name: "Configure Haxelib"
+      run: |
+        haxelib setup /home/runner/haxe/haxelib/
+        haxelib install haxelib 4.0.3
+        haxelib dev flixel-ui .
+    
+    - uses: HaxeFlixel/setup-flixel@v1
+      with:
+        haxe-version: current
+        flixel-versions: dev
+        target: ${{matrix.target}}
+        run-tests: true

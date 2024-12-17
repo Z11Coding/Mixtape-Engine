@@ -1,0 +1,35 @@
+; exclude paths from classpath when searching for haxeui arifacts (module.xml, native.xml, etc)
+; speeds up build
+\/lime\/_internal\/.*$
+\/lime\/src\/.*$
+\/lime\/.*\/src\/.*$
+\/lime\/app\/.*$
+\/lime\/graphics\/.*$
+\/lime\/math\/.*$
+\/lime\/media\/.*$
+\/lime\/net\/.*$
+\/lime\/system\/.*$
+\/lime\/text\/.*$
+\/lime\/tools\/.*$
+\/lime\/ui\/.*$
+\/lime\/utils\/.*$
+\/openfl\/src\/.*$
+\/openfl\/.*\/src\/.*$
+\/openfl\/desktop\/.*$
+\/openfl\/display\/.*$
+\/openfl\/display3D\/.*$
+\/openfl\/errors\/.*$
+\/openfl\/events\/.*$
+\/openfl\/external\/.*$
+\/openfl\/filters\/.*$
+\/openfl\/geom\/.*$
+\/openfl\/media\/.*$
+\/openfl\/net\/.*$
+\/openfl\/printing\/.*$
+\/openfl\/profiler\/.*$
+\/openfl\/sensors\/.*$
+\/openfl\/system\/.*$
+\/openfl\/text\/.*$
+\/openfl\/ui\/.*$
+\/openfl\/utils\/.*$
+\/actuate\/.*$
