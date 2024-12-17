@@ -112,7 +112,7 @@ class PlayState extends MusicBeatState
 		['Good', 0.8], // From 70% to 79%
 		['Great', 0.9], // From 80% to 89%
 		['Sick!', 1], // From 90% to 99%
-		['Botplay Because There Is Literally\nNo Way Your Actually Doing This.', 1] // The value on this one isn't used actually, since Perfect is always "1"
+		['Perfection.', 1] // The value on this one isn't used actually, since Perfect is always "1"
 	];
 
 	// event variables
@@ -292,6 +292,9 @@ class PlayState extends MusicBeatState
 	// Anticheat
 	var hadBotplayOn:Bool = false;
 
+	//The modifier that allows sperate saves depending how how you want to play the game
+	public var saveMod:String = "";
+
 	function set_cpuControlled(value)
 	{
 		cpuControlled = value;
@@ -403,7 +406,6 @@ class PlayState extends MusicBeatState
 
 	// Less laggy controls
 	public var keysArray:Array<Dynamic>;
-
 	private var controlArray:Array<String>;
 
 	// aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
@@ -570,6 +572,9 @@ class PlayState extends MusicBeatState
 	var artistTxt:FlxText;
 	var charterTxt:FlxText;
 	var modTxt:FlxText;
+
+	public var mashViolations:Int = 0;
+	public var mashing:Int = 0;
 
 	public var RandomSpeedChange:Bool = ClientPrefs.getGameplaySetting('randomspeedchange', false);
 
@@ -758,8 +763,31 @@ class PlayState extends MusicBeatState
 		instakillOnMiss = ClientPrefs.getGameplaySetting('instakill', false);
 		practiceMode = ClientPrefs.getGameplaySetting('practice', false);
 		cpuControlled = ClientPrefs.getGameplaySetting('botplay', false);
-		chartModifier = CacheMode ? "Normal" : (ClientPrefs.getGameplaySetting('chartModifier', 'Normal') ?? "Normal");
+		chartModifier = (ClientPrefs.getGameplaySetting('chartModifier', 'Normal') ?? "Normal");
 		trace("Chart Modifier: " + chartModifier);
+
+		if (bothMode)
+			saveMod += "-bothMode";
+		else if (opponentmode)
+			saveMod += "-opponentMode";
+		else if (playAsGF)
+			saveMod += "-gfMode";
+		if (chartModifier != "Normal")
+			saveMod += "-"+chartModifier;
+		if (!gimmicksAllowed)
+			saveMod += "-noGimmick";
+		if (!ClientPrefs.data.modcharts)
+			saveMod += "-noModchart";
+		if (ClientPrefs.data.noAntimash)
+			saveMod += "-noAntimash";
+		if (!ClientPrefs.data.drain)
+			saveMod += "-noHealthDrain";
+		if (!ClientPrefs.data.useMarvs)
+			saveMod += "-noMarvs";
+		if (loopModeChallenge)
+			saveMod += "-endlessChallenge";
+		else if (loopMode)
+			saveMod += "-endless";
 
 		AIPlayer.active = AIMode && !bothMode;
 		switch (AIDifficulty)
@@ -2533,12 +2561,12 @@ class PlayState extends MusicBeatState
 
 			if (ClientPrefs.data.middleScroll)
 			{
-				modManager.setValue('transformX', -335, 0);
+				modManager.setValue('transformX', -315, 0);
 				modManager.setValue('noteAlpha', .7, 1);
 				modManager.setValue('alpha', .7, 1);
 				for (i in 0...dadField.strumNotes.length)
 					if (i > ((dadField.strumNotes.length/2)-1))
-						modManager.setValue('transform'+i+'X', (FlxG.width / 2)-50 * Note.separator[mania], 1);
+						modManager.setValue('transform'+i+'X', (FlxG.width / 2)-10 * Note.separator[mania], 1);
 					else
 						modManager.setValue('transform'+i+'X', 30, 1);
 				if (mania > 8) forceInvis = true; //dont wanna deal with anything higher then 9K
@@ -2872,7 +2900,7 @@ class PlayState extends MusicBeatState
 			scoreTxt.borderColor = FlxColor.fromInt(Std.parseInt("0xFFFFE600"));
 			if (AIPlayer.active)
 				opponentScoreTxt.borderColor = FlxColor.fromInt(Std.parseInt("0xFFFFE600"));
-			playerScoreTxt.color = FlxColor.fromInt(Std.parseInt("0xFFFFE600"));
+			playerScoreTxt.borderColor = FlxColor.fromInt(Std.parseInt("0xFFFFE600"));
 		}
 
 		if (!miss && !cpuControlled)
@@ -6127,7 +6155,7 @@ class PlayState extends MusicBeatState
 			}
 			else if (ratingName == '?')
 			{
-				scoreTxt.borderColor = FlxColor.fromInt(Std.parseInt("0xFFFFE600"));
+				scoreTxt.borderColor = FlxColor.fromInt(0xFFFFE600);
 				scoreTxt.text = mixupMode
 					&& !bothMode ? 'Misses: ' + songMisses + ' | NPS: ' + nps : 'Score: '
 					+ songScore
@@ -6141,10 +6169,10 @@ class PlayState extends MusicBeatState
 					+ playbackRate;
 				if (AIPlayer.active)
 				{
-					opponentScoreTxt.borderColor = FlxColor.fromInt(Std.parseInt("0xFFFFE600"));
+					opponentScoreTxt.borderColor = FlxColor.fromInt(0xFFFFE600);
 					opponentScoreTxt.text = aiText; // peeps wanted no integer rating
 				}
-				playerScoreTxt.color = FlxColor.fromInt(Std.parseInt("0xFFFFE600"));
+				playerScoreTxt.borderColor = FlxColor.fromInt(0xFFFFE600);
 				playerScoreTxt.text = '[' + daNameB + ']\nScore: ' + songScore + '\nRating: ' + ratingName + ' ('
 					+ CoolUtil.formatAccuracy(Highscore.floorDecimal(ratingPercent * 100, 2)) + '%)' + ' - ' + ratingFC; // peeps wanted no integer rating
 			}
@@ -7012,7 +7040,7 @@ class PlayState extends MusicBeatState
 
 				if (loopMode || loopModeChallenge || curSong == "Small Argument")
 				{
-					Highscore.saveEndlessScore(SONG.song.toLowerCase(), songScore);
+					Highscore.saveEndlessScore(SONG.song.toLowerCase()+saveMod, songScore);
 				}
 
 				paused = true;
@@ -7026,28 +7054,10 @@ class PlayState extends MusicBeatState
 				FlxG.camera.setFilters([]);
 				isPlayerDying = true;
 				halfReset();
-
-				if (loopMode || loopModeChallenge || curSong == "Small Argument")
+				
+				if (GameOverSubstate.deathDelay > 0)
 				{
-					endSong();
-				}
-				else
-				{
-					if (GameOverSubstate.deathDelay > 0)
-					{
-						gameOverTimer = new FlxTimer().start(GameOverSubstate.deathDelay, function(_)
-						{
-							vocals.stop();
-							opponentVocals.stop();
-							gfVocals.stop();
-							for (track in tracks)
-								track.stop();
-							FlxG.sound.music.stop();
-							openSubState(new GameOverSubstate(boyfriend));
-							gameOverTimer = null;
-						});
-					}
-					else
+					gameOverTimer = new FlxTimer().start(GameOverSubstate.deathDelay, function(_)
 					{
 						vocals.stop();
 						opponentVocals.stop();
@@ -7056,7 +7066,18 @@ class PlayState extends MusicBeatState
 							track.stop();
 						FlxG.sound.music.stop();
 						openSubState(new GameOverSubstate(boyfriend));
-					}
+						gameOverTimer = null;
+					});
+				}
+				else
+				{
+					vocals.stop();
+					opponentVocals.stop();
+					gfVocals.stop();
+					for (track in tracks)
+						track.stop();
+					FlxG.sound.music.stop();
+					openSubState(new GameOverSubstate(boyfriend));
 				}
 
 				// MusicBeatState.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
@@ -8315,7 +8336,7 @@ class PlayState extends MusicBeatState
 	public function finishSong(?ignoreNoteOffset:Bool = false):Void
 	{
 		var finishCallback:Void->Void = endSong; // In case you want to change it in a specific song.
-
+		KillNotes();
 		updateTime = false;
 		FlxG.sound.music.volume = 0;
 		vocals.volume = 0;
@@ -8450,7 +8471,7 @@ class PlayState extends MusicBeatState
 				var percent:Float = ratingPercent;
 				if (Math.isNaN(percent))
 					percent = 0;
-				Highscore.saveScore(SONG.song, songScore, storyDifficulty, percent, deathCounter);
+				Highscore.saveScore(SONG.song+saveMod, songScore, storyDifficulty, percent, deathCounter);
 				#end
 			}
 			playbackRate = 1;
@@ -8499,7 +8520,7 @@ class PlayState extends MusicBeatState
 
 						if (!playAsGF)
 						{
-							Highscore.saveWeekScore(WeekData.getWeekFileName(), campaignScore, storyDifficulty);
+							Highscore.saveWeekScore(WeekData.getWeekFileName()+saveMod, campaignScore, storyDifficulty);
 						}
 
 						FlxG.save.data.weekCompleted = StoryMenuState.weekCompleted;
@@ -9815,6 +9836,7 @@ class PlayState extends MusicBeatState
 	inline function dropHold(note:Note, field:PlayField):Void
 		callOnScripts("onHoldRelease", [note, field]);
 
+	
 	function goodNoteHit(note:Note, field:PlayField):Void
 	{
 		// if(note.wasGoodHit) return;
@@ -9837,6 +9859,7 @@ class PlayState extends MusicBeatState
 			if (result != LuaUtils.Function_Stop && result != LuaUtils.Function_StopHScript && result != LuaUtils.Function_StopAll)
 				callOnHScript('goodNoteHitPre', [note]);
 		}
+		
 
 		if (Paths.formatToSongPath(SONG.song) != 'tutorial')
 			camZooming = true;
@@ -9864,6 +9887,18 @@ class PlayState extends MusicBeatState
 				if (spr != null && field.keysPressed[note.noteData])
 					spr.playAnim('confirm', true, note);
 			}
+		}
+
+		if (ClientPrefs.data.inputSystem == "Mic'ed Up Engine")
+		{
+			if (mashing != 0)
+				mashing = 0;
+
+			if (mashViolations >= 1)
+				mashViolations--;
+
+			if (mashViolations < 0)
+				mashViolations = 0;
 		}
 
 		// if (cpuControlled)SONG.validScore = false; // if botplay hits a note, then you lose scoring

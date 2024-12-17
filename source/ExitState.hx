@@ -56,16 +56,20 @@ class ExitState extends FlxState
 			}
 		}
 
-		// Exit the game
-		FlxTween.num(1, 0, 0.5, {
-			ease: FlxEase.sineInOut,
-			onComplete: function(twn:FlxTween)
-			{
-				Main.closeGame();
-			}
-		}, function(num)
+		if (backend.window.WindowsData.curWidnowAlpha != 0)
 		{
-			backend.window.CppAPI.setWindowOppacity(num);
-		});
+			// Exit the game
+			FlxTween.num(1, 0, 0.5, {
+				ease: FlxEase.sineInOut,
+				onComplete: function(twn:FlxTween)
+				{
+					Main.closeGame();
+				}
+			}, function(num)
+			{
+				backend.window.CppAPI.setWindowOppacity(num);
+			});
+		}
+		else Main.closeGame();
 	}
 }

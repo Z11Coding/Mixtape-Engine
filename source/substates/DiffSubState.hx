@@ -269,10 +269,9 @@ class DiffSubState extends MusicBeatSubstate
 			curDifficulty = 0;
 
 		#if !switch
-		Highscore.isOppMode = ClientPrefs.getGameplaySetting('opponentplay', false);
-		intendedScore = Highscore.getScore(songChoices[curSelected], curDifficulty);
-		intendedRating = Highscore.getRating(songChoices[curSelected], curDifficulty);
-		rank.loadGraphic(Paths.image('rankings/' + rankTable[Highscore.getRank(songChoices[curSelected], curDifficulty)]));
+		intendedScore = Highscore.getScore(songChoices[curSelected], curDifficulty, Highscore.saveMod);
+		intendedRating = Highscore.getRating(songChoices[curSelected], curDifficulty, Highscore.saveMod);
+		rank.loadGraphic(Paths.image('rankings/' + rankTable[Highscore.getRank(songChoices[curSelected], curDifficulty, Highscore.saveMod)]));
 		rank.scale.x = rank.scale.y = 140 / rank.height;
 		rank.updateHitbox();
 		rank.antialiasing = true;

@@ -71,14 +71,11 @@ class FreeplayState extends MusicBeatState
 	var multiSongs:Array<String> = [];
 
 	public static var archipelago:Bool = false;
-
 	public static var curUnlocked:Array<String> = ['Tutorial'];
-	
 	public static var doChange:Bool = false;
-	
 	public static var multisong:Bool = false;
 	var h:String;
-	
+	var mismatched:String = "";
 	var rankTable:Array<String> = [
 		'P-small', 'X-small', 'X--small', 'SS+-small', 'SS-small', 'SS--small', 'S+-small', 'S-small', 'S--small', 'A+-small', 'A-small', 'A--small',
 		'B-small', 'C-small', 'D-small', 'E-small', 'NA'
@@ -102,7 +99,7 @@ class FreeplayState extends MusicBeatState
 			lastCategory = CategoryState.loadWeekForce;
 		} 
 		
-		MemoryUtil.clearMajor();
+		Highscore.reloadModifiers();
 		//Paths.clearStoredMemory();
 		//Paths.clearUnusedMemory();
 
@@ -320,6 +317,8 @@ class FreeplayState extends MusicBeatState
 		{
 			changeSelection(0, false);
 			doChange = false;
+			mismatched = "";
+			Highscore.reloadModifiers();
 		}
 		persistentUpdate = true;
 		super.closeSubState();
@@ -729,6 +728,12 @@ class FreeplayState extends MusicBeatState
 				FlxTransitionableState.skipNextTransOut = false;
 				if (!multisong)
 				{
+					if(ClientPrefs.getGameplaySetting('bothMode', false) && (ClientPrefs.getGameplaySetting('opponentplay', false) || ClientPrefs.getGameplaySetting('gfMode', false)))
+						mismatched = "you can't have \"Play Both Sides\" and \"GF Mode\" or \"Opponent Mode\" on at the same time!";
+					if(ClientPrefs.getGameplaySetting('opponentplay', false) && ClientPrefs.getGameplaySetting('gfMode', false))
+						mismatched = "you can't have \"GF Mode\" and \"Opponent Mode\" on at the same time!";
+					if(ClientPrefs.getGameplaySetting('loopMode', false) && ClientPrefs.getGameplaySetting('loopModeC', false))
+						mismatched = "you can't have \"Loop Mode\" and \"Loop Challenge Mode\" on at the same time!";
 					try
 					{
 						if (songLowercase == "song-not-found")
@@ -763,6 +768,20 @@ class FreeplayState extends MusicBeatState
 							}
 							PlayState.isStoryMode = false;
 							PlayState.storyDifficulty = curDifficulty;
+						}
+						else if (mismatched != "")
+						{
+							trace('ERROR! Modifiers are on that shouldn\'t be!');
+
+							missingText.text = 'ERROR! '+mismatched.toUpperCase();
+							missingText.screenCenter(Y);
+							missingText.visible = true;
+							missingTextBG.visible = true;
+							FlxG.sound.play(Paths.sound('cancelMenu'));
+
+							updateTexts(elapsed);
+							super.update(elapsed);
+							return;
 						}
 						else
 						{
@@ -902,10 +921,9 @@ class FreeplayState extends MusicBeatState
 			curDifficulty = 0;
 
 		#if !switch
-		Highscore.isOppMode = ClientPrefs.getGameplaySetting('opponentplay', false);
-		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
-		intendedRating = Highscore.getRating(songs[curSelected].songName, curDifficulty);
-		rank.loadGraphic(Paths.image('rankings/' + rankTable[Highscore.getRank(songs[curSelected].songName, curDifficulty)]));
+		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty, Highscore.saveMod);
+		intendedRating = Highscore.getRating(songs[curSelected].songName, curDifficulty, Highscore.saveMod);
+		rank.loadGraphic(Paths.image('rankings/' + rankTable[Highscore.getRank(songs[curSelected].songName, curDifficulty, Highscore.saveMod)]));
 		rank.scale.x = rank.scale.y = 140 / rank.height;
 		rank.updateHitbox();
 		rank.antialiasing = true;

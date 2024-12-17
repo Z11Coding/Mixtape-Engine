@@ -427,11 +427,11 @@ class Main extends Sprite
 				}
 			}
 			// Main.closeGame();
-		}
-		// Main.closeGame();
-		WindowUtils.__triedClosing = false;
-		WindowUtils.preventClosing = true;
-		pressedOnce = false;
+		} //Respectfully, PLEASE DON'T REMOVE MY IMPATIENCE TOGGLE (Otherwise known as this else statement)
+		else closeGame();
+		//WindowUtils.__triedClosing = false;
+		//WindowUtils.preventClosing = true;
+		//pressedOnce = false;
 	}
 	
 

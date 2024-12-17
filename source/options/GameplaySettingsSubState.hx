@@ -21,7 +21,16 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		addOption(option);
 
 		var option:Option = new Option('Input System', "The input system you wish to use.", 'inputSystem', 'string',
-			["Native", "BEAT! Engine", "Kade Engine", "ZoroForce EK"]);
+		[
+			"Native", 
+			"BEAT! Engine", 
+			"Kade Engine", 
+			"ZoroForce EK", 
+			"Mic'ed Up Engine", 
+			"Andromeda Engine (legacy)",
+			"YoshiEngine",
+			"Kade Engine Community"
+		]);
 		addOption(option);
 		option.displayFormat = '< %v >';
 
@@ -38,7 +47,7 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		addOption(option);
 
 		var option:Option = new Option('No Antimash', // even tho only one person asked, it here
-			"If checked, Antimash will be disabled.", 'noAntimash', 'bool');
+			"If checked, Antimash will be disabled. (ONLY \"BEAT! Engine\" AND \"Mic'ed Up Engine\" HAVE ANTI-MASH)", 'noAntimash', 'bool');
 		addOption(option);
 
 		var option:Option = new Option('Disable Reset Button',
