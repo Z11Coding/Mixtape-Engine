@@ -216,13 +216,15 @@ class WindowsData
        	SetLayeredWindowAttributes(window, 0, (255 * (a * 100)) / 100, LWA_ALPHA);
 
     ')
+	public static var curWidnowAlpha:Float;
 	/**
 	 * Set Whole Window's Opacity
 	 * ! MAKE SURE TO CALL CppAPI._setWindowLayered(); BEFORE RUNNING THIS
 	 * @param alpha 
 	 */
-	public static function setWindowAlpha(alpha:Float)
+	public static function setWindowAlpha(?alpha:Float)
 	{
+		curWidnowAlpha = alpha;
 		return alpha;
 	}
 

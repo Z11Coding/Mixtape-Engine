@@ -18,8 +18,6 @@ import backend.Rating;
 import objects.Character;
 import objects.NoteSplash;
 
-using StringTools;
-
 /*
 The system is seperated into 3 classes:
 
@@ -279,6 +277,7 @@ class PlayField extends FlxTypedGroup<FlxBasic>
 		return spawnedNotes.contains(note) || noteQueue[note.column]!=null && noteQueue[note.column].contains(note);
 	
 	var closestNotes:Array<Note> = [];
+	var strumsBlocked:Array<Bool> = [];
 	// sends an input to the playfield
 	public function input(data:Int){
 		switch (ClientPrefs.data.inputSystem)
@@ -375,6 +374,7 @@ class PlayField extends FlxTypedGroup<FlxBasic>
 				closestNotes = [];
 
 				var noteList = getNotesWithEnd(data, Conductor.songPosition + ClientPrefs.data.badWindow, (note:Note) -> !note.isSustainNote && note.requiresTap);
+				noteList.sort((a, b) -> Std.int((b.strumTime + (b.lowPriority ? 10000 : 0)) - (a.strumTime + (a.lowPriority ? 10000 : 0)))); // so lowPriority actually works (even though i hate it lol!)
 				for (daNote in noteList)
 				{
 					if (daNote.canBeHit && daNote.mustPress && !daNote.wasGoodHit)
@@ -429,6 +429,7 @@ class PlayField extends FlxTypedGroup<FlxBasic>
 				var closestNotes = [];
 
 				var noteList = getNotesWithEnd(data, Conductor.songPosition + ClientPrefs.data.badWindow, (note:Note) -> !note.isSustainNote && note.requiresTap);
+				noteList.sort((a, b) -> Std.int((b.strumTime + (b.lowPriority ? 10000 : 0)) - (a.strumTime + (a.lowPriority ? 10000 : 0)))); // so lowPriority actually works (even though i hate it lol!)
 				for (daNote in noteList)
 				{
 					if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit && !daNote.isSustainNote)
@@ -475,9 +476,231 @@ class PlayField extends FlxTypedGroup<FlxBasic>
 				}
 				else if (!ClientPrefs.data.ghostTapping)
 					PlayState.instance.noteMissPress(data);
+
+			case "Mic'ed Up Engine":
+				PlayState.instance.notes.forEachAlive(function(daNote:Note)
+				{
+					if (daNote.isSustainNote && daNote.canBeHit && daNote.mustPress && keysPressed[daNote.noteData])
+					{
+						noteHitCallback(daNote, this);
+					}
+				});
+
+				// PRESSES, check for note hits
+				var possibleNotes:Array<Note> = []; // notes that can be hit
+				var directionList:Array<Int> = []; // directions that can be hit
+				var dumbNotes:Array<Note> = []; // notes to kill later
+
+				PlayState.instance.notes.forEachAlive(function(daNote:Note)
+				{
+					if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit)
+					{
+						if (directionList.contains(daNote.noteData))
+						{
+							for (coolNote in possibleNotes)
+							{
+								if (coolNote.noteData == daNote.noteData && Math.abs(daNote.strumTime - coolNote.strumTime) < 10)
+								{ // if it's the same note twice at < 10ms distance, just delete it
+									// EXCEPT u cant delete it in this loop cuz it fucks with the collection lol
+									dumbNotes.push(daNote);
+									break;
+								}
+								else if (coolNote.noteData == daNote.noteData && daNote.strumTime < coolNote.strumTime)
+								{ // if daNote is earlier than existing note (coolNote), replace
+									possibleNotes.remove(coolNote);
+									possibleNotes.push(daNote);
+									break;
+								}
+							}
+						}
+						else
+						{
+							possibleNotes.push(daNote);
+							directionList.push(daNote.noteData);
+						}
+					}
+				});
+
+				for (note in dumbNotes)
+				{
+					FlxG.log.add("killing dumb ass note at " + note.strumTime);
+					note.kill();
+					removeNote(note);
+					note.destroy();
+				}
+
+				possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
+
+				var dontCheck = false;
+
+				for (i in 0...keysPressed.length)
+				{
+					if (keysPressed[i] && !directionList.contains(i))
+						dontCheck = true;
+				}
+
+				if (possibleNotes.length > 0 && !dontCheck || possibleNotes.length > 0 && ClientPrefs.data.noAntimash)
+				{
+					if (!ClientPrefs.data.ghostTapping)
+					{
+						for (shit in 0...keysPressed.length)
+						{ // if a direction is hit that shouldn't be
+							if (keysPressed[shit] && !directionList.contains(shit))
+								PlayState.instance.noteMissPress(shit);
+						}
+					}
+					for (coolNote in possibleNotes)
+					{
+						if (keysPressed[coolNote.noteData])
+						{
+							if (!coolNote.prevNote.isSustainNote && coolNote.isSustainNote && coolNote.prevNote != null && !ClientPrefs.data.guitarHeroSustains)
+							{
+								noteHitCallback(coolNote.prevNote, this);
+								return coolNote.prevNote;
+							}
+							if (PlayState.instance.mashViolations != 0)
+								PlayState.instance.mashViolations--;
+							PlayState.instance.scoreTxt.color = FlxColor.WHITE;
+							noteHitCallback(coolNote, this);
+							return coolNote;
+						}
+					}
+				}
+				else if (!ClientPrefs.data.ghostTapping)
+				{
+					for (shit in 0...keysPressed.length)
+						if (keysPressed[shit])
+							PlayState.instance.noteMissPress(shit);
+				}
+
+				if (dontCheck && possibleNotes.length > 0 || !ClientPrefs.data.noAntimash && possibleNotes.length > 0)
+				{
+					if (PlayState.instance.mashViolations > (Note.ammo[PlayState.mania]) && !ClientPrefs.data.noAntimash)
+					{
+						trace('mash violations ' + PlayState.instance.mashViolations);
+						PlayState.instance.scoreTxt.color = FlxColor.RED;
+						for (shit in 0...keysPressed.length)
+							if (keysPressed[shit])
+								PlayState.instance.noteMissPress(shit);
+						PlayState.instance.health -= 0.05;
+						PlayState.instance.bfkilledcheck = true;
+					}
+					else
+						PlayState.instance.mashViolations++;
+				}
+
+			case "Andromeda Engine (legacy)":
+				var noteList = getNotesWithEnd(data, Conductor.songPosition + ClientPrefs.data.badWindow, (note:Note) -> !note.isSustainNote && note.requiresTap);
+				noteList.sort((a,b)->Std.int(a.strumTime-b.strumTime)); // SHOULD be in order?
+				// But just incase, we do this sort
+				if(noteList.length>0){
+					var hitNote = noteList[0];
+					if(!hitNote.wasGoodHit) // because parent tap notes
+					{
+						noteHitCallback(hitNote, this);
+						return hitNote;
+					}
+				}else{
+					if(!ClientPrefs.data.ghostTapping)
+						PlayState.instance.noteMissPress(data);
+				}
+
+			case "YoshiEngine":
+				var noteList = getNotesWithEnd(data, Conductor.songPosition + ClientPrefs.data.badWindow, (note:Note) -> !note.isSustainNote && note.requiresTap);
+				noteList.sort((a, b) -> Std.int((b.strumTime + (b.lowPriority ? 10000 : 0)) - (a.strumTime + (a.lowPriority ? 10000 : 0)))); // so lowPriority actually works (even though i hate it lol!)
+
+				var possibleNotes:Array<Note> = [];
+				var ignoreList:Array<Int> = [];
+				var notesToHit:Array<Note> = [];
+				
+				for (i in 0...Note.ammo[PlayState.mania]) notesToHit.push(null);
+				for (daNote in noteList)
+				{
+					if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit && !daNote.isSustainNote)
+					{
+						if (keysPressed[(daNote.noteData % Note.ammo[PlayState.mania]) % Note.ammo[PlayState.mania]]) {
+							var can = false;
+							if (notesToHit[(daNote.noteData % Note.ammo[PlayState.mania]) % Note.ammo[PlayState.mania]] != null) {
+								if (notesToHit[(daNote.noteData % Note.ammo[PlayState.mania]) % Note.ammo[PlayState.mania]].strumTime > daNote.strumTime)
+									can = true;
+								if (notesToHit[(daNote.noteData % Note.ammo[PlayState.mania]) % Note.ammo[PlayState.mania]].strumTime == daNote.strumTime) {
+									noteHitCallback(daNote, this);
+									return daNote;
+								}
+							} else {
+								can = true;
+							}
+							if (can) notesToHit[(daNote.noteData % Note.ammo[PlayState.mania]) % Note.ammo[PlayState.mania]] = daNote;
+						}
+					}
+				};
+				for (note in notesToHit) {
+					if (note != null) {
+						noteHitCallback(note, this);
+						return note;
+					}
+				}
+
+				
+				for (daNote in noteList)
+				{
+					if (daNote.canBeHit && daNote.mustPress && daNote.isSustainNote)
+					{
+						if (keysPressed[(daNote.noteData % Note.ammo[PlayState.mania]) % Note.ammo[PlayState.mania]])
+						{
+							noteHitCallback(daNote, this);
+							return daNote;
+						}
+					}
+				};
+
+			case "Kade Engine Community":
+				final lastConductorTime:Float = Conductor.songPosition;
+				keysPressed[data] = true;
+
+				final closestNotes:Array<Note> = PlayState.instance.notes.members.filter(function(aliveNote:Note)
+				{
+					return aliveNote != null && aliveNote.alive && aliveNote.canBeHit && aliveNote.mustPress && !aliveNote.wasGoodHit && !aliveNote.isSustainNote
+						&& aliveNote.noteData == data;
+				});
+
+				final defNotes:Array<Note> = [for (v in closestNotes) v];
+
+				haxe.ds.ArraySort.sort(defNotes, sortNotes);
+
+				if (closestNotes.length != 0)
+				{
+					final coolNote = defNotes[0];
+					if (defNotes.length > 1) // stacked notes or really close ones
+					{
+						for (i in 0...defNotes.length)
+						{
+							if (i == 0) // skip the first note
+								continue;
+
+							var note = defNotes[i];
+
+							if (!note.isSustainNote && ((note.strumTime - coolNote.strumTime) < 2) && note.noteData == data)
+								removeNote(note);
+						}
+					}
+
+					noteHitCallback(coolNote, this);
+					return coolNote;
+				}
+				else if (!ClientPrefs.data.ghostTapping)
+					PlayState.instance.noteMissPress(data);
+
+				Conductor.songPosition = lastConductorTime;
 		}
 
 		return null;
+	}
+
+	//for community input
+	function sortNotes(Obj1:Note, Obj2:Note):Int
+	{
+		return FlxSort.byValues(FlxSort.ASCENDING, Obj1.strumTime, Obj2.strumTime);
 	}
 
 	// generates the receptors
