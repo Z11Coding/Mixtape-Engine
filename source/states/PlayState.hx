@@ -6683,15 +6683,17 @@ class PlayState extends MusicBeatState
 				KillNotes();
 				FlxG.sound.music.onComplete();
 			}
-			if (FlxG.keys.justPressed.TWO)
-			{ // Go 10 seconds into the future :D
-				setSongTime(Conductor.songPosition + 10000);
-				clearNotesBefore(Conductor.songPosition);
-			}
-			if (FlxG.keys.justPressed.THREE)
-			{ // Go 10 seconds into the past >:(
-				setSongTime(Conductor.songPosition - 10000);
-				clearNotesBefore(Conductor.songPosition);
+			if (chartingMode) {
+				if (FlxG.keys.justPressed.TWO)
+				{ // Go 10 seconds into the future :D
+					setSongTime(Conductor.songPosition + 10000);
+					clearNotesBefore(Conductor.songPosition);
+				}
+				if (FlxG.keys.justPressed.THREE)
+				{ // Go 10 seconds into the past >:(
+					setSongTime(Conductor.songPosition - 10000);
+					clearNotesBefore(Conductor.songPosition);
+				}
 			}
 		}
 

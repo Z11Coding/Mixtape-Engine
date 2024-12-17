@@ -10,7 +10,7 @@ import haxe.DynamicAccess;
 import haxe.Timer;
 import ap.Client;
 import substates.Prompt;
-//import archipelago.GameState;
+import archipelago.GameState;
 import flixel.FlxG;
 import flixel.FlxState;
 import flixel.addons.ui.FlxInputText;
