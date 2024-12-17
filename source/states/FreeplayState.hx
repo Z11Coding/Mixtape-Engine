@@ -165,7 +165,7 @@ class FreeplayState extends MusicBeatState
 				}
 				if (categoryWhaat.toLowerCase() == CategoryState.loadWeekForce || (CategoryState.loadWeekForce == "mods" && categoryWhaat == null) || CategoryState.loadWeekForce == "all")
 				{
-					if (inArchipelagoMode)
+					if (APEntryState.inArchipelagoMode)
 					{
 						for (ii in 0...curUnlocked.length)
 						{

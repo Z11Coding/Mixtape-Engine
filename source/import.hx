@@ -27,6 +27,16 @@ import sys.io.*;
 import js.html.*;
 #end
 
+import archipelago.APConnectingSubState;
+import archipelago.APDisconnectSubstate;
+import archipelago.APEntryState;
+import archipelago.APDisconnectSubState;
+import archipelago.APDisconnectSubState;
+import archipelago.APDisconnectSubState;
+import archipelago.APDisconnectSubState;
+import archipelago.APDisconnectSubState;
+import archipelago.APDisconnectSubState;
+
 import backend.Mods;
 import backend.Paths;
 import backend.Controls;

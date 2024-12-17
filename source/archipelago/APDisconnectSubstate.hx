@@ -11,7 +11,7 @@ import lime.app.Event;
 
 using flixel.util.FlxSpriteUtil;
 
-class APDisconnectSubState extends FlxSubState
+class APDisconnectSubstate extends FlxSubState
 {
 	public var onCancel(default, null) = new Event<Void->Void>();
 	public var onReconnect(default, null) = new Event<Void->Void>();
