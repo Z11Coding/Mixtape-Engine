@@ -23,12 +23,11 @@ class APDisconnectSubstate extends FlxSubState
 	{
 		super(FlxColor.fromRGBFloat(0, 0, 0, .5));
 		_ap = ap;
-		_seed = _ap.seed;
 
-		_ap.onRoomInfo.add(onRoomInfo);
-		_ap.onSlotRefused.add(onSlotRefused);
-		_ap.onSocketDisconnected.add(onSocketDisconnected);
-		_ap.onSlotConnected.add(onSlotConnected);
+	}
+
+	public function setSeed(seed:String):Void {
+		_seed = seed;
 	}
 
     function onSlotConnected(slotData:Dynamic):Void
@@ -42,8 +41,9 @@ class APDisconnectSubstate extends FlxSubState
         close();
     }
 
-    function onSocketDisconnected():Void
-        onCancel.dispatch;
+    function onSocketDisconnected():Void {
+        onCancel.dispatch();
+    }
 
     function onSlotRefused(a:Array<String>):Void
         onCancel.dispatch();

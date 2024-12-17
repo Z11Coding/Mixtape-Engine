@@ -1,8 +1,11 @@
 package archipelago;
 
+import states.FreeplayState;
+import yutautil.MemoryHelper;
 import flixel.FlxState;
 import archipelago.Client;
 import archipelago.PacketTypes;
+import archipelago.APDisconnectSubstate;
 
 import haxe.ds.Option;
 
@@ -91,10 +94,24 @@ typedef SetNotifyPacket = { keys: Array<String> };
 class APGameState {
 
     private var _ap:Client;
+    private var _seed:String;
+    private var _disconnectSubstate:APDisconnectSubstate;
 
     public function new(ap:Client, slotData:Dynamic)
     {
         _ap = ap;
+
+        _seed = _ap.seed;
+
+        _disconnectSubstate = new APDisconnectSubstate(_ap);
+        _disconnectSubstate.setSeed(_seed);
+        _disconnectSubstate.onCancel.add(onCancel);
+        _disconnectSubstate.onReconnect.add(onReconnect);
+
+		_ap.onRoomInfo.add(onRoomInfo);
+		_ap.onSlotRefused.add(onSlotRefused);
+		_ap.onSocketDisconnected.add(onSocketDisconnected);
+		_ap.onSlotConnected.add(onSlotConnected);
     }
 
     public function info()
@@ -117,10 +134,26 @@ class APGameState {
     //     _ap.clientStatus = ClientStatus.UNKNOWN;
     // }
 
-    // public function onSocketDisconnected()
-    // {
-    //     _ap.clientStatus = ClientStatus.UNKNOWN;
-    // }
+    private function onSocketDisconnected():Void {
+        FlxG.switchState(_disconnectSubstate);
+    }
+
+    private function onCancel():Void {
+    _ap.disconnect_socket(); 
+    _ap.clientStatus = ClientStatus.UNKNOWN;
+    _ap.onRoomInfo.remove(onRoomInfo);
+    _ap.onSlotRefused.remove(onSlotRefused);
+    _ap.onSocketDisconnected.remove(onSocketDisconnected);
+    _ap.onSlotConnected.remove(onSlotConnected);
+    _ap = null;
+    MemoryHelper.clearClassObject(this);
+    MusicBeatState.switchState(new APEntryStateq());
+}
+
+
+    private function onReconnect():Void {
+        MusicBeatState.switchState(new FreeplayState());
+    }
 
     // public function onRoomUpdate(roomUpdatePacket:RoomUpdatePacket)
     // {
