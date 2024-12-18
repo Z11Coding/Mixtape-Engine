@@ -193,6 +193,42 @@ class PlayField extends FlxTypedGroup<FlxBasic>
 		noteQueue[note.column].sort((a, b) -> Std.int(a.strumTime - b.strumTime));
 	}
 
+	public function requeue(note:Note)
+	{
+		var newColumn = note.noteData;
+		if (note.column != newColumn)
+		{
+			removeNote(note);
+
+			var newNote = new Note(note.strumTime, newColumn);
+			// newNote.column = newColumn;
+			// newNote.strumTime = note.strumTime;
+			newNote.sustainLength = note.sustainLength;
+			newNote.noteData = note.noteData;
+			newNote.requiresTap = note.requiresTap;
+			newNote.isSustainNote = note.isSustainNote;
+			newNote.mustPress = note.mustPress;
+			newNote.wasGoodHit = note.wasGoodHit;
+			newNote.tooLate = note.tooLate;
+			newNote.ignoreNote = note.ignoreNote;
+			newNote.hitCausesMiss = note.hitCausesMiss;
+			newNote.lowPriority = note.lowPriority;
+			newNote.AIStrumTime = note.AIStrumTime;
+			newNote.AIMiss = note.AIMiss;
+			newNote.field = note.field;
+			newNote.parent = note.parent;
+			newNote.unhitTail = note.unhitTail;
+			newNote.fieldIndex = note.fieldIndex;
+			newNote.active = note.active;
+			newNote.visible = note.visible;
+			newNote.spawned = note.spawned;
+			newNote.blockHit = note.blockHit;
+			
+
+			queue(newNote);
+		}
+	}
+
 	// destroys a note
 	public function removeNote(daNote:Note){
 		daNote.active = false;

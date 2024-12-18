@@ -7683,11 +7683,11 @@ class PlayState extends MusicBeatState
 				var prevNote1:Note = null;
 				var prevNote2:Note = null;
 
-				playfields.forEach(function(daPlayfield:PlayField)
-				{
-					for (note in allNotes)
-						daPlayfield.unqueue(note);
-				});
+				// playfields.forEach(function(daPlayfield:PlayField)
+				// {
+				// 	for (note in allNotes)
+				// 		daPlayfield.unqueue(note);
+				// });
 
 				if (value1.toLowerCase().trim() == "random")
 				{
@@ -7728,7 +7728,7 @@ class PlayState extends MusicBeatState
 					playfields.forEach(function(daPlayfield:PlayField)
 					{
 						for (note in allNotes)
-							daPlayfield.queue(note);
+							daPlayfield.requeue(note);
 					});
 				}
 				changeMania(newMania, skipTween, true);

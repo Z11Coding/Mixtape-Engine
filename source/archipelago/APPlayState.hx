@@ -1,4 +1,5 @@
 package archipelago;
+import backend.Song;
 #if sys
 import sys.FileSystem;
 import sys.io.File;
@@ -1309,6 +1310,9 @@ class APPlayState extends PlayState {
 			}
 		}
 	}
+
+	// override public function generateNotes(song:SwagSong, AI:Array<Array<Float>>):Void
+	// 	super.generateNotes(song, AI);
 
     function updateScrollUI()
 	{
