@@ -1,6 +1,6 @@
 package options;
 
-class ArcipelagoSettingsSubState extends BaseOptionsMenu
+class ArchipelagoSettingsSubState extends BaseOptionsMenu
 {
 	public function new()
 	{

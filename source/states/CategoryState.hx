@@ -37,7 +37,7 @@ class CategoryState extends MusicBeatState
 		if (categories != null) {
 			if (Std.is(categories, Array)) {
 				menuItems = categories;
-			} else if (Std.is(categories, Map)) {
+			} /*else if (Std.is(categories, Map)) {
 				menuItems = [];
 				menuLocks = [];
 				for (key in categories.toIterable()) {
@@ -51,7 +51,7 @@ class CategoryState extends MusicBeatState
 						throw "CategoryState: 'categories' Map values must be either Bool or Void -> Bool!";
 					}
 				}
-			} else {
+			} */else {
 				throw "CategoryState: 'categories' must be either an Array<String> or a Map<String, Void -> Bool>!";
 			}
 		}

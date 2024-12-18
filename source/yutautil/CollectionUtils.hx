@@ -248,10 +248,6 @@ class CollectionUtils {
         }
     }
 
-    public static inline function asCallable<T>(func:T -> Void):Void -> Void {
-        return function() func();
-    }
-
     public static inline function asTypedCallable<T, R>(func:T -> R):T -> R {
         return func;
     }

@@ -238,7 +238,7 @@ class APPlayState extends PlayState {
 
         super.create();
 
-        terminateSound = new FlxSound().loadEmbedded(Paths.sound('beep'));
+        terminateSound = new FlxSound().loadEmbedded(Paths.sound('streamervschat/beep'));
         FlxG.sound.list.add(terminateSound);
 
         terminateMessage.visible = false;
@@ -307,37 +307,40 @@ class APPlayState extends PlayState {
             {
                 var foundOne:Bool = false;
 
-                for (i in 0...unspawnNotes.length)
+                for(queue in playerField.noteQueue)
                 {
-                    if (did >= itemAmount)
+                    for(note in queue)
                     {
-                        break; // exit the loop if the required number of notes are created
-                    }
-                    if (unspawnNotes[i].mustPress
-                        && unspawnNotes[i].noteType == ''
-                        && !unspawnNotes[i].isSustainNote
-                        && FlxG.random.bool(1)
-                        && unspawnNotes.filter(function(note:Note):Bool
+                        if (did >= itemAmount)
+                        {
+                            break; // exit the loop if the required number of notes are created
+                        }
+                        if (note.mustPress
+                            && note.noteType == ''
+                            && !note.isSustainNote
+                            && FlxG.random.bool(1)
+                            && unspawnNotes.filter(function(note:Note):Bool
+                            {
+                                return note.mustPress && note.noteType == '' && !note.isSustainNote;
+                            }).length != 0)
+
+                        {
+                            note.isCheck = true;
+                            note.noteType = 'Check Note';
+                            did++;
+                            foundOne = true;
+                            Sys.print('\rGenerating Checks: ' + did + '/' + itemAmount);
+                        }
+                        else if (unspawnNotes.filter(function(note:Note):Bool
                         {
                             return note.mustPress && note.noteType == '' && !note.isSustainNote;
-                        }).length != 0)
-
-                    {
-                        unspawnNotes[i].isCheck = true;
-                        unspawnNotes[i].noteType = 'Check Note';
-                        did++;
-                        foundOne = true;
-                        Sys.print('\rGenerating Checks: ' + did + '/' + itemAmount);
-                    }
-                    else if (unspawnNotes.filter(function(note:Note):Bool
-                    {
-                        return note.mustPress && note.noteType == '' && !note.isSustainNote;
-                    }).length == 0)
-                    {
-                        Sys.println('');
-                        trace('Stuck!');
-                        stuck = true;
-                        // Additional handling for when it gets stuck
+                        }).length == 0)
+                        {
+                            Sys.println('');
+                            trace('Stuck!');
+                            stuck = true;
+                            // Additional handling for when it gets stuck
+                        }
                     }
                 }
                 // Check if there are no more mustPress notes of type '' and not isSustainNote
@@ -350,9 +353,11 @@ class APPlayState extends PlayState {
                 }
             }
         }
-        for (i in 0...unspawnNotes.length)
-        {
-            if (unspawnNotes[i].noteType == 'Hurt Note') unspawnNotes[i].reloadNote('HURT');
+        for(queue in playerField.noteQueue){
+            for(note in queue)
+            {
+               if (note.noteType == 'Hurt Note') note.reloadNote('HURT');
+            }
         }
         Sys.println('');
         startOnTime = FlxG.save.data.songPos;
@@ -437,7 +442,7 @@ class APPlayState extends PlayState {
 		var alwaysEnd:Bool = false;
 		var playSound:String = "";
 		var playSoundVol:Float = 1;
-		// trace(effect);
+		trace(effect);
 		switch (effect)
 		{
 			case 'colorblind':
@@ -548,14 +553,14 @@ class APPlayState extends PlayState {
 					if (daNote == null)
 						continue;
 					if (daNote.strumTime >= Conductor.songPosition && !daNote.isSustainNote)
-						daNote.spinAmount = (FlxG.random.bool() ? 1 : -1) * FlxG.random.float(333 * 0.8, 333 * 1.15);
+						modManager.setValue('roll', (FlxG.random.bool() ? 1 : -1) * FlxG.random.float(333 * 0.8, 333 * 1.15));
 				}
 				for (daNote in notes)
 				{
 					if (daNote == null)
 						continue;
 					if (!daNote.isSustainNote)
-						daNote.spinAmount = (FlxG.random.bool() ? 1 : -1) * FlxG.random.float(333 * 0.8, 333 * 1.15);
+						modManager.setValue('roll', 0);
 				}
 				playSound = "spin";
 				ttl = 15;
@@ -646,16 +651,23 @@ class APPlayState extends PlayState {
 					if (daNote == null)
 						continue;
 					if (daNote.strumTime >= Conductor.songPosition && !daNote.isSustainNote)
-						daNote.setColorTransform(1, 1, 1, 1, FlxG.random.int(-255, 255), FlxG.random.int(-255, 255), FlxG.random.int(-255, 255));
+                    {
+						daNote.rgbShader.r = FlxColor.getHSBColorWheel()[FlxG.random.int(0, 360)];
+                        daNote.rgbShader.g = FlxColor.getHSBColorWheel()[FlxG.random.int(0, 360)];
+                        daNote.rgbShader.b = FlxColor.getHSBColorWheel()[FlxG.random.int(0, 360)];
+                    }
 					else if (daNote.strumTime >= Conductor.songPosition && daNote.isSustainNote)
-						daNote.setColorTransform(1, 1, 1, 1, Std.int(daNote.prevNote.colorTransform.redOffset),
-							Std.int(daNote.prevNote.colorTransform.greenOffset), Std.int(daNote.prevNote.colorTransform.blueOffset));
+                    {
+                        daNote.rgbShader.r = FlxColor.getHSBColorWheel()[FlxG.random.int(0, 360)];
+                        daNote.rgbShader.g = FlxColor.getHSBColorWheel()[FlxG.random.int(0, 360)];
+                        daNote.rgbShader.b = FlxColor.getHSBColorWheel()[FlxG.random.int(0, 360)];
+                    }
 				}
 				for (daNote in notes)
 				{
 					if (daNote == null)
 						continue;
-					daNote.setColorTransform(1, 1, 1, 1, FlxG.random.int(-255, 255), FlxG.random.int(-255, 255), FlxG.random.int(-255, 255));
+					daNote.defaultRGB();
 				}
 				playSound = "rainbow";
 				playSoundVol = 0.5;
@@ -691,26 +703,26 @@ class APPlayState extends PlayState {
 						playSound = "bell";
 						playSoundVol = 0.6;
 					case 1:
-						errorMessage.loadGraphic(Paths.image("scam"));
+						errorMessage.loadGraphic(Paths.image("streamervschat/scam"));
 						playSound = 'scam';
 					case 2:
-						errorMessage.loadGraphic(Paths.image("funnyskeletonman"));
+						errorMessage.loadGraphic(Paths.image("streamervschat/funnyskeletonman"));
 						playSound = 'doot';
 						errorMessage.scale.x = errorMessage.scale.y = 0.8;
 					case 3:
-						errorMessage.loadGraphic(Paths.image("error"));
+						errorMessage.loadGraphic(Paths.image("streamervschat/error"));
 						playSound = 'error';
 						errorMessage.scale.x = errorMessage.scale.y = 0.8;
 						errorMessage.antialiasing = true;
 						errorMessage.updateHitbox();
 					case 4:
-						errorMessage.loadGraphic(Paths.image("nopunch"));
+						errorMessage.loadGraphic(Paths.image("streamervschat/nopunch"));
 						playSound = 'nopunch';
 						errorMessage.scale.x = errorMessage.scale.y = 0.8;
 						errorMessage.antialiasing = true;
 						errorMessage.updateHitbox();
 					case 5:
-						errorMessage.loadGraphic(Paths.image("banana"), true, 397, 750);
+						errorMessage.loadGraphic(Paths.image("streamervschat/banana"), true, 397, 750);
 						errorMessage.animation.add("dance", [0, 1, 2, 3, 4, 5, 6, 7, 8], 9, true);
 						errorMessage.animation.play("dance");
 						playSound = 'banana';
@@ -718,13 +730,13 @@ class APPlayState extends PlayState {
 						errorMessage.scale.x = errorMessage.scale.y = 0.5;
 					case 6:
 						errorMessage = new VideoHandlerMP4();
-						cast(errorMessage, VideoHandlerMP4).playMP4(Paths.video('mark'), null, false, false).setDimensions(378, 362);
+						cast(errorMessage, VideoHandlerMP4).playMP4(Paths.video('streamervschat/mark'), null, false, false).setDimensions(378, 362);
 						addedMP4s.push(cast(errorMessage, VideoHandlerMP4));
 						errorMessages.add(errorMessage);
 					case 7:
 						randomPosition = false;
 						errorMessage = new VideoHandlerMP4();
-						cast(errorMessage, VideoHandlerMP4).playMP4(Paths.video('fireworks'), null, false, false).setDimensions(1280, 720);
+						cast(errorMessage, VideoHandlerMP4).playMP4(Paths.video('streamervschat/fireworks'), null, false, false).setDimensions(1280, 720);
 						addedMP4s.push(cast(errorMessage, VideoHandlerMP4));
 						errorMessages.add(errorMessage);
 						errorMessage.x = errorMessage.y = 0;
@@ -733,7 +745,7 @@ class APPlayState extends PlayState {
 					case 8:
 						randomPosition = false;
 						errorMessage = new VideoHandlerMP4();
-						cast(errorMessage, VideoHandlerMP4).playMP4(Paths.video('spiral'), null, false, false).setDimensions(1280, 720);
+						cast(errorMessage, VideoHandlerMP4).playMP4(Paths.video('streamervschat/spiral'), null, false, false).setDimensions(1280, 720);
 						addedMP4s.push(cast(errorMessage, VideoHandlerMP4));
 						errorMessages.add(errorMessage);
 						errorMessage.x = errorMessage.y = 0;
@@ -742,7 +754,7 @@ class APPlayState extends PlayState {
 					case 9:
 						randomPosition = false;
 						errorMessage = new VideoHandlerMP4();
-						cast(errorMessage, VideoHandlerMP4).playMP4(Paths.video('thingy'), null, false, false).setDimensions(1280, 720);
+						cast(errorMessage, VideoHandlerMP4).playMP4(Paths.video('streamervschat/thingy'), null, false, false).setDimensions(1280, 720);
 						addedMP4s.push(cast(errorMessage, VideoHandlerMP4));
 						errorMessages.add(errorMessage);
 						errorMessage.x = errorMessage.y = 0;
@@ -751,7 +763,7 @@ class APPlayState extends PlayState {
 					case 10:
 						randomPosition = false;
 						errorMessage = new VideoHandlerMP4();
-						cast(errorMessage, VideoHandlerMP4).playMP4(Paths.video('light'), null, false, false).setDimensions(1280, 720);
+						cast(errorMessage, VideoHandlerMP4).playMP4(Paths.video('streamervschat/light'), null, false, false).setDimensions(1280, 720);
 						addedMP4s.push(cast(errorMessage, VideoHandlerMP4));
 						errorMessages.add(errorMessage);
 						errorMessage.x = errorMessage.y = 0;
@@ -760,7 +772,7 @@ class APPlayState extends PlayState {
 					case 11:
 						randomPosition = false;
 						errorMessage = new VideoHandlerMP4();
-						cast(errorMessage, VideoHandlerMP4).playMP4(Paths.video('snow'), null, false, false).setDimensions(1280, 720);
+						cast(errorMessage, VideoHandlerMP4).playMP4(Paths.video('streamervschat/snow'), null, false, false).setDimensions(1280, 720);
 						addedMP4s.push(cast(errorMessage, VideoHandlerMP4));
 						errorMessages.add(errorMessage);
 						errorMessage.x = errorMessage.y = 0;
@@ -770,7 +782,7 @@ class APPlayState extends PlayState {
 					case 12:
 						randomPosition = false;
 						errorMessage = new VideoHandlerMP4();
-						cast(errorMessage, VideoHandlerMP4).playMP4(Paths.video('spiral2'), null, false, false).setDimensions(1280, 720);
+						cast(errorMessage, VideoHandlerMP4).playMP4(Paths.video('streamervschat/spiral2'), null, false, false).setDimensions(1280, 720);
 						addedMP4s.push(cast(errorMessage, VideoHandlerMP4));
 						errorMessages.add(errorMessage);
 						errorMessage.x = errorMessage.y = 0;
@@ -779,7 +791,7 @@ class APPlayState extends PlayState {
 					case 13:
 						randomPosition = false;
 						errorMessage = new VideoHandlerMP4();
-						cast(errorMessage, VideoHandlerMP4).playMP4(Paths.video('wheel'), null, false, false).setDimensions(1280, 720);
+						cast(errorMessage, VideoHandlerMP4).playMP4(Paths.video('streamervschat/wheel'), null, false, false).setDimensions(1280, 720);
 						addedMP4s.push(cast(errorMessage, VideoHandlerMP4));
 						errorMessages.add(errorMessage);
 						errorMessage.x = errorMessage.y = 0;
@@ -858,14 +870,14 @@ class APPlayState extends PlayState {
 
 			case 'nostrum':
 				noIcon = false;
-				for (i in 0...playerStrums.length)
-					playerStrums.members[i].visible = false;
+				for (i in 0...playerField.strumNotes.length)
+					playerField.strumNotes[i].visible = false;
 				playSound = "nostrum";
 				ttl = 13;
 				onEnd = function()
 				{
-					for (i in 0...playerStrums.length)
-						playerStrums.members[i].visible = true;
+					for (i in 0...playerField.strumNotes.length)
+						playerField.strumNotes[i].visible = true;
 				}
 			case 'jackspam':
 				noIcon = true;
@@ -896,7 +908,7 @@ class APPlayState extends PlayState {
 					picked = FlxG.random.int(0, 3);
 				else
 					picked = chooseFrom[FlxG.random.int(0, chooseFrom.length - 1)];
-				playerStrums.members[picked].alpha = 0;
+				playerField.strumNotes[picked].alpha = 0;
 				severInputs[picked] = true;
 
 				var okayden:Array<Int> = [];
@@ -904,7 +916,7 @@ class APPlayState extends PlayState {
 				{
 					okayden.push(i);
 				}
-				var explosion = new FlxSprite().loadGraphic(Paths.image("explosion"), true, 256, 256);
+				var explosion = new FlxSprite().loadGraphic(Paths.image("streamervschat/explosion"), true, 256, 256);
 				explosion.animation.add("boom", okayden, 60, false);
 				explosion.animation.finishCallback = function(name)
 				{
@@ -914,8 +926,8 @@ class APPlayState extends PlayState {
 					FlxDestroyUtil.destroy(explosion);
 				};
 				explosion.cameras = [camHUD];
-				explosion.x = playerStrums.members[picked].x + playerStrums.members[picked].width / 2 - explosion.width / 2;
-				explosion.y = playerStrums.members[picked].y + playerStrums.members[picked].height / 2 - explosion.height / 2;
+				explosion.x = playerField.strumNotes[picked].x + playerField.strumNotes[picked].width / 2 - explosion.width / 2;
+				explosion.y = playerField.strumNotes[picked].y + playerField.strumNotes[picked].height / 2 - explosion.height / 2;
 				explosion.animation.play("boom", true);
 				add(explosion);
 
@@ -924,7 +936,7 @@ class APPlayState extends PlayState {
 				alwaysEnd = true;
 				onEnd = function()
 				{
-					playerStrums.members[picked].alpha = 1;
+					playerField.strumNotes[picked].alpha = 1;
 					severInputs[picked] = false;
 				}
 			case 'shake':
@@ -1014,7 +1026,7 @@ class APPlayState extends PlayState {
 						noisysoundVol = 0.9;
 				}
 				noiseSound.stop();
-				noiseSound.loadEmbedded(Paths.sound(noisysound));
+				noiseSound.loadEmbedded(Paths.sound("streamervschat/"+noisysound));
 				noiseSound.volume = noisysoundVol;
 				noiseSound.play(true);
 
@@ -1240,7 +1252,7 @@ class APPlayState extends PlayState {
 
 		if (playSound != "")
 		{
-			FlxG.sound.play(Paths.sound(playSound), playSoundVol);
+			FlxG.sound.play(Paths.sound("streamervschat/"+playSound), playSoundVol);
 		}
 
 		new FlxTimer().start(ttl, function(tmr:FlxTimer)
@@ -1259,7 +1271,7 @@ class APPlayState extends PlayState {
 		{
 			if (lagOn)
 			{
-				var icon = new FlxSprite().loadGraphic(Paths.image("effectIcons/" + effect));
+				var icon = new FlxSprite().loadGraphic(Paths.image("streamervschat/effectIcons/" + effect));
 				icon.cameras = [camOther];
 				icon.screenCenter(X);
 				icon.y = (effectiveDownScroll ? FlxG.height - icon.height - 10 : 10);
@@ -1274,7 +1286,7 @@ class APPlayState extends PlayState {
 			}
 			else
 			{
-				var icon = new FlxSprite().loadGraphic(Paths.image("effectIcons/" + effect));
+				var icon = new FlxSprite().loadGraphic(Paths.image("streamervschat/effectIcons/" + effect));
 				icon.cameras = [camOther];
 				icon.screenCenter(X);
 				icon.y = (effectiveDownScroll ? FlxG.height - icon.frameHeight - 10 : 10);
@@ -1302,7 +1314,6 @@ class APPlayState extends PlayState {
 
     function updateScrollUI()
 	{
-		ClientPrefs.data.downScroll = effectiveDownScroll;
 		timeTxt.y = (effectiveDownScroll ? FlxG.height - 44 : 19);
 		timeBar.y = (timeTxt.y + (timeTxt.height / 4)) + 4;
         modManager.queueEase(curStep, curStep+3, 'reverse', effectiveDownScroll ? 1 : 0, "sineInOut");
@@ -1369,29 +1380,24 @@ class APPlayState extends PlayState {
 		{
 			case 1:
 				swagNote.noteType = 'Mine Note';
-				swagNote.reloadNote('minenote');
 				swagNote.isMine = true;
 				swagNote.ignoreNote = true;
 				swagNote.specialNote = true;
 			case 2:
 				swagNote.noteType = 'Warning Note';
-				swagNote.reloadNote('warningnote');
 				swagNote.isAlert = true;
 				swagNote.specialNote = true;
 			case 3:
 				swagNote.noteType = 'Heal Note';
-				swagNote.reloadNote('healnote');
 				swagNote.isHeal = true;
 				swagNote.specialNote = true;
 			case 4:
 				swagNote.noteType = 'Ice Note';
-				swagNote.reloadNote('icenote');
 				swagNote.isFreeze = true;
 				swagNote.ignoreNote = true;
 				swagNote.specialNote = true;
 			case 5:
 				swagNote.noteType = 'Fake Heal Note';
-				swagNote.reloadNote('fakehealnote');
 				swagNote.isFakeHeal = true;
 				swagNote.ignoreNote = true;
 				swagNote.specialNote = true;
@@ -1494,10 +1500,12 @@ class APPlayState extends PlayState {
 					note.blockHit = false;
 			});
 		}
-        for (i in 0...unspawnNotes.length)
-		{
-			if (unspawnNotes[i].noteData == picked)
-				unspawnNotes[i].blockHit = true;
+        for(queue in playerField.noteQueue){
+            for(note in queue)
+            {
+                if (note.noteData == picked)
+                    note.blockHit = true;
+            }
 		}
 
         if (!endingSong)
@@ -1580,12 +1588,12 @@ class APPlayState extends PlayState {
                     var healthToTake = health / 3 * dmgMultiplier;
                     health -= healthToTake;
                     boyfriend.playAnim('hit', true);
-                    FlxG.sound.play(Paths.sound('theshoe'));
+                    FlxG.sound.play(Paths.sound('streamervschat/theshoe'));
                     timestamp.kill();
                     terminateTimestamps.resize(0);
 
                     var theShoe = new FlxSprite();
-                    theShoe.loadGraphic(Paths.image("theshoe"));
+                    theShoe.loadGraphic(Paths.image("streamervschat/theshoe"));
                     theShoe.x = boyfriend.x + boyfriend.width / 2 - theShoe.width / 2;
                     theShoe.y = -FlxG.height / defaultCamZoom;
                     add(theShoe);
@@ -1951,7 +1959,7 @@ class APPlayState extends PlayState {
 				terminateTimestamps.push(terminate);
 				terminateStep--;
 			case 2 | 1 | 0:
-				terminateMessage.loadGraphic(Paths.image("terminate" + terminateStep));
+				terminateMessage.loadGraphic(Paths.image("streamervschat/terminate" + terminateStep));
 				terminateMessage.screenCenter(XY);
 				terminateMessage.cameras = [camOther];
 				terminateMessage.visible = true;
@@ -1962,7 +1970,7 @@ class APPlayState extends PlayState {
 				}
 				else if (terminateStep == 0)
 				{
-					FlxG.sound.play(Paths.sound('beep2'), 0.85);
+					FlxG.sound.play(Paths.sound('streamervschat/beep2'), 0.85);
 				}
 				terminateStep--;
 			case -1:

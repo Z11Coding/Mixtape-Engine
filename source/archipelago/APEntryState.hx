@@ -348,7 +348,22 @@ class APEntryState extends FlxState
 
 	override function update(elapsed:Float)
 	{
-		if (FlxG.keys.justPressed.HOME) inArchipelagoMode = true;
+		if (FlxG.keys.justPressed.HOME) 
+		{
+			inArchipelagoMode = true;
+			WeekData.reloadWeekFiles(false);
+			unlockable = baseGame;
+			for (i in 0...WeekData.weeksList.length) {
+				var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
+				
+				for (song in leWeek.songs)
+				{
+					unlockable.remove(song[0]); // To remove dups
+					unlockable.push(song[0]);
+					unlockable.remove('Tutorial'); // To remove Tutorial because it keeps re-adding itself
+				}
+			}
+		}
 		if(swagShader != null) swagShader.hue += elapsed * 0.1;
 		if (!ClientPrefs.data.lowQuality)
 		{

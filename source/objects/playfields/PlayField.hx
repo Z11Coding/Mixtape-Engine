@@ -292,12 +292,12 @@ class PlayField extends FlxTypedGroup<FlxBasic>
 				#if PE_MOD_COMPATIBILITY
 				noteList.sort((a, b) -> Std.int((b.strumTime + (b.lowPriority ? 10000 : 0)) - (a.strumTime + (a.lowPriority ? 10000 : 0)))); // so lowPriority actually works (even though i hate it lol!)
 				#else
-				noteList.sort((a, b) -> Std.int(b.strumTim - a.strumTime)); // so lowPriority actually works (even though i hate it lol!)
+				noteList.sort((a, b) -> Std.int(b.strumTime - a.strumTime)); //so lowPriority actually works (even though i hate it lol!)
 				#end
 				while (noteList.length > 0)
 				{
 					var note:Note = noteList.pop();
-					noteHitCallback(note, this);
+					if (!note.blockHit && !note.ignoreNote) noteHitCallback(note, this);
 					return note;
 				}
 			case 'BEAT! Engine':
