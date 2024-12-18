@@ -16,6 +16,10 @@ class OtherSettingsSubState extends BaseOptionsMenu
 			"If checked, The game will ignore tween errors.", 'ignoreTweenErrors', 'bool');
 			addOption(option);
 
+		var option:Option = new Option("Allow Force Quit",
+			"If checked, The game will allow you to force quit the game.", 'allowForcedExit', 'bool');
+			addOption(option);
+
 		var option:ToggleOption = new ToggleOption('Test Togglable', 'A test.', 'testToggle', 'int', 0);
 		option.defaultValue = 0;
 		option.minValue = 0;
