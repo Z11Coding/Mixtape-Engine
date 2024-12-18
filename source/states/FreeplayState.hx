@@ -364,7 +364,7 @@ class FreeplayState extends MusicBeatState
 		{
 			var daSong = APEntryState.unlockable[FlxG.random.int(0, APEntryState.unlockable.length - 1)];
 			ArchPopup.startPopupSong(daSong, 'archColor');
-			reloadSongs();
+			reloadSongs(true);
 		}
 		trace(APEntryState.unlockable);
 	}
@@ -443,6 +443,16 @@ class FreeplayState extends MusicBeatState
 							}
 						}
 						else addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
+
+						for (ii in 0...curUnlocked.length)
+						{
+							if ((Std.string('Small Argument').toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()) || APEntryState.inArchipelagoMode && 'Small Argument'.toLowerCase() == curUnlocked[ii].toLowerCase()) && FlxG.save.data.gotIntoAnArgument && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
+								addSong('Small Argument', 0, "gfchibi", FlxColor.fromRGB(235, 100, 161));
+							if ((Std.string('Beat Battle').toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()) || APEntryState.inArchipelagoMode && 'Beat Battle'.toLowerCase() == curUnlocked[ii].toLowerCase()) && FlxG.save.data.gotbeatbattle && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
+								addSong('Beat Battle', 0, "gf", FlxColor.fromRGB(165, 0, 77));
+							if ((Std.string('Beat Battle 2').toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()) || APEntryState.inArchipelagoMode && 'Beat Battle 2'.toLowerCase() == curUnlocked[ii].toLowerCase()) && FlxG.save.data.gotbeatbattle2 && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
+								addSong('Beat Battle 2', 0, "gf", FlxColor.fromRGB(165, 0, 77));
+						}
 					}
 					else
 					{	
@@ -463,13 +473,15 @@ class FreeplayState extends MusicBeatState
 							}
 							else addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
 						}
-
-						if (Std.string('Small Argument').toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()) && FlxG.save.data.gotIntoAnArgument && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
-							addSong('Small Argument', 0, "gfchibi", FlxColor.fromRGB(235, 100, 161));
-						if (Std.string('Beat Battle').toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()) && FlxG.save.data.gotbeatbattle && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
-							addSong('Beat Battle', 0, "gf", FlxColor.fromRGB(165, 0, 77));
-						if (Std.string('Beat Battle 2').toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()) && FlxG.save.data.gotbeatbattle2 && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
-							addSong('Beat Battle 2', 0, "gf", FlxColor.fromRGB(165, 0, 77));
+						for (ii in 0...curUnlocked.length)
+						{
+							if ((Std.string('Small Argument').toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()) || APEntryState.inArchipelagoMode && 'Small Argument'.toLowerCase() == curUnlocked[ii].toLowerCase()) && FlxG.save.data.gotIntoAnArgument && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
+								addSong('Small Argument', 0, "gfchibi", FlxColor.fromRGB(235, 100, 161));
+							if ((Std.string('Beat Battle').toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()) || APEntryState.inArchipelagoMode && 'Beat Battle'.toLowerCase() == curUnlocked[ii].toLowerCase()) && FlxG.save.data.gotbeatbattle && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
+								addSong('Beat Battle', 0, "gf", FlxColor.fromRGB(165, 0, 77));
+							if ((Std.string('Beat Battle 2').toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()) || APEntryState.inArchipelagoMode && 'Beat Battle 2'.toLowerCase() == curUnlocked[ii].toLowerCase()) && FlxG.save.data.gotbeatbattle2 && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
+								addSong('Beat Battle 2', 0, "gf", FlxColor.fromRGB(165, 0, 77));
+						}
 					}
 				}
 			}
@@ -542,7 +554,7 @@ class FreeplayState extends MusicBeatState
 		if (searchBar.text == 'CLICK TO SEARCH FREEPLAY!' && searchBar.hasFocus)
 		{
 			searchBar.text = '';
-			reloadSongs(null);
+			reloadSongs();
 			searchBar.updateHitbox();
 		}
 		if (!searchBar.hasFocus)
@@ -661,7 +673,7 @@ class FreeplayState extends MusicBeatState
 		{
 			searchBar.hasFocus = false;
 		}
-		if (FlxG.keys.justPressed.ANY && searchBar.hasFocus) reloadSongs(null);
+		if (FlxG.keys.justPressed.ANY && searchBar.hasFocus) reloadSongs();
 
 		if (searchBar.hasFocus == false || searchBar.text == null)
 		{
