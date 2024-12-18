@@ -110,7 +110,8 @@ class Main extends Sprite
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, init);
 		}
-
+		// var testThing:FCTInput<Int> = 3;
+		// trace("Test thing: " + testThing);
 		setupGame();
 	}
 

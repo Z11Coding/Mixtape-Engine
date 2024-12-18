@@ -71,7 +71,7 @@ class CategoryState extends MusicBeatState
 		if (menuItems.contains("Secrets") && !showSecrets) {
 			throw "CategoryState: 'Secrets' category is disabled, yet it's in the menuItems array!";
 		}
-		menuItems.mapIfBreak(it -> it.isEmpty(), throw "CategoryState: Empty strings are not allowed in the menuItems array!");
+		// menuItems.mapIfBreak(it -> it.isEmpty(), throw "CategoryState: Empty strings are not allowed in the menuItems array!");
 
 		if (menuItems.contains("h?")) {
 			if (h) {

@@ -295,7 +295,7 @@ class APPlayState extends PlayState {
         // Check if there are any mustPress notes available
         if (unspawnNotes.filter(function(note:Note):Bool
         {
-            return note.mustPress && note.noteType == '' && !note.isSustainNote;
+            return note.field == playerField && note.noteType == '' && !note.isSustainNote;
         }).length == 0)
         {
             trace('No mustPress notes found. Pausing Note Generation...');
@@ -632,6 +632,8 @@ class APPlayState extends PlayState {
 					effectiveScrollSpeed -= changeAmount;
 					songSpeed = PlayState.SONG.speed * ClientPrefs.getGameplaySetting('scrollspeed', 1) * effectiveScrollSpeed;
 				}
+			case 'notif':
+				backend.window.CppAPI.sendWindowsNotification("Archipelago", "You're crazy...");
 			case 'scrollslower':
 				noIcon = false;
 				var changeAmount:Float = FlxG.random.float(0.1, 0.9);
@@ -1111,10 +1113,6 @@ class APPlayState extends PlayState {
 			case 'randomize':
 				noIcon = false;
 				var available:Array<Int> = [];
-				for (i in 0...PlayState.mania+1) {
-					available.push(i);
-					trace("available: " + available);
-				}
 				FlxG.random.shuffle(available);
 				switch (available)
 				{
@@ -1211,38 +1209,38 @@ class APPlayState extends PlayState {
 					vocalLowFilterAmount = 1;
 				}
 
-			case 'songSwitch':
-				//save everything first
-				if (FlxG.save.data.manualOverride != null && FlxG.save.data.manualOverride == false) 
-					FlxG.save.data.manualOverride = true;
-				else if (FlxG.save.data.manualOverride != null && FlxG.save.data.manualOverride == true) 
-					FlxG.save.data.manualOverride = false;
+			// case 'songSwitch':
+			// 	//save everything first
+			// 	if (FlxG.save.data.manualOverride != null && FlxG.save.data.manualOverride == false) 
+			// 		FlxG.save.data.manualOverride = true;
+			// 	else if (FlxG.save.data.manualOverride != null && FlxG.save.data.manualOverride == true) 
+			// 		FlxG.save.data.manualOverride = false;
 
-				trace('MANUAL OVERRIDE: ' + FlxG.save.data.manualOverride);
+			// 	trace('MANUAL OVERRIDE: ' + FlxG.save.data.manualOverride);
 
-				if (FlxG.save.data.manualOverride)
-				{
-					FlxG.save.data.storyWeek = PlayState.storyWeek;
-					FlxG.save.data.currentModDirectory = Mods.currentModDirectory;
-					FlxG.save.data.difficulties = Difficulty.list; // just in case
-					FlxG.save.data.SONG = PlayState.SONG;
-					FlxG.save.data.storyDifficulty = PlayState.storyDifficulty;
-					FlxG.save.data.songPos = Conductor.songPosition;
-					FlxG.save.flush();
-				}
+			// 	if (FlxG.save.data.manualOverride)
+			// 	{
+			// 		FlxG.save.data.storyWeek = PlayState.storyWeek;
+			// 		FlxG.save.data.currentModDirectory = Mods.currentModDirectory;
+			// 		FlxG.save.data.difficulties = Difficulty.list; // just in case
+			// 		FlxG.save.data.SONG = PlayState.SONG;
+			// 		FlxG.save.data.storyDifficulty = PlayState.storyDifficulty;
+			// 		FlxG.save.data.songPos = Conductor.songPosition;
+			// 		FlxG.save.flush();
+			// 	}
 
-				//Then make a hostile takeover
-				if (FlxG.save.data.manualOverride)
-				{
-					//playBackRate = 1;
-					PlayState.storyWeek = 0;
-					Mods.currentModDirectory = '';
-					Difficulty.list = Difficulty.defaultList.copy();
-					PlayState.SONG = Song.loadFromJson(Highscore.formatSong('tutorial', curDifficulty), Paths.formatToSongPath('tutorial'));
-					PlayState.storyDifficulty = curDifficulty;
-					FlxG.save.flush();
-				}
-				MusicBeatState.resetState();
+			// 	//Then make a hostile takeover
+			// 	if (FlxG.save.data.manualOverride)
+			// 	{
+			// 		//playBackRate = 1;
+			// 		PlayState.storyWeek = 0;
+			// 		Mods.currentModDirectory = '';
+			// 		Difficulty.list = Difficulty.defaultList.copy();
+			// 		PlayState.SONG = Song.loadFromJson(Highscore.formatSong('tutorial', curDifficulty), Paths.formatToSongPath('tutorial'));
+			// 		PlayState.storyDifficulty = curDifficulty;
+			// 		FlxG.save.flush();
+			// 	}
+			// 	MusicBeatState.resetState();
 
 			default:
 				return;
@@ -1660,6 +1658,7 @@ class APPlayState extends PlayState {
 			states.FreeplayState.giveSong = true;
 		}
         super.endSong();
+		TransitionState.transitionState(states.FreeplayState);
         return true; //why does endsong need this?????
     }
 

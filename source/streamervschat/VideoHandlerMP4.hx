@@ -10,8 +10,7 @@ import flixel.util.FlxColor;
 import openfl.media.Video;
 import openfl.net.NetConnection;
 import openfl.net.NetStream;
-// import streamervschat.vlc.VlcBitmap;
-import hxvlc.flixel.FlxVideoSprite;
+import streamervschat.vlc.VlcBitmap;
 
 // THIS IS FOR TESTING
 // DONT STEAL MY CODE >:(
@@ -27,10 +26,9 @@ class VideoHandlerMP4 extends FlxSprite
 	public var skipable:Bool = false;
 	public var muted:Bool = false;
 	public var completed:Bool = false;
-	// repeatCount:Int = 0;
 
 	#if desktop
-	public var vlcBitmap:FlxVideoSprite;
+	public var vlcBitmap:VlcBitmap;
 	#end
 
 	public function new(?x:Float = 0, ?y:Float = 0)
@@ -100,24 +98,27 @@ class VideoHandlerMP4 extends FlxSprite
 
 		finishCallback = callback;
 
-		vlcBitmap = new FlxVideoSprite();
-		// vlcBitmap.onVideoReady = onVLCVideoReady;
-		vlcBitmap.bitmap.onEndReached.add(onVLCComplete);
-		// vlcBitmap.volume = FlxG.sound.volume;
+		vlcBitmap = new VlcBitmap();
+		vlcBitmap.onVideoReady = onVLCVideoReady;
+		vlcBitmap.onComplete = onVLCComplete;
+		vlcBitmap.volume = FlxG.sound.volume;
 
-		// if (repeat)
-		// 	vlcBitmap.repeat = -1;
-		// else
-		// 	vlcBitmap.repeat = 0;
+		if (repeat)
+			vlcBitmap.repeat = -1;
+		else
+			vlcBitmap.repeat = 0;
 
-		// vlcBitmap.inWindow = isWindow;
-		// vlcBitmap.fullscreen = isFullscreen;
+		vlcBitmap.inWindow = isWindow;
+		vlcBitmap.fullscreen = isFullscreen;
 
-		FlxG.state.add(vlcBitmap);
-		vlcBitmap.load(checkFile(path));
-		vlcBitmap.play();
-		vlcBitmap.visible = true;
+		FlxG.addChildBelowMouse(vlcBitmap);
+		vlcBitmap.play(checkFile(path));
+		vlcBitmap.visible = false;
+
+		waitingStart = true;
+
 		return this;
+
 	}
 
 	public function setDimensions(_x:Int, _y:Int)
@@ -186,11 +187,11 @@ class VideoHandlerMP4 extends FlxSprite
 		vlcBitmap.stop();
 
 		// Clean player, just in case!
-		vlcBitmap.destroy();
+		vlcBitmap.dispose();
 
-		if (FlxG.state.members.indexOf(vlcBitmap) != -1)
+		if (FlxG.game.contains(vlcBitmap))
 		{
-			FlxG.state.remove(vlcBitmap);
+			FlxG.game.removeChild(vlcBitmap);
 		}
 
 		trace("Done!");
@@ -248,22 +249,26 @@ class VideoHandlerMP4 extends FlxSprite
 		if (vlcBitmap != null)
 		{
 			if (!muted)
-				vlcBitmap.bitmap.volume = Std.int(FlxG.sound.volume * 100);
+				vlcBitmap.volume = FlxG.sound.volume;
 			else
-				vlcBitmap.bitmap.volume = 0;
+				vlcBitmap.volume = 0;
 		}
 
-		// if (waitingStart)
-		// {
-		// 	if (vlcBitmap.initComplete)
-		// 	{
-		// 		makeGraphic(vlcBitmap.bitmapData.width, vlcBitmap.bitmapData.height, FlxColor.TRANSPARENT);
+		if (waitingStart)
+		{
+			if (vlcBitmap.initComplete)
+			{
+				makeGraphic(vlcBitmap.bitmapData.width, vlcBitmap.bitmapData.height, FlxColor.TRANSPARENT);
 
-		// 		waitingStart = false;
-		// 		startDrawing = true;
-		// 	}
-		// }
+				waitingStart = false;
+				startDrawing = true;
+			}
+		}
 
+		if (startDrawing)
+		{
+			pixels.draw(vlcBitmap.bitmapData);
+		}
 
 		if (skipable)
 		{

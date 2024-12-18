@@ -11,7 +11,38 @@ import haxe.ds.StringMap;
 //     pop;
 //     get(item:T):Bool;
 // }
+
+/**
+ * A type similar to Java's Predicate type.
+ */
 @:generic typedef Predicate<T> = T -> Bool; 
+
+/**
+ * An abstract type that allows any form of input that will result in the required type.
+ * If the input is a function, it will be executed to get the result.
+ */
+// @:generic abstract FCTInput<I>(I) {
+//     public function new(value:I) {
+//         this = value.toCallable()();
+//         while (Reflect.isFunction(this)) {
+//             trace("Unpacking and executing function...");
+//             this = this();
+//             trace("Function executed.");
+//         }
+//         var thee = this;
+//         this = thee;
+//     }
+// }
+
+    // public inline function get():T {
+    //     if (Std.is(this, Function)) {
+    //         return (cast this: I -> T)();
+    //     } else {
+    //         return cast this;
+    //     }
+    // }
+
+
 class CollectionUtils {
 
     public static inline function isIterable<T>(input:Dynamic):Bool {
