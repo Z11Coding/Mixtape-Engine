@@ -31,13 +31,15 @@ class CategoryState extends MusicBeatState
 	var allowedKeys:String = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 	var easterEggKeysBuffer:String = '';
 
+	// TODO: later, change to OneOfTwo<Array<String>, Map<String, Void -> Bool>> for categories, so it specifies that it must be one of the two types.
+
 	public function new(?categories:Dynamic, ?showmods:Bool = true, ?showsecrets:Bool = true, ?showall:Bool = true, ?h:Bool = true)
 	{
 		super();
 		if (categories != null) {
 			if (Std.is(categories, Array)) {
 				menuItems = categories;
-			} else if (Std.is(categories, Map)) {
+			} else if (categories.isMap()) {
 				menuItems = [];
 				menuLocks = [];
 				for (key in categories.toIterable()) {
@@ -69,9 +71,8 @@ class CategoryState extends MusicBeatState
 		if (menuItems.contains("Secrets") && !showSecrets) {
 			throw "CategoryState: 'Secrets' category is disabled, yet it's in the menuItems array!";
 		}
-		if (menuItems.contains(" ") || menuItems.contains("")) {
-			throw "CategoryState: Empty strings are not allowed in the menuItems array!";
-		}
+		menuItems.mapIfBreak(it -> it.isEmpty(), throw "CategoryState: Empty strings are not allowed in the menuItems array!");
+
 		if (menuItems.contains("h?")) {
 			if (h) {
 				throw "CategoryState: 'h?' category is reserved for a secret!";
@@ -84,8 +85,7 @@ class CategoryState extends MusicBeatState
 	override function create()
 	{
 		MemoryUtil.clearMajor();
-		menuItems.remove("");
-		menuItems.remove(" ");
+		menuItems = menuItems.filter(it -> !it.isEmpty());
 		FlxTransitionableState.skipNextTransOut = false;
 
 		if (FlxG.save.data.gotIntoAnArgument) menuItems.push("Secrets");

@@ -42,6 +42,16 @@ class Alphabet extends FlxSpriteGroup
 		this.text = text;
 	}
 
+	public static function isValidText(text:String):Bool
+	{
+		for (character in text.split(''))
+		{
+			if (!AlphaCharacter.allLetters.exists(character.toLowerCase()))
+				return false;
+		}
+		return true;
+	}
+
 	public function setAlignmentFromString(align:String)
 	{
 		switch (align.toLowerCase().trim())

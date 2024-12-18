@@ -11,10 +11,19 @@ import haxe.ds.StringMap;
 //     pop;
 //     get(item:T):Bool;
 // }
+@:generic typedef Predicate<T> = T -> Bool; 
 class CollectionUtils {
 
     public static inline function isIterable<T>(input:Dynamic):Bool {
         return Std.is(input, Array) || Std.is(input, IMap) || (Reflect.hasField(input, "iterator") || (Reflect.hasField(input, "hasNext") && Reflect.hasField(input, "next")));
+    }
+
+    public static inline function isMap<T>(input:Dynamic):Bool {
+        return Std.is(input, IMap);
+    }
+
+    public static inline function isIterableOfType<T>(input:Dynamic, type:Class<T>):Bool {
+        return (Std.is(input, Array) && (input: Array<T>).length > 0) || (Std.is(input, IMap) && (input: Map<Dynamic, T>).keys().hasNext()) || (Reflect.hasField(input, "iterator") || (Reflect.hasField(input, "hasNext") && Reflect.hasField(input, "next")));
     }
 
     private static function list<T>(l:List<T>):List<T> {
@@ -249,8 +258,18 @@ class CollectionUtils {
     }
 
     public static inline function asCallable<T>(func:T -> Void):Void -> Void {
-        return function() func();
+        return function() func(cast null);
     }
+
+    public static inline function asVoidCallable<T>(func:Void -> T):Void -> T {
+        return function() return func();
+    }
+
+    public static inline function asVoidCallableWithArgs<T>(func:Void -> T):T -> Void {
+        return function(arg:T) return func();
+    }
+
+
 
     public static inline function asTypedCallable<T, R>(func:T -> R):T -> R {
         return func;
@@ -259,6 +278,10 @@ class CollectionUtils {
     public static inline function toCallable<T>(item:T):Void -> T {
         return function() return item;
     }
+
+    // public static macro function toCallableWithArgs<T>(func:T -> Void):Void -> T {
+    //     return function() return func();
+    // }
 
     public static inline function forEachIf<T>(input:Dynamic, predicate:T -> Bool, func:T -> Void):Void {
         if (Std.is(input, Array)) {
@@ -306,6 +329,46 @@ class CollectionUtils {
             var result = [];
             for (item in (input: Iterable<T>)) {
                 result.push(predicate(item) ? func(item) : cast item);
+            }
+            return result;
+        } else {
+            return predicate(input) ? func(input) : input;
+        }
+    }
+    
+    public static inline function mapIfBreak<T, R>(input:Dynamic, predicate:T -> Bool, func:T -> R):Dynamic {
+        if (Std.is(input, Array)) {
+            var result = [];
+            for (item in (input: Array<T>)) {
+                if (predicate(item)) {
+                    result.push(func(item));
+                    break;
+                } else {
+                    // break;
+                }
+            }
+            return result;
+        } else if (Std.is(input, IMap)) {
+            var result = new Map<Dynamic, R>();
+            for (key in (input: Map<Dynamic, T>).keys()) {
+                var value = input.get(key);
+                if (predicate(value)) {
+                    result.set(key, func(value));
+                    break;
+                } else {
+                    // break;
+                }
+            }
+            return result;
+        } else if (Reflect.hasField(input, "iterator") || (Reflect.hasField(input, "hasNext") && Reflect.hasField(input, "next"))) {
+            var result = [];
+            for (item in (input: Iterable<T>)) {
+                if (predicate(item)) {
+                    result.push(func(item));
+                    break;
+                } else {
+                    // break;
+                }
             }
             return result;
         } else {
@@ -488,6 +551,20 @@ class CollectionUtils {
 
     public static inline function generateRandomNumber():Float {
         return Math.random() * 1000000;
+    }
+
+    public static inline function isEmpty<T>(input:Dynamic):Bool {
+        if (Std.is(input, Array)) {
+            return (input: Array<T>).length == 0;
+        } else if (Std.is(input, IMap)) {
+            return !(input: Map<Dynamic, T>).keys().hasNext();
+        } else if (Reflect.hasField(input, "iterator") || (Reflect.hasField(input, "hasNext") && Reflect.hasField(input, "next"))) {
+            return !(input: Iterable<T>).iterator().hasNext();
+        } else if (Std.is(input, String)) {
+            return StringTools.trim(input).length == 0;
+        } else {
+            return input == null;
+        }
     }
 
     public static function createTestData():Void {
