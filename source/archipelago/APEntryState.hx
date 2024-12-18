@@ -28,7 +28,7 @@ typedef APSettings =
 	var	mod_songs:Bool; //for later
 	var	mods_enabled:Bool;
 	var	mods:Array<String>;
-	var	songs:Array<String>;
+	var	starting_songs:Array<String>;
 	var	randomize_chart_modifier:Array<String>;
 	var	chart_modifier_change_chance:Int;
 	var	trap_percentage:Array<Int>;
@@ -49,7 +49,7 @@ class APEntryState extends FlxState
 
 	private var _tabOrder:Array<FlxInputText> = [];
 
-	var checker:FlxBackdrop = new FlxBackdrop(Paths.image('Main_Checker'), XY, Std.int(0.2), Std.int(0.2));
+	var checker:FlxBackdrop = new FlxBackdrop(Paths.image('mainmenu/Main_Checker'), XY, Std.int(0.2), Std.int(0.2));
 	var gradientBar:FlxSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, 300, 0x83B700FF);
 	var swagShader:ColorSwap = null;
 	var titleText:FlxText;
@@ -69,11 +69,12 @@ class APEntryState extends FlxState
 	 'Darnell', 'Lit Up', '2Hot', 'Blazin',
 	 'Small Argument', 'Beat Battle', 'Beat Battle 2'];
 
+	 //So we have a general idea of what to put in the yaml
 	public static var gameSettings:APSettings = {
 		mod_songs: false,
 		mods_enabled: false,
 		mods: [],
-		songs: ['Tutorial'],
+		starting_songs: ['Tutorial'],
 		randomize_chart_modifier: ['Always', 'Sometimes', 'Never'],
 		chart_modifier_change_chance: 0,
 		trap_percentage: [0, 0, 0],
@@ -85,7 +86,8 @@ class APEntryState extends FlxState
 
 	override function create()
 	{
-
+		Cursor.show();
+		Cursor.cursorMode = Default;
 		swagShader = new ColorSwap();
 
 		// TODO: save last game's settings as default; Reset button to return to base default
@@ -346,6 +348,7 @@ class APEntryState extends FlxState
 
 	override function update(elapsed:Float)
 	{
+		if (FlxG.keys.justPressed.HOME) inArchipelagoMode = true;
 		if(swagShader != null) swagShader.hue += elapsed * 0.1;
 		if (!ClientPrefs.data.lowQuality)
 		{

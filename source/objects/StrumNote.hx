@@ -104,24 +104,19 @@ class StrumNote extends NoteObject
 		FlxG.plugins.add(new FlxMouseControl());
 		animation = new PsychAnimationController(this);
 		
-		if (PlayState.mania <= 8)
+		rgbShader = new RGBShaderReference(this, Note.initializeGlobalRGBShader(leData));
+		if(PlayState.SONG != null && PlayState.SONG.disableNoteRGB) useRGBShader = false;
+		var arr:Array<FlxColor> = ClientPrefs.data.arrowRGBExtra[Note.keysShit.get(PlayState.mania).get('pixelAnimIndex')[leData]];
+		if(PlayState.instance != null && PlayState.isPixelStage) arr = ClientPrefs.data.arrowRGBPixelExtra[Note.keysShit.get(PlayState.mania).get('pixelAnimIndex')[leData]];
+		if(leData <= arr.length)
 		{
-			rgbShader = new RGBShaderReference(this, Note.initializeGlobalRGBShader(leData));
-			rgbShader.enabled = false;
-			if(PlayState.SONG != null && PlayState.SONG.disableNoteRGB) useRGBShader = false;
-			var arr:Array<FlxColor> = ClientPrefs.data.arrowRGBExtra[Note.gfxIndex[PlayState.mania][leData]];
-			if(PlayState.instance != null && PlayState.isPixelStage) arr = ClientPrefs.data.arrowRGBPixelExtra[Note.gfxIndex[PlayState.mania][leData]];
-			if(leData <= PlayState.mania)
+			@:bypassAccessor
 			{
-				@:bypassAccessor
-				{
-					rgbShader.r = arr[0];
-					rgbShader.g = arr[1];
-					rgbShader.b = arr[2];
-				}
+				rgbShader.r = arr[0];
+				rgbShader.g = arr[1];
+				rgbShader.b = arr[2];
 			}
 		}
-		else useRGBShader = false;
 		this.field = field;
 		super(x, y);
 		objType = STRUM;
@@ -134,7 +129,7 @@ class StrumNote extends NoteObject
 		if(PlayState.SONG != null && PlayState.SONG.arrowSkin != null && PlayState.SONG.arrowSkin.length > 1 && (!Paths.doesImageAssetExist(Paths.modsImages('noteskins/normal')) || !Paths.doesImageAssetExist(Paths.getPath('images/noteskins/normal')))) 
 			skin = PlayState.SONG.arrowSkin;
 		else 
-			skin = "noteskins/"+Note.defaultNoteSkin;
+			skin = "noteskins/normal";
 
 		texture = skin; //Load texture and anims
 		scrollFactor.set();

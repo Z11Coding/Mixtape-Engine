@@ -213,9 +213,7 @@ class PlayState extends MusicBeatState
 	public var tracks:Array<FlxSound> = [];
 
 	public var dad:Character = null;
-
-	public static var dad2:Character = null;
-
+	public var dad2:Character = null;
 	public var gf:Character = null;
 	public var boyfriend:Character = null;
 	public var bf2:Character = null;
@@ -1584,6 +1582,7 @@ class PlayState extends MusicBeatState
 		currentRate = playbackRate;
 		add(playfields);
 		add(notefields);
+		add(PlayField.extraStuff);
 		if (gf != null && !Crashed)
 		{
 			#if desktop
@@ -2500,7 +2499,7 @@ class PlayState extends MusicBeatState
 	public var forceInvis:Bool = false;
 
 	function cacheCountdown()
-	{
+	{	
 		var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
 		introAssets.set('default', ['ready', 'set', 'go']);
 		introAssets.set('pixel', ['pixelUI/ready-pixel', 'pixelUI/set-pixel', 'pixelUI/date-pixel']);
@@ -9249,7 +9248,7 @@ class PlayState extends MusicBeatState
 	// Hold notes
 	public static var pressedGameplayKeys:Array<Bool> = [];
 
-	private function keyShit():Void
+	public function keyShit():Void
 	{
 		// HOLDING
 		var parsedHoldArray:Array<Bool> = parseKeys();
