@@ -234,29 +234,6 @@ class Note extends NoteObject
         0.32 //18k
     ];
 
-	public static var gfxIndex:Array<Dynamic> = [
-		[4],
-		[0, 3],
-		[0, 4, 3],
-		[0, 1, 2, 3],
-		[0, 1, 4, 2, 3],
-		[0, 2, 3, 5, 1, 8],
-		[0, 2, 3, 4, 5, 1, 8],
-		[0, 1, 2, 3, 5, 6, 7, 8],
-		[0, 1, 2, 3, 4, 5, 6, 7, 8]
-	];
-	public static var gfxHud:Array<Dynamic> = [
-		[4],
-		[0, 3],
-		[0, 4, 3],
-		[0, 1, 2, 3],
-		[0, 1, 4, 2, 3],
-		[0, 2, 3, 0, 1, 3],
-		[0, 2, 3, 4, 0, 1, 3],
-		[0, 1, 2, 3, 0, 1, 2, 3],
-		[0, 1, 2, 3, 4, 0, 1, 2, 3]
-	];
-
 	// End of extra keys stuff
 	//////////////////////////////////////////////////
 
@@ -442,6 +419,21 @@ class Note extends NoteObject
 	public var AIStrumTime:Float = 0;
 	public var AIMiss:Bool = false;
 
+	//Archipelago
+	public var isCheck:Bool = false;
+	public var isMine:Bool = false;
+	public var isAlert:Bool = false;
+	public var isHeal:Bool = false;
+	public var isFreeze:Bool = false;
+	public var isFakeHeal:Bool = false;
+	var justMixedUp:Bool = false;
+	public var trueNoteData:Int = 0;
+	public var specialNote:Bool = false;
+	public var ignoreMiss:Bool = false;
+	public var spinAmount:Float = 0;
+	public var rootNote:Note;
+	var posTween:FlxTween;
+
 
 	public static var defaultNotes = [
 		'No Animation',
@@ -480,34 +472,46 @@ class Note extends NoteObject
 
 	public function defaultRGB()
 	{
-		var arr:Array<FlxColor> = ClientPrefs.data.arrowRGBExtra[gfxIndex[PlayState.mania][noteData]];
-		if(PlayState.isPixelStage) arr = ClientPrefs.data.arrowRGBPixelExtra[gfxIndex[PlayState.mania][noteData]];
+		var arr:Array<FlxColor> = ClientPrefs.data.arrowRGBExtra[Note.keysShit.get(mania).get('pixelAnimIndex')[noteData]];
+		if(PlayState.isPixelStage) arr = ClientPrefs.data.arrowRGBPixelExtra[Note.keysShit.get(mania).get('pixelAnimIndex')[noteData]];
 
-		if (noteData > -1 && noteData <= PlayState.mania)
+		if (arr != null && noteData > -1 && noteData <= arr.length)
 		{
 			rgbShader.r = arr[0];
 			rgbShader.g = arr[1];
 			rgbShader.b = arr[2];
 		}
+		else
+		{
+			rgbShader.r = 0xFFFF0000;
+			rgbShader.g = 0xFF00FF00;
+			rgbShader.b = 0xFF0000FF;
+		}
 	}
 
 	private function set_noteType(value:String):String {
 		noteSplashTexture = PlayState.SONG != null ? PlayState.SONG.splashSkin : 'noteSplashes';
-		//defaultRGB();
+		defaultRGB();
 		if(noteData > -1 && noteType != value) {
 			switch(value) {
 				case 'Hurt Note':
 					ignoreNote = mustPress;
-					reloadNote('HURT');
+					//reloadNote('HURTNOTE_assets');
+					//this used to change the note texture to HURTNOTE_assets.png,
+					//but i've changed it to something more optimized with the implementation of RGBPalette:
+					
+					// note colors
+					rgbShader.r = 0xFF101010;
+					rgbShader.g = 0xFFFF0000;
+					rgbShader.b = 0xFF990022;
+					
 					noteSplashTexture = 'HURTnoteSplashes';
 					usesDefaultColours = false;
-					if(isSustainNote) {
-						missHealth = 0.1;
-					} else {
-						missHealth = 0.3;
-					}
+					
+					// gameplay data
+					lowPriority = true;
+					missHealth = isSustainNote ? 0.25 : 0.1;
 					hitCausesMiss = true;
-
 				case 'No Animation':
 					noAnimation = true;
 					noMissAnimation = true;
@@ -521,6 +525,26 @@ class Note extends NoteObject
 					ghostNote = true;
 				case 'EX Note':
 					exNote = true;
+				case 'Check Note':
+					isCheck = true;
+					rgbShader.r = 0xFF313131;
+					rgbShader.g = 0xFFFFFFFF;
+					rgbShader.b = 0xFFB4B4B4;
+				case 'Mine Note':
+					ignoreNote = true;
+					lowPriority = true;
+					hitCausesMiss = true;
+					rgbShader.enabled = false;
+				case 'Ice Note':
+					ignoreNote = true;
+					lowPriority = true;
+					hitCausesMiss = true;
+					rgbShader.enabled = false;
+				case 'Fake Heal Note':
+					ignoreNote = true;
+					lowPriority = true;
+					hitCausesMiss = true;
+					rgbShader.enabled = false;
 				default:
 					//Nothing
 						
@@ -570,18 +594,14 @@ class Note extends NoteObject
 		antialiasing = ClientPrefs.data.globalAntialiasing;
 		
 		this.noteData = noteData;
-
 		if(noteData > -1) {
+			rgbShader = new RGBShaderReference(this, initializeGlobalRGBShader(noteData));
+			if(PlayState.SONG != null && PlayState.SONG.disableNoteRGB) 
+			{
+				rgbShader.enabled = false;
+				if (noteType == '' || noteType == null) reloadNote('normalNOTE');
+			}
 			texture = '';
-			if (mania <= 8) 
-			{
-				rgbShader = new RGBShaderReference(this, initializeGlobalRGBShader(noteData));
-				if (noteType == '' || noteType == null) reloadNote('NOTE');
-			}
-			else
-			{
-				if (noteType == '' || noteType == null) reloadNote('normal');
-			}
 
 			x += swagWidth * (noteData % Note.ammo[mania]);
 			if(!isSustainNote && noteData > -1 && noteData < Note.maxManiaUI_integer) { //Doing this 'if' check to fix the warnings on Senpai songs
@@ -674,7 +694,7 @@ class Note extends NoteObject
 		{
 			skin = PlayState.SONG != null ? PlayState.SONG.arrowSkin : null;
 			if(skin == null || skin.length < 1)
-				skin = 'noteskins/' + defaultNoteSkin + postfix;
+				skin = 'noteskins/' + "NOTE" + postfix;
 		}
 		//else rgbShader.enabled = false;
 

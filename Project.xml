@@ -109,6 +109,9 @@
 		<assets path="assets/base_game" rename="assets" exclude="*.mp3"  unless="web"/>
 	</section>
 
+	<assets path="plugins/" rename='' if="windows"/>
+	<assets path="dlls/" rename='' if="windows"/>
+
 	<!-- DONT ENABLE THIS -->
 	<define name="CHECK_FOR_UPDATES" if="desktop officialBuild"/>
 	

@@ -27,15 +27,8 @@ import sys.io.*;
 import js.html.*;
 #end
 
-import archipelago.APConnectingSubState;
-import archipelago.APDisconnectSubstate;
-import archipelago.APEntryState;
-import archipelago.ArchPopup;
-import archipelago.Bitsets;
-import archipelago.Client;
-import archipelago.Definitions;
-//import archipelago.GameState;
-import archipelago.PacketTypes;
+import archipelago.*;
+import streamervschat.*;
 
 import backend.Mods;
 import backend.Paths;

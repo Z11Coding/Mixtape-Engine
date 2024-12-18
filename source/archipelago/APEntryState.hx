@@ -49,7 +49,7 @@ class APEntryState extends FlxState
 
 	private var _tabOrder:Array<FlxInputText> = [];
 
-	var checker:FlxBackdrop = new FlxBackdrop(Paths.image('Main_Checker'), XY, Std.int(0.2), Std.int(0.2));
+	var checker:FlxBackdrop = new FlxBackdrop(Paths.image('mainmenu/Main_Checker'), XY, Std.int(0.2), Std.int(0.2));
 	var gradientBar:FlxSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, 300, 0x83B700FF);
 	var swagShader:ColorSwap = null;
 	var titleText:FlxText;
@@ -346,6 +346,7 @@ class APEntryState extends FlxState
 
 	override function update(elapsed:Float)
 	{
+		if (FlxG.keys.justPressed.HOME) inArchipelagoMode = true;
 		if(swagShader != null) swagShader.hue += elapsed * 0.1;
 		if (!ClientPrefs.data.lowQuality)
 		{
