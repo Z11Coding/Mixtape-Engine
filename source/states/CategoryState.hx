@@ -85,7 +85,7 @@ class CategoryState extends MusicBeatState
 	override function create()
 	{
 		MemoryUtil.clearMajor();
-		menuItems = menuItems.filter(it -> !it.isEmpty());
+		menuItems = menuItems.filter(it -> (!it.isEmpty() && Alphabet.isValidText(it)));
 		FlxTransitionableState.skipNextTransOut = false;
 
 		if (FlxG.save.data.gotIntoAnArgument) menuItems.push("Secrets");

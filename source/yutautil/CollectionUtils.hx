@@ -376,6 +376,19 @@ class CollectionUtils {
         }
     }
 
+    /**
+     * Made to run a "For Loop" similar to how C, and Java do it.
+     */
+    public static inline function CForLoop<T>(i:Int, condition:Predicate<Int>, increment:Int -> Int, func:Int -> Void):Void {
+        var i = i;
+        while (condition(i)) {
+            func(i);
+            i = increment(i);
+        }
+
+        
+    }
+
     public static inline function forEachIfElse<T>(input:Dynamic, predicate:T -> Bool, ifFunc:T -> Void, elseFunc:T -> Void):Void {
         if (Std.is(input, Array)) {
             for (item in (input: Array<T>)) {
@@ -564,6 +577,28 @@ class CollectionUtils {
             return StringTools.trim(input).length == 0;
         } else {
             return input == null;
+        }
+    }
+
+    public static inline function isNotEmpty<T>(input:Dynamic):Bool {
+        return !isEmpty(input);
+    }
+
+    public static inline function lengthTo<T>(input:Dynamic):Int {
+        if (Std.is(input, Array)) {
+            return (input: Array<T>).length;
+        } else if (Std.is(input, IMap)) {
+            return (input: Map<Dynamic, T>).toArray().length;
+        } else if (Reflect.hasField(input, "iterator") || (Reflect.hasField(input, "hasNext") && Reflect.hasField(input, "next"))) {
+            var length = 0;
+            for (item in (input: Iterable<T>)) {
+                length++;
+            }
+            return length;
+        } else if (Std.is(input, String)) {
+            return (input).length;
+        } else {
+            return 1;
         }
     }
 
