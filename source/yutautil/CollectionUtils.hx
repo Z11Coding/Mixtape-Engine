@@ -248,6 +248,18 @@ class CollectionUtils {
         }
     }
 
+    public static inline function asCallable<T>(func:T -> Void):Void -> Void {
+        return function() func();
+    }
+
+    public static inline function asTypedCallable<T, R>(func:T -> R):T -> R {
+        return func;
+    }
+
+    public static inline function toCallable<T>(item:T):Void -> T {
+        return function() return item;
+    }
+
     public static inline function forEachIf<T>(input:Dynamic, predicate:T -> Bool, func:T -> Void):Void {
         if (Std.is(input, Array)) {
             for (item in (input: Array<T>)) {

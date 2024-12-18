@@ -31,11 +31,29 @@ class CategoryState extends MusicBeatState
 	var allowedKeys:String = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 	var easterEggKeysBuffer:String = '';
 
-	public function new(?categories:Array<String>, ?showmods:Bool = true, ?showsecrets:Bool = true, ?showall:Bool = true, ?h:Bool = true)
+	public function new(?categories:Dynamic, ?showmods:Bool = true, ?showsecrets:Bool = true, ?showall:Bool = true, ?h:Bool = true)
 	{
 		super();
 		if (categories != null) {
-			menuItems = categories;
+			if (Std.is(categories, Array)) {
+				menuItems = categories;
+			} else if (Std.is(categories, Map)) {
+				menuItems = [];
+				menuLocks = [];
+				for (key in categories.toIterable()) {
+					menuItems.push(key);
+					var lockValue = categories.get(key);
+					if (Std.is(lockValue, Bool)) {
+						menuLocks.push(lockValue);
+					} else if (Std.is(lockValue, Void -> Bool)) {
+						menuLocks.push(lockValue.toCallable()());
+					} else {
+						throw "CategoryState: 'categories' Map values must be either Bool or Void -> Bool!";
+					}
+				}
+			} else {
+				throw "CategoryState: 'categories' must be either an Array<String> or a Map<String, Void -> Bool>!";
+			}
 		}
 		this.showMods = showmods;
 		this.showSecrets = showsecrets;
@@ -56,13 +74,11 @@ class CategoryState extends MusicBeatState
 		}
 		if (menuItems.contains("h?")) {
 			if (h) {
-			throw "CategoryState: 'h?' category is reserved for a secret!"; } else {
+				throw "CategoryState: 'h?' category is reserved for a secret!";
+			} else {
 				throw "CategoryState: 'h?' category is disabled, yet it's in the menuItems array!";
 			}
 		}
-	
-	
-		super();
 	}
 
 	override function create()
