@@ -31,6 +31,7 @@ class APPlayState extends PlayState {
     private var lastDifficultyName:String = '';
     private var invulnCount:Int = 0;
     private var debugKeysDodge:Array<FlxKey>;
+	// private var unBlurShaderRestore:Map<Dynamic, Dynamic> = new Map<Dynamic, Dynamic>();
     var curDifficulty:Int = -1;
     var effectsActive:Map<String, Int> = new Map<String, Int>();
     var effectTimer:FlxTimer = new FlxTimer();
@@ -180,39 +181,39 @@ class APPlayState extends PlayState {
 				switch activeItems[3]
 				{
 					case 1:
-						apChartModifier = 'Flip';
+						chartModifier = 'Flip';
 					case 2:
-						apChartModifier = 'Random';
+						chartModifier = 'Random';
 					case 3:
-						apChartModifier = 'Stairs';
+						chartModifier = 'Stairs';
 					case 4:
-						apChartModifier = 'Wave';
+						chartModifier = 'Wave';
 					case 5:
-						apChartModifier = 'SpeedRando';
+						chartModifier = 'SpeedRando';
 					case 6:
-						apChartModifier = 'Amalgam';
+						chartModifier = 'Amalgam';
 					case 7:
-						apChartModifier = 'Trills';
+						chartModifier = 'Trills';
 					case 8:
-						apChartModifier = "SpeedUp";
+						chartModifier = "SpeedUp";
 					case 9:
 						if (PlayState.SONG.mania == 3)
 						{
-							apChartModifier = "ManiaConverter";
-							apConvertMania = FlxG.random.int(4, Note.maxMania);
+							chartModifier = "ManiaConverter";
+							convertMania = FlxG.random.int(4, Note.maxMania);
 						}
 						else
 						{
-							apChartModifier = "4K Only";
+							chartModifier = "4K Only";
 						}
 				}
 			}
-			if (apChartModifier == "ManiaConverter")
+			if (chartModifier == "ManiaConverter")
 			{
 				ArchPopup.startPopupCustom("convertMania value is:", "" + convertMania + "", 'Color');
 			}
 
-			ArchPopup.startPopupCustom('You Got an Item!', "Chart Modifier Trap (" + apChartModifier + ")", 'Color');
+			ArchPopup.startPopupCustom('You Got an Item!', "Chart Modifier Trap (" + chartModifier + ")", 'Color');
 		}
 		MaxHP = activeItems[2];
 
@@ -458,6 +459,7 @@ class APPlayState extends PlayState {
 				}
 				noIcon = false;
 			case 'blur':
+				var originalShaders:Map<Dynamic, Dynamic> = new Map<Dynamic, Dynamic>();
 				if (effectsActive[effect] == null || effectsActive[effect] <= 0)
 				{
 					camGamefilters.push(filterMap.get("BlurLittle").filter);
@@ -467,10 +469,12 @@ class APPlayState extends PlayState {
 						blurEffect.setStrength(32, 32);
 					for (sprite in playerField.strumNotes)
 					{
+						originalShaders.set(sprite, sprite.shader);
 						sprite.shader = blurEffect.shader;
 					};
 					for (sprite in dadField.strumNotes)
 					{
+						originalShaders.set(sprite, sprite.shader);
 						sprite.shader = blurEffect.shader;
 					};
 					for (daNote in unspawnNotes)
@@ -478,18 +482,30 @@ class APPlayState extends PlayState {
 						if (daNote == null)
 							continue;
 						if (daNote.strumTime >= Conductor.songPosition)
+						{
+							originalShaders.set(daNote, daNote.shader);
 							daNote.shader = blurEffect.shader;
+						}
 					}
 					for (daNote in notes)
 					{
 						if (daNote == null)
 							continue;
 						else
+						{
+							originalShaders.set(daNote, daNote.shader);
 							daNote.shader = blurEffect.shader;
+						}
 					}
+					originalShaders.set(boyfriend, boyfriend.shader);
 					boyfriend.shader = blurEffect.shader;
+					originalShaders.set(dad, dad.shader);
 					dad.shader = blurEffect.shader;
-					if (gf != null) gf.shader = blurEffect.shader;
+					if (gf != null)
+					{
+						originalShaders.set(gf, gf.shader);
+						gf.shader = blurEffect.shader;
+					}
 				}
 				noIcon = false;
 				playSound = "blur";
@@ -497,27 +513,31 @@ class APPlayState extends PlayState {
 				ttl = 12;
 				onEnd = function()
 				{
-					strumLineNotes.forEach(function(sprite)
+					for (sprite in playerField.strumNotes)
 					{
-						sprite.shader = null;
-					});
+						sprite.shader = originalShaders.get(sprite);
+					};
+					for (sprite in dadField.strumNotes)
+					{
+						sprite.shader = originalShaders.get(sprite);
+					};
 					for (daNote in unspawnNotes)
 					{
 						if (daNote == null)
 							continue;
 						if (daNote.strumTime >= Conductor.songPosition)
-							daNote.shader = null;
+							daNote.shader = originalShaders.get(daNote);
 					}
 					for (daNote in notes)
 					{
 						if (daNote == null)
 							continue;
 						else
-							daNote.shader = null;
+							daNote.shader = originalShaders.get(daNote);
 					}
-					boyfriend.shader = null;
-					dad.shader = null;
-					if(gf != null) gf.shader = null;
+					boyfriend.shader = originalShaders.get(boyfriend);
+					dad.shader = originalShaders.get(dad);
+					if (gf != null) gf.shader = originalShaders.get(gf);
 					blurEffect.setStrength(0, 0);
 					camGamefilters.remove(filterMap.get("BlurLittle").filter);
 				}
@@ -1460,9 +1480,9 @@ class APPlayState extends PlayState {
 				swagNote.specialNote = false;
 		}
 		swagNote.mustPress = true;
-		if (apChartModifier == "SpeedRando")
+		if (chartModifier == "SpeedRando")
 			{swagNote.multSpeed = FlxG.random.float(0.1, 2);}
-		if (apChartModifier == "SpeedUp")
+		if (chartModifier == "SpeedUp")
 			{}
 		swagNote.x += FlxG.width / 2;
 

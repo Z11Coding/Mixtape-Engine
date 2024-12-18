@@ -279,8 +279,6 @@ class PlayState extends MusicBeatState
 	public var instakillOnMiss:Bool = false;
 	public var cpuControlled(default, set) = false;
 	public var practiceMode:Bool = false;
-	public var apChartModifier:String = 'Normal'; //the archipelago override
-	public var apConvertMania:Int = -1; //the archipelago override
 	public var chartModifier:String = '';
 	public var convertMania:Int = ClientPrefs.getGameplaySetting('convertMania', 3);
 	public var opponentmode:Bool = ClientPrefs.getGameplaySetting('opponentplay', false);
@@ -764,7 +762,7 @@ class PlayState extends MusicBeatState
 		instakillOnMiss = ClientPrefs.getGameplaySetting('instakill', false);
 		practiceMode = ClientPrefs.getGameplaySetting('practice', false);
 		cpuControlled = ClientPrefs.getGameplaySetting('botplay', false);
-		chartModifier = (apChartModifier != '' ? ClientPrefs.getGameplaySetting('chartModifier', 'Normal') : "Normal");
+		chartModifier = ClientPrefs.getGameplaySetting('chartModifier', 'Normal') != null ? ClientPrefs.getGameplaySetting('chartModifier', 'Normal') : "Normal";
 		trace("Chart Modifier: " + chartModifier);
 
 		if (bothMode)
@@ -891,7 +889,7 @@ class PlayState extends MusicBeatState
 			if (chartModifier == "4K Only")
 				mania = 3;
 			else if (chartModifier == "ManiaConverter")
-				mania = apConvertMania != -1 ? apConvertMania : convertMania;
+				mania = convertMania;
 			else
 				mania = SONG.mania;
 
@@ -2580,7 +2578,7 @@ class PlayState extends MusicBeatState
 			Conductor.songPosition = -Conductor.crochet * 5;
 			setOnScripts('startedCountdown', true);
 			callOnScripts('onCountdownStarted');
-			changeMania(chartModifier != 'ManiaConverter' ? SONG.startMania : apConvertMania != -1 ? apConvertMania : convertMania, isStoryMode || skipArrowStartTween);
+			changeMania(chartModifier != 'ManiaConverter' ? SONG.startMania : convertMania, isStoryMode || skipArrowStartTween);
 
 			var swagCounter:Int = 0;
 
