@@ -594,6 +594,7 @@ class Note extends NoteObject
 		antialiasing = ClientPrefs.data.globalAntialiasing;
 		
 		this.noteData = noteData;
+		trueNoteData = noteData;
 		if(noteData > -1) {
 			rgbShader = new RGBShaderReference(this, initializeGlobalRGBShader(noteData));
 			if(PlayState.SONG != null && PlayState.SONG.disableNoteRGB) 
