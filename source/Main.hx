@@ -428,7 +428,7 @@ class Main extends Sprite
 			}
 			// Main.closeGame();
 		} //Respectfully, PLEASE DON'T REMOVE MY IMPATIENCE TOGGLE (Otherwise known as this else statement)
-		else closeGame();
+		else if (ClientPrefs.data.allowForcedExit) Main.closeGame(); //Trying to be safe here. :3
 		//WindowUtils.__triedClosing = false;
 		//WindowUtils.preventClosing = true;
 		//pressedOnce = false;
