@@ -720,19 +720,33 @@ class Note extends NoteObject
 		
 		if (PlayState.isPixelStage)
 		{
-			if (isSustainNote)
+			switch (noteType)
 			{
-				loadGraphic(Paths.image('pixelUI/' + skinPixel + 'ENDS' + skinPostfix, null, true));
-				width = width / 18;
-				height = height / 2;
-				loadGraphic(Paths.image('pixelUI/' + skinPixel + 'ENDS' + skinPostfix, null, true), true, Math.floor(width), Math.floor(height));
-			}
-			else
-			{
-				loadGraphic(Paths.image('pixelUI/' + skinPixel + skinPostfix, null, true));
-				width = width / 18;
-				height = height / 5;
-				loadGraphic(Paths.image('pixelUI/' + skinPixel + skinPostfix, null, true), true, Math.floor(width), Math.floor(height));
+				case 'Mine Note':
+					loadGraphic(Paths.image("streamervschat/pixelUI/minenote"), false);
+				case 'Warning Note':
+					loadGraphic(Paths.image("streamervschat/pixelUI/warningnote"), false);
+				case 'Heal Note':
+					loadGraphic(Paths.image("streamervschat/pixelUI/healnote"), false);
+				case 'Ice Note':
+					loadGraphic(Paths.image("streamervschat/pixelUI/icenote"), false);
+				case 'Fake Heal Note':
+					loadGraphic(Paths.image("streamervschat/pixelUI/fakehealnote"), false);
+				default:
+					if (isSustainNote)
+					{
+						loadGraphic(Paths.image('pixelUI/' + skinPixel + 'ENDS' + skinPostfix, null, true));
+						width = width / 18;
+						height = height / 2;
+						loadGraphic(Paths.image('pixelUI/' + skinPixel + 'ENDS' + skinPostfix, null, true), true, Math.floor(width), Math.floor(height));
+					}
+					else
+					{
+						loadGraphic(Paths.image('pixelUI/' + skinPixel + skinPostfix, null, true));
+						width = width / 18;
+						height = height / 5;
+						loadGraphic(Paths.image('pixelUI/' + skinPixel + skinPostfix, null, true), true, Math.floor(width), Math.floor(height));
+					}
 			}
 			defaultWidth = width;
 			setGraphicSize(Std.int(width * PlayState.daPixelZoom * Note.pixelScales[mania]));
@@ -741,9 +755,23 @@ class Note extends NoteObject
 		}
 		else
 		{
-			frames = Paths.getSparrowAtlas(skin, null, true);
-			loadNoteAnims();
-			antialiasing = ClientPrefs.data.globalAntialiasing;
+			switch (noteType)
+			{
+				case 'Mine Note':
+					loadGraphic(Paths.image("streamervschat/minenote"), false);
+				case 'Warning Note':
+					loadGraphic(Paths.image("streamervschat/warningnote"), false);
+				case 'Heal Note':
+					loadGraphic(Paths.image("streamervschat/healnote"), false);
+				case 'Ice Note':
+					loadGraphic(Paths.image("streamervschat/icenote"), false);
+				case 'Fake Heal Note':
+					loadGraphic(Paths.image("streamervschat/fakehealnote"), false);
+				default:
+					frames = Paths.getSparrowAtlas(skin, null, true);
+					loadNoteAnims();
+					antialiasing = ClientPrefs.data.globalAntialiasing;
+			}
 		}
 		
 		if(isSustainNote) {

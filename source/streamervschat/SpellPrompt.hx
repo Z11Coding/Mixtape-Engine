@@ -23,7 +23,7 @@ class SpellPrompt extends FlxSprite
 	{
 		super();
 		letterArray = alphabet.split("");
-		loadGraphic(Paths.image("spell"));
+		loadGraphic(Paths.image("streamervschat/spell"));
 
 		x = FlxG.random.float(0, FlxG.width - width);
 		y = FlxG.random.float(0, FlxG.height - height);
