@@ -23,7 +23,6 @@ class APPlayState extends PlayState {
     public static var controlButtons:Array<String> = [];
     public static var ogScroll:Bool = ClientPrefs.data.downScroll;
     public var activeItems:Array<Int> = [0, 0, 0, 0]; // Shield, Curse, MHP, Traps
-    public var archMode:Bool = false;
     public var itemAmount:Int = 0;
     public var midSwitched:Bool = false;
     public var severInputs:Array<Bool> = new Array<Bool>();
@@ -56,7 +55,6 @@ class APPlayState extends PlayState {
 	var terminateTimestamps:Array<TerminateTimestamp> = new Array<TerminateTimestamp>();
 	var terminateCooldown:Bool = false;
 	var shieldSprite:FlxSprite = new FlxSprite();
-	var filters:Array<BitmapFilter> = [];
 	var filtersGame:Array<BitmapFilter> = [];
 	var filtersHUD:Array<BitmapFilter> = [];
 	var filterMap:Map<String, {filter:BitmapFilter, ?onUpdate:Void->Void}>;
@@ -175,51 +173,48 @@ class APPlayState extends PlayState {
 			controlButtons.push(StringTools.trim(thing).toLowerCase());
 		}
 
-        if (archMode)
-        {
-            if (FlxG.save.data.activeItems == null)
-            {
-                if (activeItems[3] != 0)
-                {
-                    switch activeItems[3]
-                    {
-                        case 1:
-                            chartModifier = 'Flip';
-                        case 2:
-                            chartModifier = 'Random';
-                        case 3:
-                            chartModifier = 'Stairs';
-                        case 4:
-                            chartModifier = 'Wave';
-                        case 5:
-                            chartModifier = 'SpeedRando';
-                        case 6:
-                            chartModifier = 'Amalgam';
-                        case 7:
-                            chartModifier = 'Trills';
-                        case 8:
-                            chartModifier = "SpeedUp";
-                        case 9:
-                            if (PlayState.SONG.mania == 3)
-                            {
-                                chartModifier = "ManiaConverter";
-                                convertMania = FlxG.random.int(4, Note.maxMania);
-                            }
-                            else
-                            {
-                                chartModifier = "4K Only";
-                            }
-                    }
-                }
-                if (chartModifier == "ManiaConverter")
-                {
-                    ArchPopup.startPopupCustom("convertMania value is:", "" + convertMania + "", 'Color');
-                }
+        if (FlxG.save.data.activeItems == null)
+		{
+			if (activeItems[3] != 0)
+			{
+				switch activeItems[3]
+				{
+					case 1:
+						apChartModifier = 'Flip';
+					case 2:
+						apChartModifier = 'Random';
+					case 3:
+						apChartModifier = 'Stairs';
+					case 4:
+						apChartModifier = 'Wave';
+					case 5:
+						apChartModifier = 'SpeedRando';
+					case 6:
+						apChartModifier = 'Amalgam';
+					case 7:
+						apChartModifier = 'Trills';
+					case 8:
+						apChartModifier = "SpeedUp";
+					case 9:
+						if (PlayState.SONG.mania == 3)
+						{
+							apChartModifier = "ManiaConverter";
+							apConvertMania = FlxG.random.int(4, Note.maxMania);
+						}
+						else
+						{
+							apChartModifier = "4K Only";
+						}
+				}
+			}
+			if (apChartModifier == "ManiaConverter")
+			{
+				ArchPopup.startPopupCustom("convertMania value is:", "" + convertMania + "", 'Color');
+			}
 
-                ArchPopup.startPopupCustom('You Got an Item!', "Chart Modifier Trap (" + chartModifier + ")", 'Color');
-            }
-            MaxHP = activeItems[2];
-        }
+			ArchPopup.startPopupCustom('You Got an Item!', "Chart Modifier Trap (" + apChartModifier + ")", 'Color');
+		}
+		MaxHP = activeItems[2];
 
         filterMap = [
             "Grayscale" => {
@@ -294,7 +289,7 @@ class APPlayState extends PlayState {
             trace("RESISTANCE OVERRIDE!"); // what are the chances
         }
         // Check if there are any mustPress notes available
-        if (unspawnNotes.filter(function(note:Note):Bool
+        if (allNotes.filter(function(note:Note):Bool
         {
             return note.field == playerField && note.noteType == '' && !note.isSustainNote;
         }).length == 0)
@@ -320,19 +315,23 @@ class APPlayState extends PlayState {
                             && note.noteType == ''
                             && !note.isSustainNote
                             && FlxG.random.bool(1)
-                            && unspawnNotes.filter(function(note:Note):Bool
+                            && queue.filter(function(note:Note):Bool
                             {
                                 return note.mustPress && note.noteType == '' && !note.isSustainNote;
                             }).length != 0)
 
                         {
                             note.isCheck = true;
+							note.rgbShader.r = 0xFF313131;
+							note.rgbShader.g = 0xFFFFFFFF;
+							note.rgbShader.b = 0xFFB4B4B4;
                             note.noteType = 'Check Note';
                             did++;
                             foundOne = true;
                             Sys.print('\rGenerating Checks: ' + did + '/' + itemAmount);
+							trace('\rGenerating Checks: ' + did + '/' + itemAmount);
                         }
-                        else if (unspawnNotes.filter(function(note:Note):Bool
+                        else if (queue.filter(function(note:Note):Bool
                         {
                             return note.mustPress && note.noteType == '' && !note.isSustainNote;
                         }).length == 0)
@@ -381,7 +380,7 @@ class APPlayState extends PlayState {
         randoTimer.start(FlxG.random.float(5, 10), function(tmr:FlxTimer)
         {
             if (curEffect <= 37) doEffect(effectArray[curEffect]);
-            else if (curEffect >= 37 && archMode)
+            else if (curEffect > 37)
             {
                 switch (curEffect)
                 {
@@ -447,29 +446,33 @@ class APPlayState extends PlayState {
 		switch (effect)
 		{
 			case 'colorblind':
-				filters.push(filterMap.get("Grayscale").filter);
-				filtersGame.push(filterMap.get("Grayscale").filter);
+				camHUDfilters.push(filterMap.get("Grayscale").filter);
+				camGamefilters.push(filterMap.get("Grayscale").filter);
 				playSound = "colorblind";
 				playSoundVol = 0.8;
 				ttl = 16;
 				onEnd = function()
 				{
-					filters.remove(filterMap.get("Grayscale").filter);
-					filtersGame.remove(filterMap.get("Grayscale").filter);
+					camHUDfilters.remove(filterMap.get("Grayscale").filter);
+					camGamefilters.remove(filterMap.get("Grayscale").filter);
 				}
 				noIcon = false;
 			case 'blur':
 				if (effectsActive[effect] == null || effectsActive[effect] <= 0)
 				{
-					filtersGame.push(filterMap.get("BlurLittle").filter);
+					camGamefilters.push(filterMap.get("BlurLittle").filter);
 					if (PlayState.curStage.startsWith('school'))
 						blurEffect.setStrength(2, 2);
 					else
 						blurEffect.setStrength(32, 32);
-					strumLineNotes.forEach(function(sprite)
+					for (sprite in playerField.strumNotes)
 					{
 						sprite.shader = blurEffect.shader;
-					});
+					};
+					for (sprite in dadField.strumNotes)
+					{
+						sprite.shader = blurEffect.shader;
+					};
 					for (daNote in unspawnNotes)
 					{
 						if (daNote == null)
@@ -516,7 +519,7 @@ class APPlayState extends PlayState {
 					dad.shader = null;
 					if(gf != null) gf.shader = null;
 					blurEffect.setStrength(0, 0);
-					filtersGame.remove(filterMap.get("BlurLittle").filter);
+					camGamefilters.remove(filterMap.get("BlurLittle").filter);
 				}
 			case 'lag':
 				noIcon = false;
@@ -670,7 +673,18 @@ class APPlayState extends PlayState {
 				{
 					if (daNote == null)
 						continue;
-					daNote.defaultRGB();
+					if (daNote.strumTime >= Conductor.songPosition && !daNote.isSustainNote)
+					{
+						daNote.rgbShader.r = FlxColor.getHSBColorWheel()[FlxG.random.int(0, 360)];
+						daNote.rgbShader.g = FlxColor.getHSBColorWheel()[FlxG.random.int(0, 360)];
+						daNote.rgbShader.b = FlxColor.getHSBColorWheel()[FlxG.random.int(0, 360)];
+					}
+					else if (daNote.strumTime >= Conductor.songPosition && daNote.isSustainNote)
+					{
+						daNote.rgbShader.r = FlxColor.getHSBColorWheel()[FlxG.random.int(0, 360)];
+						daNote.rgbShader.g = FlxColor.getHSBColorWheel()[FlxG.random.int(0, 360)];
+						daNote.rgbShader.b = FlxColor.getHSBColorWheel()[FlxG.random.int(0, 360)];
+					}
 				}
 				playSound = "rainbow";
 				playSoundVol = 0.5;
@@ -682,13 +696,13 @@ class APPlayState extends PlayState {
 						if (daNote == null)
 							continue;
 						if (daNote.strumTime >= Conductor.songPosition)
-							daNote.setColorTransform();
+							daNote.defaultRGB();
 					}
 					for (daNote in notes)
 					{
 						if (daNote == null)
 							continue;
-						daNote.setColorTransform();
+						daNote.defaultRGB();
 					}
 				};
 			case 'cover':
@@ -868,7 +882,7 @@ class APPlayState extends PlayState {
 				{
 					camOther.flash(FlxColor.WHITE, 7, null, true);
 					remove(whiteScreen);
-					FlxG.sound.play(Paths.sound('ringing'), 0.4);
+					FlxG.sound.play(Paths.sound('streamervschat/ringing'), 0.4);
 				});
 
 			case 'nostrum':
@@ -1113,7 +1127,7 @@ class APPlayState extends PlayState {
 
 			case 'randomize':
 				noIcon = false;
-				var available:Array<Int> = [];
+				var available:Array<Int> = [0, 1, 2, 3];
 				FlxG.random.shuffle(available);
 				switch (available)
 				{
@@ -1121,14 +1135,30 @@ class APPlayState extends PlayState {
 						available = [3, 2, 1, 0];
 					default:
 				}
+				trace(available);
 
-				for (daNote in unspawnNotes)
+				for (field in playfields.members)
 				{
-					if (daNote == null)
-						continue;
-					if (daNote.strumTime >= Conductor.songPosition)
+					for (column in field.noteQueue)
 					{
-						daNote.noteData = available[daNote.noteData];
+						if (column.length >= Note.ammo[PlayState.mania])
+						{
+							for (nIdx in 1...column.length)
+							{
+								var last = column[nIdx - 1];
+								var current = column[nIdx];
+								if (last == null || current == null)
+									continue;
+								if (last.isSustainNote || current.isSustainNote)
+									continue; // holds only get fukt if their parents get fukt
+								if (!last.alive || !current.alive)
+									continue; // just incase
+								if (current.strumTime >= Conductor.songPosition)
+								{
+									current.noteData = available[current.noteData];
+								}
+							}
+						}
 					}
 				}
 				for (daNote in notes)
@@ -1146,13 +1176,28 @@ class APPlayState extends PlayState {
 				ttl = 10;
 				onEnd = function()
 				{
-					for (daNote in unspawnNotes)
+					for (field in playfields.members)
 					{
-						if (daNote == null)
-							continue;
-						if (daNote.strumTime >= Conductor.songPosition)
+						for (column in field.noteQueue)
 						{
-							daNote.noteData = daNote.trueNoteData;
+							if (column.length >= Note.ammo[PlayState.mania])
+							{
+								for (nIdx in 1...column.length)
+								{
+									var last = column[nIdx - 1];
+									var current = column[nIdx];
+									if (last == null || current == null)
+										continue;
+									if (last.isSustainNote || current.isSustainNote)
+										continue; // holds only get fukt if their parents get fukt
+									if (!last.alive || !current.alive)
+										continue; // just incase
+									if (current.strumTime >= Conductor.songPosition)
+									{
+										current.noteData = current.trueNoteData;
+									}
+								}
+							}
 						}
 					}
 					for (daNote in notes)
@@ -1186,15 +1231,15 @@ class APPlayState extends PlayState {
 				if (FlxG.random.bool(40)) 
 				{
 					lowFilterAmount = .0134;
-					filtersGame.push(filterMap.get("BlurLittle").filter);
+					camGamefilters.push(filterMap.get("BlurLittle").filter);
 					blurEffect.setStrength(32, 32);
 				
 				}
 				else 
 				{
 					vocalLowFilterAmount = .0134;
-					filtersHUD.push(filterMap.get("BlurLittle").filter);
-					filters.push(filterMap.get("BlurLittle").filter);
+					camHUDfilters.push(filterMap.get("BlurLittle").filter);
+					camGamefilters.push(filterMap.get("BlurLittle").filter);
 					blurEffect.setStrength(32, 32);
 				}
 				playSound = "delay";
@@ -1203,9 +1248,8 @@ class APPlayState extends PlayState {
 				onEnd = function()
 				{
 					blurEffect.setStrength(0, 0);
-					filtersHUD.remove(filterMap.get("BlurLittle").filter);
-					filtersGame.remove(filterMap.get("BlurLittle").filter);
-					filters.remove(filterMap.get("BlurLittle").filter);
+					camHUDfilters.remove(filterMap.get("BlurLittle").filter);
+					camGamefilters.remove(filterMap.get("BlurLittle").filter);
 					lowFilterAmount = 1;
 					vocalLowFilterAmount = 1;
 				}
@@ -1311,6 +1355,14 @@ class APPlayState extends PlayState {
 		}
 	}
 
+	override function stepHit()
+	{
+		if (!localFreezeNotes) // so that the event doen't get overriden
+			if (!lagOn || (lagOn && curStep % 2 == 0))
+				freezeNotes = true;
+		super.stepHit();
+	}
+
 	// override public function generateNotes(song:SwagSong, AI:Array<Array<Float>>):Void
 	// 	super.generateNotes(song, AI);
 
@@ -1408,9 +1460,9 @@ class APPlayState extends PlayState {
 				swagNote.specialNote = false;
 		}
 		swagNote.mustPress = true;
-		if (chartModifier == "SpeedRando")
+		if (apChartModifier == "SpeedRando")
 			{swagNote.multSpeed = FlxG.random.float(0.1, 2);}
-		if (chartModifier == "SpeedUp")
+		if (apChartModifier == "SpeedUp")
 			{}
 		swagNote.x += FlxG.width / 2;
 
@@ -1662,7 +1714,7 @@ class APPlayState extends PlayState {
 			states.FreeplayState.giveSong = true;
 		}
         super.endSong();
-		TransitionState.transitionState(states.FreeplayState);
+		super.endSong();
         return true; //why does endsong need this?????
     }
 

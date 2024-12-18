@@ -279,7 +279,9 @@ class PlayState extends MusicBeatState
 	public var instakillOnMiss:Bool = false;
 	public var cpuControlled(default, set) = false;
 	public var practiceMode:Bool = false;
-	public var chartModifier:String = 'Normal';
+	public var apChartModifier:String = 'Normal'; //the archipelago override
+	public var apConvertMania:Int = -1; //the archipelago override
+	public var chartModifier:String = '';
 	public var convertMania:Int = ClientPrefs.getGameplaySetting('convertMania', 3);
 	public var opponentmode:Bool = ClientPrefs.getGameplaySetting('opponentplay', false);
 	public var loopMode:Bool = ClientPrefs.getGameplaySetting('loopMode', false);
@@ -409,11 +411,11 @@ class PlayState extends MusicBeatState
 	// aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 	public var bfkilledcheck = false;
 
-	var camGamefilters:Array<BitmapFilter> = [];
-	var camHUDfilters:Array<BitmapFilter> = [];
-	var camVisualfilters:Array<BitmapFilter> = [];
-	var camOtherfilters:Array<BitmapFilter> = [];
-	var camDialoguefilters:Array<BitmapFilter> = [];
+	public var camGamefilters:Array<BitmapFilter> = [];
+	public var camHUDfilters:Array<BitmapFilter> = [];
+	public var camVisualfilters:Array<BitmapFilter> = [];
+	public var camOtherfilters:Array<BitmapFilter> = [];
+	public var camDialoguefilters:Array<BitmapFilter> = [];
 	var ch = 2 / 1000;
 
 	public var shaderUpdates:Array<Float->Void> = [];
@@ -426,6 +428,7 @@ class PlayState extends MusicBeatState
 	var blackUnderlay:FlxSprite;
 
 	public var freezeNotes:Bool = false;
+	public var localFreezeNotes:Bool = false;
 	public var sh_r:Float = 600;
 
 	var rotRate:Float;
@@ -761,7 +764,7 @@ class PlayState extends MusicBeatState
 		instakillOnMiss = ClientPrefs.getGameplaySetting('instakill', false);
 		practiceMode = ClientPrefs.getGameplaySetting('practice', false);
 		cpuControlled = ClientPrefs.getGameplaySetting('botplay', false);
-		chartModifier = (ClientPrefs.getGameplaySetting('chartModifier', 'Normal') ?? "Normal");
+		chartModifier = (apChartModifier != '' ? ClientPrefs.getGameplaySetting('chartModifier', 'Normal') : "Normal");
 		trace("Chart Modifier: " + chartModifier);
 
 		if (bothMode)
@@ -888,7 +891,7 @@ class PlayState extends MusicBeatState
 			if (chartModifier == "4K Only")
 				mania = 3;
 			else if (chartModifier == "ManiaConverter")
-				mania = convertMania;
+				mania = apConvertMania != -1 ? apConvertMania : convertMania;
 			else
 				mania = SONG.mania;
 
@@ -2577,7 +2580,7 @@ class PlayState extends MusicBeatState
 			Conductor.songPosition = -Conductor.crochet * 5;
 			setOnScripts('startedCountdown', true);
 			callOnScripts('onCountdownStarted');
-			changeMania(chartModifier != 'ManiaConverter' ? SONG.startMania : convertMania, isStoryMode || skipArrowStartTween);
+			changeMania(chartModifier != 'ManiaConverter' ? SONG.startMania : apConvertMania != -1 ? apConvertMania : convertMania, isStoryMode || skipArrowStartTween);
 
 			var swagCounter:Int = 0;
 
@@ -5775,6 +5778,8 @@ class PlayState extends MusicBeatState
 
 	override public function update(elapsed:Float)
 	{
+		if (songEndTriggered) endSong();
+		if (timeBar.percent == 100) finishSong();
 		specialOverlays.forEachAlive(function(sprite:FlxSprite)
 		{
 			sprite.screenCenter();
@@ -7866,10 +7871,12 @@ class PlayState extends MusicBeatState
 				if (value1 == 'true' || value1 == 'True')
 				{
 					freezeNotes = true;
+					localFreezeNotes = true;
 				}
 				else
 				{
 					freezeNotes = false;
+					localFreezeNotes = false;
 				}
 
 			case 'Funnie Window Tween':
@@ -8372,7 +8379,7 @@ class PlayState extends MusicBeatState
 
 	public var transitioning = false;
 	var daEnding:String;
-
+	public static var songEndTriggered:Bool = false;
 	public function endSong()
 	{
 		// Should kill you if you tried to cheat
@@ -8419,6 +8426,7 @@ class PlayState extends MusicBeatState
 				return false;
 		}
 
+		songEndTriggered = true;
 		timeBar.visible = false;
 		timeTxt.visible = false;
 		canPause = false;
