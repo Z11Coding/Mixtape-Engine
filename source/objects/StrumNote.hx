@@ -129,7 +129,7 @@ class StrumNote extends NoteObject
 		if(PlayState.SONG != null && PlayState.SONG.arrowSkin != null && PlayState.SONG.arrowSkin.length > 1 && (!Paths.doesImageAssetExist(Paths.modsImages('noteskins/normal')) || !Paths.doesImageAssetExist(Paths.getPath('images/noteskins/normal')))) 
 			skin = PlayState.SONG.arrowSkin;
 		else 
-			skin = "noteskins/normal";
+			skin = "normal";
 
 		texture = skin; //Load texture and anims
 		scrollFactor.set();

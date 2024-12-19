@@ -5787,6 +5787,8 @@ class PlayState extends MusicBeatState
 	{
 		if (songEndTriggered) endSong();
 		if (timeBar.percent == 100) finishSong();
+		if (FlxG.sound.music != null && !endingSong && !startingSong && !paused)
+			FlxG.sound.music.volume = 1 * instVolumeMultiplier;
 		specialOverlays.forEachAlive(function(sprite:FlxSprite)
 		{
 			sprite.screenCenter();
@@ -8658,6 +8660,8 @@ class PlayState extends MusicBeatState
 		// trace(noteDiff, ' ' + Math.abs(note.strumTime - Conductor.songPosition));
 
 		// boyfriend.playAnim('hey');
+		if (FlxG.sound.music != null)
+			FlxG.sound.music.volume = 1 * instVolumeMultiplier;
 		vocals.volume = 1 * vocalVolumeMultiplier;
 		opponentVocals.volume = 1 * vocalVolumeMultiplier;
 		gfVocals.volume = 1 * vocalVolumeMultiplier;
@@ -8897,6 +8901,8 @@ class PlayState extends MusicBeatState
 		// trace(noteDiff, ' ' + Math.abs(note.strumTime - Conductor.songPosition));
 
 		// boyfriend.playAnim('hey');
+		if (FlxG.sound.music != null)
+			FlxG.sound.music.volume = 1 * instVolumeMultiplier;
 		opponentVocals.volume = 1;
 		gfVocals.volume = 1;
 		for (track in tracks)
@@ -9740,6 +9746,8 @@ class PlayState extends MusicBeatState
 		}
 
 		note.hitByOpponent = true;
+		if (FlxG.sound.music != null)
+			FlxG.sound.music.volume = 1 * instVolumeMultiplier;
 		if (opponentVocals.length <= 0)
 			vocals.volume = 1 * vocalVolumeMultiplier;
 		if (gfVocals.length <= 0 && (note.gfNote || note.noteType == 'GF Duet'))
@@ -10091,6 +10099,8 @@ class PlayState extends MusicBeatState
 		ArtemisIntegration.sendBoyfriendHealth(health);
 		#end
 		bfkilledcheck = false;
+		if (FlxG.sound.music != null)
+			FlxG.sound.music.volume = 1 * instVolumeMultiplier;
 		vocals.volume = 1 * vocalVolumeMultiplier;
 		var isSus:Bool = note.isSustainNote; // GET OUT OF MY HEAD, GET OUT OF MY HEAD, GET OUT OF MY HEAD
 		var leData:Int = Math.round(Math.abs(note.noteData));
@@ -10280,7 +10290,7 @@ class PlayState extends MusicBeatState
 			else
 				Conductor.songPosition = FlxG.sound.music.time + delayOffset;
 
-			setVocalsTime(Conductor.songPosition - (delayOffset*1.2));
+			setVocalsTime(Conductor.songPosition - (delayOffset*1.5));
 
 			FlxG.sound.music.play();
 			for (i in [vocals, opponentVocals, gfVocals])
@@ -10295,7 +10305,7 @@ class PlayState extends MusicBeatState
 			while (Conductor.songPosition > 20 && FlxG.sound.music.time < 20)
 			{
 				FlxG.sound.music.time = Conductor.songPosition + delayOffset;
-				setVocalsTime(Conductor.songPosition + (delayOffset*1.2));
+				setVocalsTime(Conductor.songPosition + (delayOffset*1.5));
 
 				FlxG.sound.music.play();
 				for (i in [vocals, opponentVocals, gfVocals])

@@ -874,22 +874,22 @@ class PlayField extends FlxTypedGroup<FlxBasic>
 					spawnNote(column[0]);
 			}
 			for (data => column in backupQueue)
-			{if (column[0] != null)
-				{
-					var dataSpawnTime = modManager.get("noteSpawnTime" + data); 
-					var noteSpawnTime = (dataSpawnTime != null && dataSpawnTime.getValue(modNumber)>0)?dataSpawnTime:modManager.get("noteSpawnTime");
-					var time:Float = noteSpawnTime == null ? spawnTime : noteSpawnTime.getValue(modNumber); // no longer averages the spawn times
-					if (time <= 0)time = spawnTime;
-					
-					while (column.length > 0 && Conductor.songPosition > column[0].strumTime)
+				{if (column[0] != null)
 					{
-						var note = column.shift();
-						note.spawned = false;
-						noteQueue[data].push(note);
-						// trace("backup");
+						var dataSpawnTime = modManager.get("noteSpawnTime" + data); 
+						var noteSpawnTime = (dataSpawnTime != null && dataSpawnTime.getValue(modNumber)>0)?dataSpawnTime:modManager.get("noteSpawnTime");
+						var time:Float = noteSpawnTime == null ? spawnTime : noteSpawnTime.getValue(modNumber); // no longer averages the spawn times
+						if (time <= 0)time = spawnTime;
+						
+						while (column.length > 0 && Conductor.songPosition > column[0].strumTime)
+						{
+							var note = column.shift();
+							note.spawned = false;
+							noteQueue[data].push(note);
+							// trace("backup");
+						}
 					}
 				}
-			}
 		}
 
 		super.update(elapsed);

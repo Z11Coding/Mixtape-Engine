@@ -238,7 +238,7 @@ class APPlayState extends PlayState {
 			{
 				ArchPopup.startPopupCustom("convertMania value is:", "" + convertMania + "", 'Color');
 			}
-			ArchPopup.startPopupCustom('You Got an Item!', "Chart Modifier Trap (" + chartModifier + ")", 'Color');
+			if (chartModifier != 'Normal') ArchPopup.startPopupCustom('You Got an Item!', "Chart Modifier Trap (" + chartModifier + ")", 'Color');
 			//MaxHP = activeItems[2];
 		}
 
@@ -1222,14 +1222,15 @@ class APPlayState extends PlayState {
 						daNote.noteData = available[daNote.noteData];
 					}
 				}
-				for(queue in playerField.noteQueue){
-					for(daNote in queue)
+				for (data => column in playerField.noteQueue)
+				{
+					if (column[0] != null)
 					{
-						if (daNote == null)
+						if (column[0] == null)
 							continue;
 						else
 						{
-							daNote.noteData = available[daNote.noteData];
+							column[0].noteData = available[column[0].noteData];
 						}
 					}
 				}
@@ -1249,14 +1250,15 @@ class APPlayState extends PlayState {
 							daNote.noteData = daNote.trueNoteData;
 						}
 					}
-					for(queue in playerField.noteQueue){
-						for(daNote in queue)
+					for (data => column in playerField.noteQueue)
+					{
+						if (column[0] != null)
 						{
-							if (daNote == null)
+							if (column[0] == null)
 								continue;
 							else
 							{
-								daNote.noteData = daNote.trueNoteData;
+								column[0].noteData = available[column[0].noteData];
 							}
 						}
 					}
@@ -1328,38 +1330,38 @@ class APPlayState extends PlayState {
 					vocalLowFilterAmount = 1;
 				}
 
-			// case 'songSwitch':
-			// 	//save everything first
-			// 	if (FlxG.save.data.manualOverride != null && FlxG.save.data.manualOverride == false) 
-			// 		FlxG.save.data.manualOverride = true;
-			// 	else if (FlxG.save.data.manualOverride != null && FlxG.save.data.manualOverride == true) 
-			// 		FlxG.save.data.manualOverride = false;
+			case 'songSwitch':
+			//save everything first
+			if (FlxG.save.data.manualOverride != null && FlxG.save.data.manualOverride == false) 
+				FlxG.save.data.manualOverride = true;
+			else if (FlxG.save.data.manualOverride != null && FlxG.save.data.manualOverride == true) 
+				FlxG.save.data.manualOverride = false;
 
-			// 	trace('MANUAL OVERRIDE: ' + FlxG.save.data.manualOverride);
+			trace('MANUAL OVERRIDE: ' + FlxG.save.data.manualOverride);
 
-			// 	if (FlxG.save.data.manualOverride)
-			// 	{
-			// 		FlxG.save.data.storyWeek = PlayState.storyWeek;
-			// 		FlxG.save.data.currentModDirectory = Mods.currentModDirectory;
-			// 		FlxG.save.data.difficulties = Difficulty.list; // just in case
-			// 		FlxG.save.data.SONG = PlayState.SONG;
-			// 		FlxG.save.data.storyDifficulty = PlayState.storyDifficulty;
-			// 		FlxG.save.data.songPos = Conductor.songPosition;
-			// 		FlxG.save.flush();
-			// 	}
+			if (FlxG.save.data.manualOverride)
+			{
+				FlxG.save.data.storyWeek = PlayState.storyWeek;
+				FlxG.save.data.currentModDirectory = Mods.currentModDirectory;
+				FlxG.save.data.difficulties = Difficulty.list; // just in case
+				FlxG.save.data.SONG = PlayState.SONG;
+				FlxG.save.data.storyDifficulty = PlayState.storyDifficulty;
+				FlxG.save.data.songPos = Conductor.songPosition;
+				FlxG.save.flush();
+			}
 
-			// 	//Then make a hostile takeover
-			// 	if (FlxG.save.data.manualOverride)
-			// 	{
-			// 		//playBackRate = 1;
-			// 		PlayState.storyWeek = 0;
-			// 		Mods.currentModDirectory = '';
-			// 		Difficulty.list = Difficulty.defaultList.copy();
-			// 		PlayState.SONG = Song.loadFromJson(Highscore.formatSong('tutorial', curDifficulty), Paths.formatToSongPath('tutorial'));
-			// 		PlayState.storyDifficulty = curDifficulty;
-			// 		FlxG.save.flush();
-			// 	}
-			// 	MusicBeatState.resetState();
+			//Then make a hostile takeover
+			if (FlxG.save.data.manualOverride)
+			{
+				//playBackRate = 1;
+				PlayState.storyWeek = 0;
+				Mods.currentModDirectory = '';
+				Difficulty.list = Difficulty.defaultList.copy();
+				PlayState.SONG = Song.loadFromJson(Highscore.formatSong('tutorial', curDifficulty), Paths.formatToSongPath('tutorial'));
+				PlayState.storyDifficulty = curDifficulty;
+				FlxG.save.flush();
+			}
+			MusicBeatState.resetState();
 
 			default:
 				return;
@@ -2047,7 +2049,7 @@ class APPlayState extends PlayState {
 			if (note.isMine || note.isFakeHeal)
 			{
 				songMisses++;
-				health -= FlxG.random.float(0.25, 0.5) * dmgMultiplier;
+				health -= FlxG.random.float(0.2, 1) * dmgMultiplier;
 				if (note.isMine)
 					FlxG.sound.play(Paths.sound('streamervschat/mine'));
 				else if (note.isFakeHeal)

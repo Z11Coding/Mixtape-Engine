@@ -456,7 +456,7 @@ class Note extends NoteObject
 
 	public function resizeByRatio(ratio:Float) //haha funny twitter shit
 	{
-		if(isSustainNote && animation.curAnim != null && !animation.curAnim.name.endsWith('end'))
+		if(isSustainNote && animation.curAnim != null && !animation.curAnim.name.endsWith('tail'))
 		{
 			scale.y *= ratio;
 			updateHitbox();
@@ -865,14 +865,14 @@ class Note extends NoteObject
 	}
 
 	function loadPixelNoteAnims() {
-		if(isSustainNote) {
-			for (i in 0...gfxLetter.length) {
+		for (i in 0...gfxLetter.length)
+		{
+			animation.add(gfxLetter[i], [i + pixelNotesDivisionValue]);
+
+			if (isSustainNote)
+			{
 				animation.add(gfxLetter[i] + ' hold', [i]);
 				animation.add(gfxLetter[i] + ' tail', [i + pixelNotesDivisionValue]);
-			}
-		} else {
-			for (i in 0...gfxLetter.length) {
-				animation.add(gfxLetter[i], [i + pixelNotesDivisionValue]);
 			}
 		}
 	}
