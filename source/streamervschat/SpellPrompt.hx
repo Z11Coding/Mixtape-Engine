@@ -71,8 +71,7 @@ class SpellPrompt extends FlxSprite
 		ttl -= FlxG.elapsed;
 		for (key in FlxG.keys.getIsDown())
 		{
-			if ((key.justPressed && key.ID.toString().toLowerCase() == word.charAt(curChar)) || (word.charAt(curChar) == "" || word.charAt(curChar) == " " || word.charAt(curChar) == "\n") || PlayState.instance.cpuControlled || !letterArray.contains(key.ID.toString().toLowerCase()))
-			{
+			if ((key.justPressed && key.ID.toString().toLowerCase() == word.charAt(curChar)) || (word.charAt(curChar) == "" || word.charAt(curChar) == " " || word.charAt(curChar) == "\n") || PlayState.instance.cpuControlled) {
 				var maxTries:Int = 10;
 				var tries:Int = 0;
 				while (tries < maxTries) {
