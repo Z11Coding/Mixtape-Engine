@@ -284,7 +284,10 @@ class PlayState extends MusicBeatState
 	public var cpuControlled(default, set) = false;
 	public var practiceMode:Bool = false;
 	public var chartModifier:String = '';
-	public var convertMania:Int = ClientPrefs.getGameplaySetting('convertMania', 3);
+	public var convertMania:Int;
+	if (!Std.is(this, APPlayState)) {
+		convertMania = ClientPrefs.getGameplaySetting('convertMania', 3);
+	}
 	public var opponentmode:Bool = ClientPrefs.getGameplaySetting('opponentplay', false);
 	public var loopMode:Bool = ClientPrefs.getGameplaySetting('loopMode', false);
 	public var loopModeChallenge:Bool = ClientPrefs.getGameplaySetting('loopModeC', false);
