@@ -753,7 +753,7 @@ class APPlayState extends PlayState {
 			case 'cover':
 				noIcon = false;
 				var errorMessage = new FlxSprite();
-				var random = FlxG.random.int(0, 13);
+				var random = FlxG.random.int(0, 14);
 				var randomPosition:Bool = true;
 
 				switch (random)
@@ -859,6 +859,14 @@ class APPlayState extends PlayState {
 						errorMessage.x = errorMessage.y = 0;
 						errorMessage.blend = ADD;
 						playSound = 'wheel';
+					case 14:
+						var transitions = ["fadeOut", "fadeColor", "slideLeft", "slideRight", "slideUp", "slideDown", "slideRandom", "fallRandom", "fallSequential"];
+						var transition = transitions[FlxG.random.int(0, transitions.length - 1)];
+						var duration = FlxG.random.float(0.5, 2);
+						TransitionState.fakeTransition({
+							transitionType: transition,
+							duration: duration,
+						});
 				}
 
 				if (randomPosition)
