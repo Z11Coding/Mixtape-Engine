@@ -359,7 +359,9 @@ class FreeplayState extends MusicBeatState
 			var daSong = APEntryState.unlockable[FlxG.random.int(0, APEntryState.unlockable.length - 1)];
 			ArchPopup.startPopupSong(daSong, 'archColor');
 			reloadSongs(true);
+		
 		}
+		trace("Unlocked: "+daSong);
 		trace(APEntryState.unlockable);
 	}
 

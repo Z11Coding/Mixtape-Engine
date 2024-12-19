@@ -1041,8 +1041,8 @@ class APPlayState extends PlayState {
 					drunkTween = FlxTween.num(0, 24, FlxG.random.float(1.2, 1.4), {
 						onUpdate: function(tween)
 						{
-							camHUD.angle = (tween.executions % 4 > 1 ? 1 : -1) * cast(tween, NumTween).value + camAngle;
-							camGame.angle = (tween.executions % 4 > 1 ? -1 : 1) * cast(tween, NumTween).value / 2 + camAngle;
+							camHUD.scrollAngle = (tween.executions % 4 > 1 ? 1 : -1) * cast(tween, NumTween).value + camAngle;
+							camGame.scrollAngle = (tween.executions % 4 > 1 ? -1 : 1) * cast(tween, NumTween).value / 2 + camAngle;
 						},
 						type: PINGPONG
 					});
@@ -1057,8 +1057,8 @@ class APPlayState extends PlayState {
 						drunkTween.cancel();
 						FlxDestroyUtil.destroy(drunkTween);
 					}
-					camHUD.angle = camAngle;
-					camGame.angle = camAngle;
+					camHUD.scrollAngle = camAngle;
+					camGame.scrollAngle = camAngle;
 				}
 			case 'noise':
 				noIcon = false;
@@ -1132,8 +1132,10 @@ class APPlayState extends PlayState {
 				}
 				shieldSprite.visible = true;
 				dmgMultiplier = 0;
+				boyfriend.invuln = true;
 				onEnd = function()
 				{
+					boyfriend.invuln = false;
 					shieldSprite.visible = false;
 					dmgMultiplier = 1.0;
 				}
@@ -1189,7 +1191,7 @@ class APPlayState extends PlayState {
 					case false:
 						availableS = "flip";
 				}
-				modManager.queueEase(curStep, curStep+3, availableS, .9, "sineInOut");
+				modManager.queueEase(curStep, curStep+3, availableS, .96, "sineInOut");
 				trace(availableS);
 				playSound = "randomize";
 				playSoundVol = 0.7;
@@ -1717,6 +1719,11 @@ class APPlayState extends PlayState {
                     ArchPopup.startPopupCustom('You Got an Item!', "Keybind Switch (S A N D)", 'Color');
             }
         }*/
+		for (video in addedMP4s)
+		{
+			if (video != null)
+				video.cameras = [camGame];
+		}
 
         if (activeItems[0] > 0 && health <= 0)
         {
@@ -1965,7 +1972,7 @@ class APPlayState extends PlayState {
         {
             if (daNote.isAlert)
             {
-                health -= daNote.missHealth * healthLoss * 2;
+                health -= 0.3;
                 FlxG.sound.play(Paths.sound('streamervschat/warning'));
                 var fist:FlxSprite = new FlxSprite().loadGraphic(Paths.image("streamervschat/thepunch"));
                 fist.x = FlxG.width / camGame.zoom;
