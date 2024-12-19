@@ -272,6 +272,10 @@ class CollectionUtils {
         }
     }
 
+    public static inline function defaultOf<T>(CLASS:Class<T>):T {
+        return Type.createEmptyInstance(CLASS);
+    }
+
     public static inline function toIterable<T>(input:Dynamic):Iterable<T> {
         if (Std.is(input, Array)) {
             return input;

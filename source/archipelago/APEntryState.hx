@@ -348,7 +348,7 @@ class APEntryState extends FlxState
 
 	override function update(elapsed:Float)
 	{
-		if (FlxG.keys.justPressed.HOME && !inArchipelagoMode) 
+		if (FlxG.keys.justPressed.HOME) 
 		{
 			inArchipelagoMode = true;
 			WeekData.reloadWeekFiles(false);
@@ -363,6 +363,8 @@ class APEntryState extends FlxState
 					unlockable.remove('Tutorial'); // To remove Tutorial because it keeps re-adding itself
 				}
 			}
+			// unlockable = unlockable.removeDuplicates();
+			MusicBeatState.switchState(new states.CategoryState());
 		}
 		if(swagShader != null) swagShader.hue += elapsed * 0.1;
 		if (!ClientPrefs.data.lowQuality)

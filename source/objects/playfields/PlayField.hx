@@ -870,7 +870,7 @@ class PlayField extends FlxTypedGroup<FlxBasic>
 				var time:Float = noteSpawnTime == null ? spawnTime : noteSpawnTime.getValue(modNumber); // no longer averages the spawn times
 				if (time <= 0)time = spawnTime;
                 
-                while (column.length > 0 && column[0].strumTime - Conductor.songPosition < time)
+                if (column.length > 0 && column[0].strumTime - Conductor.songPosition < time)
 					spawnNote(column[0]);
 			}
 			for (data => column in backupQueue)
@@ -881,7 +881,7 @@ class PlayField extends FlxTypedGroup<FlxBasic>
 						var time:Float = noteSpawnTime == null ? spawnTime : noteSpawnTime.getValue(modNumber); // no longer averages the spawn times
 						if (time <= 0)time = spawnTime;
 						
-						while (column.length > 0 && Conductor.songPosition > column[0].strumTime)
+						if (column.length > 0 && Conductor.songPosition > column[0].strumTime)
 						{
 							var note = column.shift();
 							note.spawned = false;
