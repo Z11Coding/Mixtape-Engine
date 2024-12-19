@@ -64,7 +64,7 @@ class APPlayState extends PlayState {
 	var effectArray:Array<String> = [
 		'colorblind', 'blur', 'lag', 'mine', 'warning', 'heal', 'spin', 'songslower', 'songfaster', 'scrollswitch', 'scrollfaster', 'scrollslower', 'rainbow',
 		'cover', 'ghost', 'flashbang', 'nostrum', 'jackspam', 'spam', 'sever', 'shake', 'poison', 'dizzy', 'noise', 'flip', 'invuln',
-		'desync', 'mute', 'ice', 'randomize', 'fakeheal', 'spell', 'terminate', 'lowpass', 'songSwitch', 'notif'
+		'desync', 'mute', 'ice', 'randomize', 'randomizeAlt', 'opponentPlay', 'fakeheal', 'spell', 'terminate', 'lowpass', 'songSwitch', 'notif'
 	];
 	var notifs:Array<String> = [
 		"You're crazy...",
@@ -126,8 +126,9 @@ class APPlayState extends PlayState {
                 activeItems = FlxG.save.data.activeItems;
             if (FlxG.save.data.activeItems == null)
             {
-                activeItems[3] = FlxG.random.int(0, 9);
-                activeItems[2] = Std.int(MaxHP);
+                activeItems[3] = -1; //FlxG.random.int(0, 9); im getting kinda tired of this
+                activeItems[2] = 0;
+				FlxG.save.flush();
             }
         }
 
@@ -202,45 +203,44 @@ class APPlayState extends PlayState {
 
         if (FlxG.save.data.activeItems == null)
 		{
-				switch activeItems[3]
-				{
-					case 1:
-						chartModifier = 'Flip';
-					case 2:
-						chartModifier = 'Random';
-					case 3:
-						chartModifier = 'Stairs';
-					case 4:
-						chartModifier = 'Wave';
-					case 5:
-						chartModifier = 'SpeedRando';
-					case 6:
-						chartModifier = 'Amalgam';
-					case 7:
-						chartModifier = 'Trills';
-					case 8:
-						chartModifier = "SpeedUp";
-					case 9:
-						if (PlayState.SONG.mania == 3)
-						{
-							chartModifier = "ManiaConverter";
-							convertMania = FlxG.random.int(4, Note.maxMania);
-						}
-						else
-						{
-							chartModifier = "4K Only";
-						}
-					default:
-						chartModifier = allowSetChartModifier && ClientPrefs.getGameplaySetting('chartModifier', 'Normal') != null ? ClientPrefs.getGameplaySetting('chartModifier', 'Normal') : "Normal";
-				}
+			switch (activeItems[3])
+			{
+				case 1:
+					chartModifier = 'Flip';
+				case 2:
+					chartModifier = 'Random';
+				case 3:
+					chartModifier = 'Stairs';
+				case 4:
+					chartModifier = 'Wave';
+				case 5:
+					chartModifier = 'SpeedRando';
+				case 6:
+					chartModifier = 'Amalgam';
+				case 7:
+					chartModifier = 'Trills';
+				case 8:
+					chartModifier = "SpeedUp";
+				case 9:
+					if (PlayState.SONG.mania == 3)
+					{
+						chartModifier = "ManiaConverter";
+						convertMania = FlxG.random.int(4, Note.maxMania);
+					}
+					else
+					{
+						chartModifier = "4K Only";
+					}
+				default:
+					chartModifier = allowSetChartModifier && ClientPrefs.getGameplaySetting('chartModifier', 'Normal') != null ? ClientPrefs.getGameplaySetting('chartModifier', 'Normal') : "Normal";
+			}
 			if (chartModifier == "ManiaConverter")
 			{
 				ArchPopup.startPopupCustom("convertMania value is:", "" + convertMania + "", 'Color');
 			}
-
 			ArchPopup.startPopupCustom('You Got an Item!', "Chart Modifier Trap (" + chartModifier + ")", 'Color');
+			//MaxHP = activeItems[2];
 		}
-		MaxHP = activeItems[2];
 
         filterMap = [
             "Grayscale" => {
@@ -293,6 +293,7 @@ class APPlayState extends PlayState {
 			shieldSprite.updateHitbox();
 		}
 		shieldSprite.visible = false;
+		add(shieldSprite);
     }
 
     public static var startOnTime:Float = 0;
@@ -405,8 +406,8 @@ class APPlayState extends PlayState {
 
         randoTimer.start(FlxG.random.float(5, 10), function(tmr:FlxTimer)
         {
-            if (curEffect <= 37) doEffect(effectArray[curEffect]);
-            else if (curEffect > 37)
+            if (curEffect <= 38) doEffect(effectArray[curEffect]);
+            else if (curEffect > 38)
             {
                 switch (curEffect)
                 {
@@ -418,6 +419,7 @@ class APPlayState extends PlayState {
                         ArchPopup.startPopupCustom('You Got an Item!', "Blue Ball's Curse", 'Color');
                     case 40:
                         activeItems[2] += 1;
+						MaxHP = 2+activeItems[2];
                         ArchPopup.startPopupCustom('You Got an Item!', "Max HP Up!", 'Color');
                 }
             }
@@ -455,7 +457,7 @@ class APPlayState extends PlayState {
 
     var oldRate:Int = 60;
 	var noIcon:Bool = false;
-
+	var available:Array<Int> = [];
 	function doEffect(effect:String)
 	{
 		if (paused)
@@ -1179,22 +1181,85 @@ class APPlayState extends PlayState {
 
 			case 'randomize':
 				noIcon = false;
-				var available:String = "";
+				var availableS:String = "";
 				switch (FlxG.random.bool(15))
 				{
 					case true:
-						available = "invert";
+						availableS = "invert";
 					case false:
-						available = "flip";
+						availableS = "flip";
 				}
-				modManager.queueEase(curStep, curStep+3, available, 1, "sineInOut");
-				trace(available);
+				modManager.queueEase(curStep, curStep+3, availableS, .9, "sineInOut");
+				trace(availableS);
 				playSound = "randomize";
 				playSoundVol = 0.7;
 				ttl = 10;
 				onEnd = function()
 				{
-					modManager.queueEase(curStep, curStep+3, available, 0, "sineInOut");
+					modManager.queueEase(curStep, curStep+3, availableS, 0, "sineInOut");
+				}
+
+			case 'randomizeAlt':
+				noIcon = false;
+				available = [];
+				for (i in 0...PlayState.mania+1) {
+					available.push(i);
+					trace("available: " + available);
+				}
+				FlxG.random.shuffle(available);
+				switch (available)
+				{
+					case [0, 1, 2, 3]:
+						available = [3, 2, 1, 0];
+					default:
+				}
+				for (daNote in notes)
+				{
+					if (daNote == null)
+						continue;
+					else
+					{
+						daNote.noteData = available[daNote.noteData];
+					}
+				}
+				for(queue in playerField.noteQueue){
+					for(daNote in queue)
+					{
+						if (daNote == null)
+							continue;
+						else
+						{
+							daNote.noteData = available[daNote.noteData];
+						}
+					}
+				}
+				playSound = "randomize";
+				playSoundVol = 0.7;
+				ttl = 10;
+				onEnd = function()
+				{
+					available = [];
+					doRandomize = false;
+					for (daNote in notes)
+					{
+						if (daNote == null)
+							continue;
+						else
+						{
+							daNote.noteData = daNote.trueNoteData;
+						}
+					}
+					for(queue in playerField.noteQueue){
+						for(daNote in queue)
+						{
+							if (daNote == null)
+								continue;
+							else
+							{
+								daNote.noteData = daNote.trueNoteData;
+							}
+						}
+					}
 				}
 
 			case 'opponentPlay':
@@ -1211,7 +1276,7 @@ class APPlayState extends PlayState {
 				ttl = 12;
 				onEnd = function()
 				{
-					opponentmode =  true;
+					opponentmode =  false;
 					playerField.isPlayer = !opponentmode && !PlayState.playAsGF || bothMode;
 					playerField.autoPlayed = opponentmode || cpuControlled || PlayState.playAsGF;
 					playerField.noteHitCallback = opponentmode ? opponentNoteHit : goodNoteHit;
@@ -1453,27 +1518,30 @@ class APPlayState extends PlayState {
 				swagNote.reloadNote();
 				swagNote.isMine = true;
 				swagNote.specialNote = true;
+				swagNote.hitCausesMiss = true;
 			case 2:
 				swagNote.noteType = 'Warning Note';
 				swagNote.reloadNote();
 				swagNote.isAlert = true;
 				swagNote.specialNote = true;
+				swagNote.hitCausesMiss = false;
 			case 3:
 				swagNote.noteType = 'Heal Note';
 				swagNote.reloadNote();
 				swagNote.isHeal = true;
 				swagNote.specialNote = true;
+				swagNote.hitCausesMiss = false;
 			case 4:
 				swagNote.noteType = 'Ice Note';
 				swagNote.reloadNote();
 				swagNote.isFreeze = true;
-				swagNote.ignoreNote = true;
+				swagNote.hitCausesMiss = true;
 				swagNote.specialNote = true;
 			case 5:
 				swagNote.noteType = 'Fake Heal Note';
 				swagNote.reloadNote();
 				swagNote.isFakeHeal = true;
-				swagNote.ignoreNote = true;
+				swagNote.hitCausesMiss = true;
 				swagNote.specialNote = true;
 			default:
 				swagNote.ignoreNote = false;
@@ -1534,6 +1602,7 @@ class APPlayState extends PlayState {
 	}
 
 	var isFrozen:Bool = false;
+	var doRandomize:Bool = false;
     override public function update(elapsed:Float)
 	{
         #if cpp			
@@ -1680,7 +1749,7 @@ class APPlayState extends PlayState {
 			else if (spellPrompts[i].ttl <= 0)
 			{
 				health -= 0.5 * dmgMultiplier;
-				FlxG.sound.play(Paths.sound('spellfail'));
+				FlxG.sound.play(Paths.sound('streamervschat/spellfail'));
 				camOther.flash(FlxColor.RED, 1, null, true);
 				spellPrompts[i].kill();
 				FlxDestroyUtil.destroy(spellPrompts[i]);
@@ -1924,6 +1993,12 @@ class APPlayState extends PlayState {
                 var animToPlay:String = 'sing' + Note.keysShit.get(PlayState.mania).get('anims')[daNote.noteData] + 'miss' + daNote.animSuffix;
                 char.playAnim(animToPlay, true);
             }
+
+			if (daNote.specialNote)
+			{
+				specialNoteHit(daNote, field);
+				return;
+			}
             super.noteMiss(daNote, field);
         }
         else
