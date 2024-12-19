@@ -65,6 +65,33 @@ class APPlayState extends PlayState {
 		'cover', 'ghost', 'flashbang', 'nostrum', 'jackspam', 'spam', 'sever', 'shake', 'poison', 'dizzy', 'noise', 'flip', 'invuln',
 		'desync', 'mute', 'ice', 'randomize', 'fakeheal', 'spell', 'terminate', 'lowpass', 'songSwitch', 'notif'
 	];
+	var notifs:Array<String> = [
+		"You're crazy...",
+		"Hey there.",
+		"LOOK OUT!!!",
+		"RUN!",
+		"Hey bro, what's that behind you?",
+		"Z11 says hi",
+		"Yuta says hi",
+		"whatever you do, DON'T PRESS 7!",
+		"I can see you.",
+		"⣀⣠⣤⣤⣤⣤⢤⣤⣄⣀⣀⣀⣀⡀⡀⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+		⠄⠉⠹⣾⣿⣛⣿⣿⣞⣿⣛⣺⣻⢾⣾⣿⣿⣿⣶⣶⣶⣄⡀⠄⠄⠄
+		⠄⠄⠠⣿⣷⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣯⣿⣿⣿⣿⣿⣿⣆⠄⠄
+		⠄⠄⠘⠛⠛⠛⠛⠋⠿⣷⣿⣿⡿⣿⢿⠟⠟⠟⠻⠻⣿⣿⣿⣿⡀⠄
+		⠄⢀⠄⠄⠄⠄⠄⠄⠄⠄⢛⣿⣁⠄⠄⠒⠂⠄⠄⣀⣰⣿⣿⣿⣿⡀
+		⠄⠉⠛⠺⢶⣷⡶⠃⠄⠄⠨⣿⣿⡇⠄⡺⣾⣾⣾⣿⣿⣿⣿⣽⣿⣿
+		⠄⠄⠄⠄⠄⠛⠁⠄⠄⠄⢀⣿⣿⣧⡀⠄⠹⣿⣿⣿⣿⣿⡿⣿⣻⣿
+		⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠉⠛⠟⠇⢀⢰⣿⣿⣿⣏⠉⢿⣽⢿⡏
+		⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠠⠤⣤⣴⣾⣿⣿⣾⣿⣿⣦⠄⢹⡿⠄
+		⠄⠄⠄⠄⠄⠄⠄⠄⠒⣳⣶⣤⣤⣄⣀⣀⡈⣀⢁⢁⢁⣈⣄⢐⠃⠄
+		⠄⠄⠄⠄⠄⠄⠄⠄⠄⣰⣿⣛⣻⡿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡯⠄⠄
+		⠄⠄⠄⠄⠄⠄⠄⠄⠄⣬⣽⣿⣻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠁⠄⠄
+		⠄⠄⠄⠄⠄⠄⠄⠄⠄⢘⣿⣿⣻⣛⣿⡿⣟⣻⣿⣿⣿⣿⡟⠄⠄⠄
+		⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠛⢛⢿⣿⣿⣿⣿⣿⣿⣷⡿⠁⠄⠄⠄
+		⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠉⠉⠉⠉⠈⠄⠄⠄⠄⠄⠄",
+		"You know what that means, FISH!"
+	];
 	var curEffect:Int = 0;
 
     function generateGibberish(length:Int, exclude:String):String
@@ -655,7 +682,7 @@ class APPlayState extends PlayState {
 					songSpeed = PlayState.SONG.speed * ClientPrefs.getGameplaySetting('scrollspeed', 1) * effectiveScrollSpeed;
 				}
 			case 'notif':
-				backend.window.CppAPI.sendWindowsNotification("Archipelago", "You're crazy...");
+				backend.window.CppAPI.sendWindowsNotification("Archipelago", notifs[FlxG.random.int(0, notifs.length-1)]);
 			case 'scrollslower':
 				noIcon = false;
 				var changeAmount:Float = FlxG.random.float(0.1, 0.9);
@@ -879,13 +906,13 @@ class APPlayState extends PlayState {
 
 			case 'ghost':
 				noIcon = false;
-				modManager.setValue('stealth', 1);
+				modManager.setValue('sudden', 1);
 				playSound = "ghost";
 				playSoundVol = 0.5;
 				ttl = 15;
 				onEnd = function()
 				{
-					modManager.setValue('stealth', 0);
+					modManager.setValue('sudden', 0);
 				};
 			case 'flashbang':
 				noIcon = true;
@@ -1144,88 +1171,45 @@ class APPlayState extends PlayState {
 
 			case 'randomize':
 				noIcon = false;
-				var available:Array<Int> = [0, 1, 2, 3];
-				FlxG.random.shuffle(available);
-				switch (available)
+				var available:String = "";
+				switch (FlxG.random.bool(15))
 				{
-					case [0, 1, 2, 3]:
-						available = [3, 2, 1, 0];
-					default:
+					case true:
+						available = "invert";
+					case false:
+						available = "flip";
 				}
+				modManager.queueEase(curStep, curStep+3, available, 1, "sineInOut");
 				trace(available);
-
-				for (field in playfields.members)
-				{
-					for (column in field.noteQueue)
-					{
-						if (column.length >= Note.ammo[PlayState.mania])
-						{
-							for (nIdx in 1...column.length)
-							{
-								var last = column[nIdx - 1];
-								var current = column[nIdx];
-								if (last == null || current == null)
-									continue;
-								if (last.isSustainNote || current.isSustainNote)
-									continue; // holds only get fukt if their parents get fukt
-								if (!last.alive || !current.alive)
-									continue; // just incase
-								if (current.strumTime >= Conductor.songPosition)
-								{
-									current.noteData = available[current.noteData];
-								}
-							}
-						}
-					}
-				}
-				for (daNote in notes)
-				{
-					if (daNote == null)
-						continue;
-					else
-					{
-						daNote.noteData = available[daNote.noteData];
-					}
-				}
-
 				playSound = "randomize";
 				playSoundVol = 0.7;
 				ttl = 10;
 				onEnd = function()
 				{
-					for (field in playfields.members)
-					{
-						for (column in field.noteQueue)
-						{
-							if (column.length >= Note.ammo[PlayState.mania])
-							{
-								for (nIdx in 1...column.length)
-								{
-									var last = column[nIdx - 1];
-									var current = column[nIdx];
-									if (last == null || current == null)
-										continue;
-									if (last.isSustainNote || current.isSustainNote)
-										continue; // holds only get fukt if their parents get fukt
-									if (!last.alive || !current.alive)
-										continue; // just incase
-									if (current.strumTime >= Conductor.songPosition)
-									{
-										current.noteData = current.trueNoteData;
-									}
-								}
-							}
-						}
-					}
-					for (daNote in notes)
-					{
-						if (daNote == null)
-							continue;
-						else
-						{
-							daNote.noteData = daNote.trueNoteData;
-						}
-					}
+					modManager.queueEase(curStep, curStep+3, available, 0, "sineInOut");
+				}
+
+			case 'opponentPlay':
+				noIcon = true;
+				opponentmode =  true;
+				playerField.isPlayer = !opponentmode && !PlayState.playAsGF || bothMode;
+				playerField.autoPlayed = opponentmode || cpuControlled || PlayState.playAsGF;
+				playerField.noteHitCallback = opponentmode ? opponentNoteHit : goodNoteHit;
+				dadField.isPlayer = opponentmode && !PlayState.playAsGF || bothMode;
+				dadField.autoPlayed = (!opponentmode || (opponentmode && cpuControlled) || PlayState.playAsGF) || bothMode && cpuControlled;
+				dadField.noteHitCallback = opponentmode ? goodNoteHit : opponentNoteHit;
+				playSound = "randomize";
+				playSoundVol = 0.7;
+				ttl = 12;
+				onEnd = function()
+				{
+					opponentmode =  true;
+					playerField.isPlayer = !opponentmode && !PlayState.playAsGF || bothMode;
+					playerField.autoPlayed = opponentmode || cpuControlled || PlayState.playAsGF;
+					playerField.noteHitCallback = opponentmode ? opponentNoteHit : goodNoteHit;
+					dadField.isPlayer = opponentmode && !PlayState.playAsGF || bothMode;
+					dadField.autoPlayed = (!opponentmode || (opponentmode && cpuControlled) || PlayState.playAsGF) || bothMode && cpuControlled;
+					dadField.noteHitCallback = opponentmode ? goodNoteHit : opponentNoteHit;
 				}
 
 			case 'fakeheal':
@@ -1375,10 +1359,13 @@ class APPlayState extends PlayState {
 	override function stepHit()
 	{
 		if (!localFreezeNotes) // so that the event doen't get overriden
-			if (lagOn && curStep % 2 == 0)
-				freezeNotes = true;
-			else if (lagOn && curStep % 2 == 1)
-				freezeNotes = true;
+			if (lagOn)
+			{
+				if (curStep % 2 == 0)
+					freezeNotes = true;
+				else if (curStep % 2 == 1)
+					freezeNotes = false;
+			}
 			else freezeNotes = false;
 		super.stepHit();
 	}
@@ -1392,6 +1379,7 @@ class APPlayState extends PlayState {
 		timeBar.y = (timeTxt.y + (timeTxt.height / 4)) + 4;
         modManager.queueEase(curStep, curStep+3, 'reverse', effectiveDownScroll ? 1 : 0, "sineInOut");
 		healthBar.y = (effectiveDownScroll ? FlxG.height * 0.1 : FlxG.height * 0.875) + 4;
+		healthBar2.y = (effectiveDownScroll ? FlxG.height * 0.1 : FlxG.height * 0.875) + 4;
 		iconP1.y = healthBar.y - (iconP1.height / 2);
 		iconP2.y = healthBar.y - (iconP2.height / 2);
 		scoreTxt.y = (effectiveDownScroll ? FlxG.height * 0.1 - 72 : FlxG.height * 0.9 + 36);
@@ -1456,7 +1444,6 @@ class APPlayState extends PlayState {
 				swagNote.noteType = 'Mine Note';
 				swagNote.reloadNote();
 				swagNote.isMine = true;
-				swagNote.ignoreNote = true;
 				swagNote.specialNote = true;
 			case 2:
 				swagNote.noteType = 'Warning Note';
@@ -1566,6 +1553,45 @@ class APPlayState extends PlayState {
 				//lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__audioSource.__backend.handle, lime.media.openal.AL.HIGHPASS_GAIN, 0);
 			}
 		}
+		if(opponentVocals != null && opponentVocals.playing)
+		{
+			@:privateAccess
+			{
+				var af = lime.media.openal.AL.createFilter(); // create AudioFilter
+				lime.media.openal.AL.filteri( af, lime.media.openal.AL.FILTER_TYPE, lime.media.openal.AL.FILTER_LOWPASS ); // set filter type
+				lime.media.openal.AL.filterf( af, lime.media.openal.AL.LOWPASS_GAIN, 1 ); // set gain
+				lime.media.openal.AL.filterf( af, lime.media.openal.AL.LOWPASS_GAINHF, vocalLowFilterAmount ); // set gainhf
+				lime.media.openal.AL.sourcei( opponentVocals._channel.__audioSource.__backend.handle, lime.media.openal.AL.DIRECT_FILTER, af ); // apply filter to source (handle)
+				//lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__audioSource.__backend.handle, lime.media.openal.AL.HIGHPASS_GAIN, 0);
+			}
+		}
+		if(gfVocals != null && gfVocals.playing)
+		{
+			@:privateAccess
+			{
+				var af = lime.media.openal.AL.createFilter(); // create AudioFilter
+				lime.media.openal.AL.filteri( af, lime.media.openal.AL.FILTER_TYPE, lime.media.openal.AL.FILTER_LOWPASS ); // set filter type
+				lime.media.openal.AL.filterf( af, lime.media.openal.AL.LOWPASS_GAIN, 1 ); // set gain
+				lime.media.openal.AL.filterf( af, lime.media.openal.AL.LOWPASS_GAINHF, vocalLowFilterAmount ); // set gainhf
+				lime.media.openal.AL.sourcei( gfVocals._channel.__audioSource.__backend.handle, lime.media.openal.AL.DIRECT_FILTER, af ); // apply filter to source (handle)
+				//lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__audioSource.__backend.handle, lime.media.openal.AL.HIGHPASS_GAIN, 0);
+			}
+		}
+		for (track in tracks)
+		{
+			if(track != null && track.playing)
+			{
+				@:privateAccess
+				{
+					var af = lime.media.openal.AL.createFilter(); // create AudioFilter
+					lime.media.openal.AL.filteri( af, lime.media.openal.AL.FILTER_TYPE, lime.media.openal.AL.FILTER_LOWPASS ); // set filter type
+					lime.media.openal.AL.filterf( af, lime.media.openal.AL.LOWPASS_GAIN, 1 ); // set gain
+					lime.media.openal.AL.filterf( af, lime.media.openal.AL.LOWPASS_GAINHF, vocalLowFilterAmount ); // set gainhf
+					lime.media.openal.AL.sourcei( track._channel.__audioSource.__backend.handle, lime.media.openal.AL.DIRECT_FILTER, af ); // apply filter to source (handle)
+					//lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__audioSource.__backend.handle, lime.media.openal.AL.HIGHPASS_GAIN, 0);
+				}
+			}
+		}
 		#end
         curEffect = FlxG.random.int(0, 40);
         if (isFrozen) boyfriend.stunned = true;
@@ -1623,7 +1649,13 @@ class APPlayState extends PlayState {
         if (activeItems[1] == 1)
         {
             activeItems[1] = 0;
-            die();
+			if (activeItems[0] > 0 && health <= 0)
+			{
+				health = 1;
+				activeItems[0]--;
+				ArchPopup.startPopupCustom('You Used A Shield!', '-1 Shield ( ' + activeItems[0] + ' Left)', 'Color');
+			}
+			else die();
         }
 
         if (drainHealth)

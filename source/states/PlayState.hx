@@ -285,9 +285,6 @@ class PlayState extends MusicBeatState
 	public var practiceMode:Bool = false;
 	public var chartModifier:String = '';
 	public var convertMania:Int;
-	if (!Std.is(this, APPlayState)) {
-		convertMania = ClientPrefs.getGameplaySetting('convertMania', 3);
-	}
 	public var opponentmode:Bool = ClientPrefs.getGameplaySetting('opponentplay', false);
 	public var loopMode:Bool = ClientPrefs.getGameplaySetting('loopMode', false);
 	public var loopModeChallenge:Bool = ClientPrefs.getGameplaySetting('loopModeC', false);
@@ -771,6 +768,9 @@ class PlayState extends MusicBeatState
 		cpuControlled = ClientPrefs.getGameplaySetting('botplay', false);
 		if (!Std.is(this, APPlayState) || (chartModifier == '' || chartModifier == null)) {
 			chartModifier = ClientPrefs.getGameplaySetting('chartModifier', 'Normal') != null ? ClientPrefs.getGameplaySetting('chartModifier', 'Normal') : "Normal";
+		}
+		if (!Std.is(this, APPlayState)) {
+			convertMania = ClientPrefs.getGameplaySetting('convertMania', 3);
 		}
 		trace("Chart Modifier: " + chartModifier);
 
