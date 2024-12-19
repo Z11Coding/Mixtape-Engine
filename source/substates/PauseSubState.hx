@@ -169,8 +169,8 @@ class PauseSubState extends MusicBeatSubstate
 		levelInfo.setFormat(Paths.font("vcr.ttf"), 32);
 		levelInfo.updateHitbox();
 		add(levelInfo);
-
-		var levelDifficulty:FlxText = new FlxText(20, 15 + 32, 0, Difficulty.getString().toUpperCase(), 32);
+		var chartModifierText = PlayState.instance.chartModifier != "Normal" ? ' (' + PlayState.instance.chartModifier + ')'.toUpperCase() : '';
+		var levelDifficulty:FlxText = new FlxText(20, 15 + 32, 0, Difficulty.getString().toUpperCase() + chartModifierText.toUpperCase() + (Std.is(PlayState.instance, APPlayState) ? ' (AP)' : ''), 32);
 		levelDifficulty.scrollFactor.set();
 		levelDifficulty.setFormat(Paths.font('vcr.ttf'), 32);
 		levelDifficulty.updateHitbox();
