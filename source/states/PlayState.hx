@@ -762,7 +762,9 @@ class PlayState extends MusicBeatState
 		instakillOnMiss = ClientPrefs.getGameplaySetting('instakill', false);
 		practiceMode = ClientPrefs.getGameplaySetting('practice', false);
 		cpuControlled = ClientPrefs.getGameplaySetting('botplay', false);
-		chartModifier = ClientPrefs.getGameplaySetting('chartModifier', 'Normal') != null ? ClientPrefs.getGameplaySetting('chartModifier', 'Normal') : "Normal";
+		if (!Std.is(this, APPlayState) || (chartModifier == '' || chartModifier == null)) {
+			chartModifier = ClientPrefs.getGameplaySetting('chartModifier', 'Normal') != null ? ClientPrefs.getGameplaySetting('chartModifier', 'Normal') : "Normal";
+		}
 		trace("Chart Modifier: " + chartModifier);
 
 		if (bothMode)
