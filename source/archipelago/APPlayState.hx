@@ -65,7 +65,7 @@ class APPlayState extends PlayState {
 	var effectArray:Array<String> = [
 		'colorblind', 'blur', 'lag', 'mine', 'warning', 'heal', 'spin', 'songslower', 'songfaster', 'scrollswitch', 'scrollfaster', 'scrollslower', 'rainbow',
 		'cover', 'ghost', 'flashbang', 'nostrum', 'jackspam', 'spam', 'sever', 'shake', 'poison', 'dizzy', 'noise', 'flip', 'invuln',
-		'desync', 'mute', 'ice', 'randomize', 'fakeheal', 'spell', 'terminate', 'lowpass', 'songSwitch'
+		'desync', 'mute', 'ice', 'randomize', 'fakeheal', 'spell', 'terminate', 'lowpass', 'songSwitch', 'notif'
 	];
 	var curEffect:Int = 0;
 
