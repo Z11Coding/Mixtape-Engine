@@ -45,8 +45,6 @@ class APPlayState extends PlayState {
 	var noiseSound:FlxSound = new FlxSound();
 	var camAngle:Float = 0;
 	var dmgMultiplier:Float = 1;
-	var delayOffset:Float = 0;
-	var volumeMultiplier:Float = 1;
 	var frozenInput:Int = 0;
 	var blurEffect:MosaicEffect = new MosaicEffect();
 	var spellPrompts:Array<SpellPrompt> = [];
@@ -1122,18 +1120,17 @@ class APPlayState extends PlayState {
 				playSound = "delay";
 				if (FlxG.random.bool(15)) 
 				{
-					FlxG.sound.music.volume = 0;
+					instVolumeMultiplier = 0;
 				}
 				else 
 				{
-					volumeMultiplier = 0;
-					vocals.volume = 0;
+					vocalVolumeMultiplier = 0;
 				}
 				ttl = 8;
 				onEnd = function()
 				{
-					FlxG.sound.music.volume = 1;
-					volumeMultiplier = 1;
+					instVolumeMultiplier = 1;
+					vocalVolumeMultiplier = 1;
 				}
 
 			case 'ice':
@@ -1378,8 +1375,11 @@ class APPlayState extends PlayState {
 	override function stepHit()
 	{
 		if (!localFreezeNotes) // so that the event doen't get overriden
-			if (!lagOn || (lagOn && curStep % 2 == 0))
+			if (lagOn && curStep % 2 == 0)
 				freezeNotes = true;
+			else if (lagOn && curStep % 2 == 1)
+				freezeNotes = true;
+			else freezeNotes = false;
 		super.stepHit();
 	}
 
@@ -1454,24 +1454,29 @@ class APPlayState extends PlayState {
 		{
 			case 1:
 				swagNote.noteType = 'Mine Note';
+				swagNote.reloadNote();
 				swagNote.isMine = true;
 				swagNote.ignoreNote = true;
 				swagNote.specialNote = true;
 			case 2:
 				swagNote.noteType = 'Warning Note';
+				swagNote.reloadNote();
 				swagNote.isAlert = true;
 				swagNote.specialNote = true;
 			case 3:
 				swagNote.noteType = 'Heal Note';
+				swagNote.reloadNote();
 				swagNote.isHeal = true;
 				swagNote.specialNote = true;
 			case 4:
 				swagNote.noteType = 'Ice Note';
+				swagNote.reloadNote();
 				swagNote.isFreeze = true;
 				swagNote.ignoreNote = true;
 				swagNote.specialNote = true;
 			case 5:
 				swagNote.noteType = 'Fake Heal Note';
+				swagNote.reloadNote();
 				swagNote.isFakeHeal = true;
 				swagNote.ignoreNote = true;
 				swagNote.specialNote = true;
@@ -1735,6 +1740,8 @@ class APPlayState extends PlayState {
 		}
         super.endSong();
 		super.endSong();
+		PlayState.gameplayArea = "Freeplay";
+		openSubState(new substates.RankingSubstate());
         return true; //why does endsong need this?????
     }
 
@@ -1829,6 +1836,7 @@ class APPlayState extends PlayState {
                 });
             }
         }
+		super.keyShit();
     }
 
     override function noteMiss(daNote:Note, field:PlayField)
@@ -1847,8 +1855,8 @@ class APPlayState extends PlayState {
             if (daNote.isAlert)
             {
                 health -= daNote.missHealth * healthLoss * 2;
-                FlxG.sound.play(Paths.sound('warning'));
-                var fist:FlxSprite = new FlxSprite().loadGraphic("assets/images/thepunch.png");
+                FlxG.sound.play(Paths.sound('streamervschat/warning'));
+                var fist:FlxSprite = new FlxSprite().loadGraphic(Paths.image("streamervschat/thepunch"));
                 fist.x = FlxG.width / camGame.zoom;
                 fist.y = char.y + char.height / 2 - fist.height / 2;
                 add(fist);
@@ -2013,7 +2021,13 @@ class APPlayState extends PlayState {
             }
 
 			note.wasGoodHit = true;
-			vocals.volume = 1 * volumeMultiplier;
+			if (FlxG.sound.music != null)
+				FlxG.sound.music.volume = 1 * instVolumeMultiplier;
+			vocals.volume = 1 * vocalVolumeMultiplier;
+			if (opponentVocals != null)
+				opponentVocals.volume = 1 * vocalVolumeMultiplier;
+			if (gfVocals != null)
+				gfVocals.volume = 1 * vocalVolumeMultiplier;
 
 			if (!note.isSustainNote)
 			{

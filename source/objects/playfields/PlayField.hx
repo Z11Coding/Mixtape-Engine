@@ -333,7 +333,7 @@ class PlayField extends FlxTypedGroup<FlxBasic>
 				while (noteList.length > 0)
 				{
 					var note:Note = noteList.pop();
-					if (!note.blockHit && !note.ignoreNote) noteHitCallback(note, this);
+					if (!note.blockHit) noteHitCallback(note, this);
 					return note;
 				}
 			case 'BEAT! Engine':
