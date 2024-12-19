@@ -348,7 +348,7 @@ class APEntryState extends FlxState
 
 	override function update(elapsed:Float)
 	{
-		if (FlxG.keys.justPressed.HOME) 
+		if (FlxG.keys.justPressed.HOME && !inArchipelagoMode) 
 		{
 			inArchipelagoMode = true;
 			WeekData.reloadWeekFiles(false);
