@@ -1096,6 +1096,35 @@ effectMap = [
             FlxG.switchState(new APPlayState());
         }
     });
+    },
+    "freeze" => function() {
+        var oldPlaybackRate:Float = playbackRate;
+        var soundOptions:Array<String> = ["delay", "dialup"];
+        var selectedSound:String = soundOptions[FlxG.random.int(0, soundOptions.length)];
+        var onEnd:(Void->Void) = function() {
+            FlxTween.num(0, oldPlaybackRate, 0.5, {
+                onComplete: function(e) {
+                    playbackRate = oldPlaybackRate;
+                }
+            }, function(t) {
+                playbackRate = t;
+            });
+        };
+
+        FlxTween.num(playbackRate, 0, 0.5, {
+            onComplete: function(e) {
+                FlxG.sound.play(Paths.sound('streamervschat/$selectedSound'), 1, false, null, true, function() {
+                    FlxTween.num(playbackRate, 0, 0.5, {
+                        onComplete: function(e) {
+                            FlxG.sound.play(Paths.sound('streamervschat/itcomes'), 1, false, null, true, function() {
+                                onEnd();
+                        });
+                    }});
+                });
+            }
+        }, function(t) {
+            playbackRate = t;
+        });
     }
 ];
 
