@@ -1,4 +1,5 @@
 package psychlua;
+import lime.app.Application;
 import llua.State;
 import flixel.FlxBasic;
 import objects.Character;
@@ -48,6 +49,7 @@ class HScript extends Iris
 			catch(e:Dynamic)
 			{
 				FunkinLua.luaTrace('ERROR (${hs.origin}) - $e', false, false, FlxColor.RED);
+				Application.current.window.alert('ERROR (${hs.name}) - - $e', 'HScript Error');
 			}
 		}
 	}
@@ -409,7 +411,51 @@ class HScript extends Iris
 		#else
 		set("VideoSprite", objects.VideoSprite);
 		#end
-	}
+
+		// Archipelago Scripting
+		// set("Archipelago", archipelago.APGameState);
+		// set("APGameState", archipelago.APGameState);
+
+		set("addAPItem", function(item:Dynamic)
+		{
+trace("This doesn't do anything....... YET!");		});
+
+		// Streamer VS Chat stuff.
+		if (PlayState.instance != null && Std.is(PlayState.instance, archipelago.APPlayState)) {
+			var SvC = cast(PlayState.instance, archipelago.APPlayState);
+			set("addSvCEffect", function(effect:Dynamic, action:Void->Void, ?apply:Dynamic) {
+				if (apply == null) apply = {};
+				apply.ttl = Reflect.hasField(apply, "ttl") && apply.ttl != null ? apply.ttl : 0;
+				apply.playSound = Reflect.hasField(apply, "playSound") && apply.playSound != null ? apply.playSound : "";
+				apply.playSoundVol = Reflect.hasField(apply, "playSoundVol") && apply.playSoundVol != null ? apply.playSoundVol : 1;
+				apply.noIcon = Reflect.hasField(apply, "noIcon") && apply.noIcon != null ? apply.noIcon : true;
+				apply.alwaysEnd = Reflect.hasField(apply, "alwaysEnd") && apply.alwaysEnd != null ? apply.alwaysEnd : true;
+				apply.effect = Reflect.hasField(apply, "effect") && apply.effect != null ? apply.effect : effect + this.name;
+				apply.onEnd = Reflect.hasField(apply, "onEnd") && apply.onEnd != null ? apply.onEnd : () -> null;
+				var thing = function() {
+					try {
+						action();
+					} catch (e:Dynamic) {
+						trace('Failed to dispatch HScript SvC Effect: $e');
+						FunkinLua.luaTrace('Failed to dispatch HScript SvC Effect: $e', false, false, FlxColor.RED);
+					}
+
+					try {
+						SvC.applyEffect(apply.ttl, apply.onEnd, apply.playSound, apply.playSoundVol, apply.noIcon, apply.alwaysEnd, apply.effect);
+					} catch (e:Dynamic) {
+						trace('Failed to finish execution for an unknown reason: $e');
+						FunkinLua.luaTrace('Failed to finish execution for an unknown reason: $e', false, false, FlxColor.RED);
+					}
+				}
+						SvC.effectMap.set(thing + this.name, action);
+					});
+			// set("doEffect", function() {
+			// 	ap.doEffect();
+			// });
+			set("effectMap", cast(PlayState.instance, archipelago.APPlayState).effectMap);
+			// set("effect", ???);
+}
+}	
 
 	public function executeCode(?funcToRun:String = null, ?funcArgs:Array<Dynamic> = null):IrisCall {
 		if (funcToRun == null) return null;
