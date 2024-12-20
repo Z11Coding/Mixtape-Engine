@@ -1128,6 +1128,8 @@ effectMap = [
     }
 ];
 
+addEffect("freeze");
+
         debugKeysDodge = ClientPrefs.keyBinds.get('dodge').copy();
 
 		effectiveScrollSpeed = 1;
