@@ -1,56 +1,78 @@
 {
 	"animations": [
 		{
-			"offsets": [0, 0],
 			"loop": false,
-			"fps": 24,
+			"offsets": [
+				0,
+				0
+			],
 			"anim": "idle",
-			"indices": [],
-			"name": "Mom Idle"
+			"fps": 24,
+			"name": "Mom Idle",
+			"indices": []
 		},
 		{
-			"offsets": [250, -23],
 			"loop": false,
-			"fps": 24,
+			"offsets": [
+				250,
+				-23
+			],
 			"anim": "singLEFT",
-			"indices": [],
-			"name": "Mom Left Pose"
+			"fps": 24,
+			"name": "Mom Left Pose",
+			"indices": []
 		},
 		{
-			"offsets": [10, -60],
 			"loop": false,
-			"fps": 24,
+			"offsets": [
+				10,
+				-60
+			],
 			"anim": "singRIGHT",
-			"indices": [],
-			"name": "Mom Pose Left"
+			"fps": 24,
+			"name": "Mom Pose Left",
+			"indices": []
 		},
 		{
-			"offsets": [20, -160],
 			"loop": false,
-			"fps": 24,
+			"offsets": [
+				20,
+				-160
+			],
 			"anim": "singDOWN",
-			"indices": [],
-			"name": "MOM DOWN POSE"
+			"fps": 24,
+			"name": "MOM DOWN POSE",
+			"indices": []
 		},
 		{
-			"offsets": [14, 71],
 			"loop": false,
-			"fps": 24,
+			"offsets": [
+				14,
+				71
+			],
 			"anim": "singUP",
-			"indices": [],
-			"name": "Mom Up Pose"
+			"fps": 24,
+			"name": "Mom Up Pose",
+			"indices": []
 		}
 	],
-	"vocals_file": "",
 	"no_antialiasing": false,
-	"score_name": "Mommy Mearest",
 	"image": "characters/Mom_Assets",
-	"position": [0, 0],
+	"position": [
+		0,
+		0
+	],
 	"healthicon": "mom",
 	"flip_x": false,
-	"healthbar_colors": [216, 85, 142],
-	"camera_position": [0, 0],
+	"healthbar_colors": [
+		216,
+		85,
+		142
+	],
+	"camera_position": [
+		0,
+		0
+	],
 	"sing_duration": 4,
-	"scale": 1,
-	"_editor_isPlayer": false
+	"scale": 1
 }

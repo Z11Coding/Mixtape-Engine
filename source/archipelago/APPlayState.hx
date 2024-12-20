@@ -94,6 +94,7 @@ class APPlayState extends PlayState {
 		"You know what that means, FISH!"
 	];
 	var curEffect:Int = 0;
+	var effectendsin:FlxText;
 
     function generateGibberish(length:Int, exclude:String):String
 	{
@@ -236,9 +237,9 @@ class APPlayState extends PlayState {
 			}
 			if (chartModifier == "ManiaConverter")
 			{
-				ArchPopup.startPopupCustom("convertMania value is:", "" + convertMania + "", 'Color');
+				ArchPopup.startPopupCustom("convertMania value is:", "" + convertMania + "", 'archColor');
 			}
-			if (chartModifier != 'Normal') ArchPopup.startPopupCustom('You Got an Item!', "Chart Modifier Trap (" + chartModifier + ")", 'Color');
+			if (chartModifier != 'Normal') ArchPopup.startPopupCustom('You Got an Item!', "Chart Modifier Trap (" + chartModifier + ")", 'archColor');
 			//MaxHP = activeItems[2];
 		}
 
@@ -259,6 +260,11 @@ class APPlayState extends PlayState {
         ];
 
         super.create();
+
+		effectendsin = new FlxText(botplayTxt.x, botplayTxt.y, 1500, "EFFECT ENDS IN: ");
+		effectendsin.screenCenter(X);
+		effectendsin.alpha = 0;
+		add(effectendsin);
 
         terminateSound = new FlxSound().loadEmbedded(Paths.sound('streamervschat/beep'));
         FlxG.sound.list.add(terminateSound);
@@ -413,14 +419,14 @@ class APPlayState extends PlayState {
                 {
                     case 38:
                         activeItems[0] += 1;
-                        ArchPopup.startPopupCustom('You Got an Item!', '+1 Shield ( ' + activeItems[0] + ' Left)', 'Color');
+                        ArchPopup.startPopupCustom('You Got an Item!', '+1 Shield ( ' + activeItems[0] + ' Left)', 'archColor');
                     case 39:
                         activeItems[1] = 1;
-                        ArchPopup.startPopupCustom('You Got an Item!', "Blue Ball's Curse", 'Color');
+                        ArchPopup.startPopupCustom('You Got an Item!', "Blue Ball's Curse", 'archWhite');
                     case 40:
                         activeItems[2] += 1;
 						MaxHP = 2+activeItems[2];
-                        ArchPopup.startPopupCustom('You Got an Item!', "Max HP Up!", 'Color');
+                        ArchPopup.startPopupCustom('You Got an Item!', "Max HP Up!", 'archColor');
                 }
             }
             tmr.reset(FlxG.random.float(5, 10));
@@ -1268,7 +1274,7 @@ class APPlayState extends PlayState {
 
 			case 'opponentPlay':
 				noIcon = true;
-				opponentmode =  true;
+				opponentmode = true;
 				playerField.isPlayer = !opponentmode && !PlayState.playAsGF || bothMode;
 				playerField.autoPlayed = opponentmode || cpuControlled || PlayState.playAsGF;
 				playerField.noteHitCallback = opponentmode ? opponentNoteHit : goodNoteHit;
@@ -1280,7 +1286,7 @@ class APPlayState extends PlayState {
 				ttl = 12;
 				onEnd = function()
 				{
-					opponentmode =  false;
+					opponentmode = false;
 					playerField.isPlayer = !opponentmode && !PlayState.playAsGF || bothMode;
 					playerField.autoPlayed = opponentmode || cpuControlled || PlayState.playAsGF;
 					playerField.noteHitCallback = opponentmode ? opponentNoteHit : goodNoteHit;
@@ -1333,37 +1339,41 @@ class APPlayState extends PlayState {
 				}
 
 			case 'songSwitch':
-			//save everything first
-			if (FlxG.save.data.manualOverride != null && FlxG.save.data.manualOverride == false) 
-				FlxG.save.data.manualOverride = true;
-			else if (FlxG.save.data.manualOverride != null && FlxG.save.data.manualOverride == true) 
-				FlxG.save.data.manualOverride = false;
-
-			trace('MANUAL OVERRIDE: ' + FlxG.save.data.manualOverride);
-
-			if (FlxG.save.data.manualOverride)
+			if (FlxG.save.data.manualOverride != null && !FlxG.save.data.manualOverride)
 			{
-				FlxG.save.data.storyWeek = PlayState.storyWeek;
-				FlxG.save.data.currentModDirectory = Mods.currentModDirectory;
-				FlxG.save.data.difficulties = Difficulty.list; // just in case
-				FlxG.save.data.SONG = PlayState.SONG;
-				FlxG.save.data.storyDifficulty = PlayState.storyDifficulty;
-				FlxG.save.data.songPos = Conductor.songPosition;
-				FlxG.save.flush();
-			}
+				//save everything first
+				if (FlxG.save.data.manualOverride != null && FlxG.save.data.manualOverride == false) 
+					FlxG.save.data.manualOverride = true;
+				else if (FlxG.save.data.manualOverride != null && FlxG.save.data.manualOverride == true) 
+					FlxG.save.data.manualOverride = false;
 
-			//Then make a hostile takeover
-			if (FlxG.save.data.manualOverride)
-			{
-				//playBackRate = 1;
-				PlayState.storyWeek = 0;
-				Mods.currentModDirectory = '';
-				Difficulty.list = Difficulty.defaultList.copy();
-				PlayState.SONG = Song.loadFromJson(Highscore.formatSong('tutorial', curDifficulty), Paths.formatToSongPath('tutorial'));
-				PlayState.storyDifficulty = curDifficulty;
-				FlxG.save.flush();
+				trace('MANUAL OVERRIDE: ' + FlxG.save.data.manualOverride);
+
+				if (FlxG.save.data.manualOverride)
+				{
+					FlxG.save.data.storyWeek = PlayState.storyWeek;
+					FlxG.save.data.currentModDirectory = Mods.currentModDirectory;
+					FlxG.save.data.difficulties = Difficulty.list; // just in case
+					FlxG.save.data.SONG = PlayState.SONG;
+					FlxG.save.data.storyDifficulty = PlayState.storyDifficulty;
+					FlxG.save.data.songPos = Conductor.songPosition;
+					FlxG.save.flush();
+				}
+
+				//Then make a hostile takeover
+				if (FlxG.save.data.manualOverride)
+				{
+					//playBackRate = 1;
+					PlayState.storyWeek = 0;
+					Mods.currentModDirectory = '';
+					Difficulty.list = Difficulty.defaultList.copy();
+					PlayState.SONG = Song.loadFromJson(Highscore.formatSong('tutorial', curDifficulty), Paths.formatToSongPath('tutorial'));
+					PlayState.storyDifficulty = curDifficulty;
+					StageData.loadDirectory(PlayState.SONG);
+					FlxG.save.flush();
+				}
+				MusicBeatState.resetState();
 			}
-			MusicBeatState.resetState();
 
 			default:
 				return;
@@ -1722,14 +1732,14 @@ class APPlayState extends PlayState {
 		for (video in addedMP4s)
 		{
 			if (video != null)
-				video.cameras = [camGame];
+				video.cameras = [camHUD];
 		}
 
         if (activeItems[0] > 0 && health <= 0)
         {
             health = 1;
             activeItems[0]--;
-            ArchPopup.startPopupCustom('You Used A Shield!', '-1 Shield ( ' + activeItems[0] + ' Left)', 'Color');
+            ArchPopup.startPopupCustom('You Used A Shield!', '-1 Shield ( ' + activeItems[0] + ' Left)', 'archWhite');
         }
 
         if (activeItems[1] == 1)
@@ -1739,7 +1749,7 @@ class APPlayState extends PlayState {
 			{
 				health = 1;
 				activeItems[0]--;
-				ArchPopup.startPopupCustom('You Used A Shield!', '-1 Shield ( ' + activeItems[0] + ' Left)', 'Color');
+				ArchPopup.startPopupCustom('You Used A Shield!', '-1 Shield ( ' + activeItems[0] + ' Left)', 'archColor');
 			}
 			else die();
         }
@@ -1757,7 +1767,7 @@ class APPlayState extends PlayState {
 			}
 			else if (spellPrompts[i].ttl <= 0)
 			{
-				health -= 0.5 * dmgMultiplier;
+				health = 0;
 				FlxG.sound.play(Paths.sound('streamervschat/spellfail'));
 				camOther.flash(FlxColor.RED, 1, null, true);
 				spellPrompts[i].kill();
@@ -1847,6 +1857,7 @@ class APPlayState extends PlayState {
             PlayState.SONG = FlxG.save.data.SONG;
             PlayState.storyDifficulty = FlxG.save.data.storyDifficulty;
             FlxG.save.data.manualOverride = false;
+			StageData.loadDirectory(PlayState.SONG);
             FlxG.save.flush();
             FlxG.resetState();
             return true;
@@ -1972,7 +1983,7 @@ class APPlayState extends PlayState {
         {
             if (daNote.isAlert)
             {
-                health -= 0.3;
+                health -= 0.5;
                 FlxG.sound.play(Paths.sound('streamervschat/warning'));
                 var fist:FlxSprite = new FlxSprite().loadGraphic(Paths.image("streamervschat/thepunch"));
                 fist.x = FlxG.width / camGame.zoom;
@@ -2042,7 +2053,7 @@ class APPlayState extends PlayState {
         {
             check++;
             if (ClientPrefs.data.notePopup)
-                ArchPopup.startPopupCustom('You Found A Check!', '$check/$itemAmount', 'Color'); // test
+                ArchPopup.startPopupCustom('You Found A Check!', '$check/$itemAmount', 'archColor'); // test
             trace('Got: ' + check + '/' + itemAmount);
             updateScore();
         }

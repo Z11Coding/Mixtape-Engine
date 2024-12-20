@@ -1,40 +1,56 @@
 {
 	"animations": [
 		{
-			"loop": true,
-			"offsets": [37, -3],
+			"offsets": [
+				37,
+				-3
+			],
+			"indices": [],
+			"fps": 24,
 			"anim": "deathLoop",
-			"fps": 24,
-			"name": "BF Dead with GF Loop",
-			"indices": []
+			"loop": true,
+			"name": "BF Dead with GF Loop"
 		},
 		{
-			"loop": false,
-			"offsets": [37, 14],
+			"offsets": [
+				37,
+				14
+			],
+			"indices": [],
+			"fps": 24,
 			"anim": "firstDeath",
-			"fps": 24,
-			"name": "BF Dies with GF",
-			"indices": []
+			"loop": false,
+			"name": "BF Dies with GF"
 		},
 		{
-			"loop": false,
-			"offsets": [37, 28],
-			"anim": "deathConfirm",
+			"offsets": [
+				37,
+				28
+			],
+			"indices": [],
 			"fps": 24,
-			"name": "RETRY confirm holding gf",
-			"indices": []
+			"anim": "deathConfirm",
+			"loop": false,
+			"name": "RETRY confirm holding gf"
 		}
 	],
-	"vocals_file": "",
 	"no_antialiasing": false,
-	"score_name": "Boyfriend & Girlfriend",
 	"image": "characters/bfHoldingGF-DEAD",
-	"position": [0, 350],
+	"position": [
+		0,
+		350
+	],
 	"healthicon": "bf",
 	"flip_x": true,
-	"healthbar_colors": [49, 176, 209],
-	"camera_position": [0, 0],
+	"healthbar_colors": [
+		49,
+		176,
+		209
+	],
+	"camera_position": [
+		0,
+		0
+	],
 	"sing_duration": 4,
-	"scale": 1.05,
-	"_editor_isPlayer": true
+	"scale": 1.05
 }

@@ -1,121 +1,120 @@
 {
 	"animations": [
 		{
-			"offsets": [0, 0],
 			"loop": false,
-			"fps": 24,
+			"offsets": [0, 0],
 			"anim": "idle",
-			"indices": [],
-			"name": "Idle"
+			"fps": 24,
+			"name": "Idle",
+			"indices": []
 		},
 		{
-			"offsets": [0, 0],
 			"loop": false,
-			"fps": 24,
+			"offsets": [0, 0],
 			"anim": "singLEFT",
-			"indices": [],
-			"name": "Pose Left"
+			"fps": 24,
+			"name": "Pose Left",
+			"indices": []
 		},
 		{
-			"offsets": [0, -10],
 			"loop": false,
-			"fps": 24,
+			"offsets": [0, -10],
 			"anim": "singDOWN",
-			"indices": [],
-			"name": "Pose Down"
+			"fps": 24,
+			"name": "Pose Down",
+			"indices": []
 		},
 		{
-			"offsets": [0, 0],
 			"loop": false,
-			"fps": 24,
+			"offsets": [0, 0],
 			"anim": "singUP",
-			"indices": [],
-			"name": "Pose Up"
+			"fps": 24,
+			"name": "Pose Up",
+			"indices": []
 		},
 		{
-			"offsets": [0, 2],
 			"loop": false,
-			"fps": 24,
+			"offsets": [0, 2],
 			"anim": "singRIGHT",
-			"indices": [],
-			"name": "Pose Right"
+			"fps": 24,
+			"name": "Pose Right",
+			"indices": []
 		},
 		{
-			"loop": true,
 			"offsets": [0, 0],
+			"loop": true,
+			"fps": 24,
 			"anim": "singLEFT-hold",
-			"fps": 24,
-			"name": "Left Flame Loop",
-			"indices": []
+			"indices": [],
+			"name": "Left Flame Loop"
 		},
 		{
-			"loop": true,
 			"offsets": [0, -10],
+			"loop": true,
+			"fps": 24,
 			"anim": "singDOWN-hold",
-			"fps": 24,
-			"name": "Down Flame Loop",
-			"indices": []
+			"indices": [],
+			"name": "Down Flame Loop"
 		},
 		{
-			"loop": true,
 			"offsets": [0, 0],
+			"loop": true,
+			"fps": 24,
 			"anim": "singUP-hold",
-			"fps": 24,
-			"name": "Up Flame Loop",
-			"indices": []
+			"indices": [],
+			"name": "Up Flame Loop"
 		},
 		{
-			"loop": true,
 			"offsets": [0, 2],
+			"loop": true,
+			"fps": 24,
 			"anim": "singRIGHT-hold",
-			"fps": 24,
-			"name": "Right Flame Loop",
-			"indices": []
+			"indices": [],
+			"name": "Right Flame Loop"
 		},
 		{
-			"loop": false,
 			"offsets": [2, 1],
+			"loop": false,
+			"fps": 24,
 			"anim": "laughCutscene",
-			"fps": 24,
-			"name": "Laugh",
-			"indices": [0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5]
+			"indices": [0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5],
+			"name": "Laugh"
 		},
 		{
-			"loop": false,
 			"offsets": [8, 1],
+			"indices": [],
+			"fps": 24,
 			"anim": "lightCan",
-			"fps": 24,
-			"name": "Light Can0",
-			"indices": []
+			"loop": false,
+			"name": "Light Can0"
 		},
 		{
-			"loop": false,
 			"offsets": [15, 9],
+			"indices": [],
+			"fps": 24,
 			"anim": "kickCan",
-			"fps": 24,
-			"name": "Kick Up0",
-			"indices": []
+			"loop": false,
+			"name": "Kick Up0"
 		},
 		{
-			"loop": false,
 			"offsets": [7, -1],
-			"anim": "kneeCan",
+			"indices": [],
 			"fps": 24,
-			"name": "Knee Forward0",
-			"indices": []
+			"anim": "kneeCan",
+			"loop": false,
+			"name": "Knee Forward0"
 		},
 		{
-			"loop": false,
 			"offsets": [0, 0],
-			"anim": "pissed",
+			"indices": [],
 			"fps": 24,
-			"name": "Gets Pissed0",
-			"indices": []
+			"anim": "pissed",
+			"loop": false,
+			"name": "Gets Pissed0"
 		}
 	],
 	"vocals_file": "",
 	"no_antialiasing": false,
-	"score_name": "Darnell",
 	"image": "characters/darnell",
 	"position": [0, 200],
 	"healthicon": "darnell",

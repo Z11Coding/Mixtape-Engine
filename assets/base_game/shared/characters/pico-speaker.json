@@ -1,80 +1,127 @@
 {
 	"animations": [
 		{
+			"offsets": [
+				0,
+				0
+			],
 			"loop": false,
-			"offsets": [0, 0],
+			"fps": 24,
 			"anim": "shoot1",
-			"fps": 24,
-			"name": "Pico shoot 1",
-			"indices": []
+			"indices": [],
+			"name": "Pico shoot 1"
 		},
 		{
+			"offsets": [
+				-1,
+				-128
+			],
 			"loop": false,
-			"offsets": [-1, -128],
+			"fps": 24,
 			"anim": "shoot2",
-			"fps": 24,
-			"name": "Pico shoot 2",
-			"indices": []
+			"indices": [],
+			"name": "Pico shoot 2"
 		},
 		{
+			"offsets": [
+				412,
+				-64
+			],
 			"loop": false,
-			"offsets": [412, -64],
+			"fps": 24,
 			"anim": "shoot3",
-			"fps": 24,
-			"name": "Pico shoot 3",
-			"indices": []
+			"indices": [],
+			"name": "Pico shoot 3"
 		},
 		{
+			"offsets": [
+				439,
+				-19
+			],
 			"loop": false,
-			"offsets": [439, -19],
+			"fps": 24,
 			"anim": "shoot4",
-			"fps": 24,
-			"name": "Pico shoot 4",
-			"indices": []
+			"indices": [],
+			"name": "Pico shoot 4"
 		},
 		{
+			"offsets": [
+				412,
+				-64
+			],
 			"loop": true,
-			"offsets": [412, -64],
+			"fps": 24,
 			"anim": "shoot3-loop",
-			"fps": 24,
-			"name": "Pico shoot 3",
-			"indices": [50, 51, 52]
+			"indices": [
+				50,
+				51,
+				52
+			],
+			"name": "Pico shoot 3"
 		},
 		{
+			"offsets": [
+				0,
+				0
+			],
 			"loop": true,
-			"offsets": [0, 0],
+			"fps": 24,
 			"anim": "shoot1-loop",
-			"fps": 24,
-			"name": "Pico shoot 1",
-			"indices": [23, 24, 25]
+			"indices": [
+				23,
+				24,
+				25
+			],
+			"name": "Pico shoot 1"
 		},
 		{
+			"offsets": [
+				1,
+				-128
+			],
 			"loop": true,
-			"offsets": [1, -128],
+			"fps": 24,
 			"anim": "shoot2-loop",
-			"fps": 24,
-			"name": "Pico shoot 2",
-			"indices": [57, 58, 59]
+			"indices": [
+				57,
+				58,
+				59
+			],
+			"name": "Pico shoot 2"
 		},
 		{
+			"offsets": [
+				439,
+				-19
+			],
 			"loop": true,
-			"offsets": [439, -19],
-			"anim": "shoot4-loop",
 			"fps": 24,
-			"name": "Pico shoot 4",
-			"indices": [50, 51, 52]
+			"anim": "shoot4-loop",
+			"indices": [
+				50,
+				51,
+				52
+			],
+			"name": "Pico shoot 4"
 		}
 	],
-	"vocals_file": "",
 	"no_antialiasing": false,
-	"score_name": "Pico",
 	"image": "characters/picoSpeaker",
-	"position": [120, -125],
+	"position": [
+		120,
+		-125
+	],
 	"healthicon": "pico",
 	"flip_x": false,
-	"healthbar_colors": [183, 216, 85],
-	"camera_position": [-310, 100],
+	"healthbar_colors": [
+		183,
+		216,
+		85
+	],
+	"camera_position": [
+		-310,
+		100
+	],
 	"sing_duration": 4,
-	"scale": 1,
-	"_editor_isPlayer": false
+	"scale": 1
 }

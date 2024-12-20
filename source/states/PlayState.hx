@@ -750,13 +750,13 @@ class PlayState extends MusicBeatState
 
 		// Modifiers
 		bothMode = ClientPrefs.getGameplaySetting('bothMode', false);
-		mixupMode = (ClientPrefs.data.mixupMode || SONG.song == "Small Argument") && !bothMode;
+		mixupMode = (ClientPrefs.data.mixupMode || SONG.song == "Small Argument" && !APEntryState.inArchipelagoMode) && !bothMode;
 		opponentmode = ClientPrefs.getGameplaySetting('opponentplay', false) && !bothMode;
 		playAsGF = ClientPrefs.getGameplaySetting('gfMode', false)
 			&& !bothMode
 			&& !opponentmode; // dont do it to yourself its not worth it
 		AIMode = mixupMode && !bothMode;
-		AIDifficulty = (SONG.song == "Small Argument") ? "Baby Mode" : ClientPrefs.data.aiDifficulty;
+		AIDifficulty = (SONG.song == "Small Argument" && !APEntryState.inArchipelagoMode) ? "Baby Mode" : ClientPrefs.data.aiDifficulty;
 		gimmicksAllowed = ClientPrefs.data.gimmicksAllowed;
 		guitarHeroSustains = ClientPrefs.data.guitarHeroSustains;
 
@@ -6437,7 +6437,7 @@ class PlayState extends MusicBeatState
 			Conductor.songPosition += FlxG.elapsed * 1000 * playbackRate;
 		}
 
-		if ((loopMode || loopModeChallenge || curSong == "Small Argument") && startedCountdown && !endingSong)
+		if ((loopMode || loopModeChallenge || curSong == "Small Argument" && !APEntryState.inArchipelagoMode) && startedCountdown && !endingSong)
 		{
 			if (FlxG.sound.music.length - Conductor.songPosition <= endingTimeLimit)
 			{
@@ -6989,7 +6989,7 @@ class PlayState extends MusicBeatState
 		endingSong = false;
 		songAboutToLoop = false;
 
-		if (curSong == "Small Argument" && AIPlayer.diff != 6 && AIScore != songScore) //Six is the highest there is. It's literally botplay at that point.
+		if ((curSong == "Small Argument" && !APEntryState.inArchipelagoMode) && AIPlayer.diff != 6 && AIScore != songScore) //Six is the highest there is. It's literally botplay at that point.
 			AIPlayer.diff += 1;
 
 		trace("AI LEVEL: "+AIPlayer.diff);
@@ -7053,7 +7053,7 @@ class PlayState extends MusicBeatState
 					bf2.stunned = true;
 				deathCounter++;
 
-				if (loopMode || loopModeChallenge || curSong == "Small Argument")
+				if (loopMode || loopModeChallenge || curSong == "Small Argument" && !APEntryState.inArchipelagoMode)
 				{
 					Highscore.saveEndlessScore(SONG.song.toLowerCase()+saveMod, songScore);
 				}
@@ -8500,7 +8500,7 @@ class PlayState extends MusicBeatState
 				return false;
 			}
 
-			if (loopMode || loopModeChallenge || curSong == "Small Argument")
+			if (loopMode || loopModeChallenge || curSong == "Small Argument" && !APEntryState.inArchipelagoMode)
 			{
 				vocals.stop();
 				opponentVocals.stop();
@@ -9748,8 +9748,8 @@ class PlayState extends MusicBeatState
 		note.hitByOpponent = true;
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.volume = 1 * instVolumeMultiplier;
-		if (opponentVocals.length <= 0)
-			vocals.volume = 1 * vocalVolumeMultiplier;
+		vocals.volume = 1 * vocalVolumeMultiplier;
+		if (opponentVocals.length <= 0) opponentVocals.volume = 1 * vocalVolumeMultiplier;
 		if (gfVocals.length <= 0 && (note.gfNote || note.noteType == 'GF Duet'))
 			gfVocals.volume = 1 * vocalVolumeMultiplier;
 		for (track in tracks)
