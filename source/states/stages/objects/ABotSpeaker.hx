@@ -15,6 +15,7 @@ class ABotSpeaker extends FlxSpriteGroup
 	public var eyeBg:FlxSprite;
 	public var eyes:FlxAnimate;
 	public var speaker:FlxAnimate;
+	public var speakerAlt:FlxAnimate;
 
 	#if funkin.vis
 	var analyzer:SpectralAnalyzer;
@@ -31,12 +32,11 @@ class ABotSpeaker extends FlxSpriteGroup
 		return snd;
 	}
 
-	public function new(x:Float = 0, y:Float = 0)
+	public function new(x:Float = 0, y:Float = 0,useDark:Bool = false)
 	{
 		super(x, y);
 
 		var antialias = ClientPrefs.data.globalAntialiasing;
-
 		bg = new FlxSprite(90, 20).loadGraphic(Paths.image('abot/stereoBG'));
 		bg.antialiasing = antialias;
 		add(bg);
@@ -74,15 +74,22 @@ class ABotSpeaker extends FlxSpriteGroup
 		eyes.anim.curFrame = eyes.anim.length - 1;
 		add(eyes);
 
-		speaker = new FlxAnimate(-65, -10);
-		Paths.loadAnimateAtlas(speaker, 'abot/abotSystem');
-		speaker.anim.addBySymbol('anim', 'Abot System', 24, false);
-		speaker.anim.play('anim', true);
-		speaker.anim.curFrame = speaker.anim.length - 1;
-		speaker.antialiasing = antialias;
-		add(speaker);
+		speaker = abotLol(useDark);
+		if(useDark) {
+			speakerAlt = abotLol(false);
+			speakerAlt.alpha = 0;
+		}
 	}
-
+	function abotLol(useDark:Bool) {
+		var temp = new FlxAnimate(-65, -10);
+		Paths.loadAnimateAtlas(temp, '${useDark? "abot/dark" : "abot"}/abotSystem');
+		temp.anim.addBySymbol('anim', 'Abot System', 24, false);
+		temp.anim.play('anim', true);
+		temp.anim.curFrame = temp.anim.length - 1;
+		temp.antialiasing = ClientPrefs.data.globalAntialiasing;
+		add(temp);
+		return temp;
+	}
 	#if funkin.vis
 	var levels:Array<Bar>;
 	var levelMax:Int = 0;
@@ -115,6 +122,7 @@ class ABotSpeaker extends FlxSpriteGroup
 	public function beatHit()
 	{
 		speaker.anim.play('anim', true);
+		speakerAlt?.anim.play('anim', true);
 	}
 
 	#if funkin.vis
@@ -123,8 +131,8 @@ class ABotSpeaker extends FlxSpriteGroup
 		@:privateAccess
 		analyzer = new SpectralAnalyzer(snd._channel.__audioSource, 7, 0.1, 40);
 	
-		#if desktop
-		// On desktop it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
+		#if !web
+		// On native it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
 		// So we want to manually change it!
 		analyzer.fftN = 256;
 		#end

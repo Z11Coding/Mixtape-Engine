@@ -5,12 +5,7 @@
 	"weekBackground": "phillystreets",
 	"weekBefore": "",
 	"startUnlocked": true,
-	"category": "base",
-	"weekCharacters": [
-		"darnell",
-		"pico-player",
-		"nene"
-	],
+	"hideStoryMode": false,
 	"songs": [
 		[
 			"Darnell",
@@ -49,6 +44,11 @@
 			]
 		]
 	],
-	"hideStoryMode": false,
+	"category": "pico",
+	"weekCharacters": [
+		"darnell",
+		"pico-player",
+		"nene"
+	],
 	"weekName": "Weekend 1"
 }

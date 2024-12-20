@@ -350,6 +350,8 @@ class FreeplayState extends MusicBeatState
 				giveSong = false;
 			}
 		}
+
+		reloadSongs(true);
 	}
 
 	function onAddSong()
@@ -360,9 +362,8 @@ class FreeplayState extends MusicBeatState
 			daSong = APEntryState.unlockable[FlxG.random.int(0, APEntryState.unlockable.length - 1)];
 			ArchPopup.startPopupSong(daSong, 'archColor');
 			reloadSongs(true);
-		
+			trace("Unlocked: "+daSong);
 		}
-		trace("Unlocked: "+daSong);
 		trace(APEntryState.unlockable);
 	}
 

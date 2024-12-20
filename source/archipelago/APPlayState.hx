@@ -96,6 +96,7 @@ class APPlayState extends PlayState {
 	var curEffect:Int = 0;
 
 	public var effectMap:Map<String, Void->Void>;
+	var effectendsin:FlxText;
 
     function generateGibberish(length:Int, exclude:String):String
 	{
@@ -1729,14 +1730,14 @@ public function doEffect(effect:String)
 		for (video in addedMP4s)
 		{
 			if (video != null)
-				video.cameras = [camGame];
+				video.cameras = [camHUD];
 		}
 
         if (activeItems[0] > 0 && health <= 0)
         {
             health = 1;
             activeItems[0]--;
-            ArchPopup.startPopupCustom('You Used A Shield!', '-1 Shield ( ' + activeItems[0] + ' Left)', 'Color');
+            ArchPopup.startPopupCustom('You Used A Shield!', '-1 Shield ( ' + activeItems[0] + ' Left)', 'archWhite');
         }
 
         if (activeItems[1] == 1)
@@ -1746,7 +1747,7 @@ public function doEffect(effect:String)
 			{
 				health = 1;
 				activeItems[0]--;
-				ArchPopup.startPopupCustom('You Used A Shield!', '-1 Shield ( ' + activeItems[0] + ' Left)', 'Color');
+				ArchPopup.startPopupCustom('You Used A Shield!', '-1 Shield ( ' + activeItems[0] + ' Left)', 'archColor');
 			}
 			else die();
         }
@@ -1764,7 +1765,7 @@ public function doEffect(effect:String)
 			}
 			else if (spellPrompts[i].ttl <= 0)
 			{
-				health -= 0.5 * dmgMultiplier;
+				health = 0;
 				FlxG.sound.play(Paths.sound('streamervschat/spellfail'));
 				camOther.flash(FlxColor.RED, 1, null, true);
 				spellPrompts[i].kill();
@@ -1854,6 +1855,7 @@ public function doEffect(effect:String)
             PlayState.SONG = FlxG.save.data.SONG;
             PlayState.storyDifficulty = FlxG.save.data.storyDifficulty;
             FlxG.save.data.manualOverride = false;
+			StageData.loadDirectory(PlayState.SONG);
             FlxG.save.flush();
             FlxG.resetState();
             return true;
@@ -1979,7 +1981,7 @@ public function doEffect(effect:String)
         {
             if (daNote.isAlert)
             {
-                health -= 0.3;
+                health -= 0.5;
                 FlxG.sound.play(Paths.sound('streamervschat/warning'));
                 var fist:FlxSprite = new FlxSprite().loadGraphic(Paths.image("streamervschat/thepunch"));
                 fist.x = FlxG.width / camGame.zoom;
@@ -2049,7 +2051,7 @@ public function doEffect(effect:String)
         {
             check++;
             if (ClientPrefs.data.notePopup)
-                ArchPopup.startPopupCustom('You Found A Check!', '$check/$itemAmount', 'Color'); // test
+                ArchPopup.startPopupCustom('You Found A Check!', '$check/$itemAmount', 'archColor'); // test
             trace('Got: ' + check + '/' + itemAmount);
             updateScore();
         }

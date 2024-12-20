@@ -8,7 +8,7 @@ class CategoryState extends MusicBeatState
 	var grpLocks:FlxTypedGroup<FlxSprite>;
 
 	public static var menuItems:Array<String> = [
-		"All", "Base"
+		"All", "Base", "Erect", "Pico"
 	];
 	private var showMods:Bool = true;
 	private var showSecrets:Bool = true;
@@ -88,7 +88,7 @@ class CategoryState extends MusicBeatState
 		menuItems = menuItems.filter(it -> (!it.isEmpty() && Alphabet.isValidText(it)));
 		FlxTransitionableState.skipNextTransOut = false;
 
-		if (FlxG.save.data.gotIntoAnArgument) menuItems.push("Secrets");
+		if (FlxG.save.data.gotIntoAnArgument) menuItems.insert(menuItems.length+1, "Secrets");
 
 		WeekData.reloadWeekFiles(false);
 		var weeks:Array<WeekData> = [];
