@@ -1037,6 +1037,10 @@ effectMap = [
 
         trace('MANUAL OVERRIDE: ' + FlxG.save.data.manualOverride);
 
+        FlxG.sound.play(Paths.sound('streamervschat/itcomes'), 1, false, null, true, function() {
+            
+
+
         if (FlxG.save.data.manualOverride) {
             FlxG.save.data.storyWeek = PlayState.storyWeek;
             FlxG.save.data.currentModDirectory = Mods.currentModDirectory;
@@ -1055,7 +1059,12 @@ effectMap = [
             PlayState.storyDifficulty = curDifficulty;
             FlxG.save.flush();
         }
-        MusicBeatState.resetState();
+        if (Std.is(FlxG.state, APPlayState)) {
+            MusicBeatState.resetState();
+        } else {
+            FlxG.switchState(new APPlayState());
+        }
+    });
     }
 ];
 
