@@ -447,7 +447,8 @@ trace("This doesn't do anything....... YET!");		});
 						FunkinLua.luaTrace('Failed to finish execution for an unknown reason: $e', false, false, FlxColor.RED);
 					}
 				}
-						SvC.effectMap.set(thing + this.name, action);
+						SvC.effectMap.set(thing + this.name, thing);
+						SvC.addEffect(thing + this.name);
 					});
 			// set("doEffect", function() {
 			// 	ap.doEffect();

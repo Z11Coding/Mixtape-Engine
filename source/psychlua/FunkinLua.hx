@@ -267,6 +267,7 @@ class FunkinLua {
 					this.call("doEffect", [SvC]);
 				}
 				SvC.effectMap.set(this.scriptName, effectCall);
+				SvC.addEffect(this.scriptName);
 			}
 		}
 		});

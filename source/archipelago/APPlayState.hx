@@ -1036,7 +1036,38 @@ effectMap = [
             FlxG.save.data.manualOverride = false;
 
         trace('MANUAL OVERRIDE: ' + FlxG.save.data.manualOverride);
+        // var haltTween:NumTween = new NumTween(null, null);
+            FlxTween.num(playbackRate, 0, 0.5, {
+            onComplete: function(e) {
+                FlxG.sound.play(Paths.sound('streamervschat/itcomes'), 1, false, null, true, function() {
+                    if (FlxG.save.data.manualOverride) {
+                        FlxG.save.data.storyWeek = PlayState.storyWeek;
+                        FlxG.save.data.currentModDirectory = Mods.currentModDirectory;
+                        FlxG.save.data.difficulties = Difficulty.list; // just in case
+                        FlxG.save.data.SONG = PlayState.SONG;
+                        FlxG.save.data.storyDifficulty = PlayState.storyDifficulty;
+                        FlxG.save.data.songPos = Conductor.songPosition;
+                        FlxG.save.flush();
+                    }
 
+                    if (FlxG.save.data.manualOverride) {
+                        PlayState.storyWeek = 0;
+                        Mods.currentModDirectory = '';
+                        Difficulty.list = Difficulty.defaultList.copy();
+                        PlayState.SONG = Song.loadFromJson(Highscore.formatSong('tutorial', curDifficulty), Paths.formatToSongPath('tutorial'));
+                        PlayState.storyDifficulty = curDifficulty;
+                        FlxG.save.flush();
+                    }
+                    if (Std.is(FlxG.state, APPlayState)) {
+                        MusicBeatState.resetState();
+                    } else {
+                        FlxG.switchState(new APPlayState());
+                    }
+                });
+            }
+        }, function(t) {
+            playbackRate = t;
+        });
         FlxG.sound.play(Paths.sound('streamervschat/itcomes'), 1, false, null, true, function() {
             
 
@@ -1236,6 +1267,9 @@ effectMap = [
 		shieldSprite.visible = false;
 		add(shieldSprite);
     }
+
+    public function addEffect(e:String)
+        effectArray.push(e);
 
     public static var startOnTime:Float = 0;
 	public var camMovement:Float = 40;
