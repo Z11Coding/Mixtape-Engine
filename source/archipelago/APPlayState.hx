@@ -1163,9 +1163,9 @@ effectMap = [
 			}
 			if (chartModifier == "ManiaConverter")
 			{
-				ArchPopup.startPopupCustom("convertMania value is:", "" + convertMania + "", 'Color');
-			}
-			if (chartModifier != 'Normal') ArchPopup.startPopupCustom('You Got an Item!', "Chart Modifier Trap (" + chartModifier + ")", 'Color');
+				ArchPopup.startPopupCustom("convertMania value is:", "" + convertMania + "", 'archColor');
+            			}
+                        if (chartModifier != 'Normal') ArchPopup.startPopupCustom('You Got an Item!', "Chart Modifier Trap (" + chartModifier + ")", 'archColor');
 			//MaxHP = activeItems[2];
 		}
 
@@ -1186,6 +1186,11 @@ effectMap = [
         ];
 
         super.create();
+
+        effectendsin = new FlxText(botplayTxt.x, botplayTxt.y, 1500, "EFFECT ENDS IN: ");
+		effectendsin.screenCenter(X);
+		effectendsin.alpha = 0;
+		add(effectendsin);
 
         terminateSound = new FlxSound().loadEmbedded(Paths.sound('streamervschat/beep'));
         FlxG.sound.list.add(terminateSound);
@@ -1340,14 +1345,14 @@ effectMap = [
                 {
                     case 38:
                         activeItems[0] += 1;
-                        ArchPopup.startPopupCustom('You Got an Item!', '+1 Shield ( ' + activeItems[0] + ' Left)', 'Color');
+                        ArchPopup.startPopupCustom('You Got an Item!', '+1 Shield ( ' + activeItems[0] + ' Left)', 'archColor');
                     case 39:
                         activeItems[1] = 1;
-                        ArchPopup.startPopupCustom('You Got an Item!', "Blue Ball's Curse", 'Color');
+                        ArchPopup.startPopupCustom('You Got an Item!', "Blue Ball's Curse", 'archWhite');
                     case 40:
                         activeItems[2] += 1;
 						MaxHP = 2+activeItems[2];
-                        ArchPopup.startPopupCustom('You Got an Item!', "Max HP Up!", 'Color');
+                        ArchPopup.startPopupCustom('You Got an Item!', "Max HP Up!", 'archColor');
                 }
             }
             tmr.reset(FlxG.random.float(5, 10));
@@ -1715,16 +1720,16 @@ public function doEffect(effect:String)
             {
                 case 0:
                     activeItems[0] += 1;
-                    ArchPopup.startPopupCustom('You Got an Item!', '+1 Shield ( ' + activeItems[0] + ' Left)', 'Color');
+                    ArchPopup.startPopupCustom('You Got an Item!', '+1 Shield ( ' + activeItems[0] + ' Left)', 'archColor');
                 case 1:
                     activeItems[1] = 1;
-                    ArchPopup.startPopupCustom('You Got an Item!', "Blue Ball's Curse", 'Color');
+                    ArchPopup.startPopupCustom('You Got an Item!', "Blue Ball's Curse", 'archColor');
                 case 2:
                     activeItems[2] += 1;
-                    ArchPopup.startPopupCustom('You Got an Item!', "Max HP Up!", 'Color');
+                    ArchPopup.startPopupCustom('You Got an Item!', "Max HP Up!", 'archColor');
                 case 3:
                     keybindSwitch('SAND');
-                    ArchPopup.startPopupCustom('You Got an Item!', "Keybind Switch (S A N D)", 'Color');
+                    ArchPopup.startPopupCustom('You Got an Item!', "Keybind Switch (S A N D)", 'archColor');
             }
         }*/
 		for (video in addedMP4s)
@@ -1765,7 +1770,7 @@ public function doEffect(effect:String)
 			}
 			else if (spellPrompts[i].ttl <= 0)
 			{
-				health = 0;
+				die(); 
 				FlxG.sound.play(Paths.sound('streamervschat/spellfail'));
 				camOther.flash(FlxColor.RED, 1, null, true);
 				spellPrompts[i].kill();

@@ -256,6 +256,20 @@ class FunkinLua {
 		Lua_helper.add_callback(lua, "crawlDirectory", function(directory:String, ?extension:String = "") {
 			return Paths.crawlDirectory(directory, extension);
 		});
+
+		Lua_helper.add_callback(lua, "registerSvCEffect", function() {
+			var game:PlayState = PlayState.instance;
+			if (Std.is(game, APPlayState)) {
+			var	SvC = cast(game, APPlayState);
+
+			if (SvC != null) {
+			var	effectCall = function() {
+					this.call("doEffect", [SvC]);
+				}
+				SvC.effectMap.set(this.scriptName, effectCall);
+			}
+		}
+		});
 		
 		//Fun cursor things for lua
 		Lua_helper.add_callback(lua, "getCursorMode", function()

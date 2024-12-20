@@ -1144,6 +1144,19 @@ class PlayState extends MusicBeatState
 					initHScript(folder + file);
 				#end
 			}
+			if (Std.is(this, APPlayState))
+			for (folder in Mods.directoriesWithFile(Paths.getSharedPath(), 'SvC/'))
+				for (file in FileSystem.readDirectory(folder))
+				{
+					#if LUA_ALLOWED
+					if (file.toLowerCase().endsWith('.lua'))
+						new FunkinLua(folder + file).call("registerSvCEffect", [this]);
+					#end
+					#if HSCRIPT_ALLOWED
+					if (file.toLowerCase().endsWith('.hx'))
+						initHScript(folder + file); // Not sure what to do with this yet...
+					#end
+				}
 		#end
 		// STAGE SCRIPTS
 		#if LUA_ALLOWED
