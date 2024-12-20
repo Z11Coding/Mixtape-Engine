@@ -2,15 +2,6 @@ package states.stages;
 
 import states.stages.objects.*;
 
-enum HenchmenKillState
-{
-	WAIT;
-	KILLING;
-	SPEEDING_OFFSCREEN;
-	SPEEDING;
-	STOPPING;
-}
-
 class Limo extends BaseStage
 {
 	var grpLimoDancers:FlxTypedGroup<BackgroundDancer>;

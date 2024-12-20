@@ -1039,6 +1039,18 @@ class PlayState extends MusicBeatState
 				new PhillyStreets(); // Weekend 1 - Darnell, Lit Up, 2Hot
 			case 'phillyBlazin':
 				new PhillyBlazin(); // Weekend 1 - Blazin
+			case 'mainStageErect': 
+				new MainStageErect(); //Week 1 Special 
+			case 'spookyMansionErect': 
+				new SpookyMansionErect(); //Week 2 Special 
+			case 'phillyTrainErect': 
+				new PhillyTrainErect(); //Week 3 Special 
+			case 'limoRideErect': 
+				new LimoRideErect(); //Week 4 Special 
+			case 'mallXmasErect': 
+				new MallXmasErect(); //Week 5 Special 
+			case 'phillyStreetsErect': 
+				new PhillyStreetsErect(); //Weekend 1 Special 
 			case 'desktop':
 				new Desktop(); // Literally your desktop as a stage lmao
 		}

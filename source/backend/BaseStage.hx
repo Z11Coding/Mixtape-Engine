@@ -17,6 +17,24 @@ enum Countdown
 	START;
 }
 
+enum NeneState
+{
+	STATE_DEFAULT;
+	STATE_PRE_RAISE;
+	STATE_RAISE;
+	STATE_READY;
+	STATE_LOWER;
+}
+
+enum HenchmenKillState
+{
+	WAIT;
+	KILLING;
+	SPEEDING_OFFSCREEN;
+	SPEEDING;
+	STOPPING;
+}
+
 class BaseStage extends FlxBasic
 {
 	private var game(get, never):Dynamic;

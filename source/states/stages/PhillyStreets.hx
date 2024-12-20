@@ -12,15 +12,7 @@ import states.stages.objects.*;
 import objects.Note;
 
 import backend.cutscenes.CutsceneHandler;
-
-enum NeneState
-{
-	STATE_DEFAULT;
-	STATE_PRE_RAISE;
-	STATE_RAISE;
-	STATE_READY;
-	STATE_LOWER;
-}
+import states.stages.PicoCapableStage;
 
 class PhillyStreets extends BaseStage
 {
