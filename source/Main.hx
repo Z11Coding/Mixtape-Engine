@@ -585,7 +585,7 @@ class Main extends Sprite
 
 					var restartProcess = new Process("MixEngine.exe", ["GameJoltBug", "restart"]);
 					// FlxG.switchState(restartProcess);
-					FlxG.switchState(new ExitState);
+					FlxG.switchState(new ExitState());
 				}
 				trace("Recommended to recompile the game to fix the issue.");
 

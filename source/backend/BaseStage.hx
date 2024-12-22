@@ -8,6 +8,8 @@ import flixel.group.FlxGroup;
 import objects.Note;
 import objects.Character;
 
+using psychlua.IntegratedScript;
+
 enum Countdown
 {
 	THREE;

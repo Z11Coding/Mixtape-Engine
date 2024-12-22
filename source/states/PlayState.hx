@@ -37,7 +37,8 @@ import states.stages.*;
 import states.stages.objects.*;
 #if LUA_ALLOWED
 import psychlua.*;
-#else
+using psychlua.IntegratedScript;
+#else	
 import psychlua.LuaUtils;
 import psychlua.HScript;
 #end
@@ -1154,7 +1155,7 @@ class PlayState extends MusicBeatState
 					#end
 					#if HSCRIPT_ALLOWED
 					if (file.toLowerCase().endsWith('.hx'))
-						initHScript(folder + file); // Not sure what to do with this yet...
+						initHScript(folder + file, true); // Not sure what to do with this yet...
 					#end
 				}
 		#end
@@ -1166,6 +1167,15 @@ class PlayState extends MusicBeatState
 		startHScriptsNamed('stages/' + curStage + '.hx');
 		#end
 		var gfVersion:String = SONG.gfVersion;
+
+		IntegratedScript.runNamelessLuaScript("
+		function onCreate()
+			-- This is a script that runs when the stage is created, as a test.
+			debugPrint('Test!')
+		end
+		");
+
+		// "e".runNamelessLuaScript();
 
 		if (gfVersion == null || gfVersion.length < 1)
 		{
@@ -10711,7 +10721,7 @@ class PlayState extends MusicBeatState
 	#end
 
 	#if HSCRIPT_ALLOWED
-	public function startHScriptsNamed(scriptFile:String)
+	public function startHScriptsNamed(scriptFile:String, ?SvC = false)
 	{
 		#if MODS_ALLOWED
 		var scriptToLoad:String = Paths.modFolders(scriptFile);
@@ -10726,20 +10736,25 @@ class PlayState extends MusicBeatState
 			if (Iris.instances.exists(scriptToLoad))
 				return false;
 
-			initHScript(scriptToLoad);
+			initHScript(scriptToLoad, SvC);
 			return true;
 		}
 		return false;
 	}
 
-	public function initHScript(file:String)
+	public function initHScript(file:String, SvC = false)
 	{
 		var newScript:HScript = null;
 		try
 		{
 			newScript = new HScript(null, file);
 			newScript.executeFunction('onCreate');
+			if (SvC)
+				newScript.executeFunction('registerSvCEffect');
+
 			trace('initialized hscript interp successfully: $file');
+			if (SvC)
+				addTextToDebug('Initialized HScript as SVC Script: $file', FlxColor.GREEN);
 			hscriptArray.push(newScript);
 		}
 		catch (e:Dynamic)
