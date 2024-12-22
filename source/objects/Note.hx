@@ -560,9 +560,7 @@ class Note extends NoteObject
 	{
 		super();
 		objType = NOTE;
-
 		animation = new PsychAnimationController(this);
-
 		mania = PlayState.mania;
 
 		if (prevNote == null)
@@ -738,7 +736,7 @@ class Note extends NoteObject
 					{
 						loadGraphic(Paths.image('pixelUI/' + skinPixel + 'ENDS' + skinPostfix, null, true));
 						width = width / 18;
-						height = height / 2;
+						height = height / 5;
 						loadGraphic(Paths.image('pixelUI/' + skinPixel + 'ENDS' + skinPostfix, null, true), true, Math.floor(width), Math.floor(height));
 					}
 					else
@@ -799,35 +797,6 @@ class Note extends NoteObject
 	private function set_scrollSpeed(value:Float):Float
 	{
 		scrollSpeed = value;
-		/*
-
-		if (isSustainNote && (animation.curAnim != null && !animation.curAnim.name.endsWith('end')))
-		{
-			scale.y = originalScale;
-			updateHitbox();
-
-			scale.y *= Conductor.stepCrochet / 100 * 1.05;
-			if (PlayState.instance != null)
-			{
-				scale.y *= scrollSpeed;
-			}
-
-			if (PlayState.isPixelStage)
-			{
-				scale.y *= 1.19;
-				scale.y *= (6 / height); // Auto adjust note size
-			}
-			updateHitbox();
-
-			if (PlayState.isPixelStage)
-			{
-				scale.y *= PlayState.daPixelZoom;
-				updateHitbox();
-			}
-			updateHitbox();
-			// prevNote.setGraphicSize();
-		}*/
-
 		return value;
 	}
 
@@ -879,8 +848,6 @@ class Note extends NoteObject
 
 	public function applyManiaChange()
 	{
-		if (isSustainNote)
-			scale.y = 1;
 		reloadNote(texture);
 		if (isSustainNote)
 			offsetX = width / 2;

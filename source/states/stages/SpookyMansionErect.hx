@@ -195,19 +195,19 @@ class SpookyMansionErect extends PicoCapableStage
 		var bfName = PlayState.instance.boyfriend.curCharacter == 'pico-dark' ? "pico-playable" : "bf";
 
 		boyfriendGhost = new Character(game.boyfriend.x, game.boyfriend.y, bfName, true);
-		game.add(boyfriendGhost);
+		addBehindBF(boyfriendGhost);
 		boyfriendGhost.dance();
 
 		dadGhost = new Character(game.dad.x, game.dad.y, 'spooky', true);
 		dadGhost.flipX = false;
-		game.add(dadGhost);
+		addBehindDad(dadGhost);
 		dadGhost.dance();
 
 		var gfMode = PlayState.instance.gf.curCharacter == 'nene-dark' ? "nene" : "gf";
 		gfGhost = new Character(game.gf.x, game.gf.y, gfMode);
 		//if (gfMode == 'nene')
 			//gfGhost.y -= 190;
-		game.add(gfGhost);
+		addBehindGF(gfGhost);
 		gfGhost.dance();
 
 		boyfriendGhost.alpha = 0;

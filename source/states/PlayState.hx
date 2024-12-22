@@ -3229,7 +3229,7 @@ class PlayState extends MusicBeatState
 		{
 			trace('Error pausing track: ' + e);
 		}
-		Conductor.songPosition += savedTime;
+		Conductor.songPosition = savedTime;
 		trace("Saved Time:" + savedTime);
 		if (savedTime != 0)
 		{
@@ -3246,37 +3246,9 @@ class PlayState extends MusicBeatState
 			{
 				trace('Error pausing track: ' + e);
 			}
-			Conductor.songPosition += savedTime;
 			trace("Saved Time:");
 			trace(savedTime);
-			notes.forEachAlive(function(daNote:Note)
-			{
-				if (daNote.strumTime > Conductor.songPosition - 1000 && daNote.strumTime < Conductor.songPosition + 1000)
-				{
-					daNote.active = false;
-					daNote.visible = false;
-
-					daNote.kill();
-					notes.remove(daNote, true);
-					daNote.destroy();
-				}
-			});
-			for (i in 0...unspawnNotes.length)
-			{
-				var daNote:Note = unspawnNotes[0];
-				if (daNote.strumTime + 1200 >= Conductor.songPosition)
-				{
-					break;
-				}
-
-				daNote.active = false;
-				daNote.visible = false;
-
-				daNote.kill();
-				unspawnNotes.splice(unspawnNotes.indexOf(daNote), 1);
-				daNote.destroy();
-			}
-
+			clearNotesBefore(savedTime);
 			FlxG.sound.music.time = Conductor.songPosition;
 			FlxG.sound.music.play();
 

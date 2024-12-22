@@ -64,7 +64,7 @@ class APPlayState extends PlayState {
 	var effectArray:Array<String> = [
 		'colorblind', 'blur', 'lag', 'mine', 'warning', 'heal', 'spin', 'songslower', 'songfaster', 'scrollswitch', 'scrollfaster', 'scrollslower', 'rainbow',
 		'cover', 'ghost', 'flashbang', 'nostrum', 'jackspam', 'spam', 'sever', 'shake', 'poison', 'dizzy', 'noise', 'flip', 'invuln',
-		'desync', 'mute', 'ice', 'randomize', 'randomizeAlt', 'opponentPlay', 'fakeheal', 'spell', 'terminate', 'lowpass', 'songSwitch', 'notif'
+		'desync', 'mute', 'ice', 'randomize', 'randomizeAlt', 'opponentPlay', 'bothplay', 'fakeheal', 'spell', 'terminate', 'lowpass', 'songSwitch', 'notif'
 	];
 	var notifs:Array<String> = [
 		"You're crazy...",
@@ -121,8 +121,6 @@ class APPlayState extends PlayState {
 
     override public function create()
     {
-        if (FlxG.save.data.closeDuringOverRide == null) FlxG.save.data.closeDuringOverRide = false;
-        if (FlxG.save.data.manualOverride == null) FlxG.save.data.manualOverride = false;
         if (APEntryState.inArchipelagoMode)
         {
             if (FlxG.save.data.activeItems != null)
@@ -260,36 +258,12 @@ effectMap = [
     'spin' => function() {
         var ttl:Float = 15;
         var onEnd:(Void->Void) = function() {
-            for (daNote in unspawnNotes) {
-                if (daNote == null) continue;
-                if (daNote.strumTime >= Conductor.songPosition && !daNote.isSustainNote) {
-                    daNote.spinAmount = 0;
-                    daNote.angle = 0;
-                }
-            }
-            for (daNote in notes) {
-                if (daNote == null) continue;
-                if (!daNote.isSustainNote) {
-                    daNote.spinAmount = 0;
-                    daNote.angle = 0;
-                }
-            }
+            modManager.setValue('roll', 0);
         };
         var playSound:String = "spin";
         var playSoundVol:Float = 1;
         var noIcon:Bool = false;
-
-        for (daNote in unspawnNotes) {
-            if (daNote == null) continue;
-            if (daNote.strumTime >= Conductor.songPosition && !daNote.isSustainNote)
-                modManager.setValue('roll', (FlxG.random.bool() ? 1 : -1) * FlxG.random.float(333 * 0.8, 333 * 1.15));
-        }
-        for (daNote in notes) {
-            if (daNote == null) continue;
-            if (!daNote.isSustainNote)
-                modManager.setValue('roll', 0);
-        }
-
+        modManager.setValue('roll', (FlxG.random.bool() ? 1 : -1) * FlxG.random.float(333 * 0.8, 333 * 1.15));
         applyEffect(ttl, onEnd, playSound, playSoundVol, noIcon, 'spin');
     },
     'songslower' => function() {
@@ -894,19 +868,19 @@ effectMap = [
                     daNote.noteData = daNote.trueNoteData;
                 }
             }
-            for (data => column in playerField.noteQueue) {
+            /*for (data => column in playerField.noteQueue) {
                 if (column[0] != null) {
                     if (column[0] == null) continue;
                     else {
                         column[0].noteData = available[column[0].noteData];
                     }
                 }
-            }
+            }*/
         };
         var playSound:String = "randomize";
         var playSoundVol:Float = 0.7;
         var noIcon:Bool = false;
-
+        doRandomize = true;
         available = [];
         for (i in 0...PlayState.mania+1) {
             available.push(i);
@@ -924,14 +898,14 @@ effectMap = [
                 daNote.noteData = available[daNote.noteData];
             }
         }
-        for (data => column in playerField.noteQueue) {
+        /*for (data => column in playerField.noteQueue) {
             if (column[0] != null) {
                 if (column[0] == null) continue;
                 else {
                     column[0].noteData = available[column[0].noteData];
                 }
             }
-        }
+        }*/
 
         applyEffect(ttl, onEnd, playSound, playSoundVol, noIcon, 'randomizeAlt');
     },
@@ -1030,17 +1004,13 @@ effectMap = [
         applyEffect(ttl, onEnd, playSound, playSoundVol, noIcon, 'lowpass');
     },
     'songSwitch' => function() {
-        if (FlxG.save.data.manualOverride != null && FlxG.save.data.manualOverride == false) 
-            FlxG.save.data.manualOverride = true;
-        else if (FlxG.save.data.manualOverride != null && FlxG.save.data.manualOverride == true) 
-            FlxG.save.data.manualOverride = false;
-
-        trace('MANUAL OVERRIDE: ' + FlxG.save.data.manualOverride);
         // var haltTween:NumTween = new NumTween(null, null);
             FlxTween.num(playbackRate, 0, 0.5, {
             onComplete: function(e) {
                 FlxG.sound.play(Paths.sound('streamervschat/itcomes'), 1, false, null, true, function() {
-                    if (FlxG.save.data.manualOverride) {
+                    trace('MANUAL OVERRIDE: ' + FlxG.save.data.manualOverride);
+                    if (!FlxG.save.data.manualOverride) {
+                        FlxG.save.data.manualOverride = true;
                         FlxG.save.data.storyWeek = PlayState.storyWeek;
                         FlxG.save.data.currentModDirectory = Mods.currentModDirectory;
                         FlxG.save.data.difficulties = Difficulty.list; // just in case
@@ -1048,54 +1018,25 @@ effectMap = [
                         FlxG.save.data.storyDifficulty = PlayState.storyDifficulty;
                         FlxG.save.data.songPos = Conductor.songPosition;
                         FlxG.save.flush();
-                    }
-
-                    if (FlxG.save.data.manualOverride) {
-                        PlayState.storyWeek = 0;
-                        Mods.currentModDirectory = '';
-                        Difficulty.list = Difficulty.defaultList.copy();
+                    
                         PlayState.SONG = Song.loadFromJson(Highscore.formatSong('tutorial', curDifficulty), Paths.formatToSongPath('tutorial'));
+                        PlayState.storyWeek = 0;
+                        Mods.currentModDirectory = 'week1';
+                        Difficulty.list = Difficulty.defaultList.copy();
                         PlayState.storyDifficulty = curDifficulty;
                         FlxG.save.flush();
-                    }
-                    if (Std.is(FlxG.state, APPlayState)) {
-                        MusicBeatState.resetState();
-                    } else {
-                        FlxG.switchState(new APPlayState());
+
+                        if (Std.is(FlxG.state, APPlayState)) {
+                            MusicBeatState.resetState();
+                        } else {
+                            FlxG.switchState(new APPlayState());
+                        }
                     }
                 });
             }
         }, function(t) {
             playbackRate = t;
         });
-        FlxG.sound.play(Paths.sound('streamervschat/itcomes'), 1, false, null, true, function() {
-            
-
-
-        if (FlxG.save.data.manualOverride) {
-            FlxG.save.data.storyWeek = PlayState.storyWeek;
-            FlxG.save.data.currentModDirectory = Mods.currentModDirectory;
-            FlxG.save.data.difficulties = Difficulty.list; // just in case
-            FlxG.save.data.SONG = PlayState.SONG;
-            FlxG.save.data.storyDifficulty = PlayState.storyDifficulty;
-            FlxG.save.data.songPos = Conductor.songPosition;
-            FlxG.save.flush();
-        }
-
-        if (FlxG.save.data.manualOverride) {
-            PlayState.storyWeek = 0;
-            Mods.currentModDirectory = '';
-            Difficulty.list = Difficulty.defaultList.copy();
-            PlayState.SONG = Song.loadFromJson(Highscore.formatSong('tutorial', curDifficulty), Paths.formatToSongPath('tutorial'));
-            PlayState.storyDifficulty = curDifficulty;
-            FlxG.save.flush();
-        }
-        if (Std.is(FlxG.state, APPlayState)) {
-            MusicBeatState.resetState();
-        } else {
-            FlxG.switchState(new APPlayState());
-        }
-    });
     },
     "freeze" => function() {
         var oldPlaybackRate:Float = playbackRate;
@@ -1235,8 +1176,8 @@ addEffect("freeze");
 			if (chartModifier == "ManiaConverter")
 			{
 				ArchPopup.startPopupCustom("convertMania value is:", "" + convertMania + "", 'archColor');
-            			}
-                        if (chartModifier != 'Normal') ArchPopup.startPopupCustom('You Got an Item!', "Chart Modifier Trap (" + chartModifier + ")", 'archColor');
+            }
+            if (chartModifier != 'Normal') ArchPopup.startPopupCustom('You Got an Item!', "Chart Modifier Trap (" + chartModifier + ")", 'archColor');
 			//MaxHP = activeItems[2];
 		}
 
@@ -1257,6 +1198,12 @@ addEffect("freeze");
         ];
 
         super.create();
+
+        if (FlxG.save.data.songPos != null && !FlxG.save.data.manualOverride) 
+        {
+            PlayState.savedTime = FlxG.save.data.songPos;
+            FlxG.save.data.songPos = null;
+        }
 
         effectendsin = new FlxText(botplayTxt.x, botplayTxt.y, 1500, "EFFECT ENDS IN: ");
 		effectendsin.screenCenter(X);
@@ -1393,7 +1340,6 @@ addEffect("freeze");
             }
         }
         Sys.println('');
-        startOnTime = FlxG.save.data.songPos;
         super.startCountdown();
         return true;
     }
@@ -1523,6 +1469,7 @@ public function doEffect(effect:String)
 	override function stepHit()
 	{
 		if (!localFreezeNotes) // so that the event doen't get overriden
+        {
 			if (lagOn)
 			{
 				if (curStep % 2 == 0)
@@ -1531,6 +1478,19 @@ public function doEffect(effect:String)
 					freezeNotes = false;
 			}
 			else freezeNotes = false;
+        }
+        if (doRandomize)
+        {
+            if (curStep % 16 == 0)
+            {
+                for (daNote in notes) {
+                    if (daNote == null) continue;
+                    else {
+                        daNote.noteData = daNote.trueNoteData;
+                    }
+                }
+            }
+        }
 		super.stepHit();
 	}
 
@@ -1809,7 +1769,11 @@ public function doEffect(effect:String)
 		for (video in addedMP4s)
 		{
 			if (video != null)
+            {
 				video.cameras = [camHUD];
+                if (video.completed)
+                    addedMP4s.remove(video);
+            }
 		}
 
         if (activeItems[0] > 0 && health <= 0)
