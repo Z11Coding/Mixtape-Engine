@@ -357,9 +357,11 @@ class FreeplayState extends MusicBeatState
 	function onAddSong()
 	{	
 		var daSong = "";
+		var randomSong = FlxG.random.int(0, APEntryState.unlockable.length - 1);
 		if (APEntryState.unlockable.length > 0)
 		{
-			daSong = APEntryState.unlockable[FlxG.random.int(0, APEntryState.unlockable.length - 1)];
+			daSong = APEntryState.unlockable[randomSong];
+			APEntryState.unlockable.remove(daSong);
 			ArchPopup.startPopupSong(daSong, 'archColor');
 			reloadSongs(true);
 			trace("Unlocked: "+daSong);

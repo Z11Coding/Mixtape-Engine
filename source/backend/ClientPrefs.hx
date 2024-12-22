@@ -387,7 +387,7 @@ class ClientPrefs {
 		'note_ate17' 	=> [O, NONE],
 		'note_ate18' 	=> [P, NONE],
 
-		'dodge'			=> [SPACE, NONE],
+		'dodge'			=> [SPACE, SPACE],
 		
 		'ui_left'		=> [A, LEFT],
 		'ui_down'		=> [S, DOWN],
