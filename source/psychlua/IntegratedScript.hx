@@ -42,7 +42,7 @@ class IntegratedLuaScript {
 
         // Run the script through FunkinLua
         new FunkinLua(tempFilePath);
-        trace("Internal Lua script loaded successfully: " + name);
+        // trace("Internal Lua script loaded successfully: " + name);
 
         // Delete the temporary file
         FileSystem.deleteFile(tempFilePath);
@@ -79,7 +79,7 @@ class IntegratedHScript {
         file.close();
 
         new HScript(null, tempFilePath);
-        trace("Internal HScript loaded successfully: " + name);
+        // trace("Internal HScript loaded successfully: " + name);
 
         // Delete the temporary file
         FileSystem.deleteFile(tempFilePath);
@@ -141,6 +141,18 @@ class IntegratedScript {
 
     public static function runNamelessHScript(scriptText:String):Void {
         runNamelessScript(IntegratedScriptType.HSCRIPT, scriptText);
+    }
+
+    public static function runLuaFunction(func:String):Void {
+        var script = "function onCreate()\n" + func + "\n close() \nend";
+        runNamelessLuaScript(script);
+        // new FunkinLua("__temp__");
+    }
+
+    public static function runHSFunction(func:String):Void {
+        var script = "function onCreate() {\n" + func + "\n}";
+        runNamelessHScript(script);
+        // new HScript(null, "__temp__");
     }
 
     private static function randomString(length:Int):String {
