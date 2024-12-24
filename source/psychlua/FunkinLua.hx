@@ -217,6 +217,8 @@ class FunkinLua {
 		set('inputSystem', ClientPrefs.data.inputSystem);
 		set('scriptName', scriptName);
 		set('currentModDirectory', Mods.currentModDirectory);
+		set("windowTitle", WindowUtils.winTitle);
+		set("WindowUtils", WindowUtils);
 
 		// Noteskin
 		set('noteSkin', ClientPrefs.data.noteSkin);
@@ -263,13 +265,20 @@ class FunkinLua {
 
 			if (SvC != null) {
 			var	effectCall = function() {
-					this.call("doEffect", [SvC]);
+					this.call("doSvCEffect", [SvC]);
 				}
 				SvC.effectMap.set(this.scriptName, effectCall);
 				SvC.addEffect(this.scriptName);
 			}
 		}
 		});
+
+		Lua_helper.add_callback(lua, "changeWindowTitle", function(title:String) {
+			WindowUtils.winTitle = title;
+			WindowUtils.updateTitle();
+		});
+
+
 		
 		//Fun cursor things for lua
 		Lua_helper.add_callback(lua, "getCursorMode", function()

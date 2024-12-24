@@ -423,14 +423,14 @@ trace("This doesn't do anything....... YET!");		});
 		// Streamer VS Chat stuff.
 		if (PlayState.instance != null && Std.is(PlayState.instance, archipelago.APPlayState)) {
 			var SvC = cast(PlayState.instance, archipelago.APPlayState);
-			set("addSvCEffect", function(effect:Dynamic, action:Void->Void, ?apply:Dynamic) {
+			set("addSvCEffect", function(effect:String, action:Void->Void, ?apply:Dynamic) {
 				if (apply == null) apply = {};
 				apply.ttl = Reflect.hasField(apply, "ttl") && apply.ttl != null ? apply.ttl : 0;
 				apply.playSound = Reflect.hasField(apply, "playSound") && apply.playSound != null ? apply.playSound : "";
 				apply.playSoundVol = Reflect.hasField(apply, "playSoundVol") && apply.playSoundVol != null ? apply.playSoundVol : 1;
 				apply.noIcon = Reflect.hasField(apply, "noIcon") && apply.noIcon != null ? apply.noIcon : true;
 				apply.alwaysEnd = Reflect.hasField(apply, "alwaysEnd") && apply.alwaysEnd != null ? apply.alwaysEnd : true;
-				apply.effect = Reflect.hasField(apply, "effect") && apply.effect != null ? apply.effect : effect + this.name;
+				apply.effect = Reflect.hasField(apply, "effect") && apply.effect != null ? apply.effect : effect;
 				apply.onEnd = Reflect.hasField(apply, "onEnd") && apply.onEnd != null ? apply.onEnd : () -> null;
 				var thing = function() {
 					try {
@@ -447,7 +447,7 @@ trace("This doesn't do anything....... YET!");		});
 						FunkinLua.luaTrace('Failed to finish execution for an unknown reason: $e', false, false, FlxColor.RED);
 					}
 				}
-						SvC.effectMap.set(thing + this.name, thing);
+						SvC.effectMap.set(this.name, thing);
 						SvC.addEffect(thing + this.name);
 					});
 			// set("doEffect", function() {
@@ -455,6 +455,15 @@ trace("This doesn't do anything....... YET!");		});
 			// });
 			set("effectMap", cast(PlayState.instance, archipelago.APPlayState).effectMap);
 			// set("effect", ???);
+
+			set("registerSvCEffect", function() {
+				var SvC = cast(PlayState.instance, archipelago.APPlayState);
+				var effect = function() {
+					this.executeFunction("doSvCEffect", [SvC]);
+				}
+				SvC.effectMap.set(this.name, effect);
+				SvC.addEffect(effect + this.name);
+			});
 }
 }	
 
