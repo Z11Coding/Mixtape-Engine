@@ -1,4 +1,4 @@
-# Copyright (c) 2022 FelicitusNeko
+    # Copyright (c) 2022 FelicitusNeko
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
@@ -56,7 +56,7 @@ class ChartModChangeChance(Range):
     """
     display_name = "Chart Modifier Trap Count"
     range_start = 0
-    range_end = 18
+    range_end = 20
     default = 0
 
 class UnlockType(OptionSet):
@@ -69,7 +69,7 @@ class UnlockType(OptionSet):
 class UnlockMethod(OptionSet):
     """The way you wish to get checks."""
     display_name = "Check Method"
-    valid_keys = ["Note Checks", "Song Completion"]
+    valid_keys = ["Note Checks", "Song Completion", "Both"]
     default = "Note Checks"
 
 
