@@ -3,7 +3,7 @@ package backend;
 typedef Chance = {
     item: Dynamic,
     chance: Float, // Probability as a percentage (0 to 100)
-    ?condition: Bool // Optional condition to check before selecting the item
+    ?condition: Bool // Optional condition to check before allowing the item to be selected
 };
 typedef ChanceFunction = {
     func: Void -> Dynamic, // Function to execute

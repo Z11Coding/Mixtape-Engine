@@ -1,4 +1,8 @@
+package yutautil.save;
+
 import sys.io.File;
+
+using yutautil.save.MixSave;
 
 class MixSaveWrapper {
     public var mixSave:MixSave;

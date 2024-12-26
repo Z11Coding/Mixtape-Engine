@@ -1,3 +1,5 @@
+package yutautil.save;
+
 class MixSave {
     public var content:Map<String, Dynamic>;
     private var customBehaviors:Map<String, {save:Dynamic->String, load:String->Dynamic}>;

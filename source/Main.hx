@@ -114,7 +114,7 @@ class Main extends Sprite
 		// trace("Test thing: " + testThing);
 
         // Create a MixSave instance and add some data
-        var mixSave = new MixSave();
+        var mixSave = new yutautil.SaveSystem.MixSave();
         mixSave.content.set("playerName", "John Doe");
         mixSave.content.set("highScore", "12345");
 
