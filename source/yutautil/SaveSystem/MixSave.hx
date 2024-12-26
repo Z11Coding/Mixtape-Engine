@@ -11,6 +11,11 @@ class MixSave {
         content.set(key, value);
     }
 
+    public function addContentWithBehavior(key:String, value:Dynamic, saveFunc:Dynamic->String, loadFunc:String->Dynamic):Void {
+        content.set(key, value);
+        customBehaviors.set(key, {save: saveFunc, load: loadFunc});
+    }
+
     public function getContent(key:String):Dynamic {
         return content.get(key);
     }
