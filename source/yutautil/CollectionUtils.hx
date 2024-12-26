@@ -206,6 +206,18 @@ class CollectionUtils {
         return null;
     }
 
+    public static inline function callOnGeneric<T>(CLASS:Class<T>, func:T -> Dynamic):Dynamic {
+        return func(Type.createEmptyInstance(CLASS));
+    }
+
+    public static inline function callFromGeneric<T>(CLASS:Class<T>, func:Any -> Dynamic):Dynamic {
+        return func(Type.createEmptyInstance(CLASS));
+    }
+
+    public static inline function callOn<T>(item:T, func:T -> Dynamic):Dynamic {
+        return func(item);
+    }
+
 
 
 

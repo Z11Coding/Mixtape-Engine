@@ -1,9 +1,28 @@
-package undertale;
+package backend;
 
+import options.GraphicsSettingsSubState.noteOptionID;
 import openfl.utils.ObjectPool;
 import flixel.addons.text.FlxTypeText;
 import flixel.input.keyboard.FlxKey;
 import flixel.FlxG;
+
+abstract Char(String) {
+    public inline function get_char():String {
+        return this;
+    }
+    public function new(char:String) {
+        this = char;
+        if (char.length > 1) {
+            throw "Char must be a single character.";
+        }
+    }
+}
+
+// enum TextOperator {
+//     NewLine = '\n',
+//     Tab = '\t',
+//     CarriageReturn = '\r'
+// };
 
 class UnderTextParser extends FlxTypeText {
     private var speed:Float;
@@ -13,6 +32,9 @@ class UnderTextParser extends FlxTypeText {
     public var isTyping:Bool = false;
     public var autoskip:Bool = false;
     public var nextMenu:String = '';
+    public var typingSound:FlxSound;
+    public var soundOnChars:Map<String, FlxSound>;
+    public var soundlessChars:Array<String> = [' ', '\n', '\t', '\r'];
 
     public function new(X:Float, Y:Float, Width:Int, Text:String, Size:Int = 8, EmbeddedFont:Bool = true, Speed:Float = 0.05) {
         super(X, Y, Width, "", Size, EmbeddedFont);
@@ -29,6 +51,26 @@ class UnderTextParser extends FlxTypeText {
 
     override public function update(elapsed:Float):Void {
         //if (_waiting || paused) return;
+        if (sounds != null) sounds = [];
+        useDefaultSound = false;
+
+        for (char in soundOnChars.keys()) {
+            if (char.length > 1) {
+                throw "soundOnChar key must be a single character.";
+            }
+        }
+
+        for (char in soundlessChars) {
+            if (char.length > 1) {
+                throw "soundlessChars element must be a single character.";
+            }
+        }
+
+        if (typingSound != null)
+            if (sounds.indexOf(typingSound) == -1)
+                sounds.push(typingSound);
+
+
 
         for (index in _formattingLocations.keys()) {
             if (_length == index) {
@@ -37,11 +79,31 @@ class UnderTextParser extends FlxTypeText {
             }
         }
 
-        for (sound in sounds)
+        // for (sound in sounds)
+        // {
+        //     if (sound != null && sound.playing && _finalText.charAt(_length) == ' ')
+        //     {
+        //         sound.pause();
+        //     }
+        // }
+
+        for (sound in soundOnChars.keys())
         {
-            if (sound != null && sound.playing && _finalText.charAt(_length) == ' ')
+            if (soundOnChars.get(sound) != null && soundOnChars.get(sound).playing && _finalText.charAt(_length) == sound)
             {
-                sound.pause();
+                soundOnChars.get(sound).play();
+            }
+            else {
+                if (typingSound != null) typingSound.play();
+            }
+        }
+
+        for (i in 0...soundlessChars.length)
+        {
+            if (soundlessChars != null && _finalText.charAt(_length) == soundlessChars[i])
+            {
+                soundOnChars.mapT(sound -> sound.pause());
+                if (typingSound != null) typingSound.pause();
             }
         }
 
@@ -233,6 +295,10 @@ class UnderTextParser extends FlxTypeText {
     
         _formattingLocations = formattingLocations;
         return result;
+    }
+
+    public function addSoundOnChar(char:String, sound:FlxSound):Void {
+        soundOnChars.set(char, sound);
     }
 
     public override function resetText(text:String):Void {
