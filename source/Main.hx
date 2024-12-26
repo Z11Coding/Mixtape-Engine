@@ -113,29 +113,6 @@ class Main extends Sprite
 		// var testThing:FCTInput<Int> = 3;
 		// trace("Test thing: " + testThing);
 
-        // Create a MixSave instance and add some data
-        var mixSave = new yutautil.SaveSystem.MixSave();
-        mixSave.content.set("playerName", "John Doe");
-        mixSave.content.set("highScore", "12345");
-
-        // Create a MixSaveWrapper instance with a custom file path
-        var testSave = new MixSaveWrapper(mixSave, "test.json");
-
-        // Save the data
-        testSave.save();
-        trace("Data saved.");
-
-        // Modify the data to demonstrate loading
-        mixSave.content.set("playerName", "Jane Doe");
-        mixSave.content.set("highScore", "54321");
-
-        // Load the data back
-        testSave.load();
-        trace("Data loaded.");
-
-        // Verify the loaded data
-        trace("Player Name: " + mixSave.content.get("playerName")); // Should be "John Doe"
-        trace("High Score: " + mixSave.content.get("highScore"));   // Should be "12345"
 		setupGame();
 	}
 

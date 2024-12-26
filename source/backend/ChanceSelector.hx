@@ -17,6 +17,8 @@ typedef ChanceFunction = {
         // Validate total probability
         var totalChance:Float = 0;
         for (o in options) {
+            
+            if (o.condition !=null)
             if (!o.condition) {options.remove(o); continue;} 
             if (o.chance < 0 || o.chance > 100) throw "Chance must be between 0 and 100";
             totalChance += o.chance;
