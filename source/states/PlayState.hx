@@ -594,6 +594,8 @@ class PlayState extends MusicBeatState
 	public var uiGroup:FlxSpriteGroup;
 	// Stores Note Objects in a Group
 	public var noteGroup:FlxTypedGroup<FlxBasic>;
+
+	var resistanceBar:IntegratedScript;
 	override public function create()
 	{
 		try
@@ -860,7 +862,7 @@ class PlayState extends MusicBeatState
 		}
 
 		rave = new FlxTypedGroup<FlxSprite>();
-		for (i in 0...8)
+		/*for (i in 0...8)
 		{
 			var light2:FlxSprite = new FlxSprite().loadGraphic(Paths.image('rave/ravelight' + i, 'rave'));
 			light2.scrollFactor.set(0, 0);
@@ -869,7 +871,7 @@ class PlayState extends MusicBeatState
 			light2.updateHitbox();
 			light2.antialiasing = true;
 			rave.add(light2);
-		}
+		}*/
 
 		try
 		{
@@ -1650,6 +1652,99 @@ class PlayState extends MusicBeatState
 		lyrics.borderSize = 4;
 		lyrics.text = '';
 		add(lyrics);
+
+		/*IntegratedScript.runNamelessLuaScript("
+			local currentBarPorcent = 0
+			local heightBar = 0
+			local songStarted = false
+			function onCreate()
+				debugPrint('LOADING BAR')
+				makeLuaSprite('FearBarImage','mechanics/general/healthBar2',screenWidth - 100,30)
+				scaleObject('FearBarImage',1.8,1.1)
+				setObjectCamera('FearBarImage','hud')
+
+
+				makeLuaSprite('FearBarBg','mechanics/general/healthBarg', getProperty('FearBarImage.x'),getProperty('FearBarImage.y'))
+				setObjectCamera('FearBarBg','hud')
+				scaleObject('FearBarBg',1.6,1.07)
+				addLuaSprite('FearBarImage')
+				addLuaSprite('FearBarBg')
+				screenCenter('FearBarBg', 'xy') 
+				setProperty('FearBarBg.x', getProperty('FearBarImage.x') + 9)
+				
+				makeLuaSprite('FearBarBar','',getProperty('FearBarImage.x') + 309,getProperty('FearBarImage.y'))
+				setObjectCamera('FearBarBar','hud')
+				makeGraphic('FearBarBar',getProperty('FearBarBg.width')/1.1,getProperty('FearBarBg.height'),'eda6c4')
+
+				addLuaSprite('FearBarBar',false)
+				songStarted = false
+			end
+			function onUpdate()
+				--[[if keyPressed('space') then
+					currentBarPorcent = currentBarPorcent + 0.1
+				end]]
+				if currentBarPorcent == 0 then
+					setGraphicSize('FearBarBar',getProperty('FearBarBg.width')/1.6 * getProperty('FearBarBg.scale.x'),0)
+				else
+					setGraphicSize('FearBarBar',getProperty('FearBarBg.width')/1.6 * getProperty('FearBarBg.scale.x'),getProperty('FearBarBg.height')/0.99* currentBarPorcent)
+				end
+				setProperty('FearBarBar.x',getProperty('FearBarBg.x'))
+				setProperty('FearBarBar.y',getProperty('FearBarImage.y') + 655 - getProperty('FearBarBar.height'))
+				setProperty('dadGroup.x',getProperty('FearBarBg.height')/1.2* currentBarPorcent)
+
+				if currentBarPorcent > 1 then
+					currentBarPorcent  = 1
+				end
+				if currentBarPorcent <= 0 then
+					currentBarPorcent  = 0
+					setGraphicSize('FearBarBar',getProperty('FearBarBg.width')/1.8 * getProperty('FearBarBg.scale.x'),0)
+					setProperty('FearBarBar.visible',false)
+				else
+					setProperty('FearBarBar.visible',true)
+				end
+				if currentBarPorcent == 1 then
+					setProperty('health', getProperty('health') - 0.0051)
+				end
+				if curStep < 240 and songStarted and keyboardJustPressed('SPACE') then
+					currentBarPorcent = 0.61
+				end
+				curResist = 100 - ((currentBarPorcent* 1000)/10)
+				if getProperty('health') >= 1 then curHorny = -0 else curHorny = ((getProperty('health')-1)*100) end
+				setTextString('scoreTxt','Momments of Weakness: '..getProperty('songMisses') ..' | Amount of Resistance Left: '..(string.sub(curResist,1,10))..'% | Level Of Horny: '..(string.sub((-curHorny),1,2))..'% | Accuracy: '..(string.sub(getProperty('ratingPercent')* 100,0,5)).. '% ['..getProperty('ratingFC')..']')
+			end
+			function onSongStart()
+				songStarted = true
+			end
+			function opponentNoteHit(a,b,c)
+				if currentBarPorcent < 1 then
+					currentBarPorcent = currentBarPorcent + 0.0030
+				end
+			end
+			function onBeatHit()
+				if currentBarPorcent < 1 then
+					currentBarPorcent = currentBarPorcent + 0.010
+				end
+			end
+			function goodNoteHit(a,b,c)
+				if currentBarPorcent > 0 then
+					currentBarPorcent = currentBarPorcent - 0.0080
+				end
+				if c == 'Anti-Horny Note' then
+					currentBarPorcent = currentBarPorcent - 0.03
+				end
+				if c == 'Bat Note' then
+					currentBarPorcent = currentBarPorcent - 0.5
+				end
+			end
+			function noteMiss(id,dir,type,sustain)
+				if type == '' then
+					if currentBarPorcent < 1 then
+						currentBarPorcent = currentBarPorcent + 0.053
+					end
+				end
+			end
+		");*/
+
 		daStatic = new FlxSprite(0, 0);
 		daStatic.frames = Paths.getSparrowAtlas('effects/static');
 		daStatic.animation.addByPrefix('static', 'lestatic', 24, true);
@@ -3280,6 +3375,7 @@ class PlayState extends MusicBeatState
 			{
 				trace('Error playing track: ' + e);
 			}
+			savedTime = 0;
 		}
 
 		FlxG.sound.music.time = Conductor.songPosition;
@@ -5793,7 +5889,7 @@ class PlayState extends MusicBeatState
 	override public function update(elapsed:Float)
 	{
 		if (songEndTriggered) endSong();
-		if (timeBar.percent == 100) finishSong();
+		if (timeBar != null && timeBar.percent == 100) finishSong();
 		if (FlxG.sound.music != null && !endingSong && !startingSong && !paused)
 			FlxG.sound.music.volume = 1 * instVolumeMultiplier;
 		specialOverlays.forEachAlive(function(sprite:FlxSprite)
@@ -7466,6 +7562,17 @@ class PlayState extends MusicBeatState
 				{
 					char.idleSuffix = value2;
 					char.recalculateDanceIdle();
+				}
+
+				override function eventCalled(eventName:String, value1:String, value2:String, flValue1:Null<Float>, flValue2:Null<Float>, strumTime:Float) {
+					if (eventName == "Change Character")
+					{
+						if(ClientPrefs.data.shaders){
+							if (gf != null) gf.shader = makeCoolShader(-9,0,-30,-4);
+							dad.shader = makeCoolShader(-32,0,-33,-23);
+							boyfriend.shader = makeCoolShader(12,0,-23,7);
+						}   
+					}
 				}
 
 			case 'Screen Shake':
@@ -10264,11 +10371,7 @@ class PlayState extends MusicBeatState
 			clearfuck.clearObject(stuff);
 		instance = null;
 		mania = oldMania;
-		MemoryUtil.clearMajor();
 		super.destroy();
-		// Clean all the gunk out
-		Paths.clearUnusedMemory();
-		Paths.clearStoredMemory();
 	}
 
 	function resyncVocals():Void
@@ -10545,7 +10648,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		if ((ravemode || ravemodeV2) && ClientPrefs.data.flashing)
+		/*if ((ravemode || ravemodeV2) && ClientPrefs.data.flashing)
 		{
 			if (ClientPrefs.data.flashing)
 			{
@@ -10605,7 +10708,7 @@ class PlayState extends MusicBeatState
 		{
 			rave.members[curLight].visible = false;
 			rave.members[curLight].alpha = 0;
-		}
+		}*/
 
 		if (didntPress)
 		{

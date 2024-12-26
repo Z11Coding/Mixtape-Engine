@@ -36,7 +36,7 @@ class PhillyStreetsErect extends BaseStage
             buildMist();
             if (!ClientPrefs.data.lowQuality)
             {
-                var skyImage = Paths.image('phillyStreets/erect/phillySkybox');
+                var skyImage = Paths.image('stages/phillyStreets/erect/phillySkybox');
                 scrollingSky = new FlxTiledSprite(skyImage, skyImage.width + 400, skyImage.height, true, false);
                 scrollingSky.antialiasing = ClientPrefs.data.globalAntialiasing;
                 scrollingSky.setPosition(-650, -375);
@@ -45,46 +45,46 @@ class PhillyStreetsErect extends BaseStage
                 add(scrollingSky);
                 darkenable.push(scrollingSky);
     
-                var phillySkyline:BGSprite = new BGSprite('phillyStreets/erect/phillySkyline', -545, -273, 0.2, 0.2);
+                var phillySkyline:BGSprite = new BGSprite('stages/phillyStreets/erect/phillySkyline', -545, -273, 0.2, 0.2);
                 add(phillySkyline);
                 darkenable.push(phillySkyline);
     
-                var phillyForegroundCity:BGSprite = new BGSprite('phillyStreets/erect/phillyForegroundCity', 625, 94, 0.3, 0.3);
+                var phillyForegroundCity:BGSprite = new BGSprite('stages/phillyStreets/erect/phillyForegroundCity', 625, 94, 0.3, 0.3);
                 add(phillyForegroundCity);
                 darkenable.push(phillyForegroundCity);
             }
     
             add(mist5);
-            var phillyConstruction:BGSprite = new BGSprite('phillyStreets/erect/phillyConstruction', 1800, 364, 0.7, 1);
+            var phillyConstruction:BGSprite = new BGSprite('stages/phillyStreets/erect/phillyConstruction', 1800, 364, 0.7, 1);
             add(phillyConstruction);
             darkenable.push(phillyConstruction);
     
-            var phillyHighwayLights:BGSprite = new BGSprite('phillyStreets/erect/phillyHighwayLights', 284, 305, 1, 1);
+            var phillyHighwayLights:BGSprite = new BGSprite('stages/phillyStreets/erect/phillyHighwayLights', 284, 305, 1, 1);
             add(phillyHighwayLights);
             darkenable.push(phillyHighwayLights);
     
             if (!ClientPrefs.data.lowQuality)
             {
-                var phillyHighwayLightsLightmap:BGSprite = new BGSprite('phillyStreets/phillyHighwayLights_lightmap', 284, 305, 1, 1);
+                var phillyHighwayLightsLightmap:BGSprite = new BGSprite('stages/phillyStreets/phillyHighwayLights_lightmap', 284, 305, 1, 1);
                 phillyHighwayLightsLightmap.blend = ADD;
                 phillyHighwayLightsLightmap.alpha = 0.6;
                 add(phillyHighwayLightsLightmap);
                 darkenable.push(phillyHighwayLightsLightmap);
             }
     
-            var phillyHighway:BGSprite = new BGSprite('phillyStreets/erect/phillyHighway', 139, 209, 1, 1);
+            var phillyHighway:BGSprite = new BGSprite('stages/phillyStreets/erect/phillyHighway', 139, 209, 1, 1);
             add(phillyHighway);
             darkenable.push(phillyHighway);
     
             if (!ClientPrefs.data.lowQuality)
             {
-                var phillySmog:BGSprite = new BGSprite('phillyStreets/phillySmog', -6, 245, 0.8, 1);
+                var phillySmog:BGSprite = new BGSprite('stages/phillyStreets/phillySmog', -6, 245, 0.8, 1);
                 add(phillySmog);
                 darkenable.push(phillySmog);
     
                 for (i in 0...2)
                 {
-                    var car:BGSprite = new BGSprite('phillyStreets/erect/phillyCars', 1200, 818, 0.9, 1, ['car1', 'car2', 'car3', 'car4'], false);
+                    var car:BGSprite = new BGSprite('stages/phillyStreets/erect/phillyCars', 1200, 818, 0.9, 1, ['car1', 'car2', 'car3', 'car4'], false);
                     add(car);
                     switch (i)
                     {
@@ -97,11 +97,11 @@ class PhillyStreetsErect extends BaseStage
                 }
                 phillyCars2.flipX = true;
     
-                phillyTraffic = new BGSprite('phillyStreets/erect/phillyTraffic', 1840, 608, 0.9, 1, ['redtogreen', 'greentored'], false);
+                phillyTraffic = new BGSprite('stages/phillyStreets/erect/phillyTraffic', 1840, 608, 0.9, 1, ['redtogreen', 'greentored'], false);
                 add(phillyTraffic);
                 darkenable.push(phillyTraffic);
     
-                var phillyTrafficLightmap:BGSprite = new BGSprite('phillyStreets/erect/phillyTraffic_lightmap', 1840, 608, 0.9, 1);
+                var phillyTrafficLightmap:BGSprite = new BGSprite('stages/phillyStreets/erect/phillyTraffic_lightmap', 1840, 608, 0.9, 1);
                 phillyTrafficLightmap.blend = ADD;
                 phillyTrafficLightmap.alpha = 0.6;
                 add(phillyTrafficLightmap);
@@ -110,17 +110,17 @@ class PhillyStreetsErect extends BaseStage
     
             add(mist4);
             //? gradient
-            var gray1:BGSprite = new BGSprite('phillyStreets/erect/greyGradient', 88, 317, 1, 1);
+            var gray1:BGSprite = new BGSprite('stages/phillyStreets/erect/greyGradient', 88, 317, 1, 1);
             gray1.alpha = 0.3;
             gray1.blend = ADD;
             add(gray1);
 
-            var gray2:BGSprite = new BGSprite('phillyStreets/erect/greyGradient', 88, 317, 1, 1);
+            var gray2:BGSprite = new BGSprite('stages/phillyStreets/erect/greyGradient', 88, 317, 1, 1);
             gray2.alpha = 0.8;
             gray2.blend = MULTIPLY;
             add(gray2);
 
-            var phillyForeground:BGSprite = new BGSprite('phillyStreets/erect/phillyForeground', 88, 317, 1, 1);
+            var phillyForeground:BGSprite = new BGSprite('stages/phillyStreets/erect/phillyForeground', 88, 317, 1, 1);
             add(phillyForeground);
             darkenable.push(phillyForeground);
     
@@ -153,7 +153,7 @@ class PhillyStreetsErect extends BaseStage
 	var mist5:FlxBackdrop;
 
     function makeMist(image:String,scrollFac:Float,alpha:Float,velX:Float) {
-        var mist = new FlxBackdrop(Paths.image('phillyStreets/erect/$image'), X);
+        var mist = new FlxBackdrop(Paths.image('stages/phillyStreets/erect/$image'), X);
 		mist.setPosition(-650, -100);
 		mist.scrollFactor.set(scrollFac, scrollFac);
 		//mist.zIndex = 1000;

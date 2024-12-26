@@ -113,12 +113,13 @@ class CacheState extends MusicBeatState
 	];
 
 	public static var newDest:FlxState;
-
+	var prevAutoPause:Bool;
 	override function create()
 	{
 		trace('ngl pretty cool');
 
-
+		prevAutoPause = FlxG.autoPause;
+		FlxG.autoPause = false;
 		if (!cacheInit && (FlxG.save.data.musicPreload2 == null || FlxG.save.data.graphicsPreload2 == null || FlxG.save.data.videoPreload2 == null)) {
 			cacheInit = true;
 			pause = true;
@@ -149,6 +150,7 @@ class CacheState extends MusicBeatState
 			|| (FlxG.save.data.graphicsPreload2 != null && ClientPrefs.data.graphicsPreload2 == false)
 				|| (FlxG.save.data.videoPreload2 != null && ClientPrefs.data.videoPreload2 == false)) {
 				FlxG.switchState(newDest);
+				FlxG.autoPause = prevAutoPause;
 				dontBother = true;
 				allowMusic = false;
 		}	
@@ -159,7 +161,7 @@ class CacheState extends MusicBeatState
 			didPreCache = true;
 		}
 
-		menuBG = new FlxSprite().loadGraphic(Paths.image('loading/' + FlxG.random.int(0, 8)));
+		menuBG = new FlxSprite().loadGraphic(Paths.image('loading/' + FlxG.random.int(1, 8)));
 		menuBG.screenCenter();
 		add(menuBG);
 
@@ -258,7 +260,7 @@ class CacheState extends MusicBeatState
 			songsCached = true;
 		}
 
-		if (allowMusic && !cacheInit) FlxG.sound.playMusic(listoSongs[FlxG.random.int(0, 10)], 1, true);
+		if (allowMusic && !cacheInit) FlxG.sound.playMusic(Paths.music(listoSongs[FlxG.random.int(0, 10)]), 1, true);
 
 		if(!cacheStart){
 			#if web
@@ -306,6 +308,7 @@ class CacheState extends MusicBeatState
 			if (!cacheStart && FlxG.keys.justPressed.ESCAPE)
 			{
 				System.gc();
+				FlxG.autoPause = prevAutoPause;
 				FlxG.switchState(newDest); 
 			}
 
@@ -321,6 +324,7 @@ class CacheState extends MusicBeatState
 					FlxG.switchState(new PlayState());
 				}
 				else {
+					FlxG.autoPause = prevAutoPause;
 					FlxG.switchState(newDest);
 				}
 			}

@@ -322,6 +322,14 @@ class LimoRideErect extends BaseStage
 		{
 			case "Kill Henchmen":
 				killHenchmen();
+
+			case "Change Character":
+			if (ClientPrefs.data.shaders)
+			{
+				if (gf != null) gf.shader = colorShader;
+				dad.shader = colorShader;
+				boyfriend.shader = colorShader;
+			}
 		}
 	}
 

@@ -7,14 +7,21 @@ class BGSprite extends FlxSprite
 		super(x, y);
 
 		if (animArray != null) {
-			frames = Paths.getSparrowAtlas(image);
-			for (i in 0...animArray.length) {
-				var anim:String = animArray[i];
-				animation.addByPrefix(anim, anim, 24, loop);
-				if(idleAnim == null) {
-					idleAnim = anim;
-					animation.play(anim);
+			try
+			{
+				frames = Paths.getSparrowAtlas(image);
+				for (i in 0...animArray.length) {
+					var anim:String = animArray[i];
+					animation.addByPrefix(anim, anim, 24, loop);
+					if(idleAnim == null) {
+						idleAnim = anim;
+						animation.play(anim);
+					}
 				}
+			}
+			catch(e:Dynamic)
+			{
+				trace("THIS BGSPRITE COULD NOT LOAD PROPERLY!");
 			}
 		} else {
 			if(image != null) {

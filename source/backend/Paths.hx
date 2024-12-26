@@ -424,21 +424,60 @@ class Paths
 	}
 
 	public static var currentTrackedAssets:Map<String, FlxGraphic> = [];
-	static public function image(key:String, ?library:String = null, ?allowGPU:Bool = true):FlxGraphic
+	static public function image(key:String, ?library:String = null, ?allowGPU:Bool = false):FlxGraphic
 	{
-		if(ImageCache.exists(getPath('images/$key.png', IMAGE, library)) && !(allowGPU && ClientPrefs.data.cacheOnGPU)){
-            //trace(key + " is in the cache");
-			//trace(getPath('images/$key.png', IMAGE, library));
-            return ImageCache.get(getPath('images/$key.png', IMAGE, library));
-        }
-		else if(ImageCache.exists(modsImages(key)) && !(allowGPU && ClientPrefs.data.cacheOnGPU)){
-            //trace(key + " is in the mods cache");
-            return ImageCache.get(modsImages(key));
-        }
-        else{
-			//if (allowGPU) trace(key + " can't be loaded due to GPU Cache being on");
-			//else trace(key + " is NOT in the cache");
-		
+		try
+		{
+			if(ImageCache.exists(getPath('images/$key.png', IMAGE, library)) && !(allowGPU && ClientPrefs.data.cacheOnGPU)){
+				//trace(key + " is in the cache");
+				//trace(getPath('images/$key.png', IMAGE, library));
+				return ImageCache.get(getPath('images/$key.png', IMAGE, library));
+			}
+			else if(ImageCache.exists(modsImages(key)) && !(allowGPU && ClientPrefs.data.cacheOnGPU)){
+				//trace(key + " is in the mods cache");
+				return ImageCache.get(modsImages(key));
+			}
+			else{
+				//if (allowGPU) trace(key + " can't be loaded due to GPU Cache being on");
+				//else trace(key + " is NOT in the cache");
+			
+				var bitmap:BitmapData = null;
+				var file:String = null;
+
+				#if MODS_ALLOWED
+				file = modsImages(key);
+				if (currentTrackedAssets.exists(file))
+				{
+					localTrackedAssets.push(file);
+					return currentTrackedAssets.get(file);
+				}
+				else if (FileSystem.exists(file))
+					bitmap = BitmapData.fromFile(file);
+				else
+				#end
+				{
+					file = getPath('images/$key.png', IMAGE, library);
+					if (currentTrackedAssets.exists(file))
+					{
+						localTrackedAssets.push(file);
+						return currentTrackedAssets.get(file);
+					}
+					else if (OpenFlAssets.exists(file, IMAGE))
+						bitmap = OpenFlAssets.getBitmapData(file);
+				}
+
+				if (bitmap != null)
+				{
+					var retVal = cacheBitmap(file, bitmap, (allowGPU && ClientPrefs.data.cacheOnGPU));
+					if(retVal != null) return retVal;
+				}
+
+				trace('oh no its returning null NOOOO ($file)');
+			}
+		}
+		catch(e:Dynamic)
+		{
+			trace('Couldn\'t Load the image (Probably in the Cache)\nLoading from Base Image Loader...');
 			var bitmap:BitmapData = null;
 			var file:String = null;
 
@@ -471,11 +510,11 @@ class Paths
 			}
 
 			trace('oh no its returning null NOOOO ($file)');
-			return null;
 		}
+		return null;
 	}
 
-	public static function cacheBitmap(file:String, ?parentFolder:String = null, ?bitmap:BitmapData, ?allowGPU:Bool = true):FlxGraphic
+	public static function cacheBitmap(file:String, ?parentFolder:String = null, ?bitmap:BitmapData, ?allowGPU:Bool = false):FlxGraphic
 	{
 		if(bitmap == null)
 		{
@@ -549,7 +588,7 @@ class Paths
 		return (OpenFlAssets.exists(getPath(key, type, parentFolder, false)));
 	}
 
-	static public function getAtlas(key:String, ?parentFolder:String = null, ?allowGPU:Bool = true):FlxAtlasFrames
+	static public function getAtlas(key:String, ?parentFolder:String = null, ?allowGPU:Bool = false):FlxAtlasFrames
 	{
 		var useMod = false;
 		var imageLoaded:FlxGraphic = image(key, parentFolder, allowGPU);
@@ -578,7 +617,7 @@ class Paths
 		return getPackerAtlas(key, parentFolder);
 	}
 
-	static public function getMultiAtlas(keys:Array<String>, ?parentFolder:String = null, ?allowGPU:Bool = true):FlxAtlasFrames
+	static public function getMultiAtlas(keys:Array<String>, ?parentFolder:String = null, ?allowGPU:Bool = false):FlxAtlasFrames
 	{
 		var parentFrames:FlxAtlasFrames = Paths.getAtlas(keys[0].trim());
 		if (keys.length > 1)
@@ -596,7 +635,7 @@ class Paths
 		return parentFrames;
 	}
 
-	inline static public function getSparrowAtlas(key:String, ?parentFolder:String = null, ?allowGPU:Bool = true):FlxAtlasFrames
+	inline static public function getSparrowAtlas(key:String, ?parentFolder:String = null, ?allowGPU:Bool = false):FlxAtlasFrames
 	{
 		if (key.contains('psychic'))
 			trace(key, parentFolder, allowGPU);
@@ -615,7 +654,7 @@ class Paths
 		#end
 	}
 
-	inline static public function getPackerAtlas(key:String, ?parentFolder:String = null, ?allowGPU:Bool = true):FlxAtlasFrames
+	inline static public function getPackerAtlas(key:String, ?parentFolder:String = null, ?allowGPU:Bool = false):FlxAtlasFrames
 	{
 		var imageLoaded:FlxGraphic = image(key, parentFolder, allowGPU);
 		#if MODS_ALLOWED
@@ -632,7 +671,7 @@ class Paths
 		#end
 	}
 
-	inline static public function getAsepriteAtlas(key:String, ?parentFolder:String = null, ?allowGPU:Bool = true):FlxAtlasFrames
+	inline static public function getAsepriteAtlas(key:String, ?parentFolder:String = null, ?allowGPU:Bool = false):FlxAtlasFrames
 	{
 		var imageLoaded:FlxGraphic = image(key, parentFolder, allowGPU);
 		#if MODS_ALLOWED

@@ -1199,10 +1199,11 @@ addEffect("freeze");
 
         super.create();
 
-        if (FlxG.save.data.songPos != null && !FlxG.save.data.manualOverride) 
+        if (FlxG.save.data.songPos != 0 && !FlxG.save.data.manualOverride) 
         {
             PlayState.savedTime = FlxG.save.data.songPos;
-            FlxG.save.data.songPos = null;
+            FlxG.save.data.songPos = 0;
+            FlxG.save.flush(); // This is why we flush
         }
 
         effectendsin = new FlxText(botplayTxt.x, botplayTxt.y, 1500, "EFFECT ENDS IN: ");
@@ -1309,7 +1310,7 @@ addEffect("freeze");
                             did++;
                             foundOne = true;
                             Sys.print('\rGenerating Checks: ' + did + '/' + itemAmount);
-							trace('\rGenerating Checks: ' + did + '/' + itemAmount);
+							//trace('\rGenerating Checks: ' + did + '/' + itemAmount);
                         }
                         else if (queue.filter(function(note:Note):Bool
                         {
@@ -1331,12 +1332,6 @@ addEffect("freeze");
                     trace('Waiting for Note Scripts...');
                     break; // exit the loop if no more mustPress notes of type '' are found
                 }
-            }
-        }
-        for(queue in playerField.noteQueue){
-            for(note in queue)
-            {
-               if (note.noteType == 'Hurt Note') note.reloadNote('HURT');
             }
         }
         Sys.println('');
@@ -1570,33 +1565,39 @@ public function doEffect(effect:String)
 				swagNote.isMine = true;
 				swagNote.specialNote = true;
 				swagNote.hitCausesMiss = true;
+                swagNote.ratingDisabled = true;
 			case 2:
 				swagNote.noteType = 'Warning Note';
 				swagNote.reloadNote();
 				swagNote.isAlert = true;
 				swagNote.specialNote = true;
 				swagNote.hitCausesMiss = false;
+                swagNote.ratingDisabled = true;
 			case 3:
 				swagNote.noteType = 'Heal Note';
 				swagNote.reloadNote();
 				swagNote.isHeal = true;
 				swagNote.specialNote = true;
 				swagNote.hitCausesMiss = false;
+                swagNote.ratingDisabled = true;
 			case 4:
 				swagNote.noteType = 'Ice Note';
 				swagNote.reloadNote();
 				swagNote.isFreeze = true;
 				swagNote.hitCausesMiss = true;
 				swagNote.specialNote = true;
+                swagNote.ratingDisabled = true;
 			case 5:
 				swagNote.noteType = 'Fake Heal Note';
 				swagNote.reloadNote();
 				swagNote.isFakeHeal = true;
 				swagNote.hitCausesMiss = true;
 				swagNote.specialNote = true;
+                swagNote.ratingDisabled = true;
 			default:
 				swagNote.ignoreNote = false;
 				swagNote.specialNote = false;
+                swagNote.ratingDisabled = true;
 		}
 		swagNote.mustPress = true;
 		if (chartModifier == "SpeedRando")
@@ -1622,7 +1623,7 @@ public function doEffect(effect:String)
         }
 		unspawnNotes.sort(sortByNotes);
         allNotes.sort(sortByNotes);
-        for (field in playfields.members)
+        /*for (field in playfields.members)
         {
             var goobaeg:Array<Note> = [];
             for (column in field.noteQueue)
@@ -1649,7 +1650,7 @@ public function doEffect(effect:String)
             }
             for (note in goobaeg)
                 field.removeNote(note);
-        }
+        }*/
 	}
 
 	var isFrozen:Bool = false;
@@ -1909,8 +1910,8 @@ public function doEffect(effect:String)
 			states.FreeplayState.giveSong = true;
 		}
         super.endSong();
-		super.endSong();
 		PlayState.gameplayArea = "Freeplay";
+        paused = true;
 		openSubState(new substates.RankingSubstate());
         return true; //why does endsong need this?????
     }

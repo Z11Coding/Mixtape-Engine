@@ -17,23 +17,23 @@ class School extends BaseStage
 		if(_song.gameOverEnd == null || _song.gameOverEnd.trim().length < 1) GameOverSubstate.endSoundName = 'gameOverEnd-pixel';
 		if(_song.gameOverChar == null || _song.gameOverChar.trim().length < 1) GameOverSubstate.characterName = 'bf-pixel-dead';
 
-		var bgSky:BGSprite = new BGSprite('weeb/weebSky', 0, 0, 0.1, 0.1);
+		var bgSky:BGSprite = new BGSprite('stages/weeb/weebSky', 0, 0, 0.1, 0.1);
 		add(bgSky);
 		bgSky.antialiasing = false;
 
 		var repositionShit = -200;
 
-		var bgSchool:BGSprite = new BGSprite('weeb/weebSchool', repositionShit, 0, 0.6, 0.90);
+		var bgSchool:BGSprite = new BGSprite('stages/weeb/weebSchool', repositionShit, 0, 0.6, 0.90);
 		add(bgSchool);
 		bgSchool.antialiasing = false;
 
-		var bgStreet:BGSprite = new BGSprite('weeb/weebStreet', repositionShit, 0, 0.95, 0.95);
+		var bgStreet:BGSprite = new BGSprite('stages/weeb/weebStreet', repositionShit, 0, 0.95, 0.95);
 		add(bgStreet);
 		bgStreet.antialiasing = false;
 
 		var widShit = Std.int(bgSky.width * PlayState.daPixelZoom);
 		if(!ClientPrefs.data.lowQuality) {
-			var fgTrees:BGSprite = new BGSprite('weeb/weebTreesBack', repositionShit + 170, 130, 0.9, 0.9);
+			var fgTrees:BGSprite = new BGSprite('stages/weeb/weebTreesBack', repositionShit + 170, 130, 0.9, 0.9);
 			fgTrees.setGraphicSize(Std.int(widShit * 0.8));
 			fgTrees.updateHitbox();
 			add(fgTrees);
@@ -41,7 +41,7 @@ class School extends BaseStage
 		}
 
 		var bgTrees:FlxSprite = new FlxSprite(repositionShit - 380, -800);
-		bgTrees.frames = Paths.getPackerAtlas('weeb/weebTrees');
+		bgTrees.frames = Paths.getPackerAtlas('stages/weeb/weebTrees');
 		bgTrees.animation.add('treeLoop', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18], 12);
 		bgTrees.animation.play('treeLoop');
 		bgTrees.scrollFactor.set(0.85, 0.85);
@@ -49,7 +49,7 @@ class School extends BaseStage
 		bgTrees.antialiasing = false;
 
 		if(!ClientPrefs.data.lowQuality) {
-			var treeLeaves:BGSprite = new BGSprite('weeb/petals', repositionShit, -40, 0.85, 0.85, ['PETALS ALL'], true);
+			var treeLeaves:BGSprite = new BGSprite('stages/weeb/petals', repositionShit, -40, 0.85, 0.85, ['PETALS ALL'], true);
 			treeLeaves.setGraphicSize(widShit);
 			treeLeaves.updateHitbox();
 			add(treeLeaves);

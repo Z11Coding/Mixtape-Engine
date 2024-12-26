@@ -25,10 +25,17 @@ class Bar extends FlxSpriteGroup
 		this.valueFunction = valueFunction;
 		setBounds(boundX, boundY);
 		
-		bg = new FlxSprite().loadGraphic(Paths.image(image));
-		bg.antialiasing = ClientPrefs.data.globalAntialiasing;
-		barWidth = bg.width - 6;
-		barHeight = bg.height - 6;
+		try
+		{
+			bg = new FlxSprite().loadGraphic(Paths.image(image));
+			bg.antialiasing = ClientPrefs.data.globalAntialiasing;
+			barWidth = bg.width - 6;
+			barHeight = bg.height - 6;
+		}
+		catch(e:Dynamic)
+		{
+			trace('Bar didnt load properly!: '+e);
+		}
 
 		leftBar = new FlxSprite().makeGraphic(Std.int(bg.width), Std.int(bg.height), FlxColor.WHITE);
 		//leftBar.color = FlxColor.WHITE;

@@ -21,9 +21,9 @@ class SchoolEvil extends BaseStage
 
 		var bg:BGSprite;
 		if(!ClientPrefs.data.lowQuality)
-			bg = new BGSprite('weeb/animatedEvilSchool', posX, posY, 0.8, 0.9, ['background 2'], true);
+			bg = new BGSprite('stages/weeb/animatedEvilSchool', posX, posY, 0.8, 0.9, ['background 2'], true);
 		else
-			bg = new BGSprite('weeb/animatedEvilSchool_low', posX, posY, 0.8, 0.9);
+			bg = new BGSprite('stages/weeb/animatedEvilSchool_low', posX, posY, 0.8, 0.9);
 
 		bg.scale.set(PlayState.daPixelZoom, PlayState.daPixelZoom);
 		bg.antialiasing = false;
@@ -66,7 +66,7 @@ class SchoolEvil extends BaseStage
 			case "Trigger BG Ghouls":
 				if(!ClientPrefs.data.lowQuality)
 				{
-					bgGhouls = new BGSprite('weeb/bgGhouls', -100, 190, 0.9, 0.9, ['BG freaks glitch instance'], false);
+					bgGhouls = new BGSprite('stages/weeb/bgGhouls', -100, 190, 0.9, 0.9, ['BG freaks glitch instance'], false);
 					bgGhouls.setGraphicSize(Std.int(bgGhouls.width * PlayState.daPixelZoom));
 					bgGhouls.updateHitbox();
 					bgGhouls.visible = false;
@@ -120,7 +120,7 @@ class SchoolEvil extends BaseStage
 		add(red);
 
 		var senpaiEvil:FlxSprite = new FlxSprite();
-		senpaiEvil.frames = Paths.getSparrowAtlas('weeb/senpaiCrazy');
+		senpaiEvil.frames = Paths.getSparrowAtlas('stages/weeb/senpaiCrazy');
 		senpaiEvil.animation.addByPrefix('idle', 'Senpai Pre Explosion', 24, false);
 		senpaiEvil.setGraphicSize(Std.int(senpaiEvil.width * 6));
 		senpaiEvil.scrollFactor.set();

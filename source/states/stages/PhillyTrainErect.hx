@@ -23,31 +23,31 @@ class PhillyTrainErect extends PicoCapableStage
 	override function create()
 	{
 		if(!ClientPrefs.data.lowQuality) {
-			var bg:BGSprite = new BGSprite('philly/erect/sky', -100, 0, 0.1, 0.1);
+			var bg:BGSprite = new BGSprite('stages/philly/erect/sky', -100, 0, 0.1, 0.1);
 			add(bg);
 		}
 
-		var city:BGSprite = new BGSprite('philly/erect/city', -10, 0, 0.3, 0.3);
+		var city:BGSprite = new BGSprite('stages/philly/erect/city', -10, 0, 0.3, 0.3);
 		city.setGraphicSize(Std.int(city.width * 0.85));
 		city.updateHitbox();
 		add(city);
 
 		phillyLightsColors = [0x502d64,0x2663ac,0x932c28,0x329a6d,0xb66f43];
-		phillyWindow = new BGSprite('philly/window', city.x, city.y, 0.3, 0.3);
+		phillyWindow = new BGSprite('stages/philly/window', city.x, city.y, 0.3, 0.3);
 		phillyWindow.setGraphicSize(Std.int(phillyWindow.width * 0.85));
 		phillyWindow.updateHitbox();
 		add(phillyWindow);
 		phillyWindow.alpha = 0;
 
 		if(!ClientPrefs.data.lowQuality) {
-			var streetBehind:BGSprite = new BGSprite('philly/behindTrain', -40, 50);
+			var streetBehind:BGSprite = new BGSprite('stages/philly/behindTrain', -40, 50);
 			add(streetBehind);
 		}
 
 		phillyTrain = new PhillyTrain(2000, 360);
 		add(phillyTrain);
 
-		phillyStreet = new BGSprite('philly/erect/street', -40, 50);
+		phillyStreet = new BGSprite('stages/philly/erect/street', -40, 50);
 		add(phillyStreet);
 	}
 
@@ -66,6 +66,24 @@ class PhillyTrainErect extends PicoCapableStage
 			phillyTrain.shader = colorShader;
 		}
 	}
+
+	override function eventCalled(eventName:String, value1:String, value2:String, flValue1:Null<Float>, flValue2:Null<Float>, strumTime:Float) {
+        if (eventName == "Change Character")
+        {
+            if(ClientPrefs.data.shaders){
+                var colorShader = new AdjustColorShader();
+				colorShader.hue = -26;
+				colorShader.saturation = -16;
+				colorShader.contrast = 0;
+				colorShader.brightness = -5;
+
+				boyfriend.shader = colorShader;
+				dad.shader = colorShader;
+				gf.shader = colorShader;
+            }   
+        }
+    }
+
 	override function update(elapsed:Float)
 	{
 		phillyWindow.alpha -= (Conductor.crochet / 1000) * FlxG.elapsed * 1.5;
