@@ -52,6 +52,7 @@ class MainStageErect extends PicoCapableStage {
 			add(TheOneAbove);
         }
 	}
+
     override function createPost() {
         super.createPost();
         if(ClientPrefs.data.shaders){
@@ -64,6 +65,7 @@ class MainStageErect extends PicoCapableStage {
     override function startCountdown():Bool {
         return super.startCountdown();
     }
+    
     function makeCoolShader(hue:Float,sat:Float,bright:Float,contrast:Float) {
         var coolShader = new AdjustColorShader();
         coolShader.hue = hue;

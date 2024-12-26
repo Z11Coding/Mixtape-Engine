@@ -21,7 +21,7 @@ class GameOverSubstate extends MusicBeatSubstate
 	public static var loopSoundName:String = 'gameOver';
 	public static var endSoundName:String = 'gameOverEnd';
 	public static var deathDelay:Float = 0;
-
+	public static var causeofdeath:UnderTextParser;
 	public static var instance:GameOverSubstate;
 	public function new(?playStateBoyfriend:Character = null)
 	{
@@ -128,6 +128,14 @@ class GameOverSubstate extends MusicBeatSubstate
 			}
 		}
 
+		causeofdeath = new UnderTextParser(0, 0, FlxG.width, "", 32);
+		causeofdeath.screenCenter(X);
+		causeofdeath.font = Paths.font("determination-extended.ttf");
+        causeofdeath.color = 0xFFFFFFFF; 
+        causeofdeath.sounds = [FlxG.sound.load(Paths.sound('ut/uifont'), 0.6)];
+		add(causeofdeath);
+
+
 		super.create();
 	}
 
@@ -208,6 +216,8 @@ class GameOverSubstate extends MusicBeatSubstate
 	{
 		FlxG.sound.music.play(true);
 		FlxG.sound.music.volume = volume;
+		causeofdeath.resetText(COD.getCOD());
+        causeofdeath.start(0.05, true);
 	}
 
 	function endBullshit():Void

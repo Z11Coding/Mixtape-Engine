@@ -6,30 +6,46 @@ import flixel.FlxG;
 class COD
 {
     public static var deathVar:String;
-    public static var missDeath:String;
-	public static var missDeath2:String;
-    public static var rDeath:String;
-	public static var ukTxt:String;
-	public static var crossDeath:String;
-	public static var instaDeath:String;
-	public static var shiftDeath:String;
-	public static var swordDeath:String;
-	public static var burgDeath:String;
-	public static var chompDeath:String;
+    var missDeath:String;
+	var missDeath2:String;
+    var rDeath:String;
+	var ukTxt:String;
+	var COD:String;
+	public static var scriptCOD:String;
 
-
-	public static function deathCheck():Void
+	public static function initCOD():Void
 	{
 		deathVar = "Cause of death: ";
-    	missDeath = "missed a note at 0 health.";
-		missDeath2 = "missed a note.";
+    	missDeath = "Missed a note at 0 health.";
+		missDeath2 = "Missed a note.";
 		rDeath = "Pressed R.";
-		ukTxt = "unkown.";
-		crossDeath = "Got Shot\n(Hint: Press Space When The Crosshair Touches The Strum To Dodge.)";	
-		instaDeath = "Pressed An Instakill Note.";
-		shiftDeath = "missed A Shifting Note.";
-		swordDeath = "missed A Sword Note.";
-		burgDeath = "hit A Condom Note.";
-		chompDeath = "missed A Chomp Note.";
+		ukTxt = "Unknown.";
+		scriptCOD = "???";
+		COD = "???";
 	}
+
+	public static function setCOD(?note:Note, ?reason:String)
+	{
+		if (scriptCOD != "???")
+			COD = scriptCOD;
+		else if (note.cod != "???")
+			COD = note.cod;
+		else
+		{
+			switch (reason)
+			{
+				case "miss0":
+					COD = missDeath;
+				case "miss":
+					COD = missDeath2;
+				case "r":
+					COD = rDeath;
+				default:
+					COD = ukTxt;
+			}
+		}
+	}
+
+	public static function getCOD():String
+		return deathVar+"\n[pause:0.5]"+COD;
 }

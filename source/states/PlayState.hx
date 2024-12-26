@@ -7564,17 +7564,6 @@ class PlayState extends MusicBeatState
 					char.recalculateDanceIdle();
 				}
 
-				override function eventCalled(eventName:String, value1:String, value2:String, flValue1:Null<Float>, flValue2:Null<Float>, strumTime:Float) {
-					if (eventName == "Change Character")
-					{
-						if(ClientPrefs.data.shaders){
-							if (gf != null) gf.shader = makeCoolShader(-9,0,-30,-4);
-							dad.shader = makeCoolShader(-32,0,-33,-23);
-							boyfriend.shader = makeCoolShader(12,0,-23,7);
-						}   
-					}
-				}
-
 			case 'Screen Shake':
 				var valuesArray:Array<String> = [value1, value2];
 				var targetsArray:Array<FlxCamera> = [camGame, camHUD];

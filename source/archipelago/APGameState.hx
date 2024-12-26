@@ -139,16 +139,16 @@ class APGameState {
     }
 
     private function onCancel():Void {
-    _ap.disconnect_socket(); 
-    _ap.clientStatus = ClientStatus.UNKNOWN;
-    _ap.onRoomInfo.remove(onRoomInfo);
-    _ap.onSlotRefused.remove(onSlotRefused);
-    _ap.onSocketDisconnected.remove(onSocketDisconnected);
-    _ap.onSlotConnected.remove(onSlotConnected);
-    _ap = null;
-    MemoryHelper.clearClassObject(this);
-    MusicBeatState.switchState(new APEntryStateq());
-}
+        _ap.disconnect_socket(); 
+        _ap.clientStatus = ClientStatus.UNKNOWN;
+        _ap.onRoomInfo.remove(onRoomInfo);
+        _ap.onSlotRefused.remove(onSlotRefused);
+        _ap.onSocketDisconnected.remove(onSocketDisconnected);
+        _ap.onSlotConnected.remove(onSlotConnected);
+        _ap = null;
+        MemoryHelper.clearClassObject(this);
+        MusicBeatState.switchState(new APEntryState());
+    }
 
 
     private function onReconnect():Void {
@@ -159,7 +159,4 @@ class APGameState {
     // {
     //     _ap.clientStatus = ClientStatus.PLAYING;
     // }
-
-
-
 }
