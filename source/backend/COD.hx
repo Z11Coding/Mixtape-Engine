@@ -1,16 +1,12 @@
-package;
-
-import flixel.FlxG;
-
-
+package backend;
 class COD
 {
     public static var deathVar:String;
-    var missDeath:String;
-	var missDeath2:String;
-    var rDeath:String;
-	var ukTxt:String;
-	var COD:String;
+    public static var missDeath:String;
+	public static var missDeath2:String;
+    public static var rDeath:String;
+	public static var ukTxt:String;
+	public static var COD:String;
 	public static var scriptCOD:String;
 
 	public static function initCOD():Void

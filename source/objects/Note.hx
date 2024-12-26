@@ -422,6 +422,7 @@ class Note extends NoteObject
 	public var customHealthHit:Bool = false;
 	public var centerNote:Bool = false;
 	public var hitboxMultiplier:Float = 1;
+	public var cod:String = '???';
 
 	//Action Engine Stuff
 	public var noteIndex:Int = -1;

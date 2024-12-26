@@ -35,31 +35,31 @@ class PhillyBlazin extends BaseStage
 
 		if(!ClientPrefs.data.lowQuality)
 		{
-			var skyImage = Paths.image('stages/phillyBlazin/skyBlur');
+			var skyImage = Paths.image('stages/weekend/phillyBlazin/skyBlur');
 			scrollingSky = new FlxTiledSprite(skyImage, Std.int(skyImage.width * 1.1) + 475, Std.int(skyImage.height / 1.1), true, false);
 			scrollingSky.antialiasing = ClientPrefs.data.globalAntialiasing;
 			scrollingSky.setPosition(-500, -120);
 			scrollingSky.scrollFactor.set();
 			add(scrollingSky);
 
-			skyAdditive = new BGSprite('stages/phillyBlazin/skyBlur', -600, -175, 0.0, 0.0);
+			skyAdditive = new BGSprite('stages/weekend/phillyBlazin/skyBlur', -600, -175, 0.0, 0.0);
 			setupScale(skyAdditive);
 			skyAdditive.visible = false;
 			add(skyAdditive);
 			
-			lightning = new BGSprite('stages/phillyBlazin/lightning', -50, -300, 0.0, 0.0, ['lightning0'], false);
+			lightning = new BGSprite('stages/weekend/phillyBlazin/lightning', -50, -300, 0.0, 0.0, ['lightning0'], false);
 			setupScale(lightning);
 			lightning.visible = false;
 			add(lightning);
 		}
 		
-		var phillyForegroundCity:BGSprite = new BGSprite('stages/phillyBlazin/streetBlur', -600, -175, 0.0, 0.0);
+		var phillyForegroundCity:BGSprite = new BGSprite('stages/weekend/phillyBlazin/streetBlur', -600, -175, 0.0, 0.0);
 		setupScale(phillyForegroundCity);
 		add(phillyForegroundCity);
 		
 		if(!ClientPrefs.data.lowQuality)
 		{
-			foregroundMultiply = new BGSprite('stages/phillyBlazin/streetBlur', -600, -175, 0.0, 0.0);
+			foregroundMultiply = new BGSprite('stages/weekend/phillyBlazin/streetBlur', -600, -175, 0.0, 0.0);
 			setupScale(foregroundMultiply);
 			foregroundMultiply.blend = MULTIPLY;
 			foregroundMultiply.visible = false;
@@ -146,13 +146,8 @@ class PhillyBlazin extends BaseStage
 		if (!ClientPrefs.data.middleScroll)
 		{
 			game.modManager.setValue('transformX', -315, 0);
-			game.modManager.setValue('noteAlpha', .7, 1);
-			game.modManager.setValue('alpha', .7, 1);
-			for (i in 0...game.dadField.strumNotes.length)
-				if (i > ((game.dadField.strumNotes.length/2)-1))
-					game.modManager.setValue('transform'+i+'X', (FlxG.width / 2)-10 * Note.separator[game.mania], 1);
-				else
-					game.modManager.setValue('transform'+i+'X', 30, 1);
+			game.modManager.setValue('noteAlpha', 1, 1);
+			game.modManager.setValue('alpha', 1, 1);
 		}
 	}
 

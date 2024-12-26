@@ -1,4 +1,4 @@
-package undertale;
+package backend;
 
 import openfl.utils.ObjectPool;
 import flixel.addons.text.FlxTypeText;
