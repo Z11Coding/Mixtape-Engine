@@ -218,7 +218,7 @@ class Highscore
 		var daSong:String = formatSong(song, diff);
 		var songMod:String = daSong+saveMod;
 		if (!songRanks.exists(songMod))
-			setRank(songMod, 0);
+			setRank(songMod, 16);
 
 		return songRanks.get(songMod);
 	}

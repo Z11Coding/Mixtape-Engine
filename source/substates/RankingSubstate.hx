@@ -123,6 +123,7 @@ class RankingSubstate extends MusicBeatSubstate
 
 		if (FlxG.keys.justPressed.ANY || PlayState.instance.practiceMode)
 		{
+			PlayState.instance.paused = false;
 			switch (PlayState.gameplayArea)
 			{
 				case "Story":

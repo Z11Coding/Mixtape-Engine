@@ -103,104 +103,121 @@ class Note extends NoteObject
 			"letters" => ["E"], 
 			"anims" => ["UP"], 
 			"strumAnims" => ["SPACE"], 
-			"pixelAnimIndex" => [4]
+			"pixelAnimIndex" => [4],
+			"colArray" => [2]
 		],
 		1 => [
 				"letters" => ["A", "D"], 
 				"anims" => ["LEFT", "RIGHT"], 
 				"strumAnims" => ["LEFT", "RIGHT"], 
-				"pixelAnimIndex" => [0, 3]
+				"pixelAnimIndex" => [0, 3],
+				"colArray" => [0, 3]
 			],
 		2 => [
 				"letters" => ["A", "E", "D"], 
 				"anims" => ["LEFT", "UP", "RIGHT"], 
 				"strumAnims" => ["LEFT", "SPACE", "RIGHT"], 
-				"pixelAnimIndex" => [0, 4, 3]
+				"pixelAnimIndex" => [0, 4, 3],
+				"colArray" => [0, 2, 3]
 			],
 		3 => [
 				"letters" => ["A", "B", "C", "D"], 
 				"anims" => ["LEFT", "DOWN", "UP", "RIGHT"], 
 				"strumAnims" => ["LEFT", "DOWN", "UP", "RIGHT"], 
-				"pixelAnimIndex" => [0, 1, 2, 3]
+				"pixelAnimIndex" => [0, 1, 2, 3],
+				"colArray" => [0, 1, 2, 3]
 			],
 
 		4 => [
 				"letters" => ["A", "B", "E", "C", "D"], 
 				"anims" => ["LEFT", "DOWN", "UP", "UP", "RIGHT"],
 				"strumAnims" => ["LEFT", "DOWN", "SPACE", "UP", "RIGHT"], 
-				"pixelAnimIndex" => [0, 1, 4, 2, 3]
+				"pixelAnimIndex" => [0, 1, 4, 2, 3],
+				"colArray" => [0, 1, 2, 2, 3]
 			],
 		5 => [
 				"letters" => ["A", "C", "D", "F", "B", "I"], 
 				"anims" => ["LEFT", "UP", "RIGHT", "LEFT", "DOWN", "RIGHT"],
 				"strumAnims" => ["LEFT", "UP", "RIGHT", "LEFT", "DOWN", "RIGHT"], 
-				"pixelAnimIndex" => [0, 2, 3, 5, 1, 8]
+				"pixelAnimIndex" => [0, 2, 3, 5, 1, 8],
+				"colArray" => [0, 2, 3, 0, 1, 3]
 			],
 		6 => [
 				"letters" => ["A", "C", "D", "E", "F", "B", "I"], 
 				"anims" => ["LEFT", "UP", "RIGHT", "UP", "LEFT", "DOWN", "RIGHT"],
 				"strumAnims" => ["LEFT", "UP", "RIGHT", "SPACE", "LEFT", "DOWN", "RIGHT"], 
-				"pixelAnimIndex" => [0, 2, 3, 4, 5, 1, 8]
+				"pixelAnimIndex" => [0, 2, 3, 4, 5, 1, 8],
+				"colArray" => [0, 2, 3, 2, 0, 1, 3]
 			],
 		7 => [
 				"letters" => ["A", "B", "C", "D", "F", "G", "H", "I"], 
 				"anims" => ["LEFT", "DOWN", "UP", "RIGHT", "LEFT", "DOWN", "UP", "RIGHT"],
 				"strumAnims" => ["LEFT", "DOWN", "UP", "RIGHT", "LEFT", "DOWN", "UP", "RIGHT"], 
-				"pixelAnimIndex" => [0, 1, 2, 3, 5, 6, 7, 8]
+				"pixelAnimIndex" => [0, 1, 2, 3, 5, 6, 7, 8],
+				"colArray" => [0, 1, 2, 3, 0, 1, 2, 3]
 			],
 		8 => [
 				"letters" => ["A", "B", "C", "D", "E", "F", "G", "H", "I"], 
 				"anims" => ["LEFT", "DOWN", "UP", "RIGHT", "UP", "LEFT", "DOWN", "UP", "RIGHT"],
 				"strumAnims" => ["LEFT", "DOWN", "UP", "RIGHT", "SPACE", "LEFT", "DOWN", "UP", "RIGHT"], 
-				"pixelAnimIndex" => [0, 1, 2, 3, 4, 5, 6, 7, 8]
+				"pixelAnimIndex" => [0, 1, 2, 3, 4, 5, 6, 7, 8],
+				"colArray" => [0, 1, 2, 3, 2, 0, 1, 2, 3]
 			],
 		9 => [
 				"letters" => ["A", "B", "C", "D", "E", "N", "F", "G", "H", "I"], 
 				"anims" => ["LEFT", "DOWN", "UP", "RIGHT", "UP", "UP", "LEFT", "DOWN", "UP", "RIGHT"],
 				"strumAnims" => ["LEFT", "DOWN", "UP", "RIGHT", "SPACE", "CIRCLE", "LEFT", "DOWN", "UP", "RIGHT"], 
-				"pixelAnimIndex" => [0, 1, 2, 3, 4, 13, 5, 6, 7, 8]
+				"pixelAnimIndex" => [0, 1, 2, 3, 4, 13, 5, 6, 7, 8],
+				"colArray" => [0, 1, 2, 3, 2, 2, 0, 1, 2, 3]
 			],
 		10 => [
 				"letters" => ["A", "B", "C", "D", "J", "E", "M", "F", "G", "H", "I"], 
 				"anims" => ["LEFT", "DOWN", "UP", "RIGHT", "LEFT", "UP", "RIGHT", "LEFT", "DOWN", "UP", "RIGHT"],
 				"strumAnims" => ["LEFT", "DOWN", "UP", "RIGHT", "CIRCLE", "SPACE", "CIRCLE", "LEFT", "DOWN", "UP", "RIGHT"], 
-				"pixelAnimIndex" => [0, 1, 2, 3, 9, 4, 12, 5, 6, 7, 8]
+				"pixelAnimIndex" => [0, 1, 2, 3, 9, 4, 12, 5, 6, 7, 8],
+				"colArray" => [0, 1, 2, 3, 0, 2, 3, 0, 1, 2, 3]
 			],
 		11 => [
 				"letters" => ["A", "B", "C", "D", "J", "K", "L", "M", "F", "G", "H", "I"], 
 				"anims" => ["LEFT", "DOWN", "UP", "RIGHT", "LEFT", "DOWN", "UP", "RIGHT", "LEFT", "DOWN", "UP", "RIGHT"],
 				"strumAnims" => ["LEFT", "DOWN", "UP", "RIGHT", "CIRCLE", "CIRCLE", "CIRCLE", "CIRCLE", "LEFT", "DOWN", "UP", "RIGHT"], 
-				"pixelAnimIndex" => [0, 1, 2, 3, 9, 10, 11, 12, 5, 6, 7, 8]
+				"pixelAnimIndex" => [0, 1, 2, 3, 9, 10, 11, 12, 5, 6, 7, 8],
+				"colArray" => [0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3]
 			],
 		12 => [
 				"letters" => ["A", "B", "C", "D", "J", "K", "N", "L", "M", "F", "G", "H", "I"], 
 				"anims" => ["LEFT", "DOWN", "UP", "RIGHT", "LEFT", "DOWN", "UP", "UP", "RIGHT", "LEFT", "DOWN", "UP", "RIGHT"],
 				"strumAnims" => ["LEFT", "DOWN", "UP", "RIGHT", "CIRCLE", "CIRCLE", "CIRCLE", "CIRCLE", "CIRCLE", "LEFT", "DOWN", "UP", "RIGHT"], 
-				"pixelAnimIndex" => [0, 1, 2, 3, 9, 10, 13, 11, 12, 5, 6, 7, 8]
+				"pixelAnimIndex" => [0, 1, 2, 3, 9, 10, 13, 11, 12, 5, 6, 7, 8],
+				"colArray" => [0, 1, 2, 3, 0, 1, 2, 2, 3, 0, 1, 2, 3]
 			],
 		13 => [
 				"letters" => ["A", "B", "C", "D", "J", "K", "E", "N", "L", "M", "F", "G", "H", "I"], 
 				"anims" => ["LEFT", "DOWN", "UP", "RIGHT", "LEFT", "DOWN", "UP", "UP", "UP", "RIGHT", "LEFT", "DOWN", "UP", "RIGHT"],
 				"strumAnims" => ["LEFT", "DOWN", "UP", "RIGHT", "CIRCLE", "CIRCLE", "SPACE", "CIRCLE", "CIRCLE", "CIRCLE", "LEFT", "DOWN", "UP", "RIGHT"], 
-				"pixelAnimIndex" => [0, 1, 2, 3, 9, 10, 4, 13, 11, 12, 5, 6, 7, 8]
+				"pixelAnimIndex" => [0, 1, 2, 3, 9, 10, 4, 13, 11, 12, 5, 6, 7, 8],
+				"colArray" => [0, 1, 2, 3, 0, 1, 2, 2, 2, 3, 0, 1, 2, 3]
 			],
 		14 => [
 				"letters" => ["A", "B", "C", "D", "J", "K", "E", "N", "E", "L", "M", "F", "G", "H", "I"], 
 				"anims" => ["LEFT", "DOWN", "UP", "RIGHT", "LEFT", "DOWN", "UP", "UP", "UP", "UP", "RIGHT", "LEFT", "DOWN", "UP", "RIGHT"],
 				"strumAnims" => ["LEFT", "DOWN", "UP", "RIGHT", "CIRCLE", "CIRCLE", "SPACE", "CIRCLE", "SPACE", "CIRCLE", "CIRCLE", "LEFT", "DOWN", "UP", "RIGHT"], 
-				"pixelAnimIndex" => [0, 1, 2, 3, 9, 10, 4, 13, 4, 11, 12, 5, 6, 7, 8]
+				"pixelAnimIndex" => [0, 1, 2, 3, 9, 10, 4, 13, 4, 11, 12, 5, 6, 7, 8],
+				"colArray" => [0, 1, 2, 3, 0, 1, 2, 2, 2, 2, 3, 0, 1, 2, 3]
 			],
 		15 => [
 				"letters" => ["A", "B", "C", "D", "J", "K", "L", "M", "O", "P", "Q", "R", "F", "G", "H", "I"], 
 				"anims" => ["LEFT", "DOWN", "UP", "RIGHT", "LEFT", "DOWN", "UP", "RIGHT", "LEFT", "DOWN", "UP", "RIGHT", "LEFT", "DOWN", "UP", "RIGHT"],
 				"strumAnims" => ["LEFT", "DOWN", "UP", "RIGHT", "CIRCLE", "CIRCLE", "CIRCLE", "CIRCLE", "CIRCLE", "CIRCLE", "CIRCLE", "CIRCLE", "LEFT", "DOWN", "UP", "RIGHT"], 
-				"pixelAnimIndex" => [0, 1, 2, 3, 9, 10, 11, 12, 14, 15, 16, 17, 5, 6, 7, 8]
+				"pixelAnimIndex" => [0, 1, 2, 3, 9, 10, 11, 12, 14, 15, 16, 17, 5, 6, 7, 8],
+				"colArray" => [0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3]
 			],
 		16 => [
 				"letters" => ["A", "B", "C", "D", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "F", "G", "H", "I"], 
 				"anims" => ["LEFT", "DOWN", "UP", "RIGHT", "LEFT", "DOWN", "UP", "UP", "RIGHT", "LEFT", "DOWN", "UP", "RIGHT", "LEFT", "DOWN", "UP", "RIGHT"],
 				"strumAnims" => ["LEFT", "DOWN", "UP", "RIGHT", "CIRCLE", "CIRCLE", "CIRCLE", "CIRCLE", "CIRCLE", "CIRCLE", "CIRCLE", "CIRCLE", "CIRCLE", "LEFT", "DOWN", "UP", "RIGHT"], 
-				"pixelAnimIndex" => [0, 1, 2, 3, 9, 10, 11, 12, 13, 14, 15, 16, 17, 5, 6, 7, 8]
+				"pixelAnimIndex" => [0, 1, 2, 3, 9, 10, 11, 12, 13, 14, 15, 16, 17, 5, 6, 7, 8],
+				"colArray" => [0, 1, 2, 3, 0, 1, 2, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3]
 		],
 		17 => [
 				"letters" => ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
@@ -209,7 +226,8 @@ class Note extends NoteObject
 				"LEFT", "DOWN", "UP", "RIGHT", "UP", "LEFT", "DOWN", "UP", "RIGHT"],
 				"strumAnims" => ["LEFT", "DOWN", "UP", "RIGHT", "SPACE", "LEFT", "DOWN", "UP", "RIGHT", 
 				"LEFT", "DOWN", "UP", "RIGHT", "CIRCLE", "LEFT", "DOWN", "UP", "RIGHT"], 
-				"pixelAnimIndex" => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+				"pixelAnimIndex" => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+				"colArray" => [0, 1, 2, 3, 2, 0, 1, 2, 3, 0, 1, 2, 3, 2, 0, 1, 2, 3]
 		],
 	];
 
@@ -254,7 +272,6 @@ class Note extends NoteObject
 	];
 
 	public var extraData:Map<String, Dynamic> = new Map<String, Dynamic>();
-
 	public var noteDiff:Float = 1000;
 	
 	// basic stuff
@@ -475,7 +492,7 @@ class Note extends NoteObject
 		var arr:Array<FlxColor> = ClientPrefs.data.arrowRGBExtra[Note.keysShit.get(mania).get('pixelAnimIndex')[noteData]];
 		if(PlayState.isPixelStage) arr = ClientPrefs.data.arrowRGBPixelExtra[Note.keysShit.get(mania).get('pixelAnimIndex')[noteData]];
 
-		if (arr != null && noteData > -1 && noteData <= arr.length)
+		if (arr != null && noteData > -1 && noteData <= mania)
 		{
 			rgbShader.r = arr[0];
 			rgbShader.g = arr[1];
@@ -606,7 +623,14 @@ class Note extends NoteObject
 			if(!isSustainNote && noteData > -1 && noteData < Note.maxManiaUI_integer) { //Doing this 'if' check to fix the warnings on Senpai songs
 				var animToPlay:String = '';
 				animToPlay = Note.keysShit.get(mania).get('letters')[noteData];
-				animation.play(animToPlay);
+				if (hasAnimation(animToPlay))
+					animation.play(animToPlay);
+				else
+				{
+					animToPlay = colArray[Note.keysShit.get(mania).get('colArray')[noteData]];
+					animation.play(animToPlay + 'Scroll');
+				}
+					
 			}
 		}
 		// trace(prevNote);
@@ -624,7 +648,13 @@ class Note extends NoteObject
 			//offsetX += width* 0.5;
 			copyAngle = false;
 
-			animation.play(Note.keysShit.get(mania).get('letters')[noteData] + ' tail');
+			var animToPlay:String = '';
+			animToPlay = Note.keysShit.get(mania).get('letters')[noteData] + ' tail';
+			if (!hasAnimation(animToPlay))
+			{
+				animToPlay = colArray[Note.keysShit.get(mania).get('colArray')[noteData]] + 'holdend';
+			}
+			animation.play(animToPlay);
 
 			updateHitbox();
 
@@ -632,8 +662,14 @@ class Note extends NoteObject
 
 			if (prevNote.isSustainNote)
 			{
-				prevNote.animation.play(Note.keysShit.get(mania).get('letters')[prevNote.noteData] + ' hold');
-
+				var animToPlay2:String = '';
+				animToPlay2 = Note.keysShit.get(mania).get('letters')[noteData] + ' hold';
+				if (!hasAnimation(animToPlay2))
+				{
+					animToPlay2 = colArray[Note.keysShit.get(mania).get('colArray')[noteData]] + 'hold';
+				}
+				prevNote.animation.play(animToPlay2);
+				
 				prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.05;
 				if(createdFrom != null && createdFrom.songSpeed != null) prevNote.scale.y *= createdFrom.songSpeed;
 
@@ -676,6 +712,11 @@ class Note extends NoteObject
 			}
 		}
 		return globalRgbShaders[noteData];
+	}
+
+	public function hasAnimation(anim:String):Bool
+	{
+		return animation.exists(anim);
 	}
 
 	var lastNoteOffsetXForPixelAutoAdjusting:Float = 0;
@@ -815,12 +856,15 @@ class Note extends NoteObject
 	function _loadNoteAnims() {
 		for (i in 0...gfxLetter.length)
 		{
-			animation.addByPrefix(gfxLetter[i], gfxLetter[i] + '0');
+			attemptToAddAnimationByPrefix(gfxLetter[i], gfxLetter[i] + '0');
+			attemptToAddAnimationByPrefix(gfxLetter[i], colArray[Note.keysShit.get(mania).get('colArray')[noteData]] + '0');
 
 			if (isSustainNote)
 			{
-				animation.addByPrefix(gfxLetter[i] + ' hold', gfxLetter[i] + ' hold');
-				animation.addByPrefix(gfxLetter[i] + ' tail', gfxLetter[i] + ' tail');
+				attemptToAddAnimationByPrefix(gfxLetter[i] + 'tail', colArray[Note.keysShit.get(mania).get('colArray')[noteData]] + ' hold end');
+				attemptToAddAnimationByPrefix(gfxLetter[i] + 'hold', colArray[Note.keysShit.get(mania).get('colArray')[noteData]] + ' hold piece');
+				attemptToAddAnimationByPrefix(gfxLetter[i] + ' hold', gfxLetter[i] + ' hold');
+				attemptToAddAnimationByPrefix(gfxLetter[i] + ' tail', gfxLetter[i] + ' tail');
 			}
 		}
 
@@ -831,6 +875,16 @@ class Note extends NoteObject
 		else
 			setGraphicSize(Std.int(defaultWidth * scales[mania]), Std.int(defaultHeight * scales[0]));
 		updateHitbox();
+	}
+
+	function attemptToAddAnimationByPrefix(name:String, prefix:String, framerate:Float = 24, doLoop:Bool = true)
+	{
+		var animFrames = [];
+		@:privateAccess
+		animation.findByPrefix(animFrames, prefix); // adds valid frames to animFrames
+		if(animFrames.length < 1) return;
+
+		animation.addByPrefix(name, prefix, framerate, doLoop);
 	}
 
 	function loadPixelNoteAnims() {
@@ -855,15 +909,33 @@ class Note extends NoteObject
 		{
 			var animToPlay:String = '';
 			animToPlay = Note.keysShit.get(mania).get('letters')[noteData];
-			animation.play(animToPlay);
+			if (hasAnimation(animToPlay))
+				animation.play(animToPlay);
+			else
+			{
+				animToPlay = colArray[Note.keysShit.get(mania).get('colArray')[noteData]];
+				animation.play(animToPlay + 'Scroll');
+			}
 		}
 
 		if (isSustainNote && prevNote != null)
 		{
-			animation.play(Note.keysShit.get(mania).get('letters')[noteData] + ' tail');
+			var animToPlay:String = '';
+			animToPlay = Note.keysShit.get(mania).get('letters')[noteData] + ' tail';
+			if (!hasAnimation(animToPlay))
+			{
+				animToPlay = colArray[Note.keysShit.get(mania).get('colArray')[noteData]] + 'holdend';
+			}
+			animation.play(animToPlay);
 			if (prevNote.isSustainNote)
 			{
-				prevNote.animation.play(Note.keysShit.get(mania).get('letters')[noteData] + ' hold');
+				var animToPlay2:String = '';
+				animToPlay2 = Note.keysShit.get(mania).get('letters')[noteData] + ' hold';
+				if (!hasAnimation(animToPlay2))
+				{
+					animToPlay2 = colArray[Note.keysShit.get(mania).get('colArray')[noteData]] + 'hold';
+				}
+				prevNote.animation.play(animToPlay2);
 				prevNote.updateHitbox();
 			}
 		}

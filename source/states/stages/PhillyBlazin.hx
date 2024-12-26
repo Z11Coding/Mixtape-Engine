@@ -22,7 +22,6 @@ class PhillyBlazin extends BaseStage
 	var additionalLighten:FlxSprite;
 	
 	var lightningTimer:Float = 3.0;
-
 	var abot:ABotSpeaker;
 
 	override function create()
@@ -36,31 +35,31 @@ class PhillyBlazin extends BaseStage
 
 		if(!ClientPrefs.data.lowQuality)
 		{
-			var skyImage = Paths.image('phillyBlazin/skyBlur');
+			var skyImage = Paths.image('stages/phillyBlazin/skyBlur');
 			scrollingSky = new FlxTiledSprite(skyImage, Std.int(skyImage.width * 1.1) + 475, Std.int(skyImage.height / 1.1), true, false);
 			scrollingSky.antialiasing = ClientPrefs.data.globalAntialiasing;
 			scrollingSky.setPosition(-500, -120);
 			scrollingSky.scrollFactor.set();
 			add(scrollingSky);
 
-			skyAdditive = new BGSprite('phillyBlazin/skyBlur', -600, -175, 0.0, 0.0);
+			skyAdditive = new BGSprite('stages/phillyBlazin/skyBlur', -600, -175, 0.0, 0.0);
 			setupScale(skyAdditive);
 			skyAdditive.visible = false;
 			add(skyAdditive);
 			
-			lightning = new BGSprite('phillyBlazin/lightning', -50, -300, 0.0, 0.0, ['lightning0'], false);
+			lightning = new BGSprite('stages/phillyBlazin/lightning', -50, -300, 0.0, 0.0, ['lightning0'], false);
 			setupScale(lightning);
 			lightning.visible = false;
 			add(lightning);
 		}
 		
-		var phillyForegroundCity:BGSprite = new BGSprite('phillyBlazin/streetBlur', -600, -175, 0.0, 0.0);
+		var phillyForegroundCity:BGSprite = new BGSprite('stages/phillyBlazin/streetBlur', -600, -175, 0.0, 0.0);
 		setupScale(phillyForegroundCity);
 		add(phillyForegroundCity);
 		
 		if(!ClientPrefs.data.lowQuality)
 		{
-			foregroundMultiply = new BGSprite('phillyBlazin/streetBlur', -600, -175, 0.0, 0.0);
+			foregroundMultiply = new BGSprite('stages/phillyBlazin/streetBlur', -600, -175, 0.0, 0.0);
 			setupScale(foregroundMultiply);
 			foregroundMultiply.blend = MULTIPLY;
 			foregroundMultiply.visible = false;
