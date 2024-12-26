@@ -2,7 +2,8 @@ package backend;
 
 typedef Chance = {
     item: Dynamic,
-    chance: Float // Probability as a percentage (0 to 100)
+    chance: Float, // Probability as a percentage (0 to 100)
+    ?condition: Bool // Optional condition to check before selecting the item
 };
 typedef ChanceFunction = {
     func: Void -> Dynamic, // Function to execute
@@ -16,6 +17,7 @@ typedef ChanceFunction = {
         // Validate total probability
         var totalChance:Float = 0;
         for (o in options) {
+            if (!o.condition) {options.remove(o); continue;} 
             if (o.chance < 0 || o.chance > 100) throw "Chance must be between 0 and 100";
             totalChance += o.chance;
         }
