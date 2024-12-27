@@ -434,12 +434,14 @@ class Paths
 				return ImageCache.get(getPath('images/$key.png', IMAGE, library));
 			}
 			else if(ImageCache.exists(modsImages(key)) && !(allowGPU && ClientPrefs.data.cacheOnGPU)){
-				//trace(key + " is in the mods cache");
+				trace(key + " is in the mods cache");
 				return ImageCache.get(modsImages(key));
 			}
 			else{
 				//if (allowGPU) trace(key + " can't be loaded due to GPU Cache being on");
-				//else trace(key + " is NOT in the cache");
+				//else 
+				trace(key + " is NOT in the cache");
+				trace(modsImages(key));
 			
 				var bitmap:BitmapData = null;
 				var file:String = null;

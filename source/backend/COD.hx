@@ -8,6 +8,7 @@ class COD
 	public static var ukTxt:String;
 	public static var COD:String;
 	public static var scriptCOD:String;
+	public static var custom:String;
 
 	public static function initCOD():Void
 	{
@@ -18,6 +19,7 @@ class COD
 		ukTxt = "Unknown.";
 		scriptCOD = "???";
 		COD = "???";
+		custom = "???";
 	}
 
 	public static function setCOD(?note:Note, ?reason:String)
@@ -36,6 +38,10 @@ class COD
 					COD = missDeath2;
 				case "r":
 					COD = rDeath;
+				case "badNote":
+					COD = "Hit a Hurt Note.";
+				case "custom":
+					COD = custom;
 				default:
 					COD = ukTxt;
 			}

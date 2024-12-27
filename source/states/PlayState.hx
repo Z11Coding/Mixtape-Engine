@@ -1652,6 +1652,7 @@ class PlayState extends MusicBeatState
 		lyrics.borderSize = 4;
 		lyrics.text = '';
 		add(lyrics);
+		COD.initCOD();
 
 		/*IntegratedScript.runNamelessLuaScript("
 			local currentBarPorcent = 0
@@ -9474,9 +9475,10 @@ class PlayState extends MusicBeatState
 				gfVocals.volume = 0;
 				for (track in tracks)
 					track.volume = 0;
-				doDeathCheck(true);
-				bfkilledcheck = true;
+				die();
+				COD.setCOD(daNote, 'miss');
 			}
+			COD.setCOD(daNote, 'miss0');
 
 			// For testing purposes
 			// trace(daNote.missHealth);
@@ -9533,6 +9535,7 @@ class PlayState extends MusicBeatState
 		if (ClientPrefs.data.ghostTapping)
 			return; // fuck it
 		bfkilledcheck = true;
+		COD.setCOD('miss0');
 		if (!boyfriend.stunned)
 		{
 			if (ClientPrefs.data.inputSystem == "Kade Engine")
@@ -9546,8 +9549,8 @@ class PlayState extends MusicBeatState
 				gfVocals.volume = 0;
 				for (track in tracks)
 					track.volume = 0;
-				doDeathCheck(true);
-				bfkilledcheck = true;
+				die();
+				COD.setCOD('miss');
 			}
 
 			if (ClientPrefs.data.ghostTapping)
@@ -9667,6 +9670,9 @@ class PlayState extends MusicBeatState
 		else if (chars.length == 0)
 			chars = field.characters;
 
+		if (note.hitCausesMiss)
+			COD.setCOD(note, 'badNote');
+
 		/*for(char in chars){
 			if(note.noteType == 'Hey!' && char.animOffsets.exists('hey')) {
 				dad.playAnim('hey', true);
@@ -9775,10 +9781,18 @@ class PlayState extends MusicBeatState
 				{
 					if (dad != null)
 					{
-						if (note.animation != null && !note.animation.curAnim.name.endsWith('tail'))
+						try 
 						{
-							dad.playAnim('sing' + Note.keysShit.get(mania).get('anims')[Std.int(Math.abs(note.noteData))] + altAnim, true);
-							dad.holdTimer = 0;
+							if (note.animation != null && !note.animation.curAnim.name.endsWith('tail'))
+							{
+								dad.playAnim('sing' + Note.keysShit.get(mania).get('anims')[Std.int(Math.abs(note.noteData))] + altAnim, true);
+								dad.holdTimer = 0;
+							}
+						}
+						catch(e:Dynamic)
+						{
+							trace("Your Tail Note Was Bugged! Skipping Note");
+							return;
 						}
 					}
 				}
@@ -10032,6 +10046,7 @@ class PlayState extends MusicBeatState
 
 		if (note.hitCausesMiss)
 		{
+			COD.setCOD(note, 'badNote');
 			switch (note.noteType)
 			{
 				case 'Hurt Note': // Hurt note

@@ -1566,6 +1566,7 @@ public function doEffect(effect:String)
 				swagNote.specialNote = true;
 				swagNote.hitCausesMiss = true;
                 swagNote.ratingDisabled = true;
+                swagNote.cod = 'Hit a Mine Note.';
 			case 2:
 				swagNote.noteType = 'Warning Note';
 				swagNote.reloadNote();
@@ -1573,6 +1574,7 @@ public function doEffect(effect:String)
 				swagNote.specialNote = true;
 				swagNote.hitCausesMiss = false;
                 swagNote.ratingDisabled = true;
+                swagNote.cod = 'Missed a Warning Note.';
 			case 3:
 				swagNote.noteType = 'Heal Note';
 				swagNote.reloadNote();
@@ -1587,6 +1589,7 @@ public function doEffect(effect:String)
 				swagNote.hitCausesMiss = true;
 				swagNote.specialNote = true;
                 swagNote.ratingDisabled = true;
+                swagNote.cod = 'Hit a Ice Note.';
 			case 5:
 				swagNote.noteType = 'Fake Heal Note';
 				swagNote.reloadNote();
@@ -1594,10 +1597,12 @@ public function doEffect(effect:String)
 				swagNote.hitCausesMiss = true;
 				swagNote.specialNote = true;
                 swagNote.ratingDisabled = true;
+                swagNote.cod = 'Hit a Fake Heal Note.';
 			default:
 				swagNote.ignoreNote = false;
 				swagNote.specialNote = false;
                 swagNote.ratingDisabled = true;
+                swagNote.cod = 'Missed a Spam/Jack Note.';
 		}
 		swagNote.mustPress = true;
 		if (chartModifier == "SpeedRando")
@@ -2025,6 +2030,7 @@ public function doEffect(effect:String)
         {
             if (daNote.isAlert)
             {
+                COD.setCOD(daNote);
                 health -= 0.5;
                 FlxG.sound.play(Paths.sound('streamervschat/warning'));
                 var fist:FlxSprite = new FlxSprite().loadGraphic(Paths.image("streamervschat/thepunch"));
@@ -2044,19 +2050,10 @@ public function doEffect(effect:String)
                     },
                     type: PINGPONG
                 });
-            }
-
-            if (daNote.isAlert)
-            {
                 char.playAnim('hit', true);
             }
-            else if (char != null && !daNote.noMissAnimation && char.hasMissAnimations)
-            {
-                var animToPlay:String = 'sing' + Note.keysShit.get(PlayState.mania).get('anims')[daNote.noteData] + 'miss' + daNote.animSuffix;
-                char.playAnim(animToPlay, true);
-            }
 
-			if (daNote.specialNote)
+            if (daNote.specialNote)
 			{
 				specialNoteHit(daNote, field);
 				return;
@@ -2088,6 +2085,7 @@ public function doEffect(effect:String)
     {
         if (note.specialNote)
 		{
+            COD.setCOD(note);
 			specialNoteHit(note, field);
 			return;
 		}
@@ -2224,6 +2222,8 @@ public function doEffect(effect:String)
 				add(terminate);
 				terminateTimestamps.push(terminate);
 				terminateStep--;
+                COD.setCOD('custom');
+                COD.custom = 'You were Terminated.';
 			case 2 | 1 | 0:
 				terminateMessage.loadGraphic(Paths.image("streamervschat/terminate" + terminateStep));
 				terminateMessage.screenCenter(XY);

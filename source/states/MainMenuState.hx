@@ -591,9 +591,4 @@ class MainMenuState extends MusicBeatState
 			});
 		}
 	}
-
-	override function destroy()
-	{
-		super.destroy();
-	}
 }

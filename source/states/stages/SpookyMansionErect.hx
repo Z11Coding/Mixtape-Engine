@@ -21,15 +21,15 @@ class SpookyMansionErect extends PicoCapableStage
 
 	override function create()
 	{
-		halloweenBG = new BGSprite('erect/bgDark', -360, -220);
-		halloweenBGLight = new BGSprite('erect/bgLight', -360, -220);
+		halloweenBG = new BGSprite('stages/mansion/erect/bgDark', -360, -220);
+		halloweenBGLight = new BGSprite('stages/mansion/erect/bgLight', -360, -220);
 		halloweenBGLight.alpha = 0;
 
-		stairsDark = new BGSprite('erect/stairsDark', 966, -225);
-		stairsLight = new BGSprite('erect/stairsLight', 966, -225);
+		stairsDark = new BGSprite('stages/mansion/erect/stairsDark', 966, -225);
+		stairsLight = new BGSprite('stages/mansion/erect/stairsLight', 966, -225);
 		stairsLight.alpha = 0;
 
-		halloweenWindow = new BGSprite('erect/bgtrees', 200, 50, 0.8, 0.8, ["bgtrees0"],true);
+		halloweenWindow = new BGSprite('stages/mansion/erect/bgtrees', 200, 50, 0.8, 0.8, ["bgtrees0"],true);
 		
 
 		add(halloweenWindow);
