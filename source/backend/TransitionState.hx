@@ -108,6 +108,7 @@ class TransitionState {
             case "slideRandom":
                 var directions = ["slideLeft", "slideRight", "slideUp", "slideDown"];
                 var randomDirection = new FlxRandom().shuffleArray(directions, 1)[0];
+                currenttransition = null;
                 transitionState(targetState, { duration: duration, transitionType: randomDirection, onComplete: onComplete }, args);
                 return; // Prevent further execution in this call
                 case "stickers":
