@@ -181,7 +181,19 @@ class CacheState extends MusicBeatState
 			cache = cache.concat(Paths.crawlDirectoryOG("assets", ".png", images));
 			cache = cache.concat(Paths.crawlDirectoryOG("mods", ".png", modImages));
 
-			
+			if (ClientPrefs.data.saveCache) {
+				ImageCache.loadCache();
+			}
+
+			for (image in cache) {
+				if (ImageCache.exists(image)) {
+					if (images.indexOf(image) != -1) {
+						images.splice(images.indexOf(image), 1);
+					} else if (modImages.indexOf(image) != -1) {
+						modImages.splice(modImages.indexOf(image), 1);
+					}
+				}
+			}
 		}
 
 		if (ClientPrefs.data.musicPreload2)
