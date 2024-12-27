@@ -61,6 +61,18 @@ class CollectionUtils {
         return l;
     }
 
+    public static inline extern overload function getFromList<T>(list:List<T>, index:Int):T {
+        return listIndex(list, index);
+    }
+
+    public static inline extern overload function getFromList<T>(list:List<T>, func:Predicate<T>):T {
+        return list.filter(func).first();
+    }
+
+    // public static inline extern overload function getFromMap<K, V>(map:Map<K, V>, key:K):V {
+    //     return map.get(key);
+    // }
+
     public static extern overload inline function addAndReturn<T>(l:List<T>, item:T):List<T> {
         l.add(item);
         return l;
@@ -140,7 +152,7 @@ class CollectionUtils {
         return -1;
     }
 
-    public static inline function listIndex<T>(list:List<T>, index:Int):T {
+    public static function listIndex<T>(list:List<T>, index:Int):T {
         var i = 0;
         for (item in list) {
             if (i == index) {
