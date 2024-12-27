@@ -206,6 +206,7 @@ class Main extends Sprite
 		FlxG.save.bind('Mixtape', CoolUtil.getSavePath());
 		yutautil.save.MixSaveWrapper.saveObjectToFile(FlxG.save.data, "save/mixsave.json", true);
 		yutautil.save.MixSaveWrapper.saveObjectToFile(init, "save/test.json", true);
+		trace(new yutautil.save.MixSaveWrapper(new yutautil.save.MixSave(), "cache.json").mixSave.content.toArray().length);
 
 
 		Highscore.load();

@@ -4,20 +4,20 @@ import sys.io.File;
 
 using yutautil.save.MixSave;
 
-
 enum OutputType {
     MixSaveWrapperType;
     MixSaveType;
     MapType;
     DynamicType;
 }
+
 class MixSaveWrapper {
     public var mixSave:MixSave;
     private var filePath:String;
     public var fancyFormat:Bool = false;
 
-    public function new(mixSave:MixSave, filePath:String = "save/mixsave.json") {
-        this.mixSave = mixSave;
+    public function new(?mixSave:MixSave, filePath:String = "save/mixsave.json") {
+        this.mixSave = mixSave != null ? mixSave : new MixSave();
         this.filePath = filePath;
         if (!filePath.endsWith(".json")) {
             filePath += ".json";
@@ -79,11 +79,6 @@ class MixSaveWrapper {
         }
     }
 
-    // function test(Int a, Int b) {
-    //     return a + b;
-    // }
-
-
     /**
      * Loads a mix file from the specified file path and returns the content based on the specified output type.
      *
@@ -121,5 +116,24 @@ class MixSaveWrapper {
 
     public function isEmpty():Bool {
         return mixSave.content.toArray().length == 0;
+    }
+}
+
+class ActiveSave extends MixSaveWrapper { // Work in progress
+    public function new(?mixSave:MixSave, filePath:String = "save/activesave.json") {
+        super(mixSave, filePath);
+    }
+
+    override public function addObject(thing:Dynamic):Void {
+        super.addObject(thing);
+        save();
+    }
+
+    override public function save():Void {
+        super.save();
+    }
+
+    override public function load():Void {
+        super.load();
     }
 }
