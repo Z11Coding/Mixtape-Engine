@@ -118,15 +118,10 @@ class CacheState extends MusicBeatState
 	override function create()
 	{
 		trace('ngl pretty cool');
-		if (!loaded) {
-			loaded = true;
-			openPreloadSettings();
-		}
-
-
 		prevAutoPause = FlxG.autoPause;
 		FlxG.autoPause = false;
 		if (!cacheInit && (FlxG.save.data.musicPreload2 == null || FlxG.save.data.graphicsPreload2 == null || FlxG.save.data.videoPreload2 == null)) {
+			openPreloadSettings();
 			cacheInit = true;
 			pause = true;
 			allowMusic = false;
@@ -156,8 +151,8 @@ class CacheState extends MusicBeatState
 		Paths.crawlDirectoryOG("mods", "", pathList);
 		
 		if((FlxG.save.data.musicPreload2 != null && ClientPrefs.data.musicPreload2 == false)
-			|| (FlxG.save.data.graphicsPreload2 != null && ClientPrefs.data.graphicsPreload2 == false)
-				|| (FlxG.save.data.videoPreload2 != null && ClientPrefs.data.videoPreload2 == false)) {
+			&& (FlxG.save.data.graphicsPreload2 != null && ClientPrefs.data.graphicsPreload2 == false)
+				&& (FlxG.save.data.videoPreload2 != null && ClientPrefs.data.videoPreload2 == false)) {
 				FlxG.switchState(newDest);
 				FlxG.autoPause = prevAutoPause;
 				dontBother = true;

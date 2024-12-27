@@ -115,7 +115,7 @@ class MixSaveWrapper {
     }
 
     public function isEmpty():Bool {
-        return mixSave.content.toArray().length == 0;
+        return mixSave.content.toArray().length <= 0;
     }
 }
 

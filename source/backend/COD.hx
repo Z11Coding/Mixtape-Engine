@@ -26,7 +26,7 @@ class COD
 	{
 		if (scriptCOD != "???")
 			COD = scriptCOD;
-		else if (note.cod != "???")
+		else if (note != null && note.cod != "???")
 			COD = note.cod;
 		else
 		{

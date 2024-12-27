@@ -101,7 +101,7 @@ class ImageCache {
     public static function loadCache():Void {
         try {
             var cacheJson:MixSaveWrapper = new MixSaveWrapper(new MixSave(), "save/cache.json");
-            if (!cacheJson.isEmpty()) {
+            if (cacheJson.mixSave.content.toArray().length <= 0) {
                 var rawData:Array<Dynamic> = cacheJson.mixSave.content.toArray();
                 var cacheData:Array<{ id: String, imageData: String }> = rawData.map(function(item:Dynamic) return { id: item.key, imageData: item.value });
                 for (data in cacheData) {
