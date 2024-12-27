@@ -70,11 +70,11 @@ class ImageCache {
             }
             var originalBitmapData:BitmapData = graphic.bitmap;
             trace("Processing id: " + id + ", size: " + originalBitmapData.width + "x" + originalBitmapData.height);
-            
+        
             // Create a new BitmapData object
             var newBitmapData:BitmapData = new BitmapData(originalBitmapData.width, originalBitmapData.height, true, 0x00000000);
             newBitmapData.draw(originalBitmapData); // Draw the original bitmap onto the new one
-            
+        
             // Encode the new BitmapData
             var bytes:ByteArray = newBitmapData.encode(newBitmapData.rect, new openfl.display.PNGEncoderOptions());
             if (bytes == null) {

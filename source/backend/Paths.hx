@@ -439,7 +439,9 @@ class Paths
 			}
 			else{
 				//if (allowGPU) trace(key + " can't be loaded due to GPU Cache being on");
-				//else trace(key + " is NOT in the cache");
+				//else 
+				trace(key + " is NOT in the cache");
+				trace(modsImages(key));
 			
 				var bitmap:BitmapData = null;
 				var file:String = null;
