@@ -152,7 +152,7 @@ class CollectionUtils {
         return -1;
     }
 
-    public static inline function listIndex<T>(list:List<T>, index:Int):T {
+    public static function listIndex<T>(list:List<T>, index:Int):T {
         var i = 0;
         for (item in list) {
             if (i == index) {
