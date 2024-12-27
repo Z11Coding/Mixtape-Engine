@@ -15,6 +15,10 @@ class CacheSettings extends BaseOptionsMenu
 			"If checked, The Music Will Be Cached.", 'musicPreload2', 'bool');
 		addOption(option); // now shut up before i put you in my basement
 
+		var option:Option = new Option('Cache Videos', // even tho only one person asked, it here
+			"If checked, The Videos Will Be Cached.", 'videoPreload2', 'bool');
+		addOption(option); // now shut up before i put you in my basement
+
 		var option:Option = new Option('Experimental Caching',
 			"If checked, Experimental Caching Will Be Enabled. Allows saving the Cache to the next session.", 'experimentalCaching', 'bool', null, FlxG.resetState);
 		addOption(option);

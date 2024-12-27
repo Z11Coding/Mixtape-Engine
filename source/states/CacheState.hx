@@ -57,11 +57,11 @@ class CacheState extends MusicBeatState
 	var daMods:Array<String> = [];
 	var pathList:Array<String> = 
 	[
-		"", "characters", "dialogue", "pauseAlt", "pixelUI", "weeb", 
-		"achievements", "credits", "icons", "loading", "mainmenu", "menubackgrounds", 
-		"menucharacters", "menudifficulties", "storymenu", "pixelUI/noteskins", "cursor", 
-		"editors", "effects", "globalIcons", "HUD", "mechanics", "noteColorMenu", "noteskins", 
-		"pause", "soundtray", "stages"
+		"", "/characters", "/dialogue", "/pauseAlt", "/pixelUI", "/weeb", 
+		"/achievements", "/credits", "/icons", "/loading", "/mainmenu", "/menubackgrounds", 
+		"/menucharacters", "/menudifficulties", "/storymenu", "/pixelUI/noteskins", "/cursor", 
+		"/editors", "/effects", "/globalIcons", "/HUD", "/mechanics", "/noteColorMenu", "/noteskins", 
+		"/pause", "/soundtray", "/stages"
 	]; //keep it here just in case
 	
 	var shitz:FlxText;
@@ -120,7 +120,7 @@ class CacheState extends MusicBeatState
 		trace('ngl pretty cool');
 		if (!loaded) {
 			loaded = true;
-		openPreloadSettings();
+			openPreloadSettings();
 		}
 
 
@@ -151,6 +151,9 @@ class CacheState extends MusicBeatState
 				daMods.push(folder);
 			}
 		}
+
+		pathList = [];
+		Paths.crawlDirectoryOG("mods", "", pathList);
 		
 		if((FlxG.save.data.musicPreload2 != null && ClientPrefs.data.musicPreload2 == false)
 			|| (FlxG.save.data.graphicsPreload2 != null && ClientPrefs.data.graphicsPreload2 == false)
@@ -178,19 +181,7 @@ class CacheState extends MusicBeatState
 			cache = cache.concat(Paths.crawlDirectoryOG("assets", ".png", images));
 			cache = cache.concat(Paths.crawlDirectoryOG("mods", ".png", modImages));
 
-			if (ClientPrefs.data.saveCache) {
-				ImageCache.loadCache();
-			}
-
-			for (image in cache) {
-				if (ImageCache.exists(image)) {
-					if (images.indexOf(image) != -1) {
-						images.splice(images.indexOf(image), 1);
-					} else if (modImages.indexOf(image) != -1) {
-						modImages.splice(modImages.indexOf(image), 1);
-					}
-				}
-			}
+			
 		}
 
 		if (ClientPrefs.data.musicPreload2)
@@ -290,6 +281,7 @@ class CacheState extends MusicBeatState
 		}
 
 		super.create();
+		COD.initCOD();
 	}
 
 	function openPreloadSettings(){
@@ -333,7 +325,7 @@ class CacheState extends MusicBeatState
 					loadingWhatMini.screenCenter(X);
 	
 					ImageCache.saveCache();
-					}
+				}
 				FlxG.sound.music.time = 0;
 				if (ClientPrefs.data.cacheCharts) {
 					var charts:Array<String> = Paths.crawlDirectory("assets/shared/data", ".json");
@@ -412,13 +404,12 @@ class CacheState extends MusicBeatState
 					loadingWhatMini.screenCenter(X);
 					loadingWhat.screenCenter(XY);
 					for (i in daMods){
-						for (ii in pathList){
-							loadingWhatMini.text = modImages[modImI];
-							loadingWhatMini.screenCenter(X);
-							if (CoolUtil.exists(Paths.file2(StringTools.replace(modImages[modImI], '.png', ''), '$i/images/$ii', "png", "mods"))){
-								if(!ImageCache.exists(Paths.file2(StringTools.replace(modImages[modImI], '.png', ''), '$i/images/$ii', "png", "mods"))){
-									ImageCache.add(Paths.file2(StringTools.replace(modImages[modImI], '.png', ''), '$i/images/$ii', "png", "mods"));
-								}
+						loadingWhatMini.text = modImages[modImI];
+						loadingWhatMini.screenCenter(X);
+						if (CoolUtil.exists(StringTools.replace(modImages[modImI], '.png', ''))){
+							trace(StringTools.replace(modImages[modImI], '.png', ''));
+							if(!ImageCache.exists(StringTools.replace(modImages[modImI], '.png', ''))){
+								ImageCache.add(StringTools.replace(modImages[modImI], '.png', ''));
 							}
 						}
 					}
@@ -459,15 +450,15 @@ class CacheState extends MusicBeatState
 				else{
 					for (i in daMods){
 						for (ii in pathList){
-							loadingWhatMini.text = modVideos[gfxMV];
-							loadingWhatMini.screenCenter(X);
-							loadingWhat.screenCenter(XY);
-							if (CoolUtil.exists(Paths.file2(StringTools.replace(modVideos[gfxMV], '.mp4', ''), '$i/videos/$ii', "mp4", "mods"))){
-								preloadVideo(StringTools.replace(modVideos[gfxMV], '.mp4', ''));
+							try
+							{
+								loadingWhatMini.text = modVideos[gfxMV];
+								loadingWhatMini.screenCenter(X);
+								loadingWhat.screenCenter(XY);
+								
 							}
-							else{
-								trace("Video: File at " + modVideos[gfxMV] + " not found, skipping cache.");
-							}
+							catch(e)
+							{}
 						}
 					}
 					gfxMV++;
@@ -564,10 +555,10 @@ class CacheState extends MusicBeatState
 		}
 		#if (LUA_ALLOWED || HSCRIPT_ALLOWED)
 		else
-			trace("Video not found: " + fileName);
+			//trace("Mod Video not found: " + fileName);
 		#else
 		else
-			trace("Video not found: " + fileName);
+			//trace("Video not found: " + fileName);
 		#end
 		#else
 		FlxG.log.warn('Platform not supported!');

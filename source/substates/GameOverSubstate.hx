@@ -129,10 +129,11 @@ class GameOverSubstate extends MusicBeatSubstate
 		}
 
 		causeofdeath = new UnderTextParser(0, 0, FlxG.width, "", 32);
+		causeofdeath.scrollFactor.set(0,0);
 		causeofdeath.screenCenter(X);
 		causeofdeath.font = Paths.font("determination-extended.ttf");
         causeofdeath.color = 0xFFFFFFFF; 
-        causeofdeath.sounds = [FlxG.sound.load(Paths.sound('ut/uifont'), 0.6)];
+        causeofdeath.soundOnChars.set("a", FlxG.sound.load(Paths.sound('ut/uifont'), 0.6));
 		add(causeofdeath);
 
 

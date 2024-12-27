@@ -42,6 +42,7 @@ class UnderTextParser extends FlxTypeText {
         this.defaultSpeed = Speed;
         this.speed = Speed;
         this.pauseDuration = 0;
+        soundOnChars = new Map<String, FlxSound>();
     }
 
     public function doSkip()

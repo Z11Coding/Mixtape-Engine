@@ -207,19 +207,18 @@ class TransitionState {
                 });
             case 'transparent close':
                 var exitSound:FlxSound;
+                exitSound = new FlxSound().loadEmbedded(Paths.music('gameOverEnd'));
                 if (FlxG.sound.music != null && FlxG.sound.music.playing)
                 {
                     FlxG.sound.music.stop();
-                    exitSound = new FlxSound().loadEmbedded(Paths.music('gameOverEnd'));
                     exitSound.play();
                 }
                 else
                 {
-                    exitSound = new FlxSound().loadEmbedded(Paths.music('gameOverEnd'));
                     exitSound.play();
                 }
-                if (ClientPrefs.data.flashing) FlxG.camera.flash(FlxColor.WHITE, exitSound.length);
-                FlxTween.num(1, 0, exitSound.length, {ease: FlxEase.sineInOut, onComplete: 
+                if (ClientPrefs.data.flashing) FlxG.camera.flash(FlxColor.WHITE, (exitSound.length*0.1));
+                FlxTween.num(1, 0, (exitSound.length*0.1), {ease: FlxEase.sineInOut, onComplete: 
                 function(twn:FlxTween)
                 {
                     switchState(targetState, onComplete, args);

@@ -434,7 +434,7 @@ class Paths
 				return ImageCache.get(getPath('images/$key.png', IMAGE, library));
 			}
 			else if(ImageCache.exists(modsImages(key)) && !(allowGPU && ClientPrefs.data.cacheOnGPU)){
-				//trace(key + " is in the mods cache");
+				trace(key + " is in the mods cache");
 				return ImageCache.get(modsImages(key));
 			}
 			else{
