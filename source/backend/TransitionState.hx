@@ -218,8 +218,8 @@ class TransitionState {
                 {
                     exitSound.play();
                 }
-                if (ClientPrefs.data.flashing) FlxG.camera.flash(FlxColor.WHITE, (exitSound.length*0.1));
-                FlxTween.num(1, 0, (exitSound.length*0.1), {ease: FlxEase.sineInOut, onComplete: 
+                if (ClientPrefs.data.flashing) FlxG.camera.flash(FlxColor.WHITE, (exitSound.length*0.01));
+                FlxTween.num(1, 0, (exitSound.length*0.01), {ease: FlxEase.sineInOut, onComplete: 
                 function(twn:FlxTween)
                 {
                     switchState(targetState, onComplete, args);

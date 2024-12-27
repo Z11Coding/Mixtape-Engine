@@ -6746,6 +6746,7 @@ class PlayState extends MusicBeatState
 		{
 			health = 0;
 			die();
+			COD.setCOD('r');
 			trace("RESET = True");
 		}
 		doDeathCheck();
@@ -8473,7 +8474,11 @@ class PlayState extends MusicBeatState
 		}
 		
 		if (AIScore > songScore)
+		{
+			COD.setCOD('custom');
+			COD.custom = 'Lost to the Opponent';
 			die();
+		}
 		else
 		{
 			if (ClientPrefs.data.noteOffset <= 0 || ignoreNoteOffset)

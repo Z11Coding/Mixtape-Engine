@@ -128,9 +128,8 @@ class GameOverSubstate extends MusicBeatSubstate
 			}
 		}
 
-		causeofdeath = new UnderTextParser(0, 0, FlxG.width, "", 32);
+		causeofdeath = new UnderTextParser(boyfriend.x, boyfriend.y - 100, FlxG.width, "", 32);
 		causeofdeath.scrollFactor.set(0,0);
-		causeofdeath.screenCenter(X);
 		causeofdeath.font = Paths.font("determination-extended.ttf");
         causeofdeath.color = 0xFFFFFFFF; 
         causeofdeath.soundOnChars.set("a", FlxG.sound.load(Paths.sound('ut/uifont'), 0.6));

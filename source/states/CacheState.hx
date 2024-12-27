@@ -1,4 +1,5 @@
 package states;
+import backend.Threader.ThreadQueue;
 #if sys
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -98,6 +99,7 @@ class CacheState extends MusicBeatState
 	public static var cacheInit:Bool = false;
 	var currentLoaded:Int = 0;
 	var loadTotal:Int = 0;
+	var thread:ThreadQueue;
 	
 	var listoSongs:Array<String> = [
 		'breakfast', 
@@ -223,10 +225,127 @@ class CacheState extends MusicBeatState
 
 
 		loadTotal = images.length + modImages.length + music.length + modMusic.length + videos.length + modVideos.length;
-		//trace("Files: " + "Images: " + images + "Images(Mod): " + modImages + "Music: " + music + "Music(Mod): " + modMusic);
-		//trace(loadTotal + " files to load");
-		
-		trace(loadTotal);
+		//trace("Files: " + "Images: " + images + "Images(Mod): " + modImages + "Music: " + music + "Music(Mod): " + modMusic + "Video: " + videos + "Video(Mod): " + modVideos);
+		trace(loadTotal + " files to load");
+
+		var cacheArr:Array<() -> Void> = [];
+
+		for (a in images)
+		{
+			var image =
+			function() 
+			{
+				if(!ImageCache.exists(a)){
+					ImageCache.add(a);
+				}
+				currentLoaded++;
+			};
+			cacheArr.push(image);
+		}
+
+		for (a in modImages)
+		{
+			var imageMod =
+			function() 
+			{
+				if(!ImageCache.exists(a)){
+					ImageCache.add(a);
+				}
+				currentLoaded++;
+			};
+			cacheArr.push(imageMod);
+		}
+
+		for (a in music)
+		{
+			var music =
+			function() 
+			{
+				if(CoolUtil.exists(a)){
+					if(CoolUtil.exists(Paths.cacheInst(a))){
+						FlxG.sound.cache(Paths.cacheInst(a));
+					}
+					if(CoolUtil.exists(Paths.cacheVoices(a))){
+						FlxG.sound.cache(Paths.cacheVoices(a));
+					}
+					if(CoolUtil.exists(Paths.cacheSound(a))){
+						FlxG.sound.cache(Paths.cacheSound(a));
+					}
+					if(CoolUtil.exists(Paths.cacheMusic(a))) {
+						FlxG.sound.cache(Paths.cacheMusic(a));
+					}
+					currentLoaded++;
+				}
+				else{
+					trace("Music/Sound: File at " + a + " not found, skipping cache.");
+				}
+			};
+			cacheArr.push(music);
+		}
+
+		for (a in modMusic)
+		{
+			var modMusic =
+			function() 
+			{
+				try
+				{
+					if(CoolUtil.exists(Paths.cacheInst(a))){
+						FlxG.sound.cache(Paths.cacheInst(a));
+					}
+					if(CoolUtil.exists(Paths.cacheVoices(a))){
+						FlxG.sound.cache(Paths.cacheVoices(a));
+					}
+					if(CoolUtil.exists(Paths.cacheSound(a))){
+						FlxG.sound.cache(Paths.cacheSound(a));
+					}
+					if(CoolUtil.exists(Paths.cacheMusic(a))) {
+						FlxG.sound.cache(Paths.cacheMusic(a));
+					}
+					currentLoaded++;
+				}
+				catch(e)
+				{
+					trace("Music/Sound: File at " + a + " not found, skipping cache.");
+				}
+			};
+			cacheArr.push(modMusic);
+		}
+
+		for (a in videos)
+		{
+			var video =
+			function() 
+			{
+				try {
+					var a = StringTools.replace(a, '.mp4', '');
+					a = StringTools.replace(a, 'assets/videos/', '');
+					preloadVideo(StringTools.replace(a, '.mp4', ''));
+					currentLoaded++;
+				}
+				catch(e){
+					trace("Video: File at " + a + " not found, skipping cache.");
+				}
+			};
+			cacheArr.push(video);
+		}
+
+		for (a in modVideos)
+		{
+			var video =
+			function() 
+			{
+				try{
+					preloadVideoMods(a);
+					currentLoaded++;
+				}
+				catch(e){
+					trace("Video: File at " + a + " not found, skipping cache.");
+				}
+			};
+			cacheArr.push(video);
+		}
+
 		if(loadTotal > 0){
 			loadingBar = new FlxBar(0, 605, LEFT_TO_RIGHT, 600, 24, this, 'currentLoaded', 0, loadTotal);
 			loadingBar.createGradientBar([0xFF333333, 0xFFFFFFFF], [0xFF7233D8, 0xFFD89033]);
@@ -270,6 +389,8 @@ class CacheState extends MusicBeatState
 
 		if (allowMusic && !cacheInit) FlxG.sound.playMusic(Paths.music(listoSongs[FlxG.random.int(0, 10)]), 1, true);
 
+		thread = new ThreadQueue(3);
+		thread.preloadMulti(cacheArr);
 		if(!cacheStart){
 			#if web
 			new FlxTimer().start(3, function(tmr:FlxTimer)
@@ -282,13 +403,12 @@ class CacheState extends MusicBeatState
 			new FlxTimer().start(3, function(tmr:FlxTimer)
 			{
 				cacheStart = true;
-				cache();
+				thread.run();
 			});
 			#end
 		}
 
 		super.create();
-		COD.initCOD();
 	}
 
 	function openPreloadSettings(){
@@ -374,168 +494,6 @@ class CacheState extends MusicBeatState
 					openPreloadSettings();
 				}
 			}
-		
-			if(startCachingGraphics){
-				if(gfxI >= images.length){
-					trace("Graphics cached");
-					startCachingGraphics = false;
-					startCachingSoundsAndMusicMods = true;
-					graphicsCached = true;
-				}
-				else{
-					loadingWhatMini.text = images[gfxI];
-					loadingWhatMini.screenCenter(X);
-					loadingWhat.screenCenter(XY);
-					if(CoolUtil.exists(images[gfxI])){
-						if(!ImageCache.exists(images[gfxI])){
-							ImageCache.add(images[gfxI]);
-						}
-					}
-					else{
-						trace("Image: File at " + images[gfxI] + " not found, skipping cache.");
-					}
-					gfxI++;
-					currentLoaded++;
-				}
-			}
-
-			if(startCachingModImages){
-				if(modImI >= modImages.length){
-					trace("Mod Graphics cached");
-					startCachingModImages = false;
-					startCachingVideos = true;
-					modImagesCached = true;
-				}
-				else{
-					loadingWhatMini.text = modImages[gfxI];
-					loadingWhatMini.screenCenter(X);
-					loadingWhat.screenCenter(XY);
-					for (i in daMods){
-						loadingWhatMini.text = modImages[modImI];
-						loadingWhatMini.screenCenter(X);
-						if (CoolUtil.exists(StringTools.replace(modImages[modImI], '.png', ''))){
-							trace(StringTools.replace(modImages[modImI], '.png', ''));
-							if(!ImageCache.exists(StringTools.replace(modImages[modImI], '.png', ''))){
-								ImageCache.add(StringTools.replace(modImages[modImI], '.png', ''));
-							}
-						}
-					}
-					modImI++;
-					currentLoaded++;
-				}
-			}
-
-			if(startCachingVideos){
-				if(gfxV >= videos.length){
-					trace("Videos cached");
-					startCachingVideos = false;
-					startCachingVideoMods = true;
-					graphicsCached = true;
-				}
-				else{
-					loadingWhatMini.text = videos[gfxV];
-					loadingWhatMini.screenCenter(X);
-					loadingWhat.screenCenter(XY);
-					if(CoolUtil.exists(videos[gfxV])){
-						var a = StringTools.replace(videos[gfxV], '.mp4', '');
-						a = StringTools.replace(a, 'assets/videos/', '');
-						preloadVideo(StringTools.replace(a, '.mp4', ''));
-					}
-					else{
-						trace("Video: File at " + videos[gfxV] + " not found, skipping cache.");
-					}
-					gfxV++;
-					currentLoaded++;
-				}
-			}
-
-			if(startCachingVideoMods){
-				if(gfxMV >= modVideos.length){
-					trace("Mod Videos cached");
-					startCachingVideoMods = false;
-				}
-				else{
-					for (i in daMods){
-						for (ii in pathList){
-							try
-							{
-								loadingWhatMini.text = modVideos[gfxMV];
-								loadingWhatMini.screenCenter(X);
-								loadingWhat.screenCenter(XY);
-								
-							}
-							catch(e)
-							{}
-						}
-					}
-					gfxMV++;
-					currentLoaded++;
-				}
-			}
-
-			if(startCachingSoundsAndMusicMods){
-				if(sNmmI >= modMusic.length){
-					trace("Mods Music and Sounds cached");
-					startCachingSoundsAndMusicMods = false;
-					startCachingModImages = true;
-				}
-				else{
-					loadingWhatMini.text = modMusic[sNmmI];
-					loadingWhatMini.screenCenter(X);
-					loadingWhat.screenCenter(XY);
-					if(CoolUtil.exists(modMusic[sNmmI])){
-						if(CoolUtil.exists(Paths.cacheInst(modMusic[sNmmI]))){
-							FlxG.sound.cache(Paths.cacheInst(modMusic[sNmmI]));
-						}
-						if(CoolUtil.exists(Paths.cacheVoices(modMusic[sNmmI]))){
-							FlxG.sound.cache(Paths.cacheVoices(modMusic[sNmmI]));
-						}
-						if(CoolUtil.exists(Paths.cacheSound(modMusic[sNmmI]))){
-							FlxG.sound.cache(Paths.cacheSound(modMusic[sNmmI]));
-						}
-						if(CoolUtil.exists(Paths.cacheMusic(modMusic[sNmmI]))) {
-							FlxG.sound.cache(Paths.cacheMusic(modMusic[sNmmI]));
-						}
-					}
-					else{
-						trace("Music/Sound: File at " + modMusic[sNmmI] + " not found, skipping cache.");
-					}
-					sNmmI++;
-					currentLoaded++;
-				}
-			}
-
-			if(startCachingSoundsAndMusic){
-				if(sNmI >= music.length){
-					trace("Music and Sounds cached");
-					startCachingSoundsAndMusic = false;
-					startCachingGraphics = true;
-				}
-				else{
-					loadingWhatMini.text = music[sNmI];
-					loadingWhatMini.screenCenter(X);
-					loadingWhat.screenCenter(XY);
-					if(CoolUtil.exists(music[sNmI])){
-						if(CoolUtil.exists(Paths.cacheInst(music[sNmI]))){
-							FlxG.sound.cache(Paths.cacheInst(music[sNmI]));
-						}
-						if(CoolUtil.exists(Paths.cacheVoices(music[sNmI]))){
-							FlxG.sound.cache(Paths.cacheVoices(music[sNmI]));
-						}
-						if(CoolUtil.exists(Paths.cacheSound(music[sNmI]))){
-							FlxG.sound.cache(Paths.cacheSound(music[sNmI]));
-						}
-						if(CoolUtil.exists(Paths.cacheMusic(music[sNmI]))) {
-							FlxG.sound.cache(Paths.cacheMusic(music[sNmI]));
-						}
-					}
-					else{
-						trace("Music/Sound: File at " + music[sNmI] + " not found, skipping cache.");
-					}
-					sNmI++;
-					currentLoaded++;
-				}
-			}
 		}
 		
 		super.update(elapsed);
@@ -547,6 +505,38 @@ class CacheState extends MusicBeatState
 		#if VIDEOS_ALLOWED
 		var foundFile:Bool = false;
 		var fileName:String = Paths.video(name);
+		#if sys
+		if (FileSystem.exists(fileName))
+		#else
+		if (OpenFlAssets.exists(fileName))
+		#end
+		foundFile = true;
+
+		if (foundFile)
+		{
+			var cutscene:VideoSprite = new VideoSprite(fileName, true, true, false);
+			add(cutscene);
+			return cutscene;
+		}
+		#if (LUA_ALLOWED || HSCRIPT_ALLOWED)
+		else
+			//trace("Mod Video not found: " + fileName);
+		#else
+		else
+			//trace("Video not found: " + fileName);
+		#end
+		#else
+		FlxG.log.warn('Platform not supported!');
+		startAndEnd();
+		#end
+		return null;
+	}
+
+	function preloadVideoMods(name:String)
+	{
+		#if VIDEOS_ALLOWED
+		var foundFile:Bool = false;
+		var fileName:String = name;
 		#if sys
 		if (FileSystem.exists(fileName))
 		#else

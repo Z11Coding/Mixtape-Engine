@@ -14,7 +14,7 @@ class ImageCache {
     public static var cache:Map<String, FlxGraphic> = new Map<String, FlxGraphic>();
     //private static var save:FlxSave = new FlxSave(); This was actually useless...
 
-    public static function add(path:String):Void {
+    inline public static function add(path:String):Void {
         try {
             var data:FlxGraphic = FlxGraphic.fromBitmapData(GPUBitmap.create(path));
             data.persist = true;
