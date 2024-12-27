@@ -95,6 +95,7 @@ class ImageCache {
             }
             save.mixSave.content = cacheMap;
             save.save();
+            trace("Cache saved: " + cache);
         }
     
         // Function to load and deserialize the cache
@@ -116,5 +117,6 @@ class ImageCache {
             } catch (e:Dynamic) {
             trace("Error loading cache: " + e + " Likely doesn't exist.");
             }
+            trace("Cache loaded: " + cache);
         }
 }
