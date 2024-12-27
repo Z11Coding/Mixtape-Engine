@@ -43,6 +43,7 @@ class CacheState extends MusicBeatState
 	public var cacheNeeded:Bool = false;
 	public static var didPreCache:Bool = false;
 	public static var bitmapData:Map<String, FlxGraphic>;
+	public static var loaded:Bool = false;
 	var images:Array<String> = [];
 	var music:Array<String> = [];
 	var json:Array<String> = [];
@@ -117,6 +118,11 @@ class CacheState extends MusicBeatState
 	override function create()
 	{
 		trace('ngl pretty cool');
+		if (!loaded) {
+			loaded = true;
+		openPreloadSettings();
+		}
+
 
 		prevAutoPause = FlxG.autoPause;
 		FlxG.autoPause = false;
@@ -171,6 +177,10 @@ class CacheState extends MusicBeatState
 			var cache:Array<String> = [];
 			cache = cache.concat(Paths.crawlDirectoryOG("assets", ".png", images));
 			cache = cache.concat(Paths.crawlDirectoryOG("mods", ".png", modImages));
+
+			if (ClientPrefs.data.saveCache) {
+				ImageCache.loadCache();
+			}
 
 			for (image in cache) {
 				if (ImageCache.exists(image)) {
@@ -314,6 +324,16 @@ class CacheState extends MusicBeatState
 
 			if(menuBG.alpha == 0){
 				System.gc();
+				if (ClientPrefs.data.saveCache) {
+					menuBG.updateHitbox();
+					FlxG.sound.music.fadeOut(1, 0);
+					loadingWhat.text = "Saving cache...";
+					loadingWhat.screenCenter(XY);
+					loadingWhatMini.text = "Saving cache...";
+					loadingWhatMini.screenCenter(X);
+	
+					ImageCache.saveCache();
+					}
 				FlxG.sound.music.time = 0;
 				if (ClientPrefs.data.cacheCharts) {
 					var charts:Array<String> = Paths.crawlDirectory("assets/shared/data", ".json");

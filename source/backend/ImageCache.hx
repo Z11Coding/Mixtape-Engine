@@ -1,5 +1,7 @@
 package backend;
 
+import yutautil.save.MixSaveWrapper;
+import yutautil.save.MixSave;
 import flixel.graphics.FlxGraphic;
 import openfl.display.BitmapData;
 import flixel.util.FlxSave;
@@ -57,45 +59,51 @@ class ImageCache {
 
     
 
-        // Function to serialize and save the cache
+        // Function to serialize and save the cache using MixSaveWrapper
         public static function saveCache():Void {
             var cacheData:Array<{ id: String, imageData: String }> = [];
             for (id in cache.keys()) {
-                var graphic:FlxGraphic = cache.get(id);
-                if (graphic == null || graphic.bitmap == null) {
-                    trace("Graphic or bitmapData is null for id: " + id);
-                    continue; // Skip this iteration
-                }
-                var originalBitmapData:BitmapData = graphic.bitmap;
-                trace("Processing id: " + id + ", size: " + originalBitmapData.width + "x" + originalBitmapData.height);
-            
-                // Create a new BitmapData object
-                var newBitmapData:BitmapData = new BitmapData(originalBitmapData.width, originalBitmapData.height, true, 0x00000000);
-                newBitmapData.draw(originalBitmapData); // Draw the original bitmap onto the new one
-            
-                // Encode the new BitmapData
-                var bytes:ByteArray = newBitmapData.encode(newBitmapData.rect, new openfl.display.PNGEncoderOptions());
-                if (bytes == null) {
-                    trace("Encoded bytes are null for id: " + id);
-                    continue; // Skip this iteration
-                }
-                bytes.position = 0; // Reset position before encoding to Base64
-                var base64Data:String = Base64.encode(bytes);
-                // Use the base64Data as needed
-                cacheData.push({ id: id, imageData: base64Data });
+            var graphic:FlxGraphic = cache.get(id);
+            if (graphic == null || graphic.bitmap == null) {
+                trace("Graphic or bitmapData is null for id: " + id);
+                continue; // Skip this iteration
             }
-            var cacheJson:String = Json.stringify(cacheData); // Never trace this, OR WAIT FOREVER
+            var originalBitmapData:BitmapData = graphic.bitmap;
+            trace("Processing id: " + id + ", size: " + originalBitmapData.width + "x" + originalBitmapData.height);
+            
+            // Create a new BitmapData object
+            var newBitmapData:BitmapData = new BitmapData(originalBitmapData.width, originalBitmapData.height, true, 0x00000000);
+            newBitmapData.draw(originalBitmapData); // Draw the original bitmap onto the new one
+            
+            // Encode the new BitmapData
+            var bytes:ByteArray = newBitmapData.encode(newBitmapData.rect, new openfl.display.PNGEncoderOptions());
+            if (bytes == null) {
+                trace("Encoded bytes are null for id: " + id);
+                continue; // Skip this iteration
+            }
+            bytes.position = 0; // Reset position before encoding to Base64
+            var base64Data:String = Base64.encode(bytes);
+            // Use the base64Data as needed
+            cacheData.push({ id: id, imageData: base64Data });
+            }
+            // var cacheJson:String = Json.stringify(cacheData); // Never trace this, OR WAIT FOREVER
 
-            FlxG.save.data.ImageCache = cacheJson;
-            FlxG.save.flush();  
+            var save = new MixSaveWrapper(new MixSave(), "cache.json");
+            var cacheMap:Map<String, Dynamic> = new Map<String, Dynamic>();
+            for (data in cacheData) {
+                cacheMap.set(data.id, data.imageData);
+            }
+            save.mixSave.content = cacheMap;
+            save.save();
         }
     
         // Function to load and deserialize the cache
         public static function loadCache():Void {
             try {
-            var cacheJson:String = FlxG.save.data.ImageCache;
-            if (cacheJson != null) {
-                var cacheData:Array<{ id: String, imageData: String }> = Json.parse(cacheJson);
+            var cacheJson:MixSaveWrapper = new MixSaveWrapper(new MixSave(), "cache.json");
+            if (!cacheJson.isEmpty()) {
+                var rawData:Array<Dynamic> = cacheJson.mixSave.content.toArray();
+                var cacheData:Array<{ id: String, imageData: String }> = rawData.map(function(item:Dynamic) return { id: item.key, imageData: item.value });
                 for (data in cacheData) {
                 var bytes:ByteArray = Base64.decode(data.imageData);
                 var bitmapData:BitmapData = BitmapData.fromBytes(bytes);

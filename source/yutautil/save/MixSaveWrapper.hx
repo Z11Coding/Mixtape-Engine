@@ -4,9 +4,17 @@ import sys.io.File;
 
 using yutautil.save.MixSave;
 
+
+enum OutputType {
+    MixSaveWrapperType;
+    MixSaveType;
+    MapType;
+    DynamicType;
+}
 class MixSaveWrapper {
     public var mixSave:MixSave;
     private var filePath:String;
+    public var fancyFormat:Bool = false;
 
     public function new(mixSave:MixSave, filePath:String = "save/mixsave.json") {
         this.mixSave = mixSave;
@@ -28,7 +36,8 @@ class MixSaveWrapper {
         if (!sys.FileSystem.exists(haxe.io.Path.directory(filePath))) {
             sys.FileSystem.createDirectory(haxe.io.Path.directory(filePath));
         }
-        File.saveContent(filePath, haxe.Json.stringify(fileContent));
+        var jsonString = haxe.Json.stringify(fileContent, null, fancyFormat ? "\t" : null);
+        File.saveContent(filePath, jsonString);
     }
 
     public function load():Void {
@@ -39,10 +48,75 @@ class MixSaveWrapper {
             for (key in Reflect.fields(parsedContent)) {
                 fileContent.set(key, Reflect.field(parsedContent, key));
             }
-            trace(fileContent);
+            // trace(fileContent);
             for (key in fileContent.keys()) {
                 mixSave.loadContent(key, fileContent.get(key));
             }
         }
+    }
+
+    public function addObject(thing:Dynamic):Void {
+        for (field in Reflect.fields(thing)) {
+            var value = Reflect.field(thing, field);
+            mixSave.content.set(field, value);
+        }
+    }
+
+    public static function saveObjectToFile(thing:Dynamic, filePath:String = "save/mixsave.json", ?fancy:Bool = false):Void {
+        var wrapper = new MixSaveWrapper(new MixSave(), filePath);
+        wrapper.addObject(thing);
+        wrapper.fancyFormat = fancy;
+        wrapper.save();
+    }
+
+    public static function loadObjectFromFile(thing:Dynamic, filePath:String = "save/mixsave.json"):Void {
+        var wrapper = new MixSaveWrapper(new MixSave(), filePath);
+        wrapper.load();
+        for (field in Reflect.fields(thing)) {
+            if (wrapper.mixSave.content.exists(field)) {
+                Reflect.setField(thing, field, wrapper.mixSave.content.get(field));
+            }
+        }
+    }
+
+
+
+    /**
+     * Loads a mix file from the specified file path and returns the content based on the specified output type.
+     *
+     * @param filePath The path to the mix file to load. Defaults to "save/mixsave.json".
+     * @param outputType The type of output to return. Can be one of the following:
+     *                   - MixSaveWrapperType: Returns the MixSaveWrapper instance.
+     *                   - MixSaveType: Returns the MixSave instance.
+     *                   - MapType: Returns the content of the MixSave as a map.
+     *                   - DynamicType: Returns the content of the MixSave as a dynamic object.
+     * @return The content of the mix file based on the specified output type.
+     */
+    public static function loadMixFile(filePath:String = "save/mixsave.json", outputType:OutputType):Dynamic {
+        var wrapper = new MixSaveWrapper(new MixSave(), filePath);
+        switch (outputType) {
+            case MixSaveWrapperType:
+                return wrapper;
+            case MixSaveType:
+                return wrapper.mixSave;
+            case MapType:
+                return wrapper.mixSave.content;
+            case DynamicType:
+                var result = {};
+                for (field in wrapper.mixSave.content.keys()) {
+                    Reflect.setField(result, field, wrapper.mixSave.content.get(field));
+                }
+                return result;
+        }
+    }
+
+    public static function newWithData(mixSave:MixSave, data:Map<String, Dynamic>, filePath:String = "save/mixsave.json"):MixSaveWrapper {
+        var wrapper = new MixSaveWrapper(mixSave, filePath);
+        wrapper.mixSave.content = data;
+        return wrapper;
+    }
+
+    public function isEmpty():Bool {
+        return mixSave.content.toArray().length == 0;
     }
 }

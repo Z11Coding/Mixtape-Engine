@@ -113,6 +113,8 @@ class Main extends Sprite
 		// var testThing:FCTInput<Int> = 3;
 		// trace("Test thing: " + testThing);
 
+
+
 		setupGame();
 	}
 
@@ -202,6 +204,9 @@ class Main extends Sprite
 		Mods.loadTopMod();
 
 		FlxG.save.bind('Mixtape', CoolUtil.getSavePath());
+		yutautil.save.MixSaveWrapper.saveObjectToFile(FlxG.save.data, "save/mixsave.json", true);
+		yutautil.save.MixSaveWrapper.saveObjectToFile(init, "save/test.json", true);
+
 
 		Highscore.load();
 
