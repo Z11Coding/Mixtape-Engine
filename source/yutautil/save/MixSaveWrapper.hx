@@ -16,14 +16,14 @@ class MixSaveWrapper {
     private var filePath:String;
     public var fancyFormat:Bool = false;
 
-    public function new(?mixSave:MixSave, filePath:String = "save/mixsave.json") {
+    public function new(?mixSave:MixSave, filePath:String = "save/mixsave.json", autoLoad:Bool = true) {
         this.mixSave = mixSave != null ? mixSave : new MixSave();
         this.filePath = filePath;
         if (!filePath.endsWith(".json")) {
             filePath += ".json";
             this.filePath = filePath;
         }
-        if (sys.FileSystem.exists(filePath)) {
+        if (sys.FileSystem.exists(filePath) && autoLoad) {
             load();
         }
     }

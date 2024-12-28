@@ -425,7 +425,7 @@ class CacheState extends MusicBeatState
 		{
 			loadingBox.width = Std.int(loadingWhat.width);
 			loadingBox.height = Std.int(loadingWhat.height);
-			if (currentLoaded == loadTotal) gameCached = true;
+			if (currentLoaded == loadTotal || thread.length == 0) gameCached = true;
 
 			//if (!ClientPrefs.data.graphicsPreload2 && !ClientPrefs.data.musicPreload2) gameCached = true;
 
@@ -451,7 +451,9 @@ class CacheState extends MusicBeatState
 					loadingWhatMini.text = "Saving cache...";
 					loadingWhatMini.screenCenter(X);
 	
-					ImageCache.saveCache();
+					// backend.Threader.runInThread(ImageCache.saveCache());
+					// backend.Threader.runInThread(ImageCache.cacheToGPU());
+					ImageCache.removeCallback();
 				}
 				FlxG.sound.music.time = 0;
 				if (ClientPrefs.data.cacheCharts) {

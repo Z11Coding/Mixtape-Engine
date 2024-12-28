@@ -107,7 +107,9 @@ class MusicBeatState extends FlxState
 	}
 
 	override function destroy()
-	{		var clearfuck:yutautil.MemoryHelper = new yutautil.MemoryHelper();
+	{	MemoryUtil.clearMajor();
+		MemoryUtil.clearMinor();
+			var clearfuck:yutautil.MemoryHelper = new yutautil.MemoryHelper();
 		clearfuck.clearClassObject(Type.getClass(this));
 	super.destroy();
 	}

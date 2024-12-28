@@ -8,61 +8,97 @@ import flixel.util.FlxSave;
 import haxe.Json;
 import haxe.crypto.Base64;
 import flash.utils.ByteArray;
-import sys.thread.Mutex;
 
 class ImageCache {
 
     public static var cache:Map<String, FlxGraphic> = new Map<String, FlxGraphic>();
     //private static var save:FlxSave = new FlxSave(); This was actually useless...
-    
-        private static var mutex:Mutex = new Mutex();
-    
+    public static var fileCache:MixSaveWrapper = new MixSaveWrapper(new MixSave(), "save/cache.json");
+
     inline public static function add(path:String):Void {
-        mutex.acquire();
         try {
-            GPUBitmap.create(path, BGRA, true, null, function(bmp:BitmapData) {
-                var data:FlxGraphic = FlxGraphic.fromBitmapData(bmp);
-                data.persist = true;
-                data.destroyOnNoUse = false;
-                //trace(cache);
-                trace(path);
-                cache.set(path, data);
-                mutex.release();
-            });
+            var data:FlxGraphic = FlxGraphic.fromBitmapData(BitmapData.fromFile(path));
+            data.persist = true;
+            data.destroyOnNoUse = false;
+            //trace(cache);
+            trace(path);
+            cache.set(path, data);
         } catch (e:Dynamic) {
-            trace("Error adding image to cache: " + e);
-            mutex.release();
+            trace("Error adding image to cache: "+ e);
+        }
+    }
+    public static function get(path:String):FlxGraphic {
+        try {
+            if (fileCache.mixSave.content.exists(path)) {
+                var base64Data:String = fileCache.mixSave.content.get(path);
+                var graphic:FlxGraphic = FlxGraphic.fromBitmapData(BitmapData.fromBase64(base64Data));
+                graphic.persist = true;
+                graphic.destroyOnNoUse = false;
+                return graphic;
+            } else {
+                trace("Image not found in cache for path: " + path);
+                return null;
+            }
+        } catch (e:Dynamic) {
+            trace("Error getting image from cache: " + e);
+            return null;
         }
     }
 
-    public static function removeCallback():Void // Remove the callback from the GPUBitmap
-        GPUBitmap.removeCallback();
-
-        // public static function createGPUBitmap(path:String):FlxGraphic {
-        //     mutex.acquire();
-        //     try {
-        //         trace("Creating GPU bitmap for path: " + path);
-        //         var data:FlxGraphic = FlxGraphic.fromBitmapData(GPUBitmap.create(path));
-        //         return data;
-        //     } catch (e:Dynamic) {
-        //         trace("Error creating GPU bitmap: "+ e);
-        //         return null;
-        //     }
-        //         mutex.release();
-        //     }
-
-    public static function get(path:String):FlxGraphic {
+    public static function saveC():Void {
         try {
-            return cache.get(path);
+            trace("Saving cache...");
+            fileCache = new MixSaveWrapper(new MixSave(), "save/cache.json", false);
+            fileCache.fancyFormat = true;
+            var keysArray:Array<Dynamic> = cache.toArray();
+            var bytes:Array<ByteArray> = [];
+            for (key in keysArray) {
+                try {
+                    trace("Encoding image: " + key.key);
+                    var graphic:FlxGraphic = cache.get(key.key);
+                    if (graphic != null && graphic.bitmap != null) {
+                        var byte:ByteArray = graphic.bitmap.encode(graphic.bitmap.rect, new openfl.display.PNGEncoderOptions());
+                        bytes.push(byte);
+                    } else {
+                        trace("Graphic or bitmapData is null for key: " + key);
+                    }
+                } catch (e:Dynamic) {
+                    trace("Error encoding bitmap for key: " + key + " - " + e);
+                }
+            }
+            fileCache.mixSave.content = new Map<String, String>();
+            for (byte in bytes) {
+                try {
+                    var index = bytes.indexOf(byte);
+                    var name = keysArray[index].key;
+                    // trace("Saving image: " + name);
+                    fileCache.mixSave.content.set(name, Base64.encode(byte));
+                } catch (e:Dynamic) {
+                    trace("Error encoding byte to Base64 for index: " + bytes.indexOf(byte) + " - " + e);
+                }
+            }
+            trace("Finishing save...");
+            fileCache.save();
+            trace("Cache saved.");
+            cache.clear();
         } catch (e:Dynamic) {
-            trace("Error getting image from cache:"+ e);
-            return null;
+            trace("Error saving cache: " + e);
+        }
+        // Trace the keys in the file cache for testing purposes
+        var keys = fileCache.mixSave.content.keys();
+        for (key in keys) {
+            trace("Cache key: " + key);
         }
     }
 
     public static function exists(path:String):Bool {
         try {
-            return cache.exists(path);
+            if (fileCache.mixSave.content.exists(path)) {
+                return true;
+            } else {
+                var absolutePath:String = Sys.getCwd() + "/" + path;
+                return fileCache.mixSave.content.exists(absolutePath);
+            }
         } catch (e:Dynamic) {
             trace("Error checking if image exists in cache: "+ e);
             return false;

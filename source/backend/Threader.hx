@@ -1,5 +1,6 @@
 package backend;
 
+// import openfl.utils.QName;
 import haxe.Exception;
 import haxe.macro.Expr;
 import haxe.macro.Context;
@@ -190,6 +191,11 @@ class ThreadQueue {
     private var running:Int;
     private var blockUntilFinished:Bool;
     private var done:Bool = true;
+    public var length(get, never):Int;
+    
+    function get_length():Int {
+        return queue.length;
+    }
 
     /**
      * Creates a new ThreadQueue.
@@ -343,7 +349,7 @@ class ThreadQueue {
      * Waits until all functions in the queue are finished.
      */
     public function waitUntilFinished():Void {
-        while (queue.length > 0 || running > 0 || !done) {
+        while (queue.length == 0 || running == 0 || !done) {
             // Busy wait
         }
     }

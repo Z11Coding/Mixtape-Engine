@@ -38,18 +38,18 @@ enum ClientState {
     spectator; player; group;
 }
 
-enum Permission {
-    disabled; enabled; goal; auto; auto_enabled;
-}
+// enum Permission {
+//     disabled; enabled; goal; auto; auto_enabled;
+// }
 
 // Types
-typedef NetworkVersion = { major: Int, minor: Int, build: Int };
+// typedef NetworkVersion = { major: Int, minor: Int, build: Int };
 // typedef NetworkPlayer = { team: Int, slot: Int, alias: String, name: String };
 // typedef NetworkItem = { item: Int, location: Int, player: Int, flags: Int };
 // typedef JSONMessagePart = { type: Option<String>, text: Option<String>, color: Option<String>, flags: Option<Int>, player: Option<Int> };
-typedef Hint = { receiving_player: Int, finding_player: Int, location: Int, item: Int, found: Bool, entrance: String, item_flags: Int };
-typedef GameData = { item_name_to_id: Map<String, Int>, location_name_to_id: Map<String, Int>, version: Int, checksum: String };
-typedef NetworkSlot = { name: String, game: String, type: ClientState, group_members: Array<Int> };
+// typedef Hint = { receiving_player: Int, finding_player: Int, location: Int, item: Int, found: Bool, entrance: String, item_flags: Int };
+// typedef GameData = { item_name_to_id: Map<String, Int>, location_name_to_id: Map<String, Int>, version: Int, checksum: String };
+// typedef NetworkSlot = { name: String, game: String, type: ClientState, group_members: Array<Int> };
 
 // Packet Structures
 typedef RoomInfoPacket = {
@@ -108,10 +108,10 @@ class APGameState {
         _disconnectSubstate.onCancel.add(onCancel);
         _disconnectSubstate.onReconnect.add(onReconnect);
 
-		_ap.onRoomInfo.add(onRoomInfo);
-		_ap.onSlotRefused.add(onSlotRefused);
+		// _ap.onRoomInfo.add(onRoomInfo);
+		// _ap.onSlotRefused.add(onSlotRefused);
 		_ap.onSocketDisconnected.add(onSocketDisconnected);
-		_ap.onSlotConnected.add(onSlotConnected);
+		// _ap.onSlotConnected.add(onSlotConnected);
     }
 
     public function info()
@@ -141,12 +141,12 @@ class APGameState {
     private function onCancel():Void {
         _ap.disconnect_socket(); 
         _ap.clientStatus = ClientStatus.UNKNOWN;
-        _ap.onRoomInfo.remove(onRoomInfo);
-        _ap.onSlotRefused.remove(onSlotRefused);
+        // _ap.onRoomInfo.remove(onRoomInfo);
+        // _ap.onSlotRefused.remove(onSlotRefused);
         _ap.onSocketDisconnected.remove(onSocketDisconnected);
-        _ap.onSlotConnected.remove(onSlotConnected);
+        // _ap.onSlotConnected.remove(onSlotConnected);
         _ap = null;
-        MemoryHelper.clearClassObject(this);
+        // MemoryHelper.clearClassObject(this);
         MusicBeatState.switchState(new APEntryState());
     }
 

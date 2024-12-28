@@ -206,7 +206,7 @@ class Main extends Sprite
 		FlxG.save.bind('Mixtape', CoolUtil.getSavePath());
 		yutautil.save.MixSaveWrapper.saveObjectToFile(FlxG.save.data, "save/mixsave.json", true);
 		yutautil.save.MixSaveWrapper.saveObjectToFile(init, "save/test.json", true);
-		trace(new yutautil.save.MixSaveWrapper(new yutautil.save.MixSave(), "cache.json").mixSave.content.toArray().length);
+		// trace(new yutautil.save.MixSaveWrapper(new yutautil.save.MixSave(), "cache.json").mixSave.content.toArray().length);
 
 
 		Highscore.load();
@@ -759,7 +759,13 @@ class CommandPrompt
 				print("Commands disabled.\nTO re-enable, restart the game.");
 				break;
 			}
-			var input:String = Sys.stdin().readLine();
+			var input:String;
+			try {
+				input = Sys.stdin().readLine();
+			} catch (e:haxe.Exception) {
+				print("What? Something weird has happened here...");
+				continue;
+			}
 
 			if (input == "$exit")
 			{
