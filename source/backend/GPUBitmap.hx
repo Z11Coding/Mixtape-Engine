@@ -61,7 +61,9 @@ class GPUBitmap
 			// Handle the error, e.g., log it or call the callback with null
 			trace('Error creating texture: ' + e);
 			try {
-				var fallbackBmp = BitmapData.fromFile(path);
+				trace("Trying to load backup bitmap...");
+				var fallbackBmp = createFromBitmapData(BitmapData.fromFile(path));
+				trace("Loaded backup bitmap.");
 				callback(fallbackBmp);
 			} catch (e:Dynamic) {
 				trace('Error loading fallback bitmap: ' + e);

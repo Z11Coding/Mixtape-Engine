@@ -11,6 +11,13 @@ import archipelago.APEntryState;
 import flixel.FlxG;
 import flixel.tweens.FlxEase;
 
+enum Icon
+{
+	Color;
+	White;
+	Any(color:FlxColor);
+}
+
 class ArchPopup extends openfl.display.Sprite {
 	public var onFinish:Void->Void = null;
 	var alphaTween:FlxTween;

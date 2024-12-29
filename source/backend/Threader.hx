@@ -318,6 +318,8 @@ class ThreadQueue {
 
     /**
      * Processes the queue, running functions in threads.
+    /**
+     * Processes the queue, running functions in threads.
      */
     private function processQueue():Void {
         if (done && queue.length > 0) {
@@ -326,12 +328,25 @@ class ThreadQueue {
         }
         while (running < maxConcurrent && queue.length > 0) {
             var func = queue.shift();
+            if (func == null) {
+                trace("Encountered a null function in the queue. Skipping...");
+                continue;
+            }
             running++;
-            sys.thread.Thread.create(function() {
-                func();
+            try {
+                sys.thread.Thread.create(function() {
+                    try {
+                        func();
+                    } catch (e:Dynamic) {
+                        trace("Exception in thread function: " + e + " ... " + haxe.CallStack.toString(haxe.CallStack.exceptionStack()));
+                    }
+                    running--;
+                    processQueue();
+                });
+            } catch (e:Dynamic) {
+                trace("Failed to create thread: " + e);
                 running--;
-                processQueue();
-            });
+            }
         }
 
         while (blockUntilFinished && queue.length == 0 && running == 0 && !done) {
@@ -352,6 +367,35 @@ class ThreadQueue {
         while (queue.length == 0 || running == 0 || !done) {
             // Busy wait
         }
+    }
+
+    /**
+     * Creates a temporary queue with functions to run.
+     * @param funcs The functions to run.
+     * @param maxConcurrent The maximum number of concurrent threads.
+     * @param blockUntilFinished Whether to block until all threads are finished.
+     * @return The created ThreadQueue.
+     */
+
+    // public static function tempQueue(funcs:Array<() -> Void>, maxConcurrent:Int = 1, blockUntilFinished:Bool = false):ThreadQueue {
+    //     var tq = new ThreadQueue(maxConcurrent, blockUntilFinished);
+    //     tq.addFunctions(funcs);
+    //     return tq;
+
+    public function kill():Void {
+        queue = [];
+        running = 0;
+        done = true;
+    }
+
+    public function reset(?autoStart:Bool):Void {
+    var newQ = queue.copy();
+
+        this.kill();
+    queue = newQ;
+    if (autoStart) {
+        this.run();
+    }
     }
 }
 

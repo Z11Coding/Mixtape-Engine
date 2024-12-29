@@ -191,6 +191,7 @@ class CacheState extends MusicBeatState
 					}
 				}
 			}
+		
 		}
 
 		if (ClientPrefs.data.musicPreload2)
@@ -389,7 +390,7 @@ class CacheState extends MusicBeatState
 
 		if (allowMusic && !cacheInit) FlxG.sound.playMusic(Paths.music(listoSongs[FlxG.random.int(0, 10)]), 1, true);
 
-		thread = new ThreadQueue(3);
+		thread = new ThreadQueue(10);
 		thread.preloadMulti(cacheArr);
 		if(!cacheStart){
 			#if web
@@ -419,8 +420,16 @@ class CacheState extends MusicBeatState
     }
 
 	var move:Bool = false;
+	var timeSinceLastCache:Float = 0;
+	var lastTotal:Int = 0;
 	override function update(elapsed) 
 	{
+		timeSinceLastCache += elapsed;
+		if (currentLoaded != lastTotal)
+		{
+			lastTotal = currentLoaded;
+			timeSinceLastCache = 0;
+		}
 		if (!dontBother && !pause)
 		{
 			loadingBox.width = Std.int(loadingWhat.width);
@@ -496,6 +505,13 @@ class CacheState extends MusicBeatState
 					openPreloadSettings();
 				}
 			}
+		}
+
+		if (timeSinceLastCache >= 100 && !gameCached)
+		{
+			thread.reset(true);
+			timeSinceLastCache = 0;
+			trace("Attempting thread reset");
 		}
 		
 		super.update(elapsed);
