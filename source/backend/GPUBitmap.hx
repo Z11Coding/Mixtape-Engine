@@ -48,15 +48,15 @@ class GPUBitmap
         // Schedule texture creation on the main thread
 		var updateCallback = function(_) {
 			try {
-			//trace('creating new texture');
-			var bmp = Assets.getBitmapData(path, false);
-			var _texture = FlxG.stage.context3D.createTexture(bmp.width, bmp.height, texFormat, optimizeForRender);
-			_texture.uploadFromBitmapData(bmp);
-			bmp.dispose();
-			bmp.disposeImage();
-			var trackedTex = new TexAsset(_texture, _cachekey);
-			trackedTextures.push(trackedTex);
-			callback(BitmapData.fromTexture(_texture));
+				//trace('creating new texture');
+				var bmp = BitmapData.fromFile(path);
+				var _texture = FlxG.stage.context3D.createTexture(bmp.width, bmp.height, texFormat, optimizeForRender);
+				_texture.uploadFromBitmapData(bmp);
+				bmp.dispose();
+				bmp.disposeImage();
+				var trackedTex = new TexAsset(_texture, _cachekey);
+				trackedTextures.push(trackedTex);
+				callback(BitmapData.fromTexture(_texture));
 			} catch (e:Dynamic) {
 			// Handle the error, e.g., log it or call the callback with null
 			trace('Error creating texture: ' + e);
