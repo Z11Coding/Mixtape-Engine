@@ -736,6 +736,8 @@ class CommandPrompt
 {
 	private var state:String;
 	private var variables:Map<String, Dynamic>;
+	public var imports:Map<String, Dynamic> = new Map();
+	public var objects:Map<String, Dynamic> = new Map();
 
 	public var active:Boolean = true; // I thought it'd be funny to add this.
 
@@ -780,8 +782,11 @@ class CommandPrompt
 				print("Resetting game...");
 				var processChecker = new Process("MixEngine.exe", ["check"]);
 			}
-
-			this.executeCommand(input);
+			try {
+				this.executeCommand(input);
+			} catch (e:haxe.Exception) {
+				print("Error executing command: " + e.toString());
+			}
 		}
 	}
 
@@ -971,6 +976,132 @@ class CommandPrompt
 			// 	for (thread in threads) {
 			// 		print("Thread: " + thread);
 			// 	}
+
+				case "import":
+					if (args.length == 1)
+					{
+						try {
+							var className = args[0];
+							var alias = className;
+							var importedClass = Type.resolveClass(className);
+							if (importedClass != null) {
+								if (args.length == 2) {alias = args[1];}
+								this.imports.set(className, importedClass);
+								print("Class " + className + " as" + alias + " imported successfully.");
+							} else {
+								print("Error: Class " + className + " not found.");
+							}
+						} catch (e:haxe.Exception) {
+							print("Error importing class: " + e.toString());
+						}
+					}
+					else
+					{
+						print("Error: import requires exactly one argument.");
+					}
+
+			case "createInstance": 
+				if (args.length >= 1)
+				{
+					try {
+						var className = args[0];
+						var alias = className;
+						var instanceArgs = [];
+						
+						if (args.length > 1) {
+							if (args[1] != "=") {
+								alias = args[1];
+								instanceArgs = args.slice(2);
+							} else {
+								instanceArgs = args.slice(1);
+							}
+						}
+
+						var importedClass = Type.resolveClass(className);
+						if (importedClass != null) {
+							this.objects.set(alias, Type.createInstance(importedClass, instanceArgs));
+							print("Instance of " + className + " created successfully with alias " + alias + ".");
+						} else {
+							print("Error: Class " + className + " not found.");
+						}
+					} catch (e:haxe.Exception) {
+						print("Error creating instance: " + e.toString());
+					}
+				}
+				else
+				{
+					print("Error: createInstance requires at least one argument.");
+				}
+
+			case "callMethod":
+				if (args.length >= 2)
+				{
+					try {
+						var objectName = args[0];
+						var methodName = args[1];
+						var methodArgs = args.slice(2);
+						var object = this.objects.get(objectName);
+						if (object != null) {
+							var method = Reflect.field(object, methodName);
+							if (method != null) {
+								var result = Reflect.callMethod(object, method, methodArgs);
+								print("Method " + methodName + " called successfully on object " + objectName + ".");
+								print("Result: " + result);
+							} else {
+								print("Error: Method " + methodName + " not found on object " + objectName + ".");
+							}
+						} else {
+							print("Error: Object " + objectName + " not found.");
+						}
+					} catch (e:haxe.Exception) {
+						print("Error calling method: " + e.toString());
+					}
+				}
+				else
+				{
+					print("Error: callMethod requires at least two arguments.");
+				}
+
+				case "callClassMethod":
+					if (args.length >= 2)
+					{
+						try {
+							var className = args[0];
+							var methodName = args[1];
+							var methodArgs = args.slice(2);
+							var importedClass = this.imports.get(className);
+							if (importedClass != null) {
+								var method = Reflect.field(importedClass, methodName);
+								if (method != null) {
+									var result = Reflect.callMethod(importedClass, method, methodArgs);
+									print("Method " + methodName + " called successfully on class " + className + ".");
+									print("Result: " + result);
+								} else {
+									print("Error: Method " + methodName + " not found on class " + className + ".");
+								}
+							} else {
+								print("Error: Class " + className + " not found.");
+							}
+						} catch (e:haxe.Exception) {
+							print("Error calling class method: " + e.toString());
+						}
+					}
+					else
+					{
+						print("Error: callClassMethod requires at least two arguments.");
+					}
+
+			case "listObjects":
+				for (object in this.objects.keys())
+				{
+					print("Object: " + object + " (" + Type.getClassName(Type.resolveClass(this.objects.get(object))));
+				}
+
+			case "listImports":
+				for (importedClass in this.imports.keys())
+				{
+					print("Imported Class: " + importedClass + " (" + Type.getClassName(Type.resolveClass(this.imports.get(importedClass))));
+				}
 
 			case "playSong":
 				var songName = args[0];
