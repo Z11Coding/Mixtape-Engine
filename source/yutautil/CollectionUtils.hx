@@ -1,6 +1,7 @@
 package yutautil;
 
-// import haxe.Random;
+import backend.Threader;
+import backend.modules.SyncUtils;
 import cpp.abi.Abi;
 import haxe.Constraints.IMap;
 import haxe.ds.StringMap;
@@ -16,6 +17,15 @@ import haxe.ds.StringMap;
  * A type similar to Java's Predicate type.
  */
 @:generic typedef Predicate<T> = T -> Bool; 
+
+// abstract Collection<T>(Dynamic) from Array<T> to Array<T> {
+//     @:from public static inline function fromList<T>(list:List<T>):Collection<T> {
+//         return cast list;
+//     }
+//     @:from public static inline function fromMap<T>(map:IMap<Dynamic, T>):Collection<T> {
+//         return cast map;
+//     }
+// }
 
 /**
  * An abstract type that allows any form of input that will result in the required type.
@@ -120,7 +130,7 @@ class CollectionUtils {
         }
     }
 
-    public static inline function toArray<T>(input:Dynamic):Array<Any>
+    public static inline function toArray<T>(input:Dynamic, ?type):Array<Any>
     {
         if (Std.is(input, Array)) {
             return input;
@@ -327,6 +337,62 @@ class CollectionUtils {
     public static inline function asVoidCallableWithArgs<T>(func:Void -> T):T -> Void {
         return function(arg:T) return func();
     }
+
+    // Special Functions for ThreadQueue classes.
+
+        /**
+         * Processes a collection using ThreadQueue and waits for completion.
+         * @param items The collection of items to process.
+         * @param action The action to perform on each item.
+         * @param maxConcurrent The maximum number of concurrent threads.
+         */
+        public static function processWithThreadQueue<T>(items:Dynamic, action:T -> Void, maxConcurrent:Int = 1):Void {
+            var queue = new ThreadQueue(maxConcurrent, true);
+            forEachT(items, function(item:T) {
+                queue.add(() -> action(item));
+            });
+            queue.run();
+            SyncUtils.wait(() -> queue.length == 0 && queue.done, "Waiting for ThreadQueue to complete...");
+        }
+
+        /**
+         * Processes a collection using MemLimitThreadQ and waits for completion.
+         * @param items The collection of items to process.
+         * @param action The action to perform on each item.
+         * @param limit The maximum number of items in the queue.
+         * @param hasty Whether to use softAdd or regular add.
+         */
+        public static function processWithMemLimitThreadQ<T>(items:Dynamic, action:T -> Void, limit:Int, ?hasty:Bool = false):Void {
+            var memLimitQueue = new MemLimitThreadQ(items, action, limit, hasty);
+            memLimitQueue.run();
+            SyncUtils.wait(() -> memLimitQueue.queue.length == 0 && memLimitQueue.queue.done, "Waiting for MemLimitThreadQ to complete...");
+        }
+
+        public static function processWithThreadQueueReturn<T, R>(items:Dynamic, action:T -> R, maxConcurrent:Int = 1):Array<R> {
+            var queue = new ThreadQueue(maxConcurrent, true);
+            var results = new Array<R>();
+            forEachT(items, function(item:T) {
+                queue.add(() -> {
+                    var result:R = action(item);
+                    results.push(result);
+                });
+            });
+            queue.run();
+            SyncUtils.wait(() -> queue.length == 0 && queue.done, "Waiting for ThreadQueue to complete...");
+            return results;
+        }
+
+        public static function processWithMemLimitThreadQReturn<T, R>(items:Dynamic, action:T -> R, limit:Int, ?hasty:Bool = false):Array<R> {
+            var results:Array<Any> = items.toArray();
+            var memLimitQueue = new MemLimitThreadQ(results, action, limit, hasty);
+            memLimitQueue.run();
+            SyncUtils.wait(() -> memLimitQueue.queue.length == 0 && memLimitQueue.queue.done, "Waiting for MemLimitThreadQ to complete...");
+                var result:Array<R> = cast results;
+                // results.push(item);
+            return result;
+        }
+
+
 
 
 
@@ -732,4 +798,6 @@ class CollectionUtils {
         // var selectedNumberFromMap = ChanceSelector.selectOption(numberMapChances);
         // trace("Selected number from map: " + selectedNumberFromMap);
     }
+
+
 }

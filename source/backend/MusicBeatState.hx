@@ -111,6 +111,11 @@ class MusicBeatState extends FlxState
 		MemoryUtil.clearMinor();
 			var clearfuck:yutautil.MemoryHelper = new yutautil.MemoryHelper();
 		clearfuck.clearClassObject(Type.getClass(this));
+		trace("Cleaning...");
+		backend.ImageCache.SpriteManager.cleanFlxState(this);
+		trace("Dealing with the rest...");
+		backend.ImageCache.SpriteManager.disposeAllSprites(this);
+		trace("Done!");
 	super.destroy();
 	}
 

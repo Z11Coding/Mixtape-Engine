@@ -10,17 +10,27 @@ import haxe.crypto.Base64;
 import flash.utils.ByteArray;
 import sys.thread.Mutex;
 
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.group.FlxGroup;
+import flixel.util.FlxDestroyUtil;
+
 class ImageCache {
 
     public static var cache:Map<String, FlxGraphic> = new Map<String, FlxGraphic>();
     //private static var save:FlxSave = new FlxSave(); This was actually useless...
-    
+    @:access(GPUBitmap)
         private static var mutex:Mutex = new Mutex();
     
     inline public static function add(path:String):Void {
-        mutex.acquire();
+        // mutex.acquire();
         try {
             GPUBitmap.create(path, BGRA, true, null, function(bmp:BitmapData) {
+                mutex.acquire();
+                if (bmp == null) {
+                    // mutex.release();
+                    return;
+                }
                 var data:FlxGraphic = FlxGraphic.fromBitmapData(bmp);
                 data.persist = true;
                 data.destroyOnNoUse = false;
@@ -35,8 +45,16 @@ class ImageCache {
         }
     }
 
+    public static function acquireMutex():Void {
+        mutex.acquire();
+    }
+
+    public static function releaseMutex():Void {
+        mutex.release();
+    }
+
     public static function removeCallback():Void // Remove the callback from the GPUBitmap
-        GPUBitmap.removeCallback();
+        GPUBitmap.removeCallbacks();
 
         // public static function createGPUBitmap(path:String):FlxGraphic {
         //     mutex.acquire();
@@ -141,5 +159,49 @@ class ImageCache {
         catch (e:Dynamic) {
             trace("Error loading cache: " + e + " Likely doesn't exist.");
         }
+    }
+}
+
+
+
+
+class SpriteManager {
+    public static function disposeUncachedSprites(group:FlxGroup):Void {
+        for (sprite in group.members) {
+            if (Std.is(sprite, FlxSprite)) {
+                var flxSprite:FlxSprite = cast sprite;
+                var existsInCache = false;
+                for (cacheKey in ImageCache.cache.keys()) {
+                    if (GPUBitmap.textureExists(cacheKey)) {
+                        existsInCache = true;
+                        break;
+                    }
+                }
+                if (!existsInCache) {
+                    trace("Disposing uncached sprite...");
+                    if (flxSprite.graphic != null) {
+                        flxSprite.graphic.bitmap.disposeImage(); // Only dispose the image, not the bitmap
+                    }
+                    FlxDestroyUtil.destroy(flxSprite); // Do not destroy the sprite completely
+                }
+            }
+        }
+    }
+
+    public static function disposeAllSprites(group:FlxGroup):Void {
+        for (sprite in group.members) {
+            if (Std.is(sprite, FlxSprite)) {
+                var flxSprite:FlxSprite = cast sprite;
+                trace("Disposing sprites...");
+                if (flxSprite.graphic != null) {
+                    flxSprite.graphic.bitmap.disposeImage(); // Only dispose the image, not the bitmap
+                }
+                FlxDestroyUtil.destroy(flxSprite); // Do not destroy the sprite completely
+            }
+        }
+    }
+
+    public static function cleanFlxState(state:flixel.FlxState):Void {
+        disposeUncachedSprites(state);
     }
 }

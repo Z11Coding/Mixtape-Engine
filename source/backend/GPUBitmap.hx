@@ -22,6 +22,18 @@ class GPUBitmap
 	static var trackedTextures:Array<TexAsset> = new Array<TexAsset>();
 	static var tasks:Array<Dynamic> = new Array<Dynamic>();
 
+	public static function textureExists(key:String):Bool
+	{
+		for (tex in trackedTextures)
+		{
+			if (tex.cacheKey == key)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/**
 
 		* Creates BitmapData for a sprite and deletes the reference stored in RAM leaving only the texture in VRAM.
@@ -45,11 +57,14 @@ class GPUBitmap
             }
         }
 
+		var updateCallback:Dynamic;
+
         // Schedule texture creation on the main thread
-		var updateCallback = function(_) {
+		updateCallback = function(_) {
 			try {
+			ImageCache.acquireMutex();
 			//trace('creating new texture');
-			var bmp = Assets.getBitmapData(path, false);
+			var bmp = openfl.utils.Assets.getBitmapData(path);
 			var _texture = FlxG.stage.context3D.createTexture(bmp.width, bmp.height, texFormat, optimizeForRender);
 			_texture.uploadFromBitmapData(bmp);
 			bmp.dispose();
@@ -57,27 +72,43 @@ class GPUBitmap
 			var trackedTex = new TexAsset(_texture, _cachekey);
 			trackedTextures.push(trackedTex);
 			callback(BitmapData.fromTexture(_texture));
+			removeCallback(updateCallback);
 			} catch (e:Dynamic) {
+				// ImageCache.releaseMutex();
 			// Handle the error, e.g., log it or call the callback with null
 			trace('Error creating texture: ' + e);
 			try {
 				trace("Trying to load backup bitmap...");
-				var fallbackBmp = createFromBitmapData(BitmapData.fromFile(path));
-				trace("Loaded backup bitmap.");
-				callback(fallbackBmp);
+				BitmapData.loadFromFile(path).onComplete(function(fallbackBmp:BitmapData) {
+					callback(createFromBitmapData(fallbackBmp));
+					trace("Loaded backup bitmap.");
+				}).onError(function(e) {
+					trace('Error loading fallback bitmap: ' + e);
+					callback(null);
+				});
+				removeCallback(updateCallback);
+				// callback(fallbackBmp);
 			} catch (e:Dynamic) {
+				// ImageCache.releaseMutex();
 				trace('Error loading fallback bitmap: ' + e);
 				callback(null);
+				removeCallback(updateCallback);
 			}
 			}
+			ImageCache.releaseMutex();
 		};
 
 		Application.current.onUpdate.add(updateCallback, true);
 		// Store the callback to remove it later if needed
 		tasks.push(updateCallback);
+		// removeCallback();
     }
 
-	static public function removeCallback():Void {
+	static public function removeCallback(c):Void {
+		Application.current.onUpdate.remove(c);
+	}
+
+	static public function removeCallbacks():Void {
 		for (task in tasks) {
 			Application.current.onUpdate.remove(task);
 		}

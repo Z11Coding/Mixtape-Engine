@@ -1,5 +1,5 @@
 package states;
-import backend.Threader.ThreadQueue;
+import backend.Threader;
 #if sys
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -100,6 +100,7 @@ class CacheState extends MusicBeatState
 	var currentLoaded:Int = 0;
 	var loadTotal:Int = 0;
 	var thread:ThreadQueue;
+	var memSafety:MemLimitThreadQ;
 	
 	var listoSongs:Array<String> = [
 		'breakfast', 
@@ -231,121 +232,121 @@ class CacheState extends MusicBeatState
 
 		var cacheArr:Array<() -> Void> = [];
 
-		for (a in images)
-		{
-			var image =
-			function() 
-			{
-				if(!ImageCache.exists(a)){
-					ImageCache.add(a);
-				}
-				currentLoaded++;
-			};
-			cacheArr.push(image);
-		}
+		// for (a in images)
+		// {
+		// 	var image =
+		// 	function() 
+		// 	{
+		// 		if(!ImageCache.exists(a)){
+		// 			ImageCache.add(a);
+		// 		}
+		// 		currentLoaded++;
+		// 	};
+		// 	cacheArr.push(image);
+		// }
 
-		for (a in modImages)
-		{
-			var imageMod =
-			function() 
-			{
-				if(!ImageCache.exists(a)){
-					ImageCache.add(a);
-				}
-				currentLoaded++;
-			};
-			cacheArr.push(imageMod);
-		}
+		// for (a in modImages)
+		// {
+		// 	var imageMod =
+		// 	function() 
+		// 	{
+		// 		if(!ImageCache.exists(a)){
+		// 			ImageCache.add(a);
+		// 		}
+		// 		currentLoaded++;
+		// 	};
+		// 	cacheArr.push(imageMod);
+		// }
 
-		for (a in music)
-		{
-			var music =
-			function() 
-			{
-				if(CoolUtil.exists(a)){
-					if(CoolUtil.exists(Paths.cacheInst(a))){
-						FlxG.sound.cache(Paths.cacheInst(a));
-					}
-					if(CoolUtil.exists(Paths.cacheVoices(a))){
-						FlxG.sound.cache(Paths.cacheVoices(a));
-					}
-					if(CoolUtil.exists(Paths.cacheSound(a))){
-						FlxG.sound.cache(Paths.cacheSound(a));
-					}
-					if(CoolUtil.exists(Paths.cacheMusic(a))) {
-						FlxG.sound.cache(Paths.cacheMusic(a));
-					}
-					currentLoaded++;
-				}
-				else{
-					trace("Music/Sound: File at " + a + " not found, skipping cache.");
-				}
-			};
-			cacheArr.push(music);
-		}
+		// for (a in music)
+		// {
+		// 	var music =
+		// 	function() 
+		// 	{
+		// 		if(CoolUtil.exists(a)){
+		// 			if(CoolUtil.exists(Paths.cacheInst(a))){
+		// 				FlxG.sound.cache(Paths.cacheInst(a));
+		// 			}
+		// 			if(CoolUtil.exists(Paths.cacheVoices(a))){
+		// 				FlxG.sound.cache(Paths.cacheVoices(a));
+		// 			}
+		// 			if(CoolUtil.exists(Paths.cacheSound(a))){
+		// 				FlxG.sound.cache(Paths.cacheSound(a));
+		// 			}
+		// 			if(CoolUtil.exists(Paths.cacheMusic(a))) {
+		// 				FlxG.sound.cache(Paths.cacheMusic(a));
+		// 			}
+		// 			currentLoaded++;
+		// 		}
+		// 		else{
+		// 			trace("Music/Sound: File at " + a + " not found, skipping cache.");
+		// 		}
+		// 	};
+		// 	cacheArr.push(music);
+		// }
 
-		for (a in modMusic)
-		{
-			var modMusic =
-			function() 
-			{
-				try
-				{
-					if(CoolUtil.exists(Paths.cacheInst(a))){
-						FlxG.sound.cache(Paths.cacheInst(a));
-					}
-					if(CoolUtil.exists(Paths.cacheVoices(a))){
-						FlxG.sound.cache(Paths.cacheVoices(a));
-					}
-					if(CoolUtil.exists(Paths.cacheSound(a))){
-						FlxG.sound.cache(Paths.cacheSound(a));
-					}
-					if(CoolUtil.exists(Paths.cacheMusic(a))) {
-						FlxG.sound.cache(Paths.cacheMusic(a));
-					}
-					currentLoaded++;
-				}
-				catch(e)
-				{
-					trace("Music/Sound: File at " + a + " not found, skipping cache.");
-				}
-			};
-			cacheArr.push(modMusic);
-		}
+		// for (a in modMusic)
+		// {
+		// 	var modMusic =
+		// 	function() 
+		// 	{
+		// 		try
+		// 		{
+		// 			if(CoolUtil.exists(Paths.cacheInst(a))){
+		// 				FlxG.sound.cache(Paths.cacheInst(a));
+		// 			}
+		// 			if(CoolUtil.exists(Paths.cacheVoices(a))){
+		// 				FlxG.sound.cache(Paths.cacheVoices(a));
+		// 			}
+		// 			if(CoolUtil.exists(Paths.cacheSound(a))){
+		// 				FlxG.sound.cache(Paths.cacheSound(a));
+		// 			}
+		// 			if(CoolUtil.exists(Paths.cacheMusic(a))) {
+		// 				FlxG.sound.cache(Paths.cacheMusic(a));
+		// 			}
+		// 			currentLoaded++;
+		// 		}
+		// 		catch(e)
+		// 		{
+		// 			trace("Music/Sound: File at " + a + " not found, skipping cache.");
+		// 		}
+		// 	};
+		// 	cacheArr.push(modMusic);
+		// }
 
-		for (a in videos)
-		{
-			var video =
-			function() 
-			{
-				try {
-					var a = StringTools.replace(a, '.mp4', '');
-					a = StringTools.replace(a, 'assets/videos/', '');
-					preloadVideo(StringTools.replace(a, '.mp4', ''));
-					currentLoaded++;
-				}
-				catch(e){
-					trace("Video: File at " + a + " not found, skipping cache.");
-				}
-			};
-			cacheArr.push(video);
-		}
+		// for (a in videos)
+		// {
+		// 	var video =
+		// 	function() 
+		// 	{
+		// 		try {
+		// 			var a = StringTools.replace(a, '.mp4', '');
+		// 			a = StringTools.replace(a, 'assets/videos/', '');
+		// 			preloadVideo(StringTools.replace(a, '.mp4', ''));
+		// 			currentLoaded++;
+		// 		}
+		// 		catch(e){
+		// 			trace("Video: File at " + a + " not found, skipping cache.");
+		// 		}
+		// 	};
+		// 	cacheArr.push(video);
+		// }
 
-		for (a in modVideos)
-		{
-			var video =
-			function() 
-			{
-				try{
-					preloadVideoMods(a);
-					currentLoaded++;
-				}
-				catch(e){
-					trace("Video: File at " + a + " not found, skipping cache.");
-				}
-			};
-			cacheArr.push(video);
-		}
+		// for (a in modVideos)
+		// {
+		// 	var video =
+		// 	function() 
+		// 	{
+		// 		try{
+		// 			preloadVideoMods(a);
+		// 			currentLoaded++;
+		// 		}
+		// 		catch(e){
+		// 			trace("Video: File at " + a + " not found, skipping cache.");
+		// 		}
+		// 	};
+		// 	cacheArr.push(video);
+		// }
 
 		if(loadTotal > 0){
 			loadingBar = new FlxBar(0, 605, LEFT_TO_RIGHT, 600, 24, this, 'currentLoaded', 0, loadTotal);
@@ -390,7 +391,7 @@ class CacheState extends MusicBeatState
 
 		if (allowMusic && !cacheInit) FlxG.sound.playMusic(Paths.music(listoSongs[FlxG.random.int(0, 10)]), 1, true);
 
-		thread = new ThreadQueue(10);
+		thread = new ThreadQueue(3);
 		thread.preloadMulti(cacheArr);
 		if(!cacheStart){
 			#if web
@@ -405,6 +406,9 @@ class CacheState extends MusicBeatState
 			{
 				cacheStart = true;
 				thread.run();
+
+				
+
 			});
 			#end
 		}
@@ -422,9 +426,45 @@ class CacheState extends MusicBeatState
 	var move:Bool = false;
 	var timeSinceLastCache:Float = 0;
 	var lastTotal:Int = 0;
+	var loadingImages:Bool = false;
 	override function update(elapsed) 
 	{
+
+		if (!loadingImages && thread.length == 0)
+		{
+			loadingImages = true;
+			memSafety = new MemLimitThreadQ(images, function(a:String) {
+				if(!ImageCache.exists(a)){
+					ImageCache.add(a);
+				}
+				currentLoaded++;
+			}, 3, true, thread);
+
+			preloadMusic();
+			videos.forEachT(function(a:String) {
+				try {
+					var a = StringTools.replace(a, '.mp4', '');
+					a = StringTools.replace(a, 'assets/videos/', '');
+					preloadVideo(StringTools.replace(a, '.mp4', ''));
+					currentLoaded++;
+				}
+				catch(e){
+					trace("Video: File at " + a + " not found, skipping cache.");
+				}
+			});
+
+			modVideos.forEachT(function(a:String) {
+				try{
+					preloadVideoMods(a);
+					currentLoaded++;
+				}
+				catch(e){
+					trace("Video: File at " + a + " not found, skipping cache.");
+				}
+			});
+		}
 		timeSinceLastCache += elapsed;
+		// trace("Time since last cache: " + timeSinceLastCache);
 		if (currentLoaded != lastTotal)
 		{
 			lastTotal = currentLoaded;
@@ -507,8 +547,9 @@ class CacheState extends MusicBeatState
 			}
 		}
 
-		if (timeSinceLastCache >= 100 && !gameCached)
+		if (timeSinceLastCache >= 3 && !gameCached)
 		{
+			trace("No update after so long... Resetting thread");
 			thread.reset(true);
 			timeSinceLastCache = 0;
 			trace("Attempting thread reset");

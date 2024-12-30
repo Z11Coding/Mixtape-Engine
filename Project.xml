@@ -65,6 +65,9 @@
 	<define name="SHOW_LOADING_SCREEN" />
 	<define name="IRIS_DEBUG"/>
 	<define name="test"/>
+	<define name ="HXCPP_GC_MOVING"/>
+	<define name="HXCPP_GC_BIG_BLOCKS"/>
+	<define name="HXCPP_GC_DYNAMIC_SIZE"/>
 	<!-- <define name="UNDERTALE"/> -->
 
 	<section if="officialBuild">

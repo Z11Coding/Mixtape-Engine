@@ -188,9 +188,9 @@ class Threader {
 class ThreadQueue {
     private var queue:Array<() -> Void>;
     private var maxConcurrent:Int;
-    private var running:Int;
+    public var running:Int;
     private var blockUntilFinished:Bool;
-    private var done:Bool = true;
+    public var done:Bool = true;
     public var length(get, never):Int;
     
     function get_length():Int {
@@ -226,7 +226,7 @@ class ThreadQueue {
         }
         if (queue.length == 0) {
             trace("Attempted a thread queue run with no threads available.");
-            throw new Exception("Attempted a thread queue run with no threads available.");
+            // throw new Exception("Attempted a thread queue run with no threads available.");
         }
         processQueue();
     }
@@ -336,7 +336,9 @@ class ThreadQueue {
             try {
                 sys.thread.Thread.create(function() {
                     try {
+                        // trace("Running thread function...");
                         func();
+                        // trace("Thread function finished.");
                     } catch (e:Dynamic) {
                         trace("Exception in thread function: " + e + " ... " + haxe.CallStack.toString(haxe.CallStack.exceptionStack()));
                     }
@@ -396,6 +398,121 @@ class ThreadQueue {
     if (autoStart) {
         this.run();
     }
+    this.processQueue();
+    }
+}
+
+/**
+ * Manages a queue of functions to be executed in threads with memory limit considerations.
+ */
+class MemLimitThreadQ {
+    public var queue:ThreadQueue;
+    private var items:Array<Dynamic>;
+    private var action:Dynamic -> Void;
+    private var limit:Int;
+    private var hasty:Bool;
+    public var queueLength(get, never):Int;
+
+    public var running(get, never):Int;
+    public var length(get, never):Int;
+
+    function get_running():Int {
+        return queue.running;
+    }
+
+    function get_length():Int {
+        return items.length;
+    }
+
+    
+    function get_queueLength():Int {
+        return queue.length;
+    }
+
+    /**
+     * Creates a new MemLimitThreadQ.
+     * @param items The items to process.
+     * @param action The action to perform on each item.
+     * @param limit The maximum number of items in the queue.
+     * @param hasty Whether to use softAdd or regular add.
+     */
+    public function new(items:Array<Dynamic>, action:Dynamic -> Void, limit:Int, ?hasty:Bool, ?hijackQueue:ThreadQueue) {
+        this.queue = hijackQueue != null ? hijackQueue : new ThreadQueue(limit, false);
+        this.items = items;
+        this.action = action;
+        this.limit = limit;
+        this.hasty = hasty != null ? hasty : false;
+        trace("Creating MemLimitThreadQ with " + items.length + " items, limit: " + limit + ", hasty: " + hasty);
+        preloadItems();
+        if (hijackQueue != null && (!hijackQueue.done || hijackQueue.length != 0 || hijackQueue.running != 0)) {
+            trace("Queue is already processing. Hooking into it...");
+            run();
+        }
+    }
+
+    public static function create(items:Array<Dynamic>, action:Dynamic -> Void, limit:Int, ?hasty:Bool):MemLimitThreadQ {
+        return new MemLimitThreadQ(items, action, limit, hasty);
+    }
+
+    /**
+     * Preloads items into the queue.
+     */
+    private function preloadItems():Void {
+        while (items.length > 0 && queue.length < limit) {
+            var item = items.shift();
+            if (hasty) {
+                queue.softAdd(() -> action(item));
+            } else {
+                queue.add(() -> action(item));
+            }
+        }
+    }
+
+    /**
+     * Runs the queue.
+     */
+    public function run():Void {
+        if (queue.done) {
+            queue.run();
+        }
+        autoAddMoreItems();
+    }
+
+    /**
+     * Automatically adds more items to the queue if there is space.
+     */
+    private function autoAddMoreItems():Void {
+        trace("Auto-Allocation started...");
+        sys.thread.Thread.create(function() {
+            while (items.length > 0) {
+                if (queue.length < limit && items.length > 0) {
+                    var item = items.shift();
+                    if (hasty) {
+                        queue.softAdd(() -> action(item));
+                    } else {
+                        queue.add(() -> action(item));
+                    }
+                    if (queue.done && queue.length != 0) {
+                        trace("Queue has emptied... Running...");
+                        queue.run();
+                    }
+                }
+                // trace("Items remaining: " + items.length);
+            }
+            trace("Ended allocation of items.");
+            if (queue.done && queue.length != 0) {
+                trace("Queue has emptied... Running...");
+                queue.run();
+            }
+        });
+    }
+
+    /**
+     * Adds more items to the queue if there is space.
+     */
+    public function addMoreItems(newItems:Array<Dynamic>):Void {
+        items = items.concat(newItems);
+        autoAddMoreItems();
     }
 }
 
@@ -440,6 +557,70 @@ class ThreadChecker {
                 return false;
             default:
                 return false;
+        }
+    }
+}
+
+/**
+ * An extension of ThreadQueue that waits for the queue to be empty before adding more to it.
+ */
+class PatientThreadQueue extends ThreadQueue {
+
+    var waiting:Bool = false;
+
+    var curQueue:Array<() -> Void> = [];
+
+    public function new(maxConcurrent:Int = 1, blockUntilFinished:Bool = false) {
+        super(maxConcurrent, blockUntilFinished);
+        // curQueue = [];
+    }
+
+    override private function processQueue():Void {
+        if (done && queue.length > 0) {
+            done = false;
+            trace("Processing queue...");
+        }
+        while (queue.length > 0 || curQueue.length > 0) {
+            if (curQueue.length == 0) {
+                for (i in 0...maxConcurrent) {
+                    if (queue.length > 0) {
+                        var func = queue.shift();
+                        if (func != null) {
+                            curQueue.push(func);
+                        }
+                    }
+                }
+            }
+
+            while (curQueue.length > 0) {
+                var func = curQueue.shift();
+                if (func == null) {
+                    trace("Encountered a null function in the curQueue. Skipping...");
+                    continue;
+                }
+                running++;
+                try {
+                    sys.thread.Thread.create(function() {
+                        try {
+                            func();
+                        } catch (e:Dynamic) {
+                            trace("Exception in thread function: " + e + " ... " + haxe.CallStack.toString(haxe.CallStack.exceptionStack()));
+                        }
+                        running--;
+                        processQueue();
+                    });
+                } catch (e:Dynamic) {
+                    trace("Failed to create thread: " + e);
+                    running--;
+                }
+            }
+
+            if (queue.length == 0 && curQueue.length == 0 && running == 0) {
+                trace("Queue is empty.");
+                done = true;
+                waiting = false;
+                break;
+            }
         }
     }
 }
