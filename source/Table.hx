@@ -458,3 +458,114 @@ public function getValueFromSecondaryArray(index:String, secondaryArray:Array<Ar
 	return secondaryArray[row][col];
 }
 }
+
+// @:generic typedef TableT = OneOfTwo<DTable<T>, HTable<T>>;
+
+class Table
+{
+	public static function create<T>(rows:Int, cols:Int):DTable<T>
+	{
+		return new DTable<T>(rows, cols);
+	}
+
+	public static function createH<T>(rows:Int, cols:Int):HTable<T>
+	{
+		return new HTable<T>(rows, cols);
+	}
+
+	public static function createCell<T>(value:T):Cell<T>
+	{
+		return new Cell<T>(value);
+	}
+
+	public static function createCellArray<T>(values:Array<T>):Array<Cell<T>>
+	{
+		var cells:Array<Cell<T>> = [];
+		for (value in values)
+		{
+			cells.push(new Cell<T>(value));
+		}
+		return cells;
+	}
+
+	public static function createCellArrayFromStrings<T>(values:Array<String>):Array<Cell<T>>
+	{
+		var cells:Array<Cell<T>> = [];
+		for (value in values)
+		{
+			cells.push(new Cell<T>(cast value));
+		}
+		return cells;
+	}
+
+	public static function createCellArrayFromObjects<T>(values:Array<Dynamic>):Array<Cell<T>>
+	{
+		var cells:Array<Cell<T>> = [];
+		for (value in values)
+		{
+			cells.push(new Cell<T>(cast value));
+		}
+		return cells;
+	}
+
+	public static function createCellArrayFromMaps<T>(values:Array<Map<String, Dynamic>>):Array<Cell<T>>
+	{
+		var cells:Array<Cell<T>> = [];
+		for (value in values)
+		{
+			cells.push(new Cell<T>(cast value));
+		}
+		return cells;
+	}
+
+	public static function createCellArrayFromArrays<T>(values:Array<Array<T>>):Array<Cell<T>>
+	{
+		var cells:Array<Cell<T>> = [];
+		for (value in values)
+		{
+			cells.push(new Cell<T>(cast value));
+		}
+		return cells;
+	}
+
+	public static function createCellArrayFromCells<T>(values:Array<Cell<T>>):Array<Cell<T>>
+	{
+		var cells:Array<Cell<T>> = [];
+		for (value in values)
+		{
+			cells.push(new Cell<T>(value.getValue()));
+		}
+		return cells;
+	}
+
+	public static function modifyCell<T>(cell:Cell<T>, value:T):Void
+	{
+		cell.setValue(value);
+	}
+
+	// public static function modifyTableMetaData<T>(table:TableT, rows:Int, cols:Int):Void {
+	// 	if (Std.is(table, DTable)) {
+	// 		var dTable:DTable<T> = cast table;
+	// 		var newTable = new DTable<T>(rows, cols);
+	// 		for (i in 0...Math.min(dTable.rows, rows)) {
+	// 			for (j in 0...Math.min(dTable.cols, cols)) {
+	// 				newTable.setCell(i, j, dTable.getCell(i, j));
+	// 			}
+	// 		}
+	// 		dTable.table = newTable.table;
+	// 		Reflect.setField(dTable, "rows", rows);
+	// 		Reflect.setField(dTable, "cols", cols);
+	// 	} else if (Std.is(table, HTable)) {
+	// 		var hTable:HTable<T> = cast table;
+	// 		var newTable = new HTable<T>(rows, cols);
+	// 		for (i in 0...Math.min(hTable.rows, rows)) {
+	// 			for (j in 0...Math.min(hTable.cols, cols)) {
+	// 				newTable.setCell(i, j, hTable.getCellValue(i, j));
+	// 			}
+	// 		}
+	// 		hTable.table = newTable.table;
+	// 		Reflect.setField(hTable, "rows", rows);
+	// 		Reflect.setField(hTable, "cols", cols);
+	// 	}
+	// }
+}

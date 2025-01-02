@@ -7,7 +7,8 @@ typedef Chance = {
 };
 typedef ChanceFunction = {
     func: Void -> Dynamic, // Function to execute
-    chance: Float // Chance of execution, assumed to be between 0 and 100
+    chance: Float, // Chance of execution, assumed to be between 0 and 100
+    ?condition: Bool // Optional condition to check before allowing the function to be executed
 }
   class ChanceSelector {
     public static function selectOption(options:Array<Chance>, strict:Bool = false, downsize:Bool = true, allowNull:Bool = false):Dynamic {
@@ -178,7 +179,7 @@ typedef ChanceFunction = {
      */
      public static function executeChanceFunction(chanceFunc:ChanceFunction):Dynamic {
         var randomNumber = Math.random() * 100; // Generate a random number between 0 and 100
-        if (randomNumber <= chanceFunc.chance) {
+        if (randomNumber <= chanceFunc.chance && (chanceFunc.condition == null || chanceFunc.condition)) {
            return chanceFunc.func(); // Execute the function if the random number is within the chance threshold
         }
         return null; // Return null if the function is not executed

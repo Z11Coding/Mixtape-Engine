@@ -189,6 +189,26 @@ class CollectionUtils
 		return {indices: indices, length: a.length};
 	}
 
+	public static inline function maybePush<T>(a:Array<T>, item:T, chance:Float):Bool
+	{
+		if (ChanceExtensions.chanceBool(true, chance))
+		{
+			a.push(item);
+			return true;
+		}
+		return false;
+	}
+
+	public static inline function pushUnique<T>(a:Array<T>, item:T):Bool
+	{
+		if (a.indexOf(item) == -1)
+		{
+			a.push(item);
+			return true;
+		}
+		return false;
+	}
+
 	public static inline function listIndexOf<T>(list:List<T>, item:T):Int
 	{
 		var index = 0;
