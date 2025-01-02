@@ -1504,6 +1504,99 @@ public function doEffect(effect:String)
 		scoreTxt.y = (effectiveDownScroll ? FlxG.height * 0.1 - 72 : FlxG.height * 0.9 + 36);
 	}
 
+    var shape:Array<Array<Int>> = [
+        [1, 1, 1, 1],
+        [1, 0, 0, 0],
+        [1, 1, 1, 0],
+        [1, 0, 0, 0],
+        [1, 1, 1, 1]
+    ];
+
+    var typedShape:Array<Array<Int>> = [
+        [1, 1, 1, 1],
+        [1, -1, -1, -1],
+        [1, 1, 1, -1],
+        [1, -1, -1, -1],
+        [1, 1, 1, 1]
+    ];
+
+    public function createNotesFromTable(table:DTable<Int>, distance:Int):Void {
+        var rows = table.toArray().length;
+        var cols = table.toArray()[0].length;
+
+        for (i in 0...rows) {
+            for (j in 0...cols) {
+                if (table.getCell(i, j) == 1) {
+                    var min = i * distance;
+                    var max = min + distance;
+                    addNoteSvCLegacy(0, min, max, j);
+                }
+            }
+        }
+    }
+
+    public function createNotesFromArray(array:Array<Int>, distance:Int):Void {
+        for (i in 0...array.length) {
+            if (array[i] == 1) {
+                var min = i * distance;
+                var max = min + distance;
+                addNoteSvCLegacy(0, min, max, -1);
+            }
+        }
+    }
+
+    public function createNotesFromArrayTable(array:Array<Array<Int>>, distance:Int):Void {
+        for (i in 0...array.length) {
+            for (j in 0...array[i].length) {
+                if (array[i][j] == 1) {
+                    var min = i * distance;
+                    var max = min + distance;
+                    addNoteSvCLegacy(0, min, max, j);
+                }
+            }
+        }
+    }
+
+    public function createTypedNotesFromTable(table:DTable<Int>, distance:Int):Void {
+        var rows = table.toArray().length;
+        var cols = table.toArray()[0].length;
+
+        for (i in 0...rows) {
+            for (j in 0...cols) {
+                var type = table.getCell(i, j);
+                if (type != -1) {
+                    var min = i * distance;
+                    var max = min + distance;
+                    addNoteSvCLegacy(type, min, max, j);
+                }
+            }
+        }
+    }
+
+    public function createTypedNotesFromArray(array:Array<Int>, distance:Int):Void {
+        for (i in 0...array.length) {
+            var type = array[i];
+            if (type != -1) {
+                var min = i * distance;
+                var max = min + distance;
+                addNoteSvCLegacy(type, min, max, -1);
+            }
+        }
+    }
+
+    public function createTypedNotesFromArrayTable(array:Array<Array<Int>>, distance:Int):Void {
+        for (i in 0...array.length) {
+            for (j in 0...array[i].length) {
+                var type = array[i][j];
+                if (type != -1) {
+                    var min = i * distance;
+                    var max = min + distance;
+                    addNoteSvCLegacy(type, min, max, j);
+                }
+            }
+        }
+    }
+
 	function addNoteSvCLegacy(type:Int = 0, min:Int = 0, max:Int = 0, ?specificData:Int)
 	{
 		if (startingSong)

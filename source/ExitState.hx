@@ -21,6 +21,16 @@ class ExitState extends FlxState
 		performCleanup();
 	}
 
+	public static function addExitCallback(func:Void->Void):Void
+	{
+		cleanupFunctions.push(func);
+	}
+
+	public static function addReturnCallback(func:Void->Dynamic):Void
+	{
+		returnFunctions.push(func);
+	}
+
 	private function performCleanup():Void
 	{
 		// Execute cleanup functions
@@ -63,6 +73,7 @@ class ExitState extends FlxState
 				ease: FlxEase.sineInOut,
 				onComplete: function(twn:FlxTween)
 				{
+					trace("Returns: " + returnResults);
 					Main.closeGame();
 				}
 			}, function(num)
@@ -70,6 +81,6 @@ class ExitState extends FlxState
 				backend.window.CppAPI.setWindowOppacity(num);
 			});
 		}
-		else Main.closeGame();
+		else trace("Returns: " + returnResults); Main.closeGame();
 	}
 }

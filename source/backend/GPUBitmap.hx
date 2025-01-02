@@ -62,7 +62,7 @@ class GPUBitmap
         // Schedule texture creation on the main thread
 		updateCallback = function(_) {
 			try {
-			ImageCache.acquireMutex();
+			// ImageCache.acquireMutex();
 			//trace('creating new texture');
 			var bmp = openfl.utils.Assets.getBitmapData(path);
 			var _texture = FlxG.stage.context3D.createTexture(bmp.width, bmp.height, texFormat, optimizeForRender);
@@ -95,7 +95,7 @@ class GPUBitmap
 				removeCallback(updateCallback);
 			}
 			}
-			ImageCache.releaseMutex();
+			// ImageCache.releaseMutex();
 		};
 
 		Application.current.onUpdate.add(updateCallback, true);

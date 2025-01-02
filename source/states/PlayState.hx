@@ -5356,6 +5356,8 @@ class PlayState extends MusicBeatState
 				var newCharacter:String = event.value2;
 				addCharacterToList(newCharacter, charType);
 
+			case 'Change Stage':
+
 			case 'False Timer':
 				if (timerExtensions == null)
 					timerExtensions = new Array();
@@ -7879,6 +7881,102 @@ class PlayState extends MusicBeatState
 				savedTime = Conductor.songPosition;
 				savedBeat = curBeat;
 				savedStep = curStep;
+
+			case 'Change Stage':
+				var stageName = value1;
+				// var newStageDatas = new Array<Dynamic>();
+
+				for (lua in luaArray) {
+					if (lua.scriptName == 'stages/' + stageName + '.lua') {
+						return;
+					} else if (lua.scriptName == 'stages/' + curStage + '.lua') {
+						lua.call('onDestroy', []);
+					}
+				}
+				for (hscript in hscriptArray) {
+					if (hscript.origin == 'stages/' + stageName + '.hx') {
+						return;
+					} else if (hscript.origin == 'stages/' + curStage + '.hx') {
+						hscript.executeFunction('onDestroy');
+					}
+				}
+
+				// for (stage in MusicBeatState.stages)
+				// {
+				// 	if (stage is BaseStage)
+				// 	{
+				// 		stage.destroy();
+				// 	}
+				// }
+
+				stagesFunc(function(stage:BaseStage) stage.destroy());
+
+				switch (stageName)
+				{
+					case 'stage':
+						new StageWeek1(); // Week 1
+					case 'spooky':
+						new Spooky(); // Week 2
+					case 'philly':
+						new Philly(); // Week 3
+					case 'limo':
+						new Limo(); // Week 4
+					case 'mall':
+						new Mall(); // Week 5 - Cocoa, Eggnog
+					case 'mallEvil':
+						new MallEvil(); // Week 5 - Winter Horrorland
+					case 'school':
+						new School(); // Week 6 - Senpai, Roses
+					case 'schoolEvil':
+						new SchoolEvil(); // Week 6 - Thorns
+					case 'tank':
+						new Tank(); // Week 7 - Ugh, Guns, Stress
+					case 'phillyStreets':
+						new PhillyStreets(); // Weekend 1 - Darnell, Lit Up, 2Hot
+					case 'phillyBlazin':
+						new PhillyBlazin(); // Weekend 1 - Blazin
+					case 'mainStageErect': 
+						new MainStageErect(); //Week 1 Special 
+					case 'spookyMansionErect': 
+						new SpookyMansionErect(); //Week 2 Special 
+					case 'phillyTrainErect': 
+						new PhillyTrainErect(); //Week 3 Special 
+					case 'limoRideErect': 
+						new LimoRideErect(); //Week 4 Special 
+					case 'mallXmasErect': 
+						new MallXmasErect(); //Week 5 Special 
+					case 'phillyStreetsErect': 
+						new PhillyStreetsErect(); //Weekend 1 Special 
+					case 'desktop':
+						new Desktop(); // Literally your desktop as a stage lmao
+					default:
+
+				}
+
+				#if LUA_ALLOWED
+				startLuasNamed('stages/' + stageName + '.lua');
+				#end
+				#if HSCRIPT_ALLOWED
+				startHScriptsNamed('stages/' + stageName + '.hx');
+				#end
+				var scripts:Array<Array<Dynamic>> = [luaArray, hscriptArray];
+				stagesFunc(function(stage:BaseStage) stage.createPost());
+				for (stuff in scripts)
+				{ for (script in stuff) {
+					if (script is HScript) {
+						var script:HScript = cast(script);
+					if (script.origin == 'stages/' + stageName + '.hx' || script.origin == 'stages/' + stageName + '.lua')
+					{
+						script.executeFunction('onCreatePost', []);
+					} } else if (script is FunkinLua) {
+						var script:FunkinLua = cast(script);
+						if (script.scriptName == 'stages/' + stageName + '.lua')
+						{
+							script.call('onCreatePost', []);
+						}
+					}
+				} }
+				
 
 			case 'False Timer':
 				if (timerExtensions != null)

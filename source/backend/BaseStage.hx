@@ -42,6 +42,8 @@ class BaseStage extends FlxBasic
 	private var game(get, never):Dynamic;
 	public var onPlayState(get, never):Bool;
 
+	// public static var currentStage:BaseStage;
+
 	// some variables for convenience
 	public var paused(get, never):Bool;
 	public var songName(get, never):String;

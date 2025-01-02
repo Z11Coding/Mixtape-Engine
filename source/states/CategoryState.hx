@@ -2,12 +2,18 @@ package states;
 import flixel.input.keyboard.FlxKey;
 import flixel.addons.transition.FlxTransitionableState;
 import backend.WeekData;
+
+typedef Category = {
+	var name:String;
+	var transition:Void -> Void;
+	var isLocked:Bool;
+}
 class CategoryState extends MusicBeatState
 {
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 	var grpLocks:FlxTypedGroup<FlxSprite>;
 
-	public static var menuItems:Array<String> = [
+	public var menuItems:Array<String> = [
 		"All", "Base", "Erect", "Pico"
 	];
 	private var showMods:Bool = true;
@@ -15,8 +21,11 @@ class CategoryState extends MusicBeatState
 	private var showAll:Bool = true;
 
 	//I'll softcode this eventually
-	public static var menuLocks:Array<Bool> = [
+	public var menuLocks:Array<Bool> = [
 		false, false
+	];
+	public var specialOptions:Array<Void -> Void> = [
+		//function() { FlxG.switchState(new FreeplayState()); }
 	];
 
 	private var hhhhhh:Bool = true;
@@ -33,8 +42,7 @@ class CategoryState extends MusicBeatState
 
 	// TODO: later, change to OneOfTwo<Array<String>, Map<String, Void -> Bool>> for categories, so it specifies that it must be one of the two types.
 
-	public function new(?categories:Dynamic, ?showmods:Bool = true, ?showsecrets:Bool = true, ?showall:Bool = true, ?h:Bool = true)
-	{
+	public function new(?categories:Dynamic, ?showmods:Bool = true, ?showsecrets:Bool = true, ?showall:Bool = true, ?h:Bool = true) {
 		super();
 		if (categories != null) {
 			if (Std.is(categories, Array)) {
@@ -53,15 +61,24 @@ class CategoryState extends MusicBeatState
 						throw "CategoryState: 'categories' Map values must be either Bool or Void -> Bool!";
 					}
 				}
+			} else if (Reflect.isObject(categories)) {
+				var category:Category = cast categories;
+				menuItems = [category.name];
+				menuLocks = [category.isLocked];
+				if (category.transition != null) {
+					specialOptions.push(category.transition);
+				} else {
+					specialOptions.push(null);
+				}
 			} else {
-				throw "CategoryState: 'categories' must be either an Array<String> or a Map<String, Void -> Bool>!";
+				throw "CategoryState: 'categories' must be either an Array<String>, a Map<String, Void -> Bool>, or a Category!";
 			}
 		}
 		this.showMods = showmods;
 		this.showSecrets = showsecrets;
 		this.showAll = showall;
 		this.hhhhhh = h;
-
+	
 		if (menuItems.contains("All") && !showAll) {
 			throw "CategoryState: 'All' category is disabled, yet it's in the menuItems array!";
 		}
@@ -72,7 +89,7 @@ class CategoryState extends MusicBeatState
 			throw "CategoryState: 'Secrets' category is disabled, yet it's in the menuItems array!";
 		}
 		// menuItems.mapIfBreak(it -> it.isEmpty(), throw "CategoryState: Empty strings are not allowed in the menuItems array!");
-
+	
 		if (menuItems.contains("h?")) {
 			if (h) {
 				throw "CategoryState: 'h?' category is reserved for a secret!";
@@ -268,6 +285,10 @@ class CategoryState extends MusicBeatState
 				{
 					Window.alert('h?', 'h?');
 					Main.closeGame();
+				}
+				else if (curSelected < specialOptions.length && specialOptions[curSelected] != null)
+				{
+					specialOptions[curSelected]();
 				}
 				else
 				{

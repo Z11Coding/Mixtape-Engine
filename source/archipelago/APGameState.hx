@@ -6,6 +6,7 @@ import flixel.FlxState;
 import archipelago.Client;
 import archipelago.PacketTypes;
 import archipelago.APDisconnectSubstate;
+import archipelago.APCategoryState;
 
 import haxe.ds.Option;
 

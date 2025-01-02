@@ -435,7 +435,7 @@ class CacheState extends MusicBeatState
 			loadingImages = true;
 			memSafety = new MemLimitThreadQ(images, function(a:String) {
 				if(!ImageCache.exists(a)){
-					ImageCache.add(a);
+					ImageCache.add(a);	
 				}
 				currentLoaded++;
 			}, 3, true, thread);
@@ -502,7 +502,7 @@ class CacheState extends MusicBeatState
 	
 					// backend.Threader.runInThread(ImageCache.saveCache());
 					// backend.Threader.runInThread(ImageCache.cacheToGPU());
-					ImageCache.removeCallback();
+					GPUBitmap.removeCallbacks();
 				}
 				FlxG.sound.music.time = 0;
 				if (ClientPrefs.data.cacheCharts) {

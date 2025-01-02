@@ -1,8 +1,8 @@
 class DTable<T>
 {
 	private var table:Array<Array<T>>;
-	private var rows:Int;
-	private var cols:Int;
+	public final rows:Int;
+	public final cols:Int;
 
 	public inline function new(rows:Int, cols:Int)
 	{
@@ -19,11 +19,17 @@ class DTable<T>
 		}
 	}
 
-	public function fromArray(array:Array<Array<T>>):Void
+	public static function fromArray<T>(array:Array<Array<T>>):DTable<T>
 	{
-		this.rows = array.length;
-		this.cols = array[0].length;
-		this.table = array;
+		var table = new DTable<T>(array.length, array[0].length);
+		for (i in 0...table.rows)
+		{
+			for (j in 0...table.cols)
+			{
+				table.setCell(i, j, array[i][j]);
+			}
+		}
+		return table;
 	}
 
 	public function getCell(row:Int, col:Int):T
@@ -82,6 +88,34 @@ class DTable<T>
         return result.replace("null", "-");
     }
 
+	public function createShape(shape:Array<Array<Int>>, mania:Int, offset:Int = 0):Void {
+		var shapeRows = shape.length;
+		var shapeCols = shape[0].length;
+		var laneOffset = (mania - shapeCols) / 2 + offset;
+
+		for (i in 0...shapeRows) {
+			for (j in 0...shapeCols) {
+				var col:Int = Std.int((j + laneOffset) % mania);
+				setCell(i, col, cast shape[i][j]);
+			}
+		}
+	}
+
+	public static function fromShapedArray(shape:Array<Array<Int>>, mania:Int, offset:Int = 0):DTable<Int> {
+		var shapeRows = shape.length;
+		var shapeCols = shape[0].length;
+		var laneOffset = (mania - shapeCols) / 2 + offset;
+
+		var table = new DTable<Int>(shapeRows, mania);
+		for (i in 0...shapeRows) {
+			for (j in 0...shapeCols) {
+				var col:Int = Std.int((j + laneOffset) % mania);
+				table.setCell(i, col, shape[i][j]);
+			}
+		}
+		return table;
+	}
+
 	// public function toString():String
 	// {
 	// 	var result = "";
@@ -96,17 +130,18 @@ class DTable<T>
 	// 	return result.replace("null", "-");
 	// }
 
-	public function fromString(str:String):Void
+	public static function fromString<T>(str:String):DTable<T>
 	{
 		var rows:Array<String> = str.split("\n");
-		this.rows = rows.length;
-		this.cols = rows[0].split(", ").length;
-		table = [];
-		for (i in 0...rows.length)
+		var rowCount = rows.length;
+		var colCount = rows[0].split(", ").length;
+		var table = new DTable<T>(rowCount, colCount);
+		for (i in 0...rowCount)
 		{
-            var row:Array<T> = rows[i].split(", ").map(function(item) return cast item);
-            table.push(row);
+			var row:Array<T> = rows[i].split(", ").map(function(item) return cast item);
+			table.table.push(row);
 		}
+		return table;
 	}
 
 	public function toArray():Array<Array<T>>
@@ -114,15 +149,20 @@ class DTable<T>
 		return table;
 	}
 
-	public function fromMap(map:Map<String, Dynamic>):Void
+	public static function fromMap<T>(map:Map<String, Dynamic>):DTable<T>
 	{
-		this.rows = map.get("rows");
-		this.cols = map.get("cols");
-		table = [];
+		var rows = map.get("rows");
+		var cols = map.get("cols");
+		var table = new DTable<T>(rows, cols);
 		for (i in 0...rows)
 		{
-			table.push(map.get("row_" + i));
+			var row:Array<T> = map.get("row_" + i);
+			for (j in 0...cols)
+			{
+				table.setCell(i, j, row[j]);
+			}
 		}
+		return table;
 	}
 
 	public function toMap():Map<String, Dynamic>
@@ -137,16 +177,17 @@ class DTable<T>
 		return map;
 	}
 
-	public function fromObject(obj:Dynamic):Void
-	{
-		this.rows = obj.rows;
-		this.cols = obj.cols;
-		table = [];
-		for (i in 0...rows)
-		{
-			table.push(obj[Std.parseInt("row_" + i)]);
-		}
-	}
+	// public static function fromObject<T>(obj:Dynamic):DTable<T>
+	// {
+	// var newTable = new DTable<T>(rows, cols);
+	// for (i in 0...newTable.rows)
+	// {
+	// 	for (j in 0...newTable.cols)
+	// 	{
+	// 		newTable.setCell(i, j, cast obj[Std.parseInt("row_" + i)][Std.parseInt("col_" + j)]);
+	// 	}
+	// }
+	// return newTable; }
 
 	public function toObject():Dynamic
 	{
