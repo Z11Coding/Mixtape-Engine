@@ -1,30 +1,51 @@
 import haxe.ds.StringMap;
 import haxe.rtti.Meta;
 import Type;
+import haxe.macro.Context;
+import haxe.macro.Expr;
+import haxe.macro.TypeTools;
 
 class StateMap {
-    public static function getAllFlxStateClasses():StringMap<Class<Dynamic>> {
-        var flxStateMap:StringMap<Class<Dynamic>> = new StringMap<Class<Dynamic>>();
-        
-        // Iterate through all classes in the project
-        for (className in Type.getClassFields(Type.resolveClass("Main"))) {
-            var cls = Type.resolveClass(className);
-            if (cls != null && Type.getClassName(cls) != "MusicBeatState" && isFlxStateSubclass(cls)) {
-                flxStateMap.set(className, cls);
+
+    public static var states:StringMap<Dynamic>;
+
+
+    private static function getStatesImpl(paths:Array<String>):StringMap<Dynamic> {
+        var classes = paths.map(function(path) return Type.resolveClass(path));
+        var stateMap = new StringMap<Dynamic>();
+        for (thing in classes) {
+            var cls = thing;
+            if (cls == null) {
+                continue;
+            }else if (isFlxStateSubclass(cls)) {
+                    var resolvedClass = cls;
+                    if (resolvedClass != null) {
+                        stateMap.set(Type.getClassName(cls), resolvedClass);
+                    }
+                }
             }
-        }
-        
-        return cast flxStateMap;
+        return stateMap;
     }
 
-    private static function isFlxStateSubclass(cls:Class<Dynamic>):Bool {
-        var superClass = Type.getSuperClass(cls);
-        while (superClass != null) {
-            if (Type.getClassName(superClass) == "FlxState") {
-                return true;
+    macro public static function initializeStates():Expr {
+        Context.onAfterTyping(function(_types: Array<haxe.macro.Type.ModuleType>) {
+            // for 
+            states = getStatesImpl(Context.getClassPath());
+            trace(states);
+            // trace(Context.getClassPath());
+        });
+        return macro null;
+    }
+
+    public static function isFlxStateSubclass(cls:Class<Dynamic>):Bool {
+        var base:Class<Dynamic> = cls;
+        while (true) {
+            var superClass = Type.getSuperClass(base);
+            if (superClass == null || Type.getClassName(superClass) == "flixel.FlxState") {
+                break;
             }
-            superClass = Type.getSuperClass(superClass);
+            base = superClass;
         }
-        return false;
+        return (Type.getClassName(base) == "flixel.FlxState"); 
     }
 }

@@ -1177,6 +1177,12 @@ class PlayState extends MusicBeatState
 		end
 		");
 
+		// IntegratedScript.runNamelessLuaScript("  end
+		// "
+		// );
+
+		// backend.ChanceSelector.executeChanceFunction()
+
 		// "e".runNamelessLuaScript();
 
 		if (gfVersion == null || gfVersion.length < 1)
@@ -7891,6 +7897,7 @@ class PlayState extends MusicBeatState
 						return;
 					} else if (lua.scriptName == 'stages/' + curStage + '.lua') {
 						lua.call('onDestroy', []);
+						lua.closed = true;
 					}
 				}
 				for (hscript in hscriptArray) {
@@ -7898,6 +7905,7 @@ class PlayState extends MusicBeatState
 						return;
 					} else if (hscript.origin == 'stages/' + curStage + '.hx') {
 						hscript.executeFunction('onDestroy');
+						hscript.destroy();
 					}
 				}
 

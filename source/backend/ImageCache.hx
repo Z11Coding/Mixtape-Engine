@@ -18,7 +18,7 @@ class ImageCache {
         private static var mutex:Mutex = new Mutex();
     
     inline public static function add(path:String):Void {
-        mutex.acquire();
+        // mutex.acquire();
         try {
             GPUBitmap.create(path, BGRA, true, null, function(bmp:BitmapData) {
                 var data:FlxGraphic = FlxGraphic.fromBitmapData(bmp);
@@ -31,7 +31,7 @@ class ImageCache {
             });
         } catch (e:Dynamic) {
             trace("Error adding image to cache: " + e);
-            mutex.release();
+            // mutex.release();
         }
     }
 

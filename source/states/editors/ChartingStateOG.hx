@@ -92,152 +92,8 @@ class ChartingStateOG extends MusicBeatChartingState
 	public var hitsound:FlxSound;
 
 	final mouse_listeners:Array<openfl.events.EventType<openfl.events.MouseEvent>> = [MouseEvent.MOUSE_DOWN, MouseEvent.RIGHT_MOUSE_DOWN, MouseEvent.MOUSE_MOVE];
-	var eventStuff:Array<Dynamic> = [
-		['', "Nothing. Yep, that's right."],
-		[
-			'Dadbattle Spotlight',
-			"Used in Dad Battle,\nValue 1: 0/1 = ON/OFF,\n2 = Target Dad\n3 = Target BF"
-		],
-		[
-			'Hey!',
-			"Plays the \"Hey!\" animation from Bopeebo,\nValue 1: BF = Only Boyfriend, GF = Only Girlfriend,\nSomething else = Both.\nValue 2: Custom animation duration,\nleave it blank for 0.6s"
-		],
-		[
-			'Set GF Speed',
-			"Sets GF head bopping speed,\nValue 1: 1 = Normal speed,\n2 = 1/2 speed, 4 = 1/4 speed etc.\nUsed on Fresh during the beatbox parts.\n\nWarning: Value must be integer!"
-		],
-		[
-			'Philly Glow',
-			"Exclusive to Week 3\nValue 1: 0/1/2 = OFF/ON/Reset Gradient\n \nNo, i won't add it to other weeks."
-		],
-		['Kill Henchmen', "For Mom's songs, don't use this please, i love them :("],
-		[
-			'Add Camera Zoom',
-			"Used on MILF on that one \"hard\" part\nValue 1: Camera zoom add (Default: 0.015)\nValue 2: UI zoom add (Default: 0.03)\nLeave the values blank if you want to use Default."
-		],
-		['BG Freaks Expression', "Should be used only in \"school\" Stage!"],
-		['Trigger BG Ghouls', "Should be used only in \"schoolEvil\" Stage!"],
-		[
-			'Play Animation',
-			"Plays an animation on a Character,\nonce the animation is completed,\nthe animation changes to Idle\n\nValue 1: Animation to play.\nValue 2: Character (Dad, BF, GF)"
-		],
-		[
-			'Camera Follow Pos',
-			"Value 1: X\nValue 2: Y\n\nThe camera won't change the follow point\nafter using this, for getting it back\nto normal, leave both values blank."
-		],
-		[
-			'Change Focus',
-			'Move the focus of the camera to a specific character\nLeave it empty to return the camera to normal.'
-		],
-		[
-			'Set Game Cam Zoom and angle',
-			"Value 1: Cam Zoom \n(1 is default, but depends in the stage's) \n Value 2: Cam angle"
-		],
-		[
-			'Set hud Cam Zoom and angle',
-			"Value 1: Hud Cam Zoom \n\n (1 is default, but depends) \n Value 2: Cam angle"
-		],
-		[
-			'Alt Idle Animation',
-			"Sets a specified suffix after the idle animation name.\nYou can use this to trigger 'idle-alt' if you set\nValue 2 to -alt\n\nValue 1: Character to set (Dad, BF or GF)\nValue 2: New suffix (Leave it blank to disable)"
-		],
-		[
-			'Screen Shake',
-			"Value 1: Camera shake\nValue 2: HUD shake\n\nEvery value works as the following example: \"1, 0.05\".\nThe first number (1) is the duration.\nThe second number (0.05) is the intensity."
-		],
-		[
-			'Change Character',
-			"Value 1: Character to change (Dad, BF, GF)\nValue 2: New character's name"
-		],
-		[
-			'Change Scroll Speed',
-			"Value 1: Scroll Speed Multiplier (1 is default)\nValue 2: Time it takes to change fully in seconds."
-		],
-		[
-			"Constant SV",
-			"Speed changes which don't affect note positions.\n(For example, a speed of 0 stops notes\ninstead of making them go onto the receptors.)\nValue 1: New Speed"
-		],
-		[
-			"Mult SV",
-			"Speed changes which don't affect note positions.\n(For example, a speed of 0 stops notes\ninstead of making them go onto the receptors.)\nValue 1: Speed Multiplier"
-		],
-		['Set Property', "Value 1: Variable name\nValue 2: New value"],
-		[
-			'Play Sound',
-			"Value 1: Sound file name\nValue 2: Volume (Default: 1), ranges from 0 to 1"
-		],
-		['Change Mania', "Value 1: The new mania value (min: 0; max: 9)"],
-		['Change Mania (Special)', "Value 1: The new mania value (min: 0; max: 9)"],
-		['Super Burst', "Funnie Powerup"],
-		['Burst Dad', "Funnie Dad Burst"],
-		['Burst Boyfriend', "Funnie BF Burst"],
-		['Burst Dad 2', "Funnie Dad 2 Burst"],
-		['Burst BF2', "Funnie BF 2 Burst"],
-		['Switch Scroll', "Swap da scroll. Value 1: True or False"],
-		['Dad Fly', "Fly da dad. Value 1: True or False"],
-		['Turn on StrumFocus', "focuses the strums"],
-		['Turn off StrumFocus', "un-focuses the strums"],
-		['Fade In', "Hello There.\nValue 1 = time it takes to fade."],
-		['Fade Out', "Bye Bye!\nValue 1 = time it takes to fade."],
-		[
-			'Silhouette',
-			'KSGDUSN UYGD WHERE DID THE CHARACTERS GO!?!?!!?\nValue 1 Can Either Be Black Or White. Leave Blank For Normal'
-		],
-		[
-			'Save Song Posititon',
-			'Place event where the player will start the song when they retry after they die.'
-		],
-		[
-			'False Timer',
-			'Dang that was a short so-OH MY GOD WAIT I HAVE 5 MINUTES LEFT WHAT!\nPlace the event where the timer will revert back to the next\nfalse timer event or the actual length of the song.'
-		],
-		[
-			'Chromatic Aberration',
-			"Adds Le Chromatic Aberration.\nValue 1 = Amount Of Abberation"
-		],
-		[
-			'Move Window',
-			"Move The Window. No Im Not Kidding. Value1 = X Posiion. Value2 = Y Position."
-		],
-		[
-			'Static',
-			"Da Static\nValue 1 = Type Of Static:\n0 = Full Static\n1 = I See You\n2 = Half Static\n3 = No Static"
-		],
-		[
-			'Static Fade',
-			"Da Static Fade\nValue 1 = Time To Fade Static\nValue 2 = Alpha to Fade Static To"
-		],
-		[
-			'Thunderstorm Trigger',
-			"Ayo Its Raining.\nValue 1 = Type Of Storm.\n0 = light rain\n1 = heavy rain\n2 = thunderstorm\n3 = clear skys"
-		],
-		[
-			'Rave Mode',
-			"Reworked and WAY cooler!\nValue 1 can either be \n0(Off), 1(Light Rave), 2(Light Rave with Spotlight),\n3(Light Rave with Philly Glow), 4(Light Rave with Spotlight and Philly Glow),\n5(Heavy Rave), 6(Heavy Rave with Spotlight),\n7(Heavy Rave with Philly Glow), 8(Heavy Rave with Spotlight and Philly Glow)\nValue 2 can either be A or M for Auto and Manual toggle.\n\nFor now, the spotlight is automated, and same with\nPhilly Glow, but i'm working on it."
-		],
-		['gfScared', "Value 1 can be true or false."],
-		['Freeze Notes', "Freeze The Notes Mid-Song"],
-		['Funnie Window Tween', 'Ayo What The Window Doin?\nValue 1: X,Y\nValue 2: Time'],
-		[
-			'Chrom Beat Effect',
-			"Does The Chromatic Abberation Effect\nOn Every Beathit.\nSlow = Every 4 beats\nFast = Every 2 beats\nFaster = Every 1 beat\nslower = Every 8 beats\nMUST BE LOWER CASE!"
-		],
-		[
-			'Change Lyric',
-			'AYO LYRICS!?!?!?!?!?!?ASKJSD:LKHSFCHU:OSCHNFC:OUSJKL BFLJS BFHNIKKS FNCS CFL>SFBHPOIS FLJKSN\nValue 1 = Lyrics\nValue 2 = Color And Effect\nValue 2 Is Optional.\nEx. Value 1 = da lyric Value 2 = white,fadein'
-		],
-		[
-			'Enable or Disable Dad Trail',
-			'Can be either true or false.\nDon\'t ask what it does, you already know.'
-		],
-		[
-			'Enable or Disable BF Trail',
-			'Can be either true or false.\nDon\'t ask what it does, you already know.'
-		],
-		[
-			'Enable or Disable GF Trail',
-			'Can be either true or false.\nDon\'t ask what it does, you already know.'
-		],
+	var eventStuff:Array<Array<String>> = [
+		// Events are handled by Events class.
 	];
 
 	var _file:FileReference;
@@ -520,6 +376,7 @@ class ChartingStateOG extends MusicBeatChartingState
 
 	override function create()
 	{
+		states.editors.ChartEditorEvents.pushToArray(eventStuff);
 		if (PlayState.SONG != null)
 			_song = PlayState.SONG;
 		else
@@ -1486,6 +1343,7 @@ class ChartingStateOG extends MusicBeatChartingState
 		#if LUA_ALLOWED
 		var eventPushedMap:Map<String, Bool> = new Map<String, Bool>();
 		var directories:Array<String> = [];
+		// states.editors.ChartEditorEvents.
 
 		directories.push(Paths.getLibraryPath('custom_events/'));
 		#if MODS_ALLOWED
@@ -3545,33 +3403,24 @@ class ChartingStateOG extends MusicBeatChartingState
 		trace(characterData);
 	}
 
-	function updateHeads():Void
-	{
-		if (_song.notes[curSec].mustHitSection)
-		{
-			leftIcon.changeIcon(characterData.iconP1);
-			rightIcon.changeIcon(characterData.iconP2);
-			if (_song.notes[curSec].gfSection)
-				leftIcon.changeIcon(characterData.iconP3);
-			if (_song.notes[curSec].exSection)
-				leftIcon.changeIcon(characterData.iconP4);
-			if (_song.notes[curSec].exSection)
-				leftIcon.changeIcon(characterData.iconP5);
-			if (_song.notes[curSec].exSection)
-				rightIcon.changeIcon(characterData.iconP4);
+	function updateHeads():Void {
+		// Always set P1 and P4 on the left
+		leftIcon.changeIcon(characterData.iconP1);
+		if (_song.notes[curSec].exSection) {
+			leftIcon.changeIcon(characterData.iconP4);
 		}
-		else
-		{
-			leftIcon.changeIcon(characterData.iconP2);
-			rightIcon.changeIcon(characterData.iconP1);
-			if (_song.notes[curSec].gfSection)
-				leftIcon.changeIcon(characterData.iconP3);
-			if (_song.notes[curSec].exSection)
-				leftIcon.changeIcon(characterData.iconP5);
-			if (_song.notes[curSec].exSection)
-				leftIcon.changeIcon(characterData.iconP4);
-			if (_song.notes[curSec].exSection)
-				rightIcon.changeIcon(characterData.iconP5);
+	
+		// Always set P2 and P5 on the right
+		rightIcon.changeIcon(characterData.iconP2);
+		if (_song.notes[curSec].exSection) {
+			rightIcon.changeIcon(characterData.iconP5);
+		}
+	
+		// Move P3 based on GFSection
+		if (_song.notes[curSec].gfSection && _song.notes[curSec].mustHitSection) {
+			leftIcon.changeIcon(characterData.iconP3);
+		} else if (_song.notes[curSec].gfSection && !_song.notes[curSec].mustHitSection) {
+			rightIcon.changeIcon(characterData.iconP3);
 		}
 	}
 
