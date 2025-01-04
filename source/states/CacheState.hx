@@ -120,6 +120,7 @@ class CacheState extends MusicBeatState
 	var prevAutoPause:Bool;
 	override function create()
 	{
+		ClientPrefs.data.highPriorityCache ? backend.window.Priority.setPriority(5) : backend.window.Priority.setPriority(ClientPrefs.data.gamePriority);
 		trace('ngl pretty cool');
 		prevAutoPause = FlxG.autoPause;
 		FlxG.autoPause = false;

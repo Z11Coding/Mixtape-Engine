@@ -29,15 +29,20 @@ class CacheSettings extends BaseOptionsMenu
 			'If checked, the Cache will be saved for later plays.', 'saveCache', 'bool');
 		var cacheChartsOption:Option = new Option('Cache Charts',
 		'If checked, Charts will be added to the Cache.', 'cacheCharts', 'bool');
+		var highPriorityOption:Option = new Option('High Priority',
+			'If checked, The game will have a higher priority during caching.', 'highPriority', 'bool');
 
 		if (experimentalCachingEnabled) {
 			addOption(saveCacheOption);
 			addOption(cacheChartsOption);
+			addOption(highPriorityOption);
 		} else {
 			removeOption(saveCacheOption);
 			ClientPrefs.data.saveCache = false;
 			removeOption(cacheChartsOption);
 			ClientPrefs.data.cacheCharts = false;
+			removeOption(highPriorityOption);
+			ClientPrefs.data.highPriorityCache = false;
 		}
 
 		super();

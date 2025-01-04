@@ -147,3 +147,23 @@ class Option
 		return type;
 	}
 }
+
+class EnumOption extends Option
+{
+	public function new<T>(name:String, description:String = '', variable:String, options:EnumValue, ?onChange:Void->Void = null, ?translation:String = null)
+	{
+		var enumOptions:Array<String> = [];
+		for (field in Type.getEnumConstructs(Type.getEnum(options)))
+		{
+			var enumValue = Type.createEnum(Type.getEnum(options), field);
+			if (Reflect.fields(enumValue).length > 0)
+			{
+				throw 'Enum options with arguments are not supported';
+			}
+			enumOptions.push(field);
+		}
+		super(name, description, variable, 'string', enumOptions, onChange, translation);
+	}
+
+	
+}

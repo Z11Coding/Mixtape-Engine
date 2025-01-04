@@ -65,6 +65,21 @@ class MusicBeatState extends FlxState
 	public static var timePassedOnState:Float = 0;
 	override function update(elapsed:Float)
 	{
+		if (ClientPrefs.data.forcePriority) {
+			if (backend.window.Priority.getPriority() != ClientPrefs.data.gamePriority) {
+				var success:Bool = backend.window.Priority.setPriority(ClientPrefs.data.gamePriority);
+				if (!success) {
+					trace("Failed to set game priority");
+				}
+			}
+		} else {
+			ClientPrefs.data.gamePriority = backend.window.Priority.getPriority();
+		}
+
+		if (ClientPrefs.data.gamePriority > 5) {
+			ClientPrefs.data.gamePriority = 2;
+			backend.window.Priority.setPriority(2);
+		}
 		EventFunc.updateAll();
 		if (Main.audioDisconnected && getState() == PlayState.instance)
 		{

@@ -1,10 +1,14 @@
 package options;
 
+import backend.window.Priority;
+
 class OtherSettingsSubState extends BaseOptionsMenu
 {
 	public static var curBPMList:Array<Int> =  [0, 160, 105, 130, 100, 160, 180, 100, 125, 150, 140];
+	public var priority:Int = 2;
 	public function new()
 	{
+		priority = Priority.getPriority();
 		title = 'Misc. Settings.';
 		rpcTitle = 'Misc. Settings'; // for Discord Rich Presence
 
@@ -18,6 +22,20 @@ class OtherSettingsSubState extends BaseOptionsMenu
 
 		var option:Option = new Option("Allow Force Quit",
 			"If checked, The game will allow you to force quit the game.", 'allowForcedExit', 'bool');
+			addOption(option);
+
+		var option:Option = new Option('Game Priority',
+			"Set the game's priority.\n Tells the game to change how it processes things.\nMakes it potentially take priority over other programs.", 'gamePriority', 'int');
+			option.minValue = 0;
+			option.maxValue = 5;
+			option.defaultValue = 2;
+			option.onChange = function()
+			{
+				backend.window.Priority.setPriority(ClientPrefs.data.gamePriority);
+			};
+			addOption(option);
+
+			var option:Option = new Option('Force Priority', 'If checked, The game will force the priority.', 'forcePriority', 'bool');
 			addOption(option);
 
 		var option:ToggleOption = new ToggleOption('Test Togglable', 'A test.', 'testToggle', 'int', 0);
@@ -259,6 +277,10 @@ class OtherSettingsSubState extends BaseOptionsMenu
 		super.update(e);
 		if (FlxG.sound.music != null)
 			Conductor.songPosition = FlxG.sound.music.time;
+
+		if (!ClientPrefs.data.forcePriority && backend.window.Priority.getPriority() != ClientPrefs.data.gamePriority){
+			backend.window.Priority.setPriority(backend.window.Priority.getPriority()); priority = ClientPrefs.data.gamePriority;
+		FlxG.resetState();}
 	}
 
 	override function beatHit()

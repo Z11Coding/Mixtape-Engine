@@ -251,6 +251,8 @@ class PlayState extends MusicBeatState
 	public var health(default, set):Float = 1;
 	public var healthGF:Float = 1;
 	public var MaxHP:Float = 2;
+	public var extraHealth:Float = 0;
+	public var noHeal:Bool = false;
 	public var combo:Int = 0;
 	public var comboOpp:Int = 0;
 
@@ -6544,6 +6546,22 @@ class PlayState extends MusicBeatState
 		if (health < 0)
 			health = 0;
 
+		if (health < MaxHP && extraHealth > 0) {
+			var neededHealth = MaxHP - health;
+			var healthToAdd = Math.min(extraHealth, neededHealth);
+			health += healthToAdd;
+			extraHealth -= healthToAdd;
+		}
+
+		if (noHeal) {
+			MaxHP = health;
+			if (extraHealth > 0) {
+				MaxHP += extraHealth;
+				health += extraHealth;
+				extraHealth = 0;
+			}
+		}
+
 		if (startedCountdown)
 		{
 			Conductor.songPosition += FlxG.elapsed * 1000 * playbackRate;
@@ -6910,8 +6928,9 @@ class PlayState extends MusicBeatState
 		var iconOffset:Int = 26;
 		if (!playAsGF)
 		{
-			iconP1.x = healthBar.barCenter + (150 * iconP1.scale.x - 150) / 2 - iconOffset;
-			iconP2.x = healthBar.barCenter - (150 * iconP2.scale.x) / 2 - iconOffset * 2;
+			var healthRatio:Float = health / MaxHP;
+			iconP1.x = healthBar.barCenter + (150 * iconP1.scale.x - 150) / 2 - iconOffset + (healthRatio * 150 - 75);
+			iconP2.x = healthBar.barCenter - (150 * iconP2.scale.x) / 2 - iconOffset * 2 + (healthRatio * 150 - 75);
 			if (dad2 != null)
 				iconP22.x = iconP2.x - 25;
 			if (iconP12 != null)

@@ -161,6 +161,7 @@ class TitleState extends MusicBeatState
 	{
 		if (!initialized)
 		{
+			backend.window.Priority.setPriority(ClientPrefs.data.gamePriority != -1 ? ClientPrefs.data.gamePriority : 2);
 			/*var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
 			diamond.persist = true;
 			diamond.destroyOnNoUse = false;
