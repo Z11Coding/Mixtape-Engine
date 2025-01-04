@@ -1,41 +1,31 @@
-from . import FunkinTestBase
+import unittest
+from ..FunkinUtils import FunkinUtils
 
 
-class TestRuleLogic(FunkinTestBase):
-    def testLogic(self):
-        for treasure_bumpers_held in range(1, 33):
-            if treasure_bumpers_held == 32:
-                self.assertFalse(self.can_reach_location("Level 5 - Cleared all Hazards"))
+class TestRuleLogic(unittest.TestCase):
+    def test_all_names_are_ascii(self) -> None:
+        bad_names = list()
+        fnfutil = FunkinUtils()
+        for name in fnfutil.song_items.keys():
+            for c in name:
+                # This is taken directly from Muse Dash taken directly from OoT. Represents the generally excepted characters.
+                if 0x20 <= ord(c) < 0x7e:
+                    continue
 
-            self.collect(self.get_item_by_name("Treasure Bumper"))
-            if treasure_bumpers_held % 8 == 0:
-                bb_count = round(treasure_bumpers_held / 8)
+                bad_names.append(name)
+                break
 
-                if bb_count < 4:
-                    self.assertFalse(self.can_reach_location(f"Treasure Bumper {treasure_bumpers_held + 1}"))
-                    # Can't reach Treasure Bumper 9 check until level 2 is unlocked, etc.
-                    # But we don't have enough Treasure Bumpers to reach this check anyway??
-                elif bb_count == 4:
-                    bb_count += 1
-                    # Level 4 has two new Bonus Booster checks; need to check both
+        self.assertEqual(len(bad_names), 0,
+                         f"Friday Night Funkin has {len(bad_names)} songs with non-ASCII characters.\n{bad_names}")
 
-                for booster_bumpers_held in range(self.count("Booster Bumper"), bb_count + 1):
-                    if booster_bumpers_held > 0:
-                        self.assertTrue(self.can_reach_location(f"Bonus Booster {booster_bumpers_held}"),
-                                    f"Bonus Booster {booster_bumpers_held} check not reachable with {self.count('Booster Bumper')} Booster Bumpers")
-                    if booster_bumpers_held < 5:
-                        self.assertFalse(self.can_reach_location(f"Bonus Booster {booster_bumpers_held + 1}"),
-                                         f"Bonus Booster {booster_bumpers_held + 1} check reachable with {self.count('Treasure Bumper')} Treasure Bumpers and {self.count('Booster Bumper')} Booster Bumpers")
-                    if booster_bumpers_held < bb_count:
-                        self.collect(self.get_item_by_name("Booster Bumper"))
+    def test_ids_dont_change(self) -> None:
+        collection = FunkinUtils()
+        items_before = {name: code for name, code in collection.item_names_to_id.items()}
+        locations_before = {name: code for name, code in collection.location_names_to_id.items()}
 
-            self.assertTrue(self.can_reach_location(f"Treasure Bumper {treasure_bumpers_held}"),
-                            f"Treasure Bumper {treasure_bumpers_held} check not reachable with {self.count('Treasure Bumper')} Treasure Bumpers")
+        collection.__init__()
+        items_after = {name: code for name, code in collection.item_names_to_id.items()}
+        locations_after = {name: code for name, code in collection.location_names_to_id.items()}
 
-            if treasure_bumpers_held < 32:
-                self.assertFalse(self.can_reach_location(f"Treasure Bumper {treasure_bumpers_held + 1}"))
-            elif treasure_bumpers_held == 32:
-                self.assertTrue(self.can_reach_location("Level 5 - 50,000+ Total Points"))
-                self.assertFalse(self.can_reach_location("Level 5 - Cleared all Hazards"))
-                self.collect(self.get_items_by_name("Hazard Bumper"))
-                self.assertTrue(self.can_reach_location("Level 5 - Cleared all Hazards"))
+        self.assertDictEqual(items_before, items_after, "Item ID changed after secondary init.")
+        self.assertDictEqual(locations_before, locations_after, "Location ID changed after secondary init.")
