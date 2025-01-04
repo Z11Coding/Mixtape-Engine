@@ -497,7 +497,7 @@ class CacheState extends MusicBeatState
 	
 					// backend.Threader.runInThread(ImageCache.saveCache());
 					// backend.Threader.runInThread(ImageCache.cacheToGPU());
-					GPUBitmap.removeCallbacks();
+					// GPUBitmap.removeCallbacks();
 				}
 				FlxG.sound.music.time = 0;
 				if (ClientPrefs.data.cacheCharts) {
