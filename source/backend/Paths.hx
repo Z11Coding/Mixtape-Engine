@@ -20,6 +20,7 @@ import haxe.Http;
 #if MODS_ALLOWED
 import backend.Mods;
 #end
+import states.CacheState;
 
 class Paths
 {
@@ -428,16 +429,18 @@ class Paths
 	{
 		try
 		{
-			if(ImageCache.exists(getPath('images/$key.png', IMAGE, library)) && !(allowGPU && ClientPrefs.data.cacheOnGPU)){
-				//trace(key + " is in the cache");
-				//trace(getPath('images/$key.png', IMAGE, library));
-				return ImageCache.get(getPath('images/$key.png', IMAGE, library));
+			if((CacheState.imageCache.getGraphic(getPath('images/$key', IMAGE, library)) != null) && !(allowGPU && ClientPrefs.data.cacheOnGPU)){
+				trace(key + " is in the cache");
+				//trace(getPath('images/$key', IMAGE, library));
+				return CacheState.imageCache.getGraphic(getPath('images/$key', IMAGE, library));
 			}
-			else if(ImageCache.exists(modsImages(key)) && !(allowGPU && ClientPrefs.data.cacheOnGPU)){
+			else if((CacheState.imageCache.getGraphic(modsImages(key)) != null) && !(allowGPU && ClientPrefs.data.cacheOnGPU)){
 				trace(key + " is in the mods cache");
-				return ImageCache.get(modsImages(key));
+				//trace(getPath('images/$key', IMAGE, library));
+				return CacheState.imageCache.getGraphic(modsImages(key));
 			}
-			else{
+			else
+			{
 				//if (allowGPU) trace(key + " can't be loaded due to GPU Cache being on");
 				//else 
 				// trace(key + " is NOT in the cache");

@@ -763,9 +763,7 @@ class Client {
 		sendVer.set("class", "Version");
 
 		slot = name;
-		#if debug
 		trace("Connecting to slot...");
-		#end
 		return InternalSend(OutgoingPacket.Connect(password, game, name, uuid, sendVer, items_handling, tags, true));
 	}
 

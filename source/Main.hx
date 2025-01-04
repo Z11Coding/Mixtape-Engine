@@ -17,7 +17,7 @@ import backend.AudioSwitchFix;
 import backend.FunkinRatioScaleMode;
 import backend.MemoryCounter;
 import haxe.ui.Toolkit;
-import backend.ImageCache;
+// import backend.ImageCache;
 import backend.JSONCache;
 import openfl.events.NativeProcessExitEvent;
 import psychlua.*;

@@ -1137,27 +1137,33 @@ class FreeplayState extends MusicBeatState
 
 		var bullShit:Int = 0;
 
-		for (i in 0...iconArray.length)
-		{
-			if (iconArray[i] != null)
+		try {
+			for (i in 0...iconArray.length)
 			{
-				iconArray[i].alpha = 0.4;
-				switch (iconArray[i].type) {
-					case SINGLE: iconArray[i].animation.curAnim.curFrame = 0;
-					case WINNING: iconArray[i].animation.curAnim.curFrame = 0;
-					default: iconArray[i].animation.curAnim.curFrame = 0;
+				if (iconArray[i] != null && iconArray[i].animation != null)
+				{
+					iconArray[i].alpha = 0.4;
+					switch (iconArray[i].type) {
+						case SINGLE: iconArray[i].animation.curAnim.curFrame = 0;
+						case WINNING: iconArray[i].animation.curAnim.curFrame = 0;
+						default: iconArray[i].animation.curAnim.curFrame = 0;
+					}
+				}
+			}
+
+			if (iconArray[curSelected] != null)
+			{
+				iconArray[curSelected].alpha = 1;
+				switch (iconArray[curSelected].type) {
+					case SINGLE: iconArray[curSelected].animation.curAnim.curFrame = 0;
+					case WINNING: iconArray[curSelected].animation.curAnim.curFrame = 1;
+					default: iconArray[curSelected].animation.curAnim.curFrame = 0;
 				}
 			}
 		}
-
-		if (iconArray[curSelected] != null)
+		catch(e)
 		{
-			iconArray[curSelected].alpha = 1;
-			switch (iconArray[curSelected].type) {
-				case SINGLE: iconArray[curSelected].animation.curAnim.curFrame = 0;
-				case WINNING: iconArray[curSelected].animation.curAnim.curFrame = 1;
-				default: iconArray[curSelected].animation.curAnim.curFrame = 0;
-			}
+			trace("Your icon broke! Skipping...");
 		}
 
 		for (item in grpSongs.members)
