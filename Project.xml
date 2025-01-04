@@ -142,6 +142,7 @@
 	<haxelib name="flixel-ui" />
 	<haxelib name="flixel-addons" version="3.2.2"/>
 	<haxelib name="tjson" version="1.4.0"/>
+	<haxelib name="FlashCache" />
 
 	<!-- Archipelago Stuff-->
 	<haxelib name="helder.set" />
