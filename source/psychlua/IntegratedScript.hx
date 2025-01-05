@@ -52,7 +52,29 @@ class IntegratedLuaScript {
         new IntegratedLuaScript(script.name, script.scriptText);
     }
 
-    private function isPlayState():Bool {
+    public static function runInVar(script:IntegratedLua, ?runCreatePost:Bool):FunkinLua {
+        if (!isPlayState()) {
+            throw "Script can only be run in PlayState or its extensions.";
+        }
+
+        var tempFilePath = Path.join([Sys.getCwd(), "__" + script.name + ".lua"]);
+        var file = File.write(tempFilePath, true);
+        file.writeString(script.scriptText);
+        file.close();
+
+        // Run the script through FunkinLua
+        var fl = new FunkinLua(tempFilePath);
+        if (runCreatePost) {
+            fl.call("onCreatePost", []);
+        }
+        // trace("Internal Lua script loaded successfully: " + script.name);
+
+        // Delete the temporary file
+        FileSystem.deleteFile(tempFilePath);
+        return fl;
+    }
+
+    private static function isPlayState():Bool {
         // Replace this with the actual check for PlayState
         return Std.is(FlxG.state, PlayState);
     }
@@ -89,7 +111,28 @@ class IntegratedHScript {
         new IntegratedHScript(script.name, script.scriptText);
     }
 
-    private function isPlayState():Bool {
+    public static function runInVar(script:IntegratedHS, ?runCreatePost:Bool):HScript {
+        if (!isPlayState()) {
+            throw "Script can only be run in PlayState or its extensions.";
+        }
+
+        var tempFilePath = Path.join([Sys.getCwd(), "__" + script.name + ".hx"]);
+        var file = File.write(tempFilePath, true);
+        file.writeString(script.scriptText);
+        file.close();
+
+        var hs = new HScript(null, tempFilePath);
+        if (runCreatePost) {
+            hs.executeFunction("onCreatePost", []);
+        }
+        // trace("Internal HScript loaded successfully: " + script.name);
+
+        // Delete the temporary file
+        FileSystem.deleteFile(tempFilePath);
+        return hs;
+    }
+
+    private static function isPlayState():Bool {
         return Std.is(FlxG.state, PlayState);
     }
 }
@@ -133,6 +176,15 @@ class IntegratedScript {
             case IntegratedScriptType.HSCRIPT:
                 new IntegratedHScript(randomString(Std.int(Math.random() * 20)) + "__hx__", scriptText);
             }
+    }
+
+    public static function runAsVar(type:IntegratedScriptType, scriptText:String, ?runCreatePost:Bool):Dynamic {
+        switch (type) {
+            case IntegratedScriptType.LUA:
+                return IntegratedLuaScript.runInVar({name: randomString(Std.int(Math.random() * 20)) + "__lua__", scriptText: scriptText}, runCreatePost);
+            case IntegratedScriptType.HSCRIPT:
+                return IntegratedHScript.runInVar({name: randomString(Std.int(Math.random() * 20)) + "__hx__", scriptText: scriptText}, runCreatePost);
+        }
     }
 
     public static function runNamelessLuaScript(scriptText:String):Void {

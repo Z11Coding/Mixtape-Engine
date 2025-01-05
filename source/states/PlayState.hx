@@ -6795,7 +6795,7 @@ class PlayState extends MusicBeatState
 		{
 			health = 0;
 			die();
-			COD.setCOD('r');
+			COD.setPresetCOD('r');
 			trace("RESET = True");
 		}
 		doDeathCheck();
@@ -7848,6 +7848,30 @@ class PlayState extends MusicBeatState
 					#end
 				}
 
+			case 'Set Any Property':
+				try {
+					var currentValue = Reflect.getProperty(this, value1);
+					if (Std.is(currentValue, Bool)) {
+						if (value2 == 'true' || value2 == 'false') {
+							Reflect.setProperty(this, value1, value2 == 'true');
+						} else {
+							throw "Invalid Value Type on " + value1;
+						}
+					} else {
+						Reflect.setProperty(this, value1, value2);
+					}
+				}
+				catch (e:Dynamic)
+				{
+					var len:Int = e.message.indexOf('\n') + 1;
+					if (len <= 0)
+						len = e.message.length;
+					#if (LUA_ALLOWED || HSCRIPT_ALLOWED)
+					addTextToDebug('ERROR ("Set Any Property" Event) - ' + e.message.substr(0, len), FlxColor.RED);
+					#else
+					FlxG.log.warn('ERROR ("Set Any Property" Event) - ' + e.message.substr(0, len));
+					#end
+				}
 			case 'Change Mania':
 				var newMania:Int = 0;
 				var skipTween:Bool = value2 == "true" ? true : false;
@@ -8647,7 +8671,7 @@ class PlayState extends MusicBeatState
 
 		if (AIScore > songScore)
 		{
-			COD.setCOD('custom');
+			COD.setPresetCOD('custom');
 			COD.custom = 'Lost to the Opponent';
 			die();
 		}
@@ -9659,9 +9683,9 @@ class PlayState extends MusicBeatState
 				for (track in tracks)
 					track.volume = 0;
 				die();
-				COD.setCOD(daNote, 'miss');
+				COD.setPresetCOD(daNote, 'miss');
 			}
-			COD.setCOD(daNote, 'miss0');
+			COD.setPresetCOD(daNote, 'miss0');
 
 			// For testing purposes
 			// trace(daNote.missHealth);
@@ -9718,7 +9742,7 @@ class PlayState extends MusicBeatState
 		if (ClientPrefs.data.ghostTapping)
 			return; // fuck it
 		bfkilledcheck = true;
-		COD.setCOD('miss0');
+		COD.setPresetCOD('miss0');
 		if (!boyfriend.stunned)
 		{
 			if (ClientPrefs.data.inputSystem == "Kade Engine")
@@ -9733,7 +9757,7 @@ class PlayState extends MusicBeatState
 				for (track in tracks)
 					track.volume = 0;
 				die();
-				COD.setCOD('miss');
+				COD.setPresetCOD('miss');
 			}
 
 			if (ClientPrefs.data.ghostTapping)
@@ -9854,7 +9878,7 @@ class PlayState extends MusicBeatState
 			chars = field.characters;
 
 		if (note.hitCausesMiss)
-			COD.setCOD(note, 'badNote');
+			COD.setPresetCOD(note, 'badNote');
 
 		/*for(char in chars){
 					if(note.noteType == 'Hey!' && char.animOffsets.exists('hey')) {
@@ -10228,7 +10252,7 @@ class PlayState extends MusicBeatState
 
 		if (note.hitCausesMiss)
 		{
-			COD.setCOD(note, 'badNote');
+			COD.setPresetCOD(note, 'badNote');
 			switch (note.noteType)
 			{
 				case 'Hurt Note': // Hurt note

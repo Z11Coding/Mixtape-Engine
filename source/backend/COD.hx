@@ -22,7 +22,7 @@ class COD
 		custom = "???";
 	}
 
-	public static function setCOD(?note:Note, ?reason:String)
+	public static function setPresetCOD(?note:Note, ?reason:String) // Backwards Compat
 	{
 		if (scriptCOD != "???")
 			COD = scriptCOD;
@@ -46,6 +46,11 @@ class COD
 					COD = ukTxt;
 			}
 		}
+	}
+
+	public static function setCOD(?o:Dynamic, ?reason:String) // Backwards Compat
+	{
+		COD = reason == null ? ukTxt : reason;
 	}
 
 	public static function getCOD():String
