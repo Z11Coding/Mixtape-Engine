@@ -2123,7 +2123,7 @@ public function doEffect(effect:String)
         {
             if (daNote.isAlert)
             {
-                COD.setCOD(daNote);
+                COD.setPresetCOD(daNote);
                 health -= 0.5;
                 FlxG.sound.play(Paths.sound('streamervschat/warning'));
                 var fist:FlxSprite = new FlxSprite().loadGraphic(Paths.image("streamervschat/thepunch"));
@@ -2178,7 +2178,7 @@ public function doEffect(effect:String)
     {
         if (note.specialNote)
 		{
-            COD.setCOD(note);
+            COD.setPresetCOD(note);
 			specialNoteHit(note, field);
 			return;
 		}
@@ -2315,7 +2315,7 @@ public function doEffect(effect:String)
 				add(terminate);
 				terminateTimestamps.push(terminate);
 				terminateStep--;
-                COD.setCOD('custom');
+                COD.setPresetCOD('custom');
                 COD.custom = 'You were Terminated.';
 			case 2 | 1 | 0:
 				terminateMessage.loadGraphic(Paths.image("streamervschat/terminate" + terminateStep));
