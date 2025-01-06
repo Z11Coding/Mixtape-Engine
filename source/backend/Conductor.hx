@@ -11,6 +11,15 @@ typedef BPMChangeEvent =
 	@:optional var stepCrochet:Float;
 }
 
+typedef BPMTween =
+{
+	var startBPM:Float;
+	var endBPM:Float;
+	var startTime:Float;
+	var endTime:Float;
+	var ?stepCrochet:Float;
+}
+
 class Conductor
 {
 	public static var bpm(default, set):Float = 100;
@@ -25,6 +34,7 @@ class Conductor
 	public static var safeZoneOffset:Float = 0; // is calculated in create(), is safeFrames in milliseconds
 
 	public static var bpmChangeMap:Array<BPMChangeEvent> = [];
+	public static var bpmtweens:Array<BPMTween> = [];
 
 	public static function judgeNote(arr:Array<Rating>, diff:Float=0):Rating // die
 	{
@@ -54,6 +64,23 @@ class Conductor
 				lastChange = Conductor.bpmChangeMap[i];
 		}
 
+		for (i in 0...Conductor.bpmtweens.length)
+		{
+			var tween = Conductor.bpmtweens[i];
+			if (time >= tween.startTime && time <= tween.endTime)
+			{
+				var tweenProgress = (time - tween.startTime) / (tween.endTime - tween.startTime);
+				var currentBPM = tween.startBPM + tweenProgress * (tween.endBPM - tween.startBPM);
+				lastChange = {
+					stepTime: lastChange.stepTime,
+					songTime: time,
+					bpm: currentBPM,
+					stepCrochet: calculateCrochet(currentBPM) / 4
+				};
+				break;
+			}
+		}
+
 		return lastChange;
 	}
 
@@ -66,8 +93,27 @@ class Conductor
 		}
 		for (i in 0...Conductor.bpmChangeMap.length)
 		{
-			if (Conductor.bpmChangeMap[i].stepTime<=step)
+			if (Conductor.bpmChangeMap[i].stepTime <= step)
 				lastChange = Conductor.bpmChangeMap[i];
+		}
+
+		for (i in 0...Conductor.bpmtweens.length)
+		{
+			var tween = Conductor.bpmtweens[i];
+			var tweenStartStep = lastChange.stepTime + (tween.startTime - lastChange.songTime) / lastChange.stepCrochet;
+			var tweenEndStep = lastChange.stepTime + (tween.endTime - lastChange.songTime) / lastChange.stepCrochet;
+			if (step >= tweenStartStep && step <= tweenEndStep)
+			{
+				var tweenProgress = (step - tweenStartStep) / (tweenEndStep - tweenStartStep);
+				var currentBPM = tween.startBPM + tweenProgress * (tween.endBPM - tween.startBPM);
+				lastChange = {
+					stepTime: Std.int(step),
+					songTime: lastChange.songTime + (step - lastChange.stepTime) * lastChange.stepCrochet,
+					bpm: currentBPM,
+					stepCrochet: calculateCrochet(currentBPM) / 4
+				};
+				break;
+			}
 		}
 
 		return lastChange;
@@ -96,10 +142,10 @@ class Conductor
 	public static function getBeatRounded(time:Float):Int{
 		return Math.floor(getStepRounded(time)/4);
 	}
-
 	public static function mapBPMChanges(song:SwagSong)
 	{
 		bpmChangeMap = [];
+		bpmtweens = [];
 
 		var curBPM:Float = song.bpm;
 		var totalSteps:Int = 0;
@@ -118,11 +164,24 @@ class Conductor
 				bpmChangeMap.push(event);
 			}
 
+			if ((song.notes[i].bpmT && song.notes[i].endBPM != null && song.notes[i].startBPM != null) && song.notes[i].endBPM != song.notes[i].startBPM)
+			{
+				var tween:BPMTween = {
+					startBPM: song.notes[i].startBPM,
+					endBPM: song.notes[i].endBPM,
+					startTime: totalPos,
+					endTime: totalPos + ((60 / song.notes[i].endBPM) * 1000 / 4) * Math.round(getSectionBeats(song, i) * 4),
+					stepCrochet: calculateCrochet(song.notes[i].endBPM) / 4
+				};
+				bpmtweens.push(tween);
+			}
+
 			var deltaSteps:Int = Math.round(getSectionBeats(song, i) * 4);
 			totalSteps += deltaSteps;
 			totalPos += ((60 / curBPM) * 1000 / 4) * deltaSteps;
 		}
 		trace("new BPM map BUDDY " + bpmChangeMap);
+		trace("new BPM tweens BUDDY " + bpmtweens);
 	}
 
 	static function getSectionBeats(song:SwagSong, section:Int)

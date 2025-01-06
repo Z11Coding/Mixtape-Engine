@@ -18,6 +18,7 @@ typedef SwagSong =
 	//@:optional var opponentNotes:Array<Dynamic>;
 	var events:Array<Dynamic>;
 	var bpm:Float;
+	var ?bpmT:Conductor.BPMTween;
 	var needsVoices:Bool;
 	var speed:Float;
 	var offset:Float;

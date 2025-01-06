@@ -430,12 +430,12 @@ class Paths
 		try
 		{
 			if((CacheState.imageCache.getGraphic(getPath('images/$key', IMAGE, library)) != null) && !(allowGPU && ClientPrefs.data.cacheOnGPU)){
-				trace(key + " is in the cache");
+				// trace(key + " is in the cache");
 				//trace(getPath('images/$key', IMAGE, library));
 				return CacheState.imageCache.getGraphic(getPath('images/$key', IMAGE, library));
 			}
 			else if((CacheState.imageCache.getGraphic(modsImages(key)) != null) && !(allowGPU && ClientPrefs.data.cacheOnGPU)){
-				trace(key + " is in the mods cache");
+				// trace(key + " is in the mods cache");
 				//trace(getPath('images/$key', IMAGE, library));
 				return CacheState.imageCache.getGraphic(modsImages(key));
 			}

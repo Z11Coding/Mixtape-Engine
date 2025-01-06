@@ -8,6 +8,9 @@ typedef SwagSection =
 	@:optional var altAnim:Bool;
 	@:optional var gfSection:Bool;
 	@:optional var bpm:Float;
+	@:optional var bpmT:Bool;
+	@:optional var startBPM:Float;
+	@:optional var endBPM:Float;
 	@:optional var changeBPM:Bool;
 	@:optional var exSection:Bool;
 }

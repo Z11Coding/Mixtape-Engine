@@ -1,5 +1,6 @@
 package yutautil;
 
+import cpp.Float32;
 import backend.Threader;
 import backend.modules.SyncUtils;
 import cpp.abi.Abi;
@@ -176,6 +177,51 @@ class CollectionUtils
 		else
 		{
 			return [input];
+		}
+	}
+
+	public static function getInfinity(t:Dynamic, positive:Bool = true):Dynamic {
+		if (Std.isOfType(t, Float)) {
+			return positive ? Math.POSITIVE_INFINITY : Math.NEGATIVE_INFINITY;
+		} else if (Std.isOfType(t, Int)) {
+			var POSITIVE_INFINITY_INT = 0x7fffffff;
+			var NEGATIVE_INFINITY_INT = -0x80000000;
+			return positive ? POSITIVE_INFINITY_INT : NEGATIVE_INFINITY_INT;
+		// } else if (Std.isOfType(t, haxe.Int32)) {
+		// 	var POSITIVE_INFINITY_INT32 = 0x7fffffff;
+		// 	var NEGATIVE_INFINITY_INT32 = -0x80000000;
+		// 	return positive ? POSITIVE_INFINITY_INT32 : NEGATIVE_INFINITY_INT32;
+		// } else if (Std.isOfType(t, haxe.Int64)) {
+		// 	var POSITIVE_INFINITY_INT64 = haxe.Int64.make(0x7fffffff, 0xffffffff);
+		// 	var NEGATIVE_INFINITY_INT64 = haxe.Int64.make(0x80000000, 0x00000000);
+		// 	return positive ? POSITIVE_INFINITY_INT64 : NEGATIVE_INFINITY_INT64;
+		// } else if (Std.isOfType(t, cpp.Int8)) {
+		// 	var POSITIVE_INFINITY_INT8 = 0x7f;
+		// 	var NEGATIVE_INFINITY_INT8 = -0x80;
+		// 	return positive ? POSITIVE_INFINITY_INT8 : NEGATIVE_INFINITY_INT8;
+		// } else if (Std.isOfType(t, cpp.Int16)) {
+		// 	var POSITIVE_INFINITY_INT16 = 0x7fff;
+		// 	var NEGATIVE_INFINITY_INT16 = -0x8000;
+		// 	return positive ? POSITIVE_INFINITY_INT16 : NEGATIVE_INFINITY_INT16;
+		// } else if (Std.isOfType(t, UInt)) {
+		// 	var POSITIVE_INFINITY_UINT = 0xffffffff;
+		// 	return positive ? POSITIVE_INFINITY_UINT : 0;
+		// } else if (Std.isOfType(t, cpp.UInt8)) {
+		// 	var POSITIVE_INFINITY_UINT8 = 0xff;
+		// 	return positive ? POSITIVE_INFINITY_UINT8 : 0;
+		// } else if (Std.isOfType(t, cpp.UInt16)) {
+		// 	var POSITIVE_INFINITY_UINT16 = 0xffff;
+		// 	return positive ? POSITIVE_INFINITY_UINT16 : 0;
+		// } else if (Std.isOfType(t, cpp.UInt32)) {
+		// 	var POSITIVE_INFINITY_UINT32 = 0xffffffff;
+		// 	return positive ? POSITIVE_INFINITY_UINT32 : 0;
+		// } else if (Std.isOfType(t, cpp.UInt64)) {
+		// 	var POSITIVE_INFINITY_UINT64 = haxe.Int64.make(0xffffffff, 0xffffffff);
+		// 	return positive ? POSITIVE_INFINITY_UINT64 : haxe.Int64.make(0, 0);
+		// } else if (Std.isOfType(t, Float32)) {
+		// 	return positive ? Math.POSITIVE_INFINITY : Math.NEGATIVE_INFINITY;
+		} else {
+			throw "Unsupported type for infinity";
 		}
 	}
 
@@ -1071,3 +1117,10 @@ class CollectionUtils
 		// trace("Selected number from map: " + selectedNumberFromMap);
 	}
 }
+
+// class CollectionMacro {
+
+// 	macro public static function infinity<T>(t:Dynamic, ?positive:Bool = true):Dynamic {
+// 		return macro CollectionUtils.getInfinity(t, true);
+// 	}
+// }
