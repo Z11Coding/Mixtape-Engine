@@ -14,6 +14,7 @@ import objects.Character;
 import openfl.filters.BlurFilter;
 import openfl.filters.ColorMatrixFilter;
 class APPlayState extends PlayState {
+    public static var apGame:APGameState;
     public static var effectiveScrollSpeed:Float;
 	public static var effectiveDownScroll:Bool;
     public static var xWiggle:Array<Float> = [0, 0, 0, 0];

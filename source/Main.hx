@@ -115,7 +115,7 @@ class Main extends Sprite
 		// var testThing:FCTInput<Int> = 3;
 		// trace("Test thing: " + testThing);
 
-
+		// archipelago.APEntryState.installAPWorld();
 
 		setupGame();
 	}

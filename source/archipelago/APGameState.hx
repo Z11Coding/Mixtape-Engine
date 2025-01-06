@@ -97,6 +97,12 @@ class APGameState {
     private var _ap:Client;
     private var _seed:String;
     private var _disconnectSubstate:APDisconnectSubstate;
+    private var _saveData:yutautil.save.MixSaveWrapper;
+    public var connected(get, never):Bool;
+    
+    function get_connected():Bool {
+       return _ap.clientStatus == ClientStatus.PLAYING || _ap.clientStatus == ClientStatus.CONNECTED || _ap.clientStatus == ClientStatus.GOAL || _ap.clientStatus == ClientStatus.READY;
+    }
 
     public function new(ap:Client, slotData:Dynamic)
     {
@@ -104,10 +110,16 @@ class APGameState {
 
         _seed = _ap.seed;
 
+        archipelago.APPlayState.apGame = this;
+
+        // var dataPackageHash = haxe.crypto.Sha1.make(_ap._dataPackage);
+        _saveData = new yutautil.save.MixSaveWrapper(new yutautil.save.MixSave(), "save/"+ "ap_" + _ap.seed + ".json", true);
+
         _disconnectSubstate = new APDisconnectSubstate(_ap);
         _disconnectSubstate.setSeed(_seed);
         _disconnectSubstate.onCancel.add(onCancel);
         _disconnectSubstate.onReconnect.add(onReconnect);
+        _ap.onSocketDisconnected.add(onSocketDisconnected);
 
 		// _ap.onRoomInfo.add(onRoomInfo);
 		// _ap.onSlotRefused.add(onSlotRefused);
@@ -153,7 +165,7 @@ class APGameState {
 
 
     private function onReconnect():Void {
-        MusicBeatState.switchState(new FreeplayState());
+        MusicBeatState.switchState(new archipelago.APCategoryState(this));
     }
 
     // public function onRoomUpdate(roomUpdatePacket:RoomUpdatePacket)

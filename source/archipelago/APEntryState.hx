@@ -44,6 +44,10 @@ class APEntryState extends FlxState
 {
 	static final wsCheck = ~/^wss?:\/\//;
 
+	static final APWorld:String = "apworld/fridaynightfunkin.apworld";
+	// #if embed
+	// @:embed(APWorld) static var apWorldBytes:ByteArray;
+	// #end
 	private var _hostInput:FlxInputText;
 	private var _portInput:FlxInputText;
 	private var _slotInput:FlxInputText;
@@ -194,6 +198,15 @@ class APEntryState extends FlxState
 
 		super.create();
 
+		#if sys
+		var apWorldButtonText = FileSystem.exists("C:/ProgramData/Archipelago/custom_worlds/fridaynightfunkin.apworld") ? "Update APWorld" : "Install APWorld";
+		var apWorldButton = new FlxButton(0, 0, apWorldButtonText, installAPWorld);
+		apWorldButton.onUp.sound = FlxG.sound.load(Paths.sound('clickText'));
+		apWorldButton.x = (FlxG.width / 2) - 10 - apWorldButton.width;
+		apWorldButton.y = FlxG.height - apWorldButton.height - 50;
+		add(apWorldButton);
+		#end
+
 		var yamlGen = new FlxButton(0, 0, "Generate YAML", onGenYaml);
 		yamlGen.onUp.sound = FlxG.sound.load(Paths.sound('clickText'));
 		yamlGen.x = (FlxG.width / 2) + 10 + yamlGen.width;
@@ -303,6 +316,30 @@ class APEntryState extends FlxState
 
 			//FlxG.switchState(new APGameState(ap, slotData));
 			runArch();
+	}
+
+	public static function installAPWorld():Void
+	{
+		#if sys
+		var programDataPath = "C:/ProgramData/Archipelago/";
+		var launcherPath = programDataPath + "ArchipelagoLauncher.exe";
+		var customWorldsPath = programDataPath + "custom_worlds/";
+		var apWorldFile = customWorldsPath + "fridaynightfunkin.apworld";
+
+		if (FileSystem.exists(launcherPath))
+		{
+			trace("ArchipelagoLauncher found. Installing or updating .apworld file.");
+			// Create a temp file to run with the system.
+			var apworld = haxe.Resource.getBytes("apworld");
+			File.saveBytes("_temp/fridaynightfunkin.apworld", apworld);
+			Sys.command("cmd /c start _temp/fridaynightfunkin.apworld");
+			FileSystem.deleteDirectory("_temp");
+		}
+		else
+		{
+			trace("Archipelago was not found. Please install Archipelago to install the .apworld file.");
+		}
+		#end
 	}
 
 	inline function postError(str:String, ?vars:Map<String, Dynamic>)

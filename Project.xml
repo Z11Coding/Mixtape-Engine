@@ -245,7 +245,7 @@
 	<!-- <haxeflag name="macro" value="options.OptionCheck.processOptions()" /> -->
 	<!-- <haxeflag name="macro" value="ReflectCheck.replaceVariableAccesses()" /> -->
 	<!-- <haxeflag name="macro" value="backend.ChanceValidator.checkChanceRange()" /> -->
-
+	<haxeflag name="--resource" value="assets/embed/apworld/fridaynightfunkin.apworld@apworld" />
 	<haxedef name="hscriptPos" /> <!-- for logging -->
 
 	<!-- <haxeflag name="macro" value="VariableInitializer.build()" /> -->
