@@ -460,7 +460,7 @@ class TitleState extends MusicBeatState
 				FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
 
 				transitioning = true;
-				if (titleJSON.gfChar != null && titleJSON.gfChar && !skippedIntro) gfDance.animation.play('Hey');
+				if (titleJSON.gfChar != null && titleJSON.gfChar) gfDance.animation.play('Hey');
 				candance = false;
 				// FlxG.sound.music.stop();
 
