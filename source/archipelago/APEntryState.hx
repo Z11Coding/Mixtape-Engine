@@ -1,5 +1,6 @@
 package archipelago;
 
+import backend.modules.SyncUtils;
 #if sys
 import sys.FileSystem;
 import sys.io.File;
@@ -207,6 +208,12 @@ class APEntryState extends FlxState
 		add(apWorldButton);
 		#end
 
+		var outputAPWorldButton = new FlxButton(0, 0, "Output APWorld", outputAPWorld);
+		outputAPWorldButton.onUp.sound = FlxG.sound.load(Paths.sound('clickText'));
+		outputAPWorldButton.x = (FlxG.width / 2) + 10;
+		outputAPWorldButton.y = FlxG.height - outputAPWorldButton.height - 50;
+		add(outputAPWorldButton);
+
 		var yamlGen = new FlxButton(0, 0, "Generate YAML", onGenYaml);
 		yamlGen.onUp.sound = FlxG.sound.load(Paths.sound('clickText'));
 		yamlGen.x = (FlxG.width / 2) + 10 + yamlGen.width;
@@ -331,9 +338,26 @@ class APEntryState extends FlxState
 			trace("ArchipelagoLauncher found. Installing or updating .apworld file.");
 			// Create a temp file to run with the system.
 			var apworld = haxe.Resource.getBytes("apworld");
-			File.saveBytes("_temp/fridaynightfunkin.apworld", apworld);
-			Sys.command("cmd /c start _temp/fridaynightfunkin.apworld");
-			FileSystem.deleteDirectory("_temp");
+			File.saveBytes("fridaynightfunkin.apworld", apworld);
+			Sys.command("cmd /c start fridaynightfunkin.apworld");
+
+			new FlxTimer().start(5, function(the)
+			{
+				while (true)
+				{
+					try
+					{
+						FileSystem.deleteFile("fridaynightfunkin.apworld");
+						trace("APWorld installed successfully.");
+						break;
+					}
+					catch (e:Dynamic)
+					{
+						// trace("Failed to delete file, retrying...");
+					}
+				}
+			});
+			// FileSystem.deleteFile("fridaynightfunkin.apworld");
 		}
 		else
 		{
@@ -341,6 +365,21 @@ class APEntryState extends FlxState
 		}
 		#end
 	}
+
+	public static function outputAPWorld():Void
+		{
+			#if sys
+			// var programDataPath = "C:/ProgramData/Archipelago/";
+			// var customWorldsPath = programDataPath + "custom_worlds/";
+			// var apWorldFile = customWorldsPath + "fridaynightfunkin.apworld";
+	
+			trace("Outputting .apworld file.");
+			var apworld = haxe.Resource.getBytes("apworld");
+			File.saveBytes("fridaynightfunkin.apworld", apworld);
+			trace("APWorld output success!");
+			#end
+		}
+	
 
 	inline function postError(str:String, ?vars:Map<String, Dynamic>)
 		openSubState(new Prompt("Error: " + errDesc(str), 0, null, null, false));
