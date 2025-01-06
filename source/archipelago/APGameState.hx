@@ -99,6 +99,15 @@ class APGameState {
     private var _disconnectSubstate:APDisconnectSubstate;
     private var _saveData:yutautil.save.MixSaveWrapper;
     public var connected(get, never):Bool;
+
+    public var itemManager(get, set):Dynamic;    
+    function get_itemManager():Dynamic {
+        
+    }
+    
+    function set_itemManager(itemManager:Dynamic):Dynamic {
+        
+    }
     
     function get_connected():Bool {
        return _ap.clientStatus == ClientStatus.PLAYING || _ap.clientStatus == ClientStatus.CONNECTED || _ap.clientStatus == ClientStatus.GOAL || _ap.clientStatus == ClientStatus.READY;
@@ -114,6 +123,10 @@ class APGameState {
 
         // var dataPackageHash = haxe.crypto.Sha1.make(_ap._dataPackage);
         _saveData = new yutautil.save.MixSaveWrapper(new yutautil.save.MixSave(), "save/"+ "ap_" + _ap.seed + ".json", true);
+
+        _saveData.addItem("slotData", slotData);
+        _saveData.addItem("seed", _seed);
+
 
         _disconnectSubstate = new APDisconnectSubstate(_ap);
         _disconnectSubstate.setSeed(_seed);

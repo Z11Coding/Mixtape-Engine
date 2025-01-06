@@ -40,6 +40,34 @@ class MixSaveWrapper {
         File.saveContent(filePath, jsonString);
     }
 
+    public function saveContent(key:String):String {
+        return mixSave.saveContent(key);
+    }
+
+    public function addItem(key:String, value:Dynamic):Void {
+        mixSave.addContent(key, value);
+    }
+
+    public function getItem(key:String):Dynamic {
+        return mixSave.getContent(key);
+    }
+
+    public function removeItem(key:String):Void {
+        mixSave.content.remove(key);
+    }
+
+    public function hasItem(key:String):Bool {
+        return mixSave.content.exists(key);
+    }
+
+    public function editItem(key:String, value:Dynamic):Void {
+        mixSave.content.set(key, value);
+    }
+
+    public function clear():Void {
+        mixSave.content = new Map();
+    }
+
     public function load():Void {
         if (sys.FileSystem.exists(filePath)) {
             var jsonContent = File.getContent(filePath);
