@@ -302,7 +302,7 @@ class APEntryState extends FlxState
 			FNF.close();
 
 			//FlxG.switchState(new APGameState(ap, slotData));
-			FlxG.switchState(new states.MainMenuState());
+			runArch();
 	}
 
 	inline function postError(str:String, ?vars:Map<String, Dynamic>)
@@ -377,42 +377,44 @@ class APEntryState extends FlxState
 		openSubState(new Prompt("Settings Exported Successfully!", 0, null, null, false));
 	}
 
+	function runArch():Void // Soon
+	{
+		inArchipelagoMode = true;
+		WeekData.reloadWeekFiles(false);
+		FlxG.save.data.closeDuringOverRide = false;
+		FlxG.save.data.manualOverride = false;
+		FlxG.save.flush();
+		unlockable = baseGame;
+		for (erect in baseErect)
+			unlockable.push(erect);
+		for (pico in basePico)
+			unlockable.push(pico);
+		for (i in 0...WeekData.weeksList.length) {
+			var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
+			
+			for (song in leWeek.songs)
+			{
+				unlockable.remove(song[0]); // To remove dups
+				unlockable.push(song[0]);
+				unlockable.remove('Tutorial'); // To remove Tutorial because it keeps re-adding itself
+			}
+		}
+		FlxG.save.data.manualOverride = false;
+		FlxG.save.data.storyWeek = null;
+		FlxG.save.data.currentModDirectory = null;
+		FlxG.save.data.difficulties = null; // just in case
+		FlxG.save.data.SONG = null;
+		FlxG.save.data.storyDifficulty = null;
+		FlxG.save.data.songPos = null;
+		FlxG.save.flush();
+		// unlockable = unlockable.removeDuplicates();
+		MusicBeatState.switchState(new states.CategoryState());
+	}
+
 	override function update(elapsed:Float)
 	{
-		if (FlxG.keys.justPressed.HOME) 
-		{
-			inArchipelagoMode = true;
-			WeekData.reloadWeekFiles(false);
-			FlxG.save.data.closeDuringOverRide = false;
-        	FlxG.save.data.manualOverride = false;
-			FlxG.save.flush();
-			unlockable = baseGame;
-			for (erect in baseErect)
-				unlockable.push(erect);
-			for (pico in basePico)
-				unlockable.push(pico);
-			for (i in 0...WeekData.weeksList.length) {
-				var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
-				
-				for (song in leWeek.songs)
-				{
-					unlockable.remove(song[0]); // To remove dups
-					unlockable.push(song[0]);
-					unlockable.remove('Tutorial'); // To remove Tutorial because it keeps re-adding itself
-				}
-			}
-			FlxG.save.data.manualOverride = false;
-			FlxG.save.data.storyWeek = null;
-			FlxG.save.data.currentModDirectory = null;
-			FlxG.save.data.difficulties = null; // just in case
-			FlxG.save.data.SONG = null;
-			FlxG.save.data.storyDifficulty = null;
-			FlxG.save.data.songPos = null;
-			FlxG.save.flush();
-			// unlockable = unlockable.removeDuplicates();
-			MusicBeatState.switchState(new states.CategoryState());
-		}
-		if(swagShader != null) swagShader.hue += elapsed * 0.1;
+		if (FlxG.keys.justPressed.HOME) runArch();
+		if(swagShader != null) swagShader.hue += 0.45 / (ClientPrefs.data.framerate / 60);
 		if (!ClientPrefs.data.lowQuality)
 		{
 			checker.x -= 0.45 / (ClientPrefs.data.framerate / 60);
