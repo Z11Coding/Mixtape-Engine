@@ -145,6 +145,26 @@ class MixSaveWrapper {
     public function isEmpty():Bool {
         return mixSave.content.toArray().length <= 0;
     }
+
+    public function toString():String {
+        return mixSave.content.toString();
+    }
+    public function toMap():Map<String, Dynamic> {
+        return mixSave.content;
+    }
+    public function toDynamic():Dynamic {
+        var result = {};
+        for (field in mixSave.content.keys()) {
+            Reflect.setField(result, field, mixSave.content.get(field));
+        }
+        return result;
+    }
+    public static function newMix(filePath = "save/mixsave.json"):MixSaveWrapper {
+        return new MixSaveWrapper(new MixSave(), filePath);
+    }
+    public static function newMixWithData(data:Map<String, Dynamic>, filePath = "save/mixsave.json"):MixSaveWrapper {
+        return newWithData(new MixSave(), data, filePath);
+    }
 }
 
 class ActiveSave extends MixSaveWrapper { // Work in progress
