@@ -102,11 +102,11 @@ class APGameState {
 
     public var itemManager(get, set):Dynamic;    
     function get_itemManager():Dynamic {
-        
+        return null;
     }
     
     function set_itemManager(itemManager:Dynamic):Dynamic {
-        
+        return null;
     }
     
     function get_connected():Bool {
