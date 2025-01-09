@@ -368,7 +368,21 @@ class APEntryState extends FlxState
 	public static function installAPWorld():Void
 	{
 		#if sys
-		var programDataPath = "C:/ProgramData/Archipelago/";
+		var programDataPath = null;
+		for (drive in FileSystem.readDirectory("/"))
+		{
+			var potentialPath = drive + "ProgramData/Archipelago/";
+			if (FileSystem.exists(potentialPath))
+			{
+				programDataPath = potentialPath;
+				break;
+			}
+		}
+		if (programDataPath == null)
+		{
+			trace("Archipelago directory not found on any drive.");
+			return;
+		}
 		var launcherPath = programDataPath + "ArchipelagoLauncher.exe";
 		var customWorldsPath = programDataPath + "custom_worlds/";
 		var apWorldFile = customWorldsPath + "fridaynightfunkin.apworld";
