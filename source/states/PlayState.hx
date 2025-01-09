@@ -9920,10 +9920,16 @@ class PlayState extends MusicBeatState
 				{
 					if (boyfriend != null)
 					{
-						if (!note.animation.curAnim.name.endsWith('tail'))
+						try {
+							if (!note.animation.curAnim.name.endsWith('tail'))
+							{
+								boyfriend.playAnim('sing' + Note.keysShit.get(mania).get('anims')[Std.int(Math.abs(note.noteData))] + altAnim, true);
+								boyfriend.holdTimer = 0;
+							}
+						}
+						catch(e)
 						{
-							boyfriend.playAnim('sing' + Note.keysShit.get(mania).get('anims')[Std.int(Math.abs(note.noteData))] + altAnim, true);
-							boyfriend.holdTimer = 0;
+							trace("NOTE WAS NULL! IGNORING ANYWAY...");
 						}
 					}
 				}
