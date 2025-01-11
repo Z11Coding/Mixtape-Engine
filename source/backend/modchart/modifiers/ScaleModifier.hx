@@ -48,7 +48,7 @@ class ScaleModifier extends NoteModifier {
 
 		scale.y *= (Math.cos(angle * Math.PI / 180) * stretchY) + (Math.sin(angle * Math.PI / 180) * stretchX);
 		scale.y *= (Math.cos(angle * Math.PI / 180) * squishY) + (Math.sin(angle * Math.PI / 180) * squishX);
-		if ((sprite is Note) && sprite.isSustainNote)
+		if ((sprite is Note) && sprite.isSustainNote && !PlayState.isPixelStage)
 			scale.y = y;
 
 		return scale;
@@ -101,7 +101,7 @@ class ScaleModifier extends NoteModifier {
 		if ((sprite is Note))
 		{
 			var note:Note = cast sprite;
-			if (note.isSustainNote)
+			if (note.isSustainNote && !PlayState.isPixelStage)
 				scale.y = 1;
 		}
 		info.scale = scale;

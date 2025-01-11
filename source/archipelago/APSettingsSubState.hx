@@ -2,8 +2,14 @@ package archipelago;
 
 import backend.ui.*;
 import archipelago.APEntryState;
+import flixel.util.FlxGradient;
+import yaml.Yaml;
+import yaml.Renderer;
+import substates.Prompt;
 
 class APSettingsSubState extends MusicBeatSubstate {
+    public static var globalSongList:Array<String> = [];
+    
     var box:PsychUIBox;
     var progression_balancing:PsychUIDropDownMenu;
     var accessibility:PsychUIDropDownMenu;
@@ -23,9 +29,80 @@ class APSettingsSubState extends MusicBeatSubstate {
     var fakeTransWeight:PsychUISlider;
     var shieldWeight:PsychUISlider;
     var MHPWeight:PsychUISlider;
-    var gameSettings:Dynamic;
+    var gradientBar:FlxSprite;
+    var dim:FlxSprite;
+
+    public static var baseGame:Array<String> = 
+	[
+		'Bopeebo', 'Fresh', 'Dad Battle',
+	 	'Spookeez', 'South', 'Monster',
+	 	'Pico', 'Philly Nice', 'Blammed',
+	 	'Satin Panties', 'High', 'Milf',
+	 	'Cocoa', 'Eggnog', 'Winter Horrorland',
+	 	'Senpai', 'Roses', 'Thorns',
+	 	'Ugh', 'Guns', 'Stress',
+	 	'Darnell', 'Lit Up', '2Hot', 'Blazin',
+		'Darnell (BF Mix)'
+	];
+
+	public static var baseErect:Array<String> = 
+	[
+		'Bopeebo Erect', 'Fresh Erect', 'Dad Battle Erect',
+	 	'Spookeez Erect', 'South Erect',
+	 	'Pico Erect', 'Philly Nice Erect', 'Blammed Erect',
+	 	'Satin Panties Erect', 'High Erect',
+	 	'Cocoa Erect', 'Eggnog Erect',
+	 	'Senpai Erect', 'Roses Erect', 'Thorns Erect',
+	 	'Ugh Erect'
+	];
+
+	public static var basePico:Array<String> = 
+	[
+		'Bopeebo (Pico mix)', 'Fresh (Pico mix)', 'Dad Battle (Pico mix)',
+	 	'Spookeez (Pico mix)', 'South (Pico mix)',
+	 	'Pico (Pico mix)', 'Philly Nice (Pico mix)', 'Blammed (Pico mix)',
+	 	'Eggnog (Pico mix)',
+	 	'Ugh (Pico mix)', 'Guns (Pico mix)'
+	];
+
+	public static var secrets:Array<String> = [
+		'Small Argument', 
+		'Beat Battle', 
+		'Beat Battle 2'
+	];
+
+    public static function generateSongList()
+	{
+        globalSongList = [];
+		globalSongList = baseGame; //This always resets the list to just base base game
+		for (erect in baseErect)
+			globalSongList.push(erect);
+		for (pico in basePico)
+			globalSongList.push(pico);
+		for (secret in secrets)
+			globalSongList.push(secret);
+		if (APEntryState.gameSettings.mods_enabled)
+		{
+			for (i in 0...WeekData.weeksList.length) {
+				var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
+				
+				for (song in leWeek.songs)
+				{
+					globalSongList.remove(song[0]); // To remove dups
+					globalSongList.push(song[0]);
+					globalSongList.remove('Tutorial'); // To remove Tutorial because it keeps re-adding itself
+				}
+			}
+		}
+	}
 
     override function create() {
+        dim = new FlxSprite().makeGraphic(FlxG.width*4, FlxG.height*4, 0x000000);
+        dim.scrollFactor.set();
+        dim.screenCenter();
+        add(dim);
+        dim.alpha = 0.5;
+
         box = new PsychUIBox(0, 0, 300, 480, ['Main Settings', 'Songs', 'Traps']);
 		box.selectedName = 'Main Settings';
 		box.scrollFactor.set();
@@ -34,7 +111,7 @@ class APSettingsSubState extends MusicBeatSubstate {
         box.screenCenter();
 		add(box);
 
-        gameSettings = archipelago.APEntryState.gameSettings;
+        generateSongList();
 
         addMainSettings();
         addSongsSettings();
@@ -62,7 +139,7 @@ class APSettingsSubState extends MusicBeatSubstate {
         else
         {
             trace("ERROR! NO SONGS FOUND! RESORTING TO DEFUALT!");
-            var tempList = APEntryState.globalSongList;
+            var tempList = globalSongList;
             tempList.sort((a:String, b:String) -> (a.toUpperCase() < b.toUpperCase()) ? -1 : 1); //Sort alphabetically descending
             startingSong.list = tempList;
         }
@@ -78,46 +155,46 @@ class APSettingsSubState extends MusicBeatSubstate {
 
         progression_balancing = new PsychUIDropDownMenu(objX, objY, [''], function(id:Int, prog:String)
         {
-            gameSettings.progression_balancing = prog;
+            APEntryState.gameSettings.progression_balancing = prog;
         });
-        progression_balancing.selectedLabel = gameSettings.progression_balancing;
+        progression_balancing.selectedLabel = APEntryState.gameSettings.progression_balancing;
 
         accessibility = new PsychUIDropDownMenu(objX + 150, objY, [''], function(id:Int, acc:String)
         {
-            gameSettings.accessibility = acc;
+            APEntryState.gameSettings.accessibility = acc;
         });
-        accessibility.selectedLabel = gameSettings.accessibility;
+        accessibility.selectedLabel = APEntryState.gameSettings.accessibility;
 
         objY += 50;
         unlockType = new PsychUIDropDownMenu(objX, objY, [''], function(id:Int, unlock:String)
         {
-            gameSettings.unlock_type = unlock;
+            APEntryState.gameSettings.unlock_type = unlock;
         });
-        unlockType.selectedLabel = gameSettings.unlock_type;
+        unlockType.selectedLabel = APEntryState.gameSettings.unlock_type;
 
         unlockMethod = new PsychUIDropDownMenu(objX + 150, objY, [''], function(id:Int, unlock:String)
         {
-            gameSettings.unlock_method = unlock;
+            APEntryState.gameSettings.unlock_method = unlock;
         });
-        unlockMethod.selectedLabel = gameSettings.unlock_method;
+        unlockMethod.selectedLabel = APEntryState.gameSettings.unlock_method;
 
         objY += 70;
-        deathlink = new PsychUICheckBox(objX, objY, 'DeathLink', 100, function() gameSettings.deathlink = deathlink.checked);
-        deathlink.checked = gameSettings.deathlink;
+        deathlink = new PsychUICheckBox(objX, objY, 'DeathLink', 100, function() APEntryState.gameSettings.deathlink = deathlink.checked);
+        deathlink.checked = APEntryState.gameSettings.deathlink;
         
         objY += 50;
-        ticketPercent = new PsychUISlider(objX, objY, function(v:Float) gameSettings.ticket_percentage = Std.int(v));
+        ticketPercent = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.ticket_percentage = Std.int(v));
         ticketPercent.decimals = 0;
         ticketPercent.min = 10;
         ticketPercent.max = 50;
-        ticketPercent.value = gameSettings.ticket_percentage;
+        ticketPercent.value = APEntryState.gameSettings.ticket_percentage;
 
         objY += 50;
-        ticketWinPercent = new PsychUISlider(objX, objY, function(v:Float) gameSettings.ticket_win_percentage = Std.int(v));
+        ticketWinPercent = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.ticket_win_percentage = Std.int(v));
         ticketWinPercent.decimals = 0;
         ticketWinPercent.min = 50;
         ticketWinPercent.max = 100;
-        ticketWinPercent.value = gameSettings.ticket_win_percentage;
+        ticketWinPercent.value = APEntryState.gameSettings.ticket_win_percentage;
 
         tab_group.add(new FlxText(progression_balancing.x, progression_balancing.y - 15, 120, 'Progression Balancing:'));
         tab_group.add(new FlxText(accessibility.x, accessibility.y - 15, 120, 'Accessibility:'));
@@ -143,18 +220,21 @@ class APSettingsSubState extends MusicBeatSubstate {
         allowMods = new PsychUICheckBox(objX, objY, 'Allow Mods', 100, 
         function() 
         {
-            gameSettings.mods_enabled = allowMods.checked;
-            APEntryState.generateSongList();
+            APEntryState.gameSettings.mods_enabled = allowMods.checked;
+            generateSongList();
             startingSong.selectedLabel = ''; //So it can reset
+            var tempList = globalSongList;
+            tempList.sort((a:String, b:String) -> (a.toUpperCase() < b.toUpperCase()) ? -1 : 1); //Sort alphabetically descending
+            startingSong.list = tempList;
         });
-        allowMods.checked = gameSettings.mods_enabled;
+        allowMods.checked = APEntryState.gameSettings.mods_enabled;
 
         objY += 50;
         startingSong = new PsychUIDropDownMenu(objX, objY, [''], function(id:Int, song:String)
         {
-            gameSettings.starting_song = song;
+            APEntryState.gameSettings.starting_song = song;
         });
-        startingSong.selectedLabel = gameSettings.starting_song;
+        startingSong.selectedLabel = APEntryState.gameSettings.starting_song;
 
         tab_group.add(new FlxText(startingSong.x, startingSong.y - 15, 120, 'Starting Song:'));
         tab_group.add(allowMods);
@@ -167,67 +247,67 @@ class APSettingsSubState extends MusicBeatSubstate {
         var objX = 10;
         var objY = 20;
 
-        trapAmount = new PsychUISlider(objX, objY, function(v:Float) gameSettings.trapAmount = Std.int(v));
+        trapAmount = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.trapAmount = Std.int(v));
         trapAmount.min = 0;
         trapAmount.max = 60;
         trapAmount.decimals = 0;
-        trapAmount.value = gameSettings.trapAmount;
+        trapAmount.value = APEntryState.gameSettings.trapAmount;
 
         objY += 40;
-        bbcWeight = new PsychUISlider(objX, objY, function(v:Float) gameSettings.bbcWeight = Std.int(v));
+        bbcWeight = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.bbcWeight = Std.int(v));
         bbcWeight.min = 0;
         bbcWeight.max = 10;
         bbcWeight.decimals = 0;
-        bbcWeight.value = gameSettings.bbcWeight;
+        bbcWeight.value = APEntryState.gameSettings.bbcWeight;
 
         objY += 40;
-        ghostChatWeight = new PsychUISlider(objX, objY, function(v:Float) gameSettings.ghostChatWeight = Std.int(v));
+        ghostChatWeight = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.ghostChatWeight = Std.int(v));
         ghostChatWeight.min = 0;
         ghostChatWeight.max = 10;
         ghostChatWeight.decimals = 0;
-        ghostChatWeight.value = gameSettings.ghostChatWeight;
+        ghostChatWeight.value = APEntryState.gameSettings.ghostChatWeight;
 
         objY += 40;
-        tutorialWeight = new PsychUISlider(objX, objY, function(v:Float) gameSettings.svcWeight = Std.int(v));
+        tutorialWeight = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.svcWeight = Std.int(v));
         tutorialWeight.min = 0;
         tutorialWeight.max = 10;
         tutorialWeight.decimals = 0;
-        tutorialWeight.value = gameSettings.svcWeight;
+        tutorialWeight.value = APEntryState.gameSettings.svcWeight;
 
         objY += 40;
-        svcWeight = new PsychUISlider(objX, objY, function(v:Float) gameSettings.tutorialWeight = Std.int(v));
+        svcWeight = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.tutorialWeight = Std.int(v));
         svcWeight.min = 0;
         svcWeight.max = 10;
         svcWeight.decimals = 0;
-        svcWeight.value = gameSettings.tutorialWeight;
+        svcWeight.value = APEntryState.gameSettings.tutorialWeight;
 
         objY += 40;
-        fakeTransWeight = new PsychUISlider(objX, objY, function(v:Float) gameSettings.fakeTransWeight = Std.int(v));
+        fakeTransWeight = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.fakeTransWeight = Std.int(v));
         fakeTransWeight.min = 0;
         fakeTransWeight.max = 10;
         fakeTransWeight.decimals = 0;
-        fakeTransWeight.value = gameSettings.fakeTransWeight;
+        fakeTransWeight.value = APEntryState.gameSettings.fakeTransWeight;
 
         objY += 40;
-        chartmodifierchance = new PsychUISlider(objX, objY, function(v:Float) gameSettings.chart_modifier_change_chance = Std.int(v));
+        chartmodifierchance = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.chart_modifier_change_chance = Std.int(v));
         chartmodifierchance.min = 0;
         chartmodifierchance.max = 10;
         chartmodifierchance.decimals = 0;
-        chartmodifierchance.value = gameSettings.chart_modifier_change_chance;
+        chartmodifierchance.value = APEntryState.gameSettings.chart_modifier_change_chance;
 
         objY += 40;
-        shieldWeight = new PsychUISlider(objX, objY, function(v:Float) gameSettings.shieldWeight = Std.int(v));
+        shieldWeight = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.shieldWeight = Std.int(v));
         shieldWeight.min = 0;
         shieldWeight.max = 10;
         shieldWeight.decimals = 0;
-        shieldWeight.value = gameSettings.shieldWeight;
+        shieldWeight.value = APEntryState.gameSettings.shieldWeight;
 
         objY += 40;
-        MHPWeight = new PsychUISlider(objX, objY, function(v:Float) gameSettings.MHPWeight = Std.int(v));
+        MHPWeight = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.MHPWeight = Std.int(v));
         MHPWeight.min = 0;
         MHPWeight.max = 10;
         MHPWeight.decimals = 0;
-        MHPWeight.value = gameSettings.MHPWeight;
+        MHPWeight.value = APEntryState.gameSettings.MHPWeight;
 
         tab_group.add(new FlxText(chartmodifierchance.x, chartmodifierchance.y - 15, 300, 'Chart Modifier Chance:'));
         tab_group.add(new FlxText(trapAmount.x, trapAmount.y - 15, 300, 'Trap Amount:'));
@@ -249,9 +329,34 @@ class APSettingsSubState extends MusicBeatSubstate {
         tab_group.add(MHPWeight);
     }
 
+    var testMap:Map<String, Dynamic>;
+    function onGenYaml()
+	{
+		globalSongList.remove(APEntryState.gameSettings.starting_song);
+		APEntryState.gameSettings.songList = globalSongList;
+		var document = Yaml.render(APEntryState.gameSettings);
+		trace(document);
+
+		#if sys
+		// This time write that same document to disk and adjust the flow level giving
+		// a more compact result.
+		if (!FileSystem.exists("./PlayerSettings/"))
+			FileSystem.createDirectory("./PlayerSettings/");
+		Yaml.write("PlayerSettings/" + APEntryState.yamlName + ".yaml", APEntryState.gameSettings, Renderer.options().setFlowLevel(1));
+		#end
+		openSubState(new Prompt("Settings Exported Successfully!", 0, null, null, false));
+        close();
+	}
+
     override function update(elapsed:Float) {
         super.update(elapsed);
 
-        if (controls.BACK) close();
+        if (controls.BACK) 
+        {
+            onGenYaml();
+            FlxTween.num(0.0134, 1, 1, {ease: FlxEase.sineInOut}, function(t) {
+                APEntryState.lowFilterAmount = t;
+            });
+        }
     }
 }
