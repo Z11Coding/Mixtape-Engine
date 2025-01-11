@@ -688,10 +688,76 @@ class Client {
 		}
 
 		trace("> " + packet);
+		if (!Reflect.hasField(packet, "cmd"))
+			packet = parseOutgoingPacketSimplified(packet);
 
 		_sendLock.execute(() -> _sendQueue.push(packet));
 
 		return true;
+	}
+
+	/**
+	 * Parses an outgoing packet and returns the enum type with its parameters.
+	 * @param packet The outgoing packet as a Dynamic object.
+	 * @return The parsed OutgoingPacket enum type.
+	 **/
+	private function parseOutgoingPacketSimplified(packet:Dynamic):Dynamic {
+		var obj:Dynamic = {};
+		switch (packet) {
+			case OutgoingPacket.Connect(password, game, name, uuid, version, items_handling, tags, slot_data):
+				obj.password = password;
+				obj.game = game;
+				obj.name = name;
+				obj.uuid = uuid;
+				obj.version = version;
+				obj.items_handling = items_handling;
+				obj.tags = tags;
+				obj.slot_data = slot_data;
+				obj.cmd = "Connect";
+			case OutgoingPacket.ConnectUpdate(items_handling, tags):
+				obj.items_handling = items_handling;
+				obj.tags = tags;
+				obj.cmd = "ConnectUpdate";
+			case OutgoingPacket.Sync:
+				obj.cmd = "Sync";
+			case OutgoingPacket.LocationChecks(locations):
+				obj.locations = locations;
+				obj.cmd = "LocationChecks";
+			case OutgoingPacket.LocationScouts(locations, create_as_hint):
+				obj.locations = locations;
+				obj.create_as_hint = create_as_hint;
+				obj.cmd = "LocationScouts";
+			case OutgoingPacket.StatusUpdate(status):
+				obj.status = status;
+				obj.cmd = "StatusUpdate";
+			case OutgoingPacket.Say(text):
+				obj.text = text;
+				obj.cmd = "Say";
+			case OutgoingPacket.GetDataPackage(games):
+				obj.games = games;
+				obj.cmd = "GetDataPackage";
+			case OutgoingPacket.Bounce(games, slots, tags, data):
+				obj.games = games;
+				obj.slots = slots;
+				obj.tags = tags;
+				obj.data = data;
+				obj.cmd = "Bounce";
+			case OutgoingPacket.Get(keys):
+				obj.keys = keys;
+				obj.cmd = "Get";
+			case OutgoingPacket.Set(key, dflt, want_reply, operations):
+				obj.key = key;
+				obj.dflt = dflt;
+				obj.want_reply = want_reply;
+				obj.operations = operations;
+				obj.cmd = "Set";
+			case OutgoingPacket.SetNotify(keys):
+				obj.keys = keys;
+				obj.cmd = "SetNotify";
+			default:
+				throw new Exception("Unknown outgoing packet type");
+		}
+		return obj;
 	}
 
 	/**
@@ -862,6 +928,216 @@ class Client {
 		}
 	}
 
+	/**
+	 * Parses an incoming packet, removes the cmd value, and returns the enum type with its parameters.
+	 * @param packet The incoming packet as a Dynamic object.
+	 * @return The parsed IncomingPacket enum type.
+	 **/
+	private function parseIncomingPacket(packet:Dynamic):IncomingPacket {
+
+		trace("Advanced processing...");
+		if (Reflect.hasField(packet, "cmd")) {
+			Reflect.deleteField(packet, "cmd");
+		}
+
+		// Check fields to determine the packet type
+		if (Reflect.hasField(packet, "version") && Reflect.hasField(packet, "tags") && Reflect.hasField(packet, "password")) {
+			return IncomingPacket.RoomInfo(
+				packet.version,
+				packet.generator_version,
+				packet.tags,
+				packet.password,
+				packet.permissions,
+				packet.hint_cost,
+				packet.location_check_points,
+				packet.games,
+				packet.datapackage_versions,
+				packet.datapackage_checksums,
+				packet.seed_name,
+				packet.time
+			);
+		} else if (Reflect.hasField(packet, "errors")) {
+			return IncomingPacket.ConnectionRefused(packet.errors);
+		} else if (Reflect.hasField(packet, "team") && Reflect.hasField(packet, "slot") && Reflect.hasField(packet, "players")) {
+			return IncomingPacket.Connected(
+				packet.team,
+				packet.slot,
+				packet.players,
+				packet.missing_locations,
+				packet.checked_locations,
+				packet.slot_data,
+				packet.slot_info,
+				packet.hint_points
+			);
+		} else if (Reflect.hasField(packet, "index") && Reflect.hasField(packet, "items")) {
+			return IncomingPacket.ReceivedItems(packet.index, packet.items);
+		} else if (Reflect.hasField(packet, "locations")) {
+			return IncomingPacket.LocationInfo(packet.locations);
+		} else if (Reflect.hasField(packet, "players") || Reflect.hasField(packet, "checked_locations") || Reflect.hasField(packet, "hint_points")) {
+			return IncomingPacket.RoomUpdate(
+				packet.version,
+				packet.generator_version,
+				packet.tags,
+				packet.password,
+				packet.permissions,
+				packet.hint_cost,
+				packet.location_check_points,
+				packet.games,
+				packet.datapackage_versions,
+				packet.datapackage_checksums,
+				packet.seed_name,
+				packet.time,
+				packet.players,
+				packet.checked_locations,
+				packet.hint_points
+			);
+		} else if (Reflect.hasField(packet, "data")) {
+			return IncomingPacket.DataPackage(packet.data);
+		} else if (Reflect.hasField(packet, "text")) {
+			return IncomingPacket.Print(packet.text);
+		} else if (Reflect.hasField(packet, "data") && Reflect.hasField(packet, "type")) {
+			return IncomingPacket.PrintJSON(
+				packet.data,
+				packet.type,
+				packet.receiving,
+				packet.item,
+				packet.found,
+				packet.team,
+				packet.slot,
+				packet.message,
+				packet.tags,
+				packet.countdown
+			);
+		} else if (Reflect.hasField(packet, "games") || Reflect.hasField(packet, "slots") || Reflect.hasField(packet, "tags")) {
+			return IncomingPacket.Bounced(
+				packet.games,
+				packet.slots,
+				packet.tags,
+				packet.data
+			);
+		} else if (Reflect.hasField(packet, "keys")) {
+			return IncomingPacket.Retrieved(packet.keys);
+		} else if (Reflect.hasField(packet, "key") && Reflect.hasField(packet, "value")) {
+			return IncomingPacket.SetReply(
+				packet.key,
+				packet.value,
+				packet.original_value
+			);
+		} else if (Reflect.hasField(packet, "type") && Reflect.hasField(packet, "text")) {
+			return IncomingPacket.InvalidPacket(
+				packet.type,
+				packet.original_cmd,
+				packet.text
+			);
+		} else {
+			return IncomingPacket.Unknown(packet.cmd);
+		}
+	}
+
+	private function parseIncomingPacketSimplified(packet:Dynamic):IncomingPacket {
+		trace("Lazy Processing...");
+		if (Reflect.hasField(packet, "cmd")) {
+			var cmd = Reflect.field(packet, "cmd");
+			switch (cmd) {
+				case "RoomInfo":
+					return IncomingPacket.RoomInfo(
+						packet.version,
+						packet.generator_version,
+						packet.tags,
+						packet.password,
+						packet.permissions,
+						packet.hint_cost,
+						packet.location_check_points,
+						packet.games,
+						packet.datapackage_versions,
+						packet.datapackage_checksums,
+						packet.seed_name,
+						packet.time
+					);
+				case "ConnectionRefused":
+					return IncomingPacket.ConnectionRefused(packet.errors);
+				case "Connected":
+					return IncomingPacket.Connected(
+						packet.team,
+						packet.slot,
+						packet.players,
+						packet.missing_locations,
+						packet.checked_locations,
+						packet.slot_data,
+						packet.slot_info,
+						packet.hint_points
+					);
+				case "ReceivedItems":
+					return IncomingPacket.ReceivedItems(packet.index, packet.items);
+				case "LocationInfo":
+					return IncomingPacket.LocationInfo(packet.locations);
+				case "RoomUpdate":
+					return IncomingPacket.RoomUpdate(
+						packet.version,
+						packet.generator_version,
+						packet.tags,
+						packet.password,
+						packet.permissions,
+						packet.hint_cost,
+						packet.location_check_points,
+						packet.games,
+						packet.datapackage_versions,
+						packet.datapackage_checksums,
+						packet.seed_name,
+						packet.time,
+						packet.players,
+						packet.checked_locations,
+						packet.hint_points
+					);
+				case "DataPackage":
+					return IncomingPacket.DataPackage(packet.data);
+				case "Print":
+					return IncomingPacket.Print(packet.text);
+				case "PrintJSON":
+					return IncomingPacket.PrintJSON(
+						packet.data,
+						packet.type,
+						packet.receiving,
+						packet.item,
+						packet.found,
+						packet.team,
+						packet.slot,
+						packet.message,
+						packet.tags,
+						packet.countdown
+					);
+				case "Bounced":
+					return IncomingPacket.Bounced(
+						packet.games,
+						packet.slots,
+						packet.tags,
+						packet.data
+					);
+				case "Retrieved":
+					return IncomingPacket.Retrieved(packet.keys);
+				case "SetReply":
+					return IncomingPacket.SetReply(
+						packet.key,
+						packet.value,
+						packet.original_value
+					);
+				default:
+					return IncomingPacket.Unknown(cmd);
+			}
+		} else {
+			return IncomingPacket.Unknown(null);
+		}
+	}
+
+	private function tryParseIncomingPacket(packet:Dynamic):IncomingPacket {
+		try {
+			return parseIncomingPacketSimplified(packet);
+		} catch (e:Dynamic) {
+			// _hOnThrow("tryParseIncomingPacket", e);
+			return IncomingPacket.InvalidPacket(null, null, e.toString());
+		}
+	}
+
 	/** Processes the packets currently in the queue. **/
 	private function process_queue() {
 		if (_sendQueue.length > 0) {
@@ -879,9 +1155,17 @@ class Client {
 
 		if (grabQueue.length > 0)
 			trace('Processing ${grabQueue.length} received packet(s)');
-		
+
 		for (packet in grabQueue) {
-			switch (packet) {
+			var parsedPacket = parseIncomingPacketSimplified(packet);
+			switch (parsedPacket)
+			{
+				case Unknown(cmd):
+					parsedPacket = parseIncomingPacket(packet);
+				default: 
+			}
+			trace("< " + parsedPacket);
+			switch (parsedPacket) {
 				case RoomInfo(version, genver, tags, password, permissions, hint_cost, location_check_points, games, _, datapackage_checksums, seed_name, time):
 					_hasBeenConnected = true;
 					localConnectTime = Timer.stamp();
@@ -1024,14 +1308,19 @@ class Client {
 					_hOnSetReply(key, value, original_value);
 
 				case x:
-					try{
+					try {
 						trace('unhandled cmd ${x.getName()}');
 						_hOnThrow("process_queue", x);
-					}	
-					catch(e)
-					{
-						trace('COMMAND WAS NULL! COMMAND HAS BEEN IGNORED!');
-						trace(x);
+					} catch (e) {
+						trace('Strange error... Attempting to recover');
+						// trace(x);
+					}
+					// Attempt read via "cmd" field as text.
+					if (Reflect.hasField(x, "cmd")) {
+						Reflect.deleteField(x, "cmd");
+						_recvQueue.push(x);
+					} else {
+						trace('Unhandled cmd: ${Reflect.field(x, "cmd")}');
 					}
 			}
 		}

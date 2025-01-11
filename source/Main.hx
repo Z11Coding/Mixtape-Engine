@@ -82,6 +82,7 @@ class Main extends Sprite
 	public function new()
 	{
 		super();
+		trace(game);
 		// Credits to MAJigsaw77 (he's the og author for this code)
 		#if android
 		Sys.setCwd(Path.addTrailingSlash(Context.getExternalFilesDir()));

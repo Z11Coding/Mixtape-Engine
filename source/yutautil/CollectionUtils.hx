@@ -429,6 +429,55 @@ class CollectionUtils
 		}
 	}
 
+	public static inline function mapToObject(In:Dynamic):Dynamic
+	{
+		if (Std.is(In, Array))
+		{
+			var out = {};
+			for (i in 0...(In : Array<Dynamic>).length)
+			{
+				Reflect.setField(out, Std.string(i), In[i]);
+			}
+			return out;
+		}
+		else if (Std.is(In, IMap))
+		{
+			var out = {};
+			for (key in (In : Map<Dynamic, Dynamic>).keys())
+			{
+				Reflect.setField(out, key, In.get(key));
+			}
+			return out;
+		}
+		else if (Reflect.hasField(In, "iterator") || (Reflect.hasField(In, "hasNext") && Reflect.hasField(In, "next")))
+		{
+			var out = {};
+			var i = 0;
+			for (item in (In : Iterable<Dynamic>))
+			{
+				Reflect.setField(out, Std.string(i), item);
+				i++;
+			}
+			return out;
+		}
+		else
+		{
+			return In;
+		}
+	}
+
+	public static inline function enumToObj(In:Dynamic):Dynamic
+	{
+		var out = {};
+		for (field in Type.getEnumConstructs(Type.getEnum(In)))
+		{
+			Reflect.setField(out, field, Type.createEnum(Type.getEnum(In), field));
+		}
+		return out;
+	}
+
+
+
 	public static inline function forEachT<T>(input:Dynamic, func:T->Void):Void
 	{
 		if (Std.is(input, Array))
