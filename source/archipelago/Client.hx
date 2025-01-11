@@ -1308,6 +1308,17 @@ class Client {
 					_hOnSetReply(key, value, original_value);
 
 				case x:
+					// before going any further, deconstruct the packet into an anon, and see if it is a Death Link Packet.
+					// if it is, then we need to handle it differently.
+
+					var packet = {};
+					for (field in Reflect.fields(x)) {
+						Reflect.setField(packet, field, Reflect.field(x, field));
+					}
+					if (Reflect.hasField(packet, "time") && Reflect.hasField(packet, "cause") && Reflect.hasField(packet, "source")) {
+							// _hOnDeathLinkBounce(packet.time, packet.cause, packet.source);
+						}
+
 					try {
 						trace('unhandled cmd ${x.getName()}');
 						_hOnThrow("process_queue", x);
