@@ -71,7 +71,7 @@ class APEntryState extends FlxState
 	var gradientBar:FlxSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, 300, 0x83B700FF);
 	var swagShader:ColorSwap = null;
 	var titleText:Alphabet;
-	public var pubAP:Client;
+	public static var ap:Client;
 
 	public static var unlockable:Array<String> = [];
 	public static var inArchipelagoMode:Bool = false;
@@ -333,7 +333,7 @@ class APEntryState extends FlxState
 		#else
 		var tags = ["AP", "Testing"];
 		#end
-		pubAP.ConnectSlot(_slotInput.text, _pwInput.text.length > 0 ? _pwInput.text : null, 0x7, tags, {major: 0, minor: 5, build: 0});
+		ap.ConnectSlot(_slotInput.text, _pwInput.text.length > 0 ? _pwInput.text : null, 0x7, tags, {major: 0, minor: 5, build: 0});
 	}
 
 	function onSlotRefused(errors:Array<String>):Void {
@@ -361,10 +361,10 @@ class APEntryState extends FlxState
 	{
 		trace("Connected - switching to game state");
 		polltimer.stop();
-		pubAP.onRoomInfo.remove(onRoomInfo);
-		pubAP.onSlotRefused.remove(onSlotRefused);
-		pubAP.onSocketDisconnected.remove(onSocketDisconnected);
-		pubAP.onSlotConnected.remove(onSlotConnected);
+		ap.onRoomInfo.remove(onRoomInfo);
+		ap.onSlotRefused.remove(onSlotRefused);
+		ap.onSocketDisconnected.remove(onSocketDisconnected);
+		ap.onSlotConnected.remove(onSlotConnected);
 		closeSubState();
 		inArchipelagoMode = true;
 		var FNF = new FlxSave();
@@ -483,7 +483,7 @@ class APEntryState extends FlxState
 				FlxG.autoPause = true;
 			};
 
-			var ap = new Client('FNF-${_slotInput.text}', "Friday Night Funkin", uri);
+			ap = new Client('FNF-${_slotInput.text}', "Friday Night Funkin", uri);
 
 			ap.onRoomInfo.add(onRoomInfo);
 			ap.onSlotRefused.add(onSlotRefused);
@@ -521,7 +521,6 @@ class APEntryState extends FlxState
 				polltimer.stop();
 				ap.disconnect_socket();
 			});
-			pubAP = ap;
 		}
 	}
 
@@ -574,11 +573,7 @@ class APEntryState extends FlxState
 			}
 		}
 
-		try {
-			pubAP.poll();
-		}
-		catch(e) {}
-
+		
 		bpmTxt.text = 
 			"Progression Balancing: "
 			+ gameSettings.progression_balancing

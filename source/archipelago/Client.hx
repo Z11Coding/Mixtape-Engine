@@ -421,9 +421,7 @@ class Client {
 			}
 		}
 
-		#if debug
 		trace("Creating new AP client to " + uri);
-		#end
 
 		this.uuid = uuid;
 		this.game = game;
@@ -689,9 +687,7 @@ class Client {
 			return false;
 		}
 
-		#if debug
 		trace("> " + packet);
-		#end
 
 		_sendLock.execute(() -> _sendQueue.push(packet));
 
@@ -870,9 +866,7 @@ class Client {
 	private function process_queue() {
 		if (_sendQueue.length > 0) {
 			_sendLock.execute(() -> {
-				#if debug
 				trace('Sending ${_sendQueue.length} queued packet(s)');
-				#end
 				_ws.send(TJson.stringify(_sendQueue));
 				_sendQueue = [];
 			});
@@ -883,11 +877,9 @@ class Client {
 		_recvQueue = [];
 		_recvLock.release();
 
-		#if debug
 		if (grabQueue.length > 0)
 			trace('Processing ${grabQueue.length} received packet(s)');
-		#end
-
+		
 		for (packet in grabQueue) {
 			switch (packet) {
 				case RoomInfo(version, genver, tags, password, permissions, hint_cost, location_check_points, games, _, datapackage_checksums, seed_name, time):
@@ -923,11 +915,9 @@ class Client {
 					}
 					if (!(dataPackageValid = games.length > 0))
 						GetDataPackage(games.toArray());
-					#if debug
 					else
 						trace("DataPackage up to date");
-					#end
-
+					
 				case ConnectionRefused(errors):
 					_hOnSlotRefused(errors);
 
@@ -1034,10 +1024,15 @@ class Client {
 					_hOnSetReply(key, value, original_value);
 
 				case x:
-					#if debug
-					trace('unhandled cmd ${x.getName()}');
-					#end
-					_hOnThrow("process_queue", x);
+					try{
+						trace('unhandled cmd ${x.getName()}');
+						_hOnThrow("process_queue", x);
+					}	
+					catch(e)
+					{
+						trace('COMMAND WAS NULL! COMMAND HAS BEEN IGNORED!');
+						trace(x);
+					}
 			}
 		}
 	}
@@ -1065,9 +1060,7 @@ class Client {
 
 	/** Called when the websocket is opened. **/
 	private function onopen() {
-		#if debug
 		trace("onopen()");
-		#end
 		trace("Server connected");
 		state = State.SOCKET_CONNECTED;
 		_hOnSocketConnected();
@@ -1076,18 +1069,14 @@ class Client {
 
 	/** Called when the websocket is closed. **/
 	private function onclose() {
-		#if debug
 		trace("onclose()");
-		#end
 		if (state > State.SOCKET_CONNECTING) {
 			trace("Server disconnected");
 			state = State.DISCONNECTED;
 			_hOnSocketDisconnected();
 		}
 		if (!_hasBeenConnected && !_hasTriedWSS) {
-			#if debug
 			trace("Disconnected immediately; may be a WSS socket (upgrading)");
-			#end
 			uri = toggleWSS(uri);
 		}
 		state = State.DISCONNECTED;
@@ -1100,17 +1089,13 @@ class Client {
 		@param msg The message received.
 	**/
 	private function onmessage(msg:MessageType) {
-		#if debug
 		trace("onmessage()");
-		#end
 		switch (msg) {
 			case StrMessage(content):
 				_recvLock.execute(() -> {
 					try {
 						var newPackets:Array<IncomingPacket> = TJson.parse(content);
-						#if debug
 						trace(newPackets);
-						#end
 						for (newPacket in newPackets)
 							_recvQueue.push(newPacket);
 					} catch (e) {
@@ -1128,9 +1113,7 @@ class Client {
 		@param e The error data.
 	**/
 	private function onerror(e:Dynamic) {
-		#if debug
 		trace("onerror()");
-		#end
 		_hOnSocketError(Std.string(e));
 		_hOnThrow("onerror", e);
 		// TODO: this is where apclientpp switches between wss and ws
@@ -1146,10 +1129,8 @@ class Client {
 			return;
 		}
 		state = State.SOCKET_CONNECTING;
-		#if debug
 		trace("Connecting to " + uri);
-		#end
-
+		
 		try {
 			_lastSocketConnect = Timer.stamp();
 			_socketReconnectInterval *= 2;
@@ -1166,9 +1147,7 @@ class Client {
 			trace("Error connecting to AP socket", e);
 			_hOnThrow("connect_socket", e);
 			if (e.message == "ssl network error" && uri.startsWith("wss:")) {
-				#if debug
 				trace("WSS connection not found; auto-switching to WS");
-				#end
 				_hasTriedWSS = true;
 				uri = toggleWSS(uri);
 			}
