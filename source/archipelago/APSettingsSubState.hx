@@ -245,7 +245,7 @@ class APSettingsSubState extends MusicBeatSubstate {
     {
         var tab_group = box.getTab('Traps').menu;
         var objX = 10;
-        var objY = 10;
+        var objY = 20;
 
         trapAmount = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.trapAmount = Std.int(v));
         trapAmount.min = 0;

@@ -30,7 +30,7 @@ class CacheSettings extends BaseOptionsMenu
 		var cacheChartsOption:Option = new Option('Cache Charts',
 		'If checked, Charts will be added to the Cache.', 'cacheCharts', 'bool');
 		var highPriorityOption:Option = new Option('High Priority',
-			'If checked, The game will have a higher priority during caching.', 'highPriority', 'bool');
+			'If checked, The game will have a higher priority during caching.', 'highPriorityCache', 'bool');
 
 		if (experimentalCachingEnabled) {
 			addOption(saveCacheOption);
