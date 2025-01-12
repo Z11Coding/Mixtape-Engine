@@ -91,7 +91,7 @@ class FreeplayState extends MusicBeatState
 		{item: "beat battle", chance: 5}, // 5% chance to play Beat Battle
 		{item: "beat battle 2", chance: 5} // 5% chance to do Beat Battle 2
 	];
-
+	
 	override function create()
 	{
 		if (lastCategory != CategoryState.loadWeekForce)
@@ -101,6 +101,11 @@ class FreeplayState extends MusicBeatState
 			curSelected = 0;
 			lastCategory = CategoryState.loadWeekForce;
 		} 
+
+		for (checkID in APEntryState.apGame.info().checkedLocations)
+		{
+			curUnlocked.push(APEntryState.apGame.info().get_item_name(checkID));
+		}
 		
 		Highscore.reloadModifiers();
 		//Paths.clearStoredMemory();

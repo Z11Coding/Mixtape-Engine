@@ -2,6 +2,7 @@ package archipelago;
 
 import backend.ui.*;
 import archipelago.APEntryState;
+import archipelago.APInfo;
 import flixel.util.FlxGradient;
 import yaml.Yaml;
 import yaml.Renderer;
@@ -32,54 +33,15 @@ class APSettingsSubState extends MusicBeatSubstate {
     var gradientBar:FlxSprite;
     var dim:FlxSprite;
 
-    public static var baseGame:Array<String> = 
-	[
-		'Bopeebo', 'Fresh', 'Dad Battle',
-	 	'Spookeez', 'South', 'Monster',
-	 	'Pico', 'Philly Nice', 'Blammed',
-	 	'Satin Panties', 'High', 'Milf',
-	 	'Cocoa', 'Eggnog', 'Winter Horrorland',
-	 	'Senpai', 'Roses', 'Thorns',
-	 	'Ugh', 'Guns', 'Stress',
-	 	'Darnell', 'Lit Up', '2Hot', 'Blazin',
-		'Darnell (BF Mix)'
-	];
-
-	public static var baseErect:Array<String> = 
-	[
-		'Bopeebo Erect', 'Fresh Erect', 'Dad Battle Erect',
-	 	'Spookeez Erect', 'South Erect',
-	 	'Pico Erect', 'Philly Nice Erect', 'Blammed Erect',
-	 	'Satin Panties Erect', 'High Erect',
-	 	'Cocoa Erect', 'Eggnog Erect',
-	 	'Senpai Erect', 'Roses Erect', 'Thorns Erect',
-	 	'Ugh Erect'
-	];
-
-	public static var basePico:Array<String> = 
-	[
-		'Bopeebo (Pico mix)', 'Fresh (Pico mix)', 'Dad Battle (Pico mix)',
-	 	'Spookeez (Pico mix)', 'South (Pico mix)',
-	 	'Pico (Pico mix)', 'Philly Nice (Pico mix)', 'Blammed (Pico mix)',
-	 	'Eggnog (Pico mix)',
-	 	'Ugh (Pico mix)', 'Guns (Pico mix)'
-	];
-
-	public static var secrets:Array<String> = [
-		'Small Argument', 
-		'Beat Battle', 
-		'Beat Battle 2'
-	];
-
     public static function generateSongList()
 	{
         globalSongList = [];
-		globalSongList = baseGame; //This always resets the list to just base base game
-		for (erect in baseErect)
+		globalSongList = APInfo.baseGame; //This always resets the list to just base base game
+		for (erect in APInfo.baseErect)
 			globalSongList.push(erect);
-		for (pico in basePico)
+		for (pico in APInfo.basePico)
 			globalSongList.push(pico);
-		for (secret in secrets)
+		for (secret in APInfo.secrets)
 			globalSongList.push(secret);
 		if (APEntryState.gameSettings.mods_enabled)
 		{
