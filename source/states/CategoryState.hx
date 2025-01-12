@@ -45,8 +45,13 @@ class CategoryState extends MusicBeatState
 	public function new(?categories:Dynamic, ?showmods:Bool = true, ?showsecrets:Bool = true, ?showall:Bool = true, ?h:Bool = true) {
 		super();
 		if (categories != null) {
+			menuItems = [];
 			if (Std.is(categories, Array)) {
 				menuItems = categories;
+				menuLocks = [];
+				for (i in 0...menuItems.length) {
+					menuLocks.push(false);
+				}
 			} else if (categories.isMap()) {
 				menuItems = [];
 				menuLocks = [];
