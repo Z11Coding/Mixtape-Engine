@@ -7,9 +7,10 @@ class APCategoryState extends states.CategoryState {
 
 
     public function new(gameState:archipelago.APGameState) {
-        this.AP = gameState.info();
         this.gameState = gameState;
-        super(['All', 'Hinted', 'Unlocked', 'Unplayed', 'Options', 'Quit'], false, false, false, false);
+        this.AP = gameState.info();
+        menuItems = [];
+        super(['All', 'Hinted', 'Unlocked', 'Unplayed', 'Options', 'Quit'], false, false, true, false);
         menuLocks = [false, false, false, false];
         specialOptions = [null, null, null, null];
 
@@ -30,5 +31,11 @@ class APCategoryState extends states.CategoryState {
                 trace("Properly disconnecting from server before exiting...");
             AP.disconnect_socket();}
         });
+    }
+
+    override function update(elapsed:Float)
+    {
+        AP.poll();
+        super.update(elapsed);
     }
 }

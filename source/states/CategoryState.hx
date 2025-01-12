@@ -22,7 +22,7 @@ class CategoryState extends MusicBeatState
 
 	//I'll softcode this eventually
 	public var menuLocks:Array<Bool> = [
-		false, false
+		false, false, false, false
 	];
 	public var specialOptions:Array<Void -> Void> = [
 		//function() { FlxG.switchState(new FreeplayState()); }

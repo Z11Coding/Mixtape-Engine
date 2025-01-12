@@ -156,6 +156,8 @@ class Client {
 	/** Whether the client has at any point succeeded in connecting to a slot. **/
 	private var _hasBeenConnected = false;
 
+	public var publicPacket:Array<IncomingPacket>;
+
 	#if (lime && !AP_NO_LIME)
 	/** Called when the websocket connects to the server. **/
 	public var onSocketConnected(default, null) = new Event<Void->Void>();

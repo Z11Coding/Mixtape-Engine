@@ -406,10 +406,11 @@ class ClientPrefs {
 		'volume_up'		=> [NUMPADPLUS, PLUS],
 		'volume_down'	=> [NUMPADMINUS, MINUS],
 		
-		'debug_1'		=> [SEVEN, NONE],
-		'debug_2'		=> [EIGHT, NONE],
+		'debug_1'		=> [SEVEN],
+		'debug_2'		=> [EIGHT],
 
-		'fullscreen'	=> [F11, NONE]
+		'fullscreen'	=> [F11],
+		'sidebar'		=> [GRAVEACCENT],
 	];
 
 	public static var gamepadBinds:Map<String, Array<FlxGamepadInputID>> = [
@@ -426,7 +427,9 @@ class ClientPrefs {
 		'accept'		=> [A, START],
 		'back'			=> [B],
 		'pause'			=> [START],
-		'reset'			=> [BACK]
+		'reset'			=> [BACK],
+
+		'sidebar'		=> [],
 	];
 	public static var defaultKeys:Map<String, Array<FlxKey>> = null;
 	public static var defaultButtons:Map<String, Array<FlxGamepadInputID>> = null;

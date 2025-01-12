@@ -3,11 +3,6 @@ package backend;
 import flixel.math.FlxPoint;
 import flixel.util.FlxSave;
 import flixel.FlxG;
-import openfl.utils.Assets;
-import lime.utils.Assets as LimeAssets;
-import lime.utils.AssetLibrary;
-import lime.utils.AssetManifest;
-import flixel.system.FlxSound;
 import lime.app.Application;
 #if sys
 import sys.io.File;
@@ -16,8 +11,7 @@ import sys.FileSystem;
 import openfl.utils.Assets;
 #end
 
-using StringTools;
-
+import haxe.Json;
 class CoolUtil
 {
 	public static function floorDecimal(value:Float, decimals:Int):Float
@@ -167,6 +161,20 @@ class CoolUtil
 		}
 		countByColor = [];
 		return maxKey;
+	}
+
+	inline public static function parseLog(msg:Dynamic):LogData {
+		try {
+			if (msg is String)
+				return cast(Json.parse(msg));
+			return cast(msg);
+		}
+		catch (e) {
+			return {
+				content: msg,
+				hue: null
+			}
+		}
 	}
 
 	inline public static function numberArray(max:Int, ?min = 0):Array<Int>
@@ -458,4 +466,9 @@ class CoolUtil
 	{
 		return lerp * (FlxG.elapsed / (1 / 60));
 	}
+}
+
+typedef LogData = {
+	var content:String;
+	var hue:Null<Float>;
 }

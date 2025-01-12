@@ -25,6 +25,7 @@ import yaml.Yaml;
 import yaml.Renderer;
 import yaml.Parser;
 import flash.net.FileFilter;
+import archipelago.PacketTypes.JSONMessagePart;
 
 typedef APSettings =
 {
@@ -72,6 +73,7 @@ class APEntryState extends FlxState
 	var swagShader:ColorSwap = null;
 	var titleText:Alphabet;
 	public static var ap:Client;
+	public static var apGame:APGameState;
 
 	public static var unlockable:Array<String> = [];
 	public static var inArchipelagoMode:Bool = false;
@@ -365,6 +367,8 @@ class APEntryState extends FlxState
 		ap.onSlotRefused.remove(onSlotRefused);
 		ap.onSocketDisconnected.remove(onSocketDisconnected);
 		ap.onSlotConnected.remove(onSlotConnected);
+		ap.onPrintJSON.add(sendMessage);
+		ap.onPrint.add(sendMessageSimple);
 		closeSubState();
 		inArchipelagoMode = true;
 		var FNF = new FlxSave();
@@ -375,9 +379,23 @@ class APEntryState extends FlxState
 			slot: _slotInput.text
 		};
 		FNF.close();
-
+		//APGameState
 		//FlxG.switchState(new APGameState(ap, slotData));
+		apGame = new APGameState(ap, slotData);
 		runArch();
+	}
+
+	function sendMessage(data:Array<JSONMessagePart>, item:Dynamic, receiving:Dynamic)
+	{
+		archipelago.console.MainTab.addMessage(data[0].text);
+		trace(data[0].text);
+		trace(data);
+	}
+
+	function sendMessageSimple(text:Dynamic)
+	{
+		archipelago.console.MainTab.addMessage(text);
+		trace(text);
 	}
 
 	public static function installAPWorld():Void
@@ -545,8 +563,7 @@ class APEntryState extends FlxState
 		FlxG.save.data.storyDifficulty = null;
 		FlxG.save.data.songPos = null;
 		FlxG.save.flush();
-		// unlockable = unlockable.removeDuplicates();
-		MusicBeatState.switchState(new states.CategoryState());
+		MusicBeatState.switchState(new archipelago.APCategoryState(apGame));
 	}
 
 	override function update(elapsed:Float)

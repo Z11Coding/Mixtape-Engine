@@ -748,7 +748,10 @@ class FreeplayState extends MusicBeatState
 						colorTween.cancel();
 					}
 					FlxG.sound.play(Paths.sound('cancelMenu'));
-					FlxG.switchState(new CategoryState());
+					if (APEntryState.inArchipelagoMode)
+						FlxG.switchState(new archipelago.APCategoryState(APEntryState.apGame));
+					else
+						FlxG.switchState(new CategoryState());
 				}
 			}
 

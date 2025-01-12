@@ -149,6 +149,7 @@
 	<haxelib name="yaml" />
 	<haxelib name="hxWebSockets" />
 	<haxelib name="haxe-concurrent" />
+	<haxelib name="actuate" />
 
 	<!--Base Game Stuff-->
 	<haxelib name="grig.audio"/>
