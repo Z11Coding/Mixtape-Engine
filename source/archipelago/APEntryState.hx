@@ -551,10 +551,9 @@ class APEntryState extends FlxState
 	{
 		inArchipelagoMode = true;
 		WeekData.reloadWeekFiles(false);
-		FlxG.save.data.closeDuringOverRide = false;
-		FlxG.save.data.manualOverride = false;
-		FlxG.save.flush();
 		unlockable = APSettingsSubState.globalSongList;
+		APInfo.giveSongsID(unlockable);
+		FlxG.save.data.closeDuringOverRide = false;
 		FlxG.save.data.manualOverride = false;
 		FlxG.save.data.storyWeek = null;
 		FlxG.save.data.currentModDirectory = null;

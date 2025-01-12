@@ -119,6 +119,7 @@ class MusicBeatState extends FlxState
 		backend.window.WindowUtils.updateTitle();
 
 		super.update(elapsed);
+		if (APEntryState.apGame != null) APEntryState.apGame.info().poll();
 	}
 
 	override function destroy()

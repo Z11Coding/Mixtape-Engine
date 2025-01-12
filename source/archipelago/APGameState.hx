@@ -136,7 +136,6 @@ class APGameState {
 
 		// _ap.onRoomInfo.add(onRoomInfo);
 		// _ap.onSlotRefused.add(onSlotRefused);
-		_ap.onSocketDisconnected.add(onSocketDisconnected);
 		// _ap.onSlotConnected.add(onSlotConnected);
     }
 
