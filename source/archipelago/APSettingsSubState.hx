@@ -33,29 +33,57 @@ class APSettingsSubState extends MusicBeatSubstate {
     var gradientBar:FlxSprite;
     var dim:FlxSprite;
 
-    public static function generateSongList()
+    public static function generateSongList(?type:String)
 	{
         globalSongList = [];
-		globalSongList = APInfo.baseGame; //This always resets the list to just base base game
-		for (erect in APInfo.baseErect)
-			globalSongList.push(erect);
-		for (pico in APInfo.basePico)
-			globalSongList.push(pico);
-		for (secret in APInfo.secrets)
-			globalSongList.push(secret);
-		if (APEntryState.gameSettings.mods_enabled)
-		{
-			for (i in 0...WeekData.weeksList.length) {
-				var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
-				
-				for (song in leWeek.songs)
-				{
-					globalSongList.remove(song[0]); // To remove dups
-					globalSongList.push(song[0]);
-					globalSongList.remove('Tutorial'); // To remove Tutorial because it keeps re-adding itself
-				}
-			}
-		}
+        switch (type)
+        {
+            case "A":
+                globalSongList = APInfo.baseGame;    
+                for (erect in APInfo.baseErect)
+                    globalSongList.push(erect);
+                for (pico in APInfo.basePico)
+                    globalSongList.push(pico);
+                for (secret in APInfo.secrets)
+                    globalSongList.push(secret);
+            case "B":
+                if (APEntryState.gameSettings.mods_enabled)
+                {
+                    for (i in 0...WeekData.weeksList.length) {
+                        var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
+                        
+                        for (song in leWeek.songs)
+                        {
+                            globalSongList.remove(song[0]); // To remove dups
+                            globalSongList.push(song[0]);
+                            globalSongList.remove('Tutorial'); // To remove Tutorial because it keeps re-adding itself
+                        }
+                    }
+                }
+            case "Test":
+                globalSongList = APInfo.baseGame;
+            default:
+                globalSongList = APInfo.baseGame; //This always resets the list to just base base game
+                for (erect in APInfo.baseErect)
+                    globalSongList.push(erect);
+                for (pico in APInfo.basePico)
+                    globalSongList.push(pico);
+                for (secret in APInfo.secrets)
+                    globalSongList.push(secret);
+                if (APEntryState.gameSettings.mods_enabled)
+                {
+                    for (i in 0...WeekData.weeksList.length) {
+                        var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
+                        
+                        for (song in leWeek.songs)
+                        {
+                            globalSongList.remove(song[0]); // To remove dups
+                            globalSongList.push(song[0]);
+                            globalSongList.remove(APEntryState.gameSettings.starting_song); // To remove Tutorial because it keeps re-adding itself
+                        }
+                    }
+                }
+        }
 	}
 
     override function create() {

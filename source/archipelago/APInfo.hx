@@ -50,7 +50,8 @@ class APInfo {
         var id = 0;
         for (song in songList)
         {
-            songIDList.set(song.trim().toLowerCase(), baseIDCode + id);
+			trace('Song Name: '+ song + "\nSong ID: " + baseIDCode + id);
+            songIDList.set(song, baseIDCode + id);
             id++;
         }
 
