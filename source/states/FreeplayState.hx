@@ -102,11 +102,15 @@ class FreeplayState extends MusicBeatState
 			lastCategory = CategoryState.loadWeekForce;
 		} 
 
-		for (checkID in APEntryState.apGame.info().checkedLocations)
-		{
-			curUnlocked.push(APEntryState.apGame.info().get_item_name(checkID));
+		if (APEntryState.apGame != null && APEntryState.apGame.info() != null) {
+			for (checkID in APEntryState.apGame.info().checkedLocations)
+			{
+				var itemName = APEntryState.apGame.info().get_item_name(checkID);
+				if (itemName != null) {
+					curUnlocked.push(itemName);
+				}
+			}
 		}
-		
 		Highscore.reloadModifiers();
 		//Paths.clearStoredMemory();
 		//Paths.clearUnusedMemory();

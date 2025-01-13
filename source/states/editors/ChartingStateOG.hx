@@ -204,6 +204,9 @@ class ChartingStateOG extends MusicBeatChartingState
 	var hurts2:Int = 0;
 	var dupes:Int = 0;
 
+	private var undoStack:Array<Dynamic> = [];
+    private var redoStack:Array<Dynamic> = [];
+
 	function refreshBalance():Void
 	{
 		dupes = 0;
@@ -322,6 +325,7 @@ class ChartingStateOG extends MusicBeatChartingState
 
 	function removeDupes()
 	{
+		markChanges();
 		// remove dupes
 		for (sec in _song.notes)
 		{
@@ -2897,6 +2901,14 @@ class ChartingStateOG extends MusicBeatChartingState
 		}
 		lastConductorPos = Conductor.songPosition;
 		super.update(elapsed);
+
+		if (FlxG.keys.pressed.CONTROL) {
+            if (FlxG.keys.justPressed.Z) {
+                undo();
+            } else if (FlxG.keys.justPressed.Y) {
+                redo();
+            }
+        }
 	}
 
 	function pauseAndSetVocalsTime()
@@ -3251,6 +3263,7 @@ class ChartingStateOG extends MusicBeatChartingState
 
 	function changeNoteSustain(value:Float):Void
 	{
+		markChanges();
 		if (curSelectedNote != null)
 		{
 			if (curSelectedNote[2] != null)
@@ -3285,6 +3298,7 @@ class ChartingStateOG extends MusicBeatChartingState
 
 	function resetSection(songBeginning:Bool = false):Void
 	{
+		markChanges();
 		updateGrid();
 
 		FlxG.sound.music.pause();
@@ -3312,6 +3326,7 @@ class ChartingStateOG extends MusicBeatChartingState
 
 	function changeSection(sec:Int = 0, ?updateMusic:Bool = true):Void
 	{
+		markChanges();
 		// trace('changing section' + sec);
 
 		if (_song.notes[sec] != null)
@@ -3757,6 +3772,7 @@ class ChartingStateOG extends MusicBeatChartingState
 
 	function deleteNote(note:Note):Void
 	{
+		markChanges();
 		var noteDataToCheck:Int = note.noteData;
 		if (noteDataToCheck > -1 && note.mustPress != _song.notes[curSec].mustHitSection)
 			noteDataToCheck += Note.ammo[_song.mania];
@@ -3824,6 +3840,7 @@ class ChartingStateOG extends MusicBeatChartingState
 
 	function clearSong():Void
 	{
+		markChanges();
 		for (daSection in 0..._song.notes.length)
 		{
 			_song.notes[daSection].sectionNotes = [];
@@ -3835,6 +3852,7 @@ class ChartingStateOG extends MusicBeatChartingState
 
 	private function addNote(strum:Null<Float> = null, data:Null<Int> = null, type:Null<Int> = null):Void
 	{
+		markChanges();
 		// curUndoIndex++;
 		// var newsong = _song.notes;
 		//	undos.push(newsong);
@@ -3894,17 +3912,22 @@ class ChartingStateOG extends MusicBeatChartingState
 	// will figure this out l8r
 	function redo()
 	{
-		// _song = redos[curRedoIndex];
+		if (redoStack.length > 0) {
+            undoStack.push(haxe.Json.stringify(_song));
+            _song = Song.parseJSONshit(redoStack.pop());
+            updateGrid();
+            updateNoteUI();
+        }
 	}
 
 	function undo()
 	{
-		// redos.push(_song);
-		undos.pop();
-		// _song.notes = undos[undos.length - 1];
-		///trace(_song.notes);
-		// updateGrid();
-		refreshBalance();
+		if (undoStack.length > 0) {
+            redoStack.push(haxe.Json.stringify(_song));
+            _song = Song.parseJSONshit(undoStack.pop());
+            updateGrid();
+            updateNoteUI();
+        }
 	}
 
 	function getStrumTime(yPos:Float, doZoomCalc:Bool = true):Float
@@ -3931,6 +3954,7 @@ class ChartingStateOG extends MusicBeatChartingState
 
 	function copyNotes()
 	{
+		markChanges();
 		notesCopied = [];
 		sectionToCopy = curSec;
 		for (i in 0..._song.notes[curSec].sectionNotes.length)
@@ -3959,6 +3983,7 @@ class ChartingStateOG extends MusicBeatChartingState
 
 	function clearNotes()
 	{
+		markChanges();
 		_song.notes[curSection].sectionNotes = [];
 
 		var i:Int = _song.events.length - 1;
@@ -3980,6 +4005,7 @@ class ChartingStateOG extends MusicBeatChartingState
 
 	function pasteNotes(events:Bool, notes:Bool)
 	{
+		markChanges();
 		if (notesCopied == null || notesCopied.length < 1)
 		{
 			return;
@@ -4203,6 +4229,11 @@ class ChartingStateOG extends MusicBeatChartingState
 			val = _song.notes[section].sectionBeats;
 		return val != null ? val : 4;
 	}
+
+	function markChanges() {
+        undoStack.push(haxe.Json.stringify(_song));
+        redoStack = []; // Clear redo stack on new change
+    }
 }
 
 class AttachedFlxText extends FlxText

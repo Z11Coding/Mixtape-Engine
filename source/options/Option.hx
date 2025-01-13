@@ -164,6 +164,40 @@ class EnumOption extends Option
 		}
 		super(name, description, variable, 'string', enumOptions, onChange, translation);
 	}
+}
 
-	
+class VarOption extends Option
+{
+	public function new<T>(name:String, description:String = '', variable:String, type:String = 'bool', ?options:Array<String> = null, ?onChange:Void->Void = null, ?translation:String = null) {
+		super(name, description, variable, type, options, onChange, translation);
+	}
+
+	// TODO: Override getValue and setValue instead via dynamic functions.
+
+	override public function getValue():Dynamic {
+		return getVariableValue(variable);
+	}
+
+	override public function setValue(value:Dynamic) {
+		try {
+			var parts = variable.split(".");
+			var lastPart = parts.pop();
+			var target = getVariableValue(parts.join("."));
+			Reflect.setProperty(target, lastPart, value);
+		} catch (e:Dynamic) {
+			trace('Error setting value for ' + variable + ': ' + e);
+		}
+	}
+
+	private function getVariableValue(variable:String):Dynamic {
+		var parts = variable.split(".");
+		var current:Dynamic = this;
+		for (part in parts) {
+			if (part == "this") {
+				part = Type.getClassName(Type.getClass(this));
+			}
+			current = Reflect.getProperty(current, part);
+		}
+		return current;
+	}
 }
