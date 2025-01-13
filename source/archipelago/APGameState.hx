@@ -177,7 +177,7 @@ class APGameState {
 
 
     private function onReconnect():Void {
-        MusicBeatState.switchState(new archipelago.APCategoryState(this));
+        MusicBeatState.switchState(new archipelago.APCategoryState(this, APEntryState.ap));
     }
 
     // public function onRoomUpdate(roomUpdatePacket:RoomUpdatePacket)

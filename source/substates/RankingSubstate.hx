@@ -11,6 +11,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import backend.Song;
 import flixel.addons.transition.FlxTransitionableState;
+import archipelago.APEntryState;
 
 class RankingSubstate extends MusicBeatSubstate
 {
@@ -152,9 +153,10 @@ class RankingSubstate extends MusicBeatSubstate
 				    Mods.loadTopMod();
 				    FlxG.sound.playMusic(Paths.music('panixPress'));
 					TransitionState.transitionState(states.FreeplayState, {transitionType: "stickers"});
-					APEntryState.apGame.info().LocationChecks([APInfo.songIDList.get(PlayState.SONG.song.toLowerCase().trim())]);
-					trace(APInfo.songIDList.get(PlayState.SONG.song.toLowerCase().trim()));
-					trace(PlayState.SONG.song.toLowerCase().trim());
+					APEntryState.apGame.info().LocationChecks([APInfo.songIDList.get(PlayState.SONG.song)]);
+					trace(APEntryState.apGame.info().get_location_id(PlayState.SONG.song));
+					trace(APInfo.songIDList.get(PlayState.SONG.song));
+					trace(PlayState.SONG.song);
 			}
 		}
 	}

@@ -114,6 +114,9 @@ class APEntryState extends FlxState
 		Cursor.cursorMode = Default;
 		swagShader = new ColorSwap();
 
+		if (APSettingsSubState.globalSongList.length <= 0)
+			APSettingsSubState.generateSongList('A');
+
 		// TODO: save last game's settings as default; Reset button to return to base default
 		var FNF = new FlxSave();
 		FNF.bind("FNF");
@@ -124,6 +127,7 @@ class APEntryState extends FlxState
 				port: "38281",
 				slot: "Player"
 			};
+		if (FNF.data.gameSettings != null) gameSettings = FNF.data.gameSettings;
 		FNF.destroy();
 
 		var bg = new FlxSprite().loadGraphic(Paths.image("menuBG"));
@@ -378,6 +382,7 @@ class APEntryState extends FlxState
 			port: _portInput.text,
 			slot: _slotInput.text
 		};
+		FNF.data.gameSettings = gameSettings;
 		FNF.close();
 		//APGameState
 		//FlxG.switchState(new APGameState(ap, slotData));
@@ -552,7 +557,8 @@ class APEntryState extends FlxState
 		inArchipelagoMode = true;
 		WeekData.reloadWeekFiles(false);
 		unlockable = APSettingsSubState.globalSongList;
-		APInfo.giveSongsID(unlockable);
+		APInfo.giveSongsID(APSettingsSubState.globalSongList);
+		trace(APInfo.songIDList.toString());
 		FlxG.save.data.closeDuringOverRide = false;
 		FlxG.save.data.manualOverride = false;
 		FlxG.save.data.storyWeek = null;
@@ -562,7 +568,7 @@ class APEntryState extends FlxState
 		FlxG.save.data.storyDifficulty = null;
 		FlxG.save.data.songPos = null;
 		FlxG.save.flush();
-		MusicBeatState.switchState(new archipelago.APCategoryState(apGame));
+		MusicBeatState.switchState(new archipelago.APCategoryState(apGame, ap));
 	}
 
 	override function update(elapsed:Float)

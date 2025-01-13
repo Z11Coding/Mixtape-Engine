@@ -135,20 +135,6 @@ class FreeplayState extends MusicBeatState
 		DiscordClient.changePresence("In the Menus", null);
 		#end
 
-		if (APEntryState.inArchipelagoMode)
-		{
-			for (i in 0...WeekData.weeksList.length) {
-				var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
-				
-				for (song in leWeek.songs)
-				{
-					APEntryState.unlockable.remove(song[0]); // To remove dups
-					APEntryState.unlockable.push(song[0]);
-					APEntryState.unlockable.remove('Tutorial'); // To remove Tutorial because it keeps re-adding itself
-				}
-			}
-		}
-
 		#if sys
 		ArtemisIntegration.setGameState ("menu");
 		ArtemisIntegration.resetModName ();
@@ -758,7 +744,7 @@ class FreeplayState extends MusicBeatState
 					}
 					FlxG.sound.play(Paths.sound('cancelMenu'));
 					if (APEntryState.inArchipelagoMode)
-						FlxG.switchState(new archipelago.APCategoryState(APEntryState.apGame));
+						FlxG.switchState(new archipelago.APCategoryState(APEntryState.apGame, APEntryState.ap));
 					else
 						FlxG.switchState(new CategoryState());
 				}
