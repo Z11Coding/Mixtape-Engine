@@ -8873,7 +8873,7 @@ class PlayState extends MusicBeatState
 				{
 					camHUD.alpha -= 1 / 10;
 				}, 10);
-				gameplayArea = "Freeplay";
+				gameplayArea = APEntryState.inArchipelagoMode ? "APFreeplay" : "Freeplay";
 				#if DISCORD_ALLOWED DiscordClient.resetClientID(); #end
 				openSubState(new substates.RankingSubstate());
 				changedDifficulty = false;

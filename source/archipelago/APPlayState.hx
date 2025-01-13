@@ -2006,7 +2006,7 @@ public function doEffect(effect:String)
 
         if (check == did)
 		{
-			states.FreeplayState.giveSong = true;
+			// For Later
 		}
         super.endSong();
 		PlayState.gameplayArea = "Freeplay";

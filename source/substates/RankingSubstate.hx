@@ -153,9 +153,19 @@ class RankingSubstate extends MusicBeatSubstate
 				    Mods.loadTopMod();
 				    FlxG.sound.playMusic(Paths.music('panixPress'));
 					TransitionState.transitionState(states.FreeplayState, {transitionType: "stickers"});
-					APEntryState.apGame.info().LocationChecks([APInfo.songIDList.get(PlayState.SONG.song)]);
+					trace(APEntryState.apGame.info().LocationChecks([APInfo.itemSongIDList.get(PlayState.SONG.song)]));
 					trace(APEntryState.apGame.info().get_location_id(PlayState.SONG.song));
-					trace(APInfo.songIDList.get(PlayState.SONG.song));
+					trace(APInfo.itemSongIDList.get(PlayState.SONG.song));
+					trace(PlayState.SONG.song);
+				case "APFreeplay":	
+					trace('WENT BACK TO ARCHIPELAGO FREEPLAY??');
+				    Mods.loadTopMod();
+				    FlxG.sound.playMusic(Paths.music('panixPress'));
+					TransitionState.transitionState(states.FreeplayState, {transitionType: "stickers"});
+					APEntryState.apGame.info().Sync();
+					trace(APEntryState.apGame.info().LocationChecks([APInfo.locationSongIDList.get(PlayState.SONG.song)]));
+					trace(APEntryState.apGame.info().get_location_id(PlayState.SONG.song));
+					trace(APInfo.itemSongIDList.get(PlayState.SONG.song));
 					trace(PlayState.SONG.song);
 			}
 		}
