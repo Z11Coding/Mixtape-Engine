@@ -699,6 +699,7 @@ class ChartingStateOG extends MusicBeatChartingState
 		{
 			openSubState(new Prompt('This action will clear current progress.\n\nProceed?', 0, function()
 			{
+				markChanges();
 				for (sec in 0..._song.notes.length)
 				{
 					_song.notes[sec].sectionNotes = [];
@@ -2198,7 +2199,11 @@ class ChartingStateOG extends MusicBeatChartingState
 			changeSection();
 		}
 		Conductor.songPosition = FlxG.sound.music.time;
-		_song.song = UI_songTitle.text;
+		try {
+			_song.song = UI_songTitle.text;
+		} catch (e:Dynamic) {
+			FlxG.log.error("Error updating song title: " + e);
+		}
 
 		strumLineUpdateY();
 		for (i in 0...strumLineNotes.members.length)
@@ -3912,22 +3917,63 @@ class ChartingStateOG extends MusicBeatChartingState
 	// will figure this out l8r
 	function redo()
 	{
-		if (redoStack.length > 0) {
-            undoStack.push(haxe.Json.stringify(_song));
-            _song = Song.parseJSONshit(redoStack.pop());
-            updateGrid();
-            updateNoteUI();
-        }
+		try {
+			if (redoStack.length > 0) {
+				try {
+					undoStack.push(haxe.Json.stringify(_song));
+				} catch (e:Dynamic) {
+					FlxG.log.error("Error pushing to undo stack: " + e);
+				}
+				try {
+					_song = Song.parseJSON(redoStack.pop());
+				} catch (e:Dynamic) {
+					FlxG.log.error("Error parsing JSON for redo: " + e);
+				}
+				try {
+					updateGrid();
+				} catch (e:Dynamic) {
+					FlxG.log.error("Error updating grid for redo: " + e);
+				}
+				try {
+					updateNoteUI();
+				} catch (e:Dynamic) {
+					FlxG.log.error("Error updating note UI for redo: " + e);
+				}
+			}
+		} catch (e:Dynamic) {
+			FlxG.log.error("Error in redo function: " + e);
+		}
 	}
 
 	function undo()
 	{
-		if (undoStack.length > 0) {
-            redoStack.push(haxe.Json.stringify(_song));
-            _song = Song.parseJSONshit(undoStack.pop());
-            updateGrid();
-            updateNoteUI();
-        }
+		try {
+			if (undoStack.length > 0) {
+				try {
+					redoStack.push(haxe.Json.stringify(_song));
+				} catch (e:Dynamic) {
+					FlxG.log.error("Error pushing to redo stack: " + e);
+				}
+				try {
+					_song = Song.parseJSON(undoStack.pop());
+				} catch (e:Dynamic) {
+					FlxG.log.error("Error parsing JSON for undo: " + e);
+				}
+				try {
+					updateGrid();
+				} catch (e:Dynamic) {
+					FlxG.log.error("Error updating grid for undo: " + e);
+				}
+				try {
+					updateNoteUI();
+				} catch (e:Dynamic) {
+					FlxG.log.error("Error updating note UI for 
+					undo: " + e);
+				}
+			}
+		} catch (e:Dynamic) {
+			FlxG.log.error("Error in undo function: " + e);
+		}
 	}
 
 	function getStrumTime(yPos:Float, doZoomCalc:Bool = true):Float
@@ -4095,6 +4141,7 @@ class ChartingStateOG extends MusicBeatChartingState
 
 	function clearEvents()
 	{
+		markChanges();
 		_song.events = [];
 		updateGrid();
 	}
