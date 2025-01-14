@@ -29,7 +29,8 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 			"Mic'ed Up Engine", 
 			"Andromeda Engine (legacy)",
 			"YoshiEngine",
-			"Kade Engine Community"
+			"Kade Engine Community",
+			"Rhythm"
 		]);
 		addOption(option);
 		option.displayFormat = '< %v >';

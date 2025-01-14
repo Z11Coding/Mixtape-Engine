@@ -338,6 +338,35 @@ class PlayField extends FlxTypedGroup<FlxBasic>
 						if (!note.blockHit) noteHitCallback(note, this);
 						return note;
 					}
+				case 'Rhythm':
+					var noteList = getNotesWithEnd(data, Conductor.songPosition + ClientPrefs.data.badWindow, (note:Note) -> !note.isSustainNote && note.requiresTap);
+					noteList.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
+					while (noteList.length > 0)
+					{
+						var note:Note = noteList.pop();
+						var hitDiff = Math.abs(note.strumTime - Conductor.songPosition);
+						var allowedError = ClientPrefs.data.badWindow * 0.05; // 5% error margin
+						if (hitDiff <= allowedError)
+						{
+							noteHitCallback(note, this);
+							return note;
+						}
+					}
+					// Check if the note is still being held when it ends
+					for (note in spawnedNotes)
+					{
+						if (note.column == data && note.isSustainNote && note.wasGoodHit && !note.tooLate && note.holdingTime >= note.sustainLength)
+						{
+							note.tooLate = true;
+							note.wasGoodHit = false;
+							noteMissed.dispatch(note, this);
+							return note;
+						}
+					}
+					if (!ClientPrefs.data.ghostTapping)
+					{
+						PlayState.instance.noteMissPress(data);
+					}
 				case 'BEAT! Engine':
 					var noteList = getNotesWithEnd(data, Conductor.songPosition + ClientPrefs.data.badWindow, (note:Note) -> !note.isSustainNote && note.requiresTap);
 					// more accurate hit time for the ratings?

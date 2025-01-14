@@ -289,6 +289,16 @@ class Main extends Sprite
 		stage.window.onDropFile.add(function(path:String)
 		{
 			trace("user dropped file with path: " + path);
+			if (currentState() == "ChartingStateOG")
+			{
+				try{
+				backend.Song.loadFromJson(path, '');
+				FlxG.resetState();}
+				catch(e:haxe.Exception)
+				{
+					trace("Error loading song: " + e);
+				}
+			}
 		});
 
 		// shader coords fix
