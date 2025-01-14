@@ -112,7 +112,7 @@ class CategoryState extends MusicBeatState
 		menuItems = menuItems.filter(it -> (!it.isEmpty() && Alphabet.isValidText(it)));
 		FlxTransitionableState.skipNextTransOut = false;
 
-		if (FlxG.save.data.gotIntoAnArgument) menuItems.insert(menuItems.length+1, "Secrets");
+		if (showSecrets && FlxG.save.data.gotIntoAnArgument) menuItems.insert(menuItems.length+1, "Secrets");
 
 		WeekData.reloadWeekFiles(false);
 		var weeks:Array<WeekData> = [];

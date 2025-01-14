@@ -1309,7 +1309,7 @@ class Client {
 
 				
 
-				
+				trace("Data: " + slot_data);
 
 					_hOnSlotConnected(slot_data);
 					_hOnLocationChecked(checked_locations);

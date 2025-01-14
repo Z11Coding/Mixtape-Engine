@@ -146,12 +146,21 @@ class APGameState {
 
 		// _ap.onRoomInfo.add(onRoomInfo);
 		// _ap.onSlotRefused.add(onSlotRefused);
-		// _ap.onSlotConnected.add(onSlotConnected);
+		_ap.onSlotConnected.add(onSlotConnected);
+        
+
+
     }
 
     public function info()
     {
         return _ap;
+    }
+
+    function onSlotConnected(slotData:Dynamic)
+    {
+        if (slotData.deathlink)
+            _ap.tags.push("DeathLink");
     }
 
     function sendMessage(data:Array<JSONMessagePart>, item:Dynamic, receiving:Dynamic)
