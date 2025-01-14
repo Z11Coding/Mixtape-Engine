@@ -159,13 +159,15 @@ class RankingSubstate extends MusicBeatSubstate
 				    FlxG.sound.playMusic(Paths.music('panixPress'));
 					TransitionState.transitionState(states.FreeplayState, {transitionType: "stickers"});
 					APEntryState.apGame.info().Sync();
-					var itemID = APInfo.locationSongIDList.get(PlayState.SONG.song)[1];
-					trace(itemID);
-					var songID = APInfo.itemIDSongList.get(itemID);
+					/*var itemID = APEntryState.apGame.info().get_location_id(PlayState.SONG.song);
+					trace(itemID + ' : ' + APEntryState.apGame.info().get_location_id(itemID));
+					var songID = APInfo.locationIDSongList.get(itemID);
 					trace(songID);
-					trace(APEntryState.apGame.info().LocationChecks([APInfo.locationSongIDList.get(songID)[0]]));
-					trace(APEntryState.apGame.info().get_location_name(APInfo.locationSongIDList.get(PlayState.SONG.song)[0]));
-					trace(APInfo.locationSongIDList.get(PlayState.SONG.song)[1]);
+					trace('Item ID:' + APInfo.locationSongIDList.get(songID)[0]);
+					var unlockedID = APInfo.locationSongIDList.get(songID)[0];
+					trace('Song Unlocked: ' + APInfo.locationIDSongList.get(unlockedID));*/
+					trace(APEntryState.apGame.info().LocationChecks([APEntryState.apGame.info().get_location_id(PlayState.SONG.song)]));
+					trace(APEntryState.apGame.info().get_location_name(APEntryState.apGame.info().get_location_id(PlayState.SONG.song)));
 					trace(PlayState.SONG.song);
 			}
 		}

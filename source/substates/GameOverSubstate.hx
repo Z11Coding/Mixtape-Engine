@@ -128,11 +128,13 @@ class GameOverSubstate extends MusicBeatSubstate
 			}
 		}
 
+		var alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 		causeofdeath = new UnderTextParser(boyfriend.x, boyfriend.y - 100, FlxG.width, "", 32);
 		causeofdeath.scrollFactor.set(0,0);
 		causeofdeath.font = Paths.font("determination-extended.ttf");
         causeofdeath.color = 0xFFFFFFFF; 
-        causeofdeath.soundOnChars.set("a", FlxG.sound.load(Paths.sound('ut/uifont'), 0.6));
+		for (letter in alphabet)
+			causeofdeath.soundOnChars.set(letter, FlxG.sound.load(Paths.sound('ut/uifont'), 1));
 		add(causeofdeath);
 
 

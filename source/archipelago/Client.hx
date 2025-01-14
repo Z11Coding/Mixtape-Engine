@@ -468,7 +468,7 @@ class Client {
 	**/
 	public function set_data_package(data:Dynamic) {
 		// TODO: APDataPackageStore??
-		if (!dataPackageValid && data.games) {
+		if (!dataPackageValid) {
 			_dataPackage = data;
 			for (game => gamedata in _dataPackage.games) {
 				_dataPackage.games[game] = gamedata;
@@ -483,6 +483,10 @@ class Client {
 					_gameLocations[game][locationId] = locationName;
 				}
 			}
+			trace(_items);
+			trace(_gameItems);
+			trace(_locations);
+			trace(_gameLocations);
 		}
 	}
 
@@ -558,7 +562,7 @@ class Client {
 		@param game The game to which the location belongs. Defaults to a blank string, which will attempt to devine a location name which may be incorrect if there is an ID collision.
 		@return The name of the location attached to the given ID, or "Unknown" if it was not found.
 	**/
-	public function get_location_name(code:Int, game = "Friday Night Funkin"):String {
+	public function get_location_name(code:Int, game = ""):String {
 		if (game.length == 0) {
 			if (_locations.exists(code))
 				return _locations.get(code);
@@ -574,7 +578,7 @@ class Client {
 		@param game The game to which the location belongs. Defaults to a blank string, which will attempt to devine a location ID which may be incorrect if there is a name collision.
 		@return The ID associated with the location name, or `null` if it was not found.
 	**/
-	public function get_location_id(name:String, game = "Friday Night Funkin"):Null<Int> {
+	public function get_location_id(name:String, game = ""):Null<Int> {
 		if (game.length == 0)
 			game = this.game;
 		if (_dataPackage.games.exists(game) && _dataPackage.games[game].location_name_to_id.exists(name))
@@ -588,12 +592,13 @@ class Client {
 		@param game The game to which the item belongs. Defaults to a blank string, which will attempt to devine an item name which may be incorrect if there is an ID collision.
 		@return The name of the item attached to the given ID, or "Unknown" if it was not found.
 	**/
-	public function get_item_name(code:Int, game = "Friday Night Funkin"):String {
+	public function get_item_name(code:Int, game = ""):String {
 		if (game.length == 0) {
 			if (_items.exists(code))
 				return _items.get(code);
 		} else if (_gameItems.exists(game) && _gameItems[game].exists(code))
 			return _gameItems[game][code];
+		trace(_gameItems[game]);
 		return "Unknown";
 	}
 
@@ -604,9 +609,10 @@ class Client {
 		@param game The game to which the item belongs. Defaults to a blank string, which will attempt to devine an item ID which may be incorrect if there is a name collision.
 		@return The ID associated with the item name, or `null` if it was not found.
 	**/
-	public function get_item_id(name:String, ?game = "Friday Night Funkin"):Null<Int> {
+	public function get_item_id(name:String, ?game = ""):Null<Int> {
 		if (game.length == 0)
 			game = this.game;
+		trace(_dataPackage.games[game].item_name_to_id);
 		if (_dataPackage.games.exists(game) && _dataPackage.games[game].item_name_to_id.exists(name))
 			return _dataPackage.games[game].item_name_to_id[name];
 		return null;
@@ -994,6 +1000,10 @@ class Client {
 				packet.hint_points
 			);
 		} else if (Reflect.hasField(packet, "data")) {
+			dataPackageValid = false;
+			set_data_package(packet.data);
+			//trace('Data Package:' + data);
+			dataPackageValid = true;
 			return IncomingPacket.DataPackage(packet.data);
 		} else if (Reflect.hasField(packet, "text")) {
 			return IncomingPacket.Print(packet.text);
@@ -1188,21 +1198,20 @@ class Client {
 						try {
 							if (!_dataPackage.games.exists(game)) { // new game
 								games.add(game);
+								trace("Added Game:" + game);
 								continue;
 							}
 							if (_dataPackage.games[game].checksum != csum) { // existing update
 								games.add(game);
+								trace("Added Game:" + game);
 								continue;
 							}
 						} catch (e) {
-							trace(e.message);
+							trace("Error! :" + e.message);
 							games.add(game);
 						}
 					}
-					if (!(dataPackageValid = games.length > 0))
-						GetDataPackage(games.toArray());
-					else
-						trace("DataPackage up to date");
+					GetDataPackage(games.toArray());
 					
 				case ConnectionRefused(errors):
 					_hOnSlotRefused(errors);
@@ -1279,7 +1288,7 @@ class Client {
 						data.games[game] = gameData;
 					dataPackageValid = false;
 					set_data_package(data);
-					trace('Data Package:' + data);
+					//trace('Data Package:' + data);
 					dataPackageValid = true;
 					_hOnDataPackageChanged(_dataPackage);
 

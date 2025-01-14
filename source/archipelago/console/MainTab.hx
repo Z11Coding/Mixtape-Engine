@@ -15,6 +15,7 @@ import openfl.events.Event;
 
 class MainTab extends TabSprite {
 	var nickname:TextField;	
+	var info:TextField;	
     var chatBg:Bitmap;
 	var chatInput:TextField;
 	static var messages:Array<TextField> = [];
@@ -37,6 +38,16 @@ class MainTab extends TabSprite {
 		nickname.y = 20;
 		nickname.x = widthTab / 2 - nickname.width / 2;
 		addChild(nickname);
+
+		info = new TextField();
+		info.selectable = false;
+		var format = TabSprite.getDefaultFormat();
+		format.size = 15;
+		info.defaultTextFormat = format;
+		info.width = widthTab;
+		info.y = 40;
+		info.x = widthTab / 2 - nickname.width / 2;
+		addChild(info);
 
 		chatInput = new TextField();
 		chatInput.defaultTextFormat = TabSprite.getDefaultFormat();
@@ -136,13 +147,20 @@ class MainTab extends TabSprite {
 	}
 
 	override function onShow() {
+		var songsLeft = [];
+		for (song in APEntryState.apGame.info().missingLocations)
+			songsLeft.push(APInfo.locationIDSongList.get(song));
 		nickname.text = APEntryState.inArchipelagoMode ? APEntryState.ap.slot : "Archipelago Not Active!";
+		info.text = 
+		  "Song Needed for Completion: "+APEntryState.victorySong
+		+ "\nDeathLink: "+APEntryState.deathLink
+		+ "\nTotal Song Amount: "+APEntryState.fullSongCount
+		+ "\nSongs Left: "+ songsLeft.toString()
+		+ "\nHint Cost: "+ APEntryState.apGame.info().hintCostPoints
+		+ "\nHint Points Left: "+ APEntryState.apGame.info().hintPoints
+		+ "\nCurrent Run Time: "+ APEntryState.apGame.info().localConnectTime;
 
-		loadAvatar();
-		updateMessages();
-	}
-
-	function loadAvatar() {
 		nickname.x = widthTab / 2 - nickname.width / 2;
+		updateMessages();
 	}
 }

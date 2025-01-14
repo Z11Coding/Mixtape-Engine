@@ -1,6 +1,6 @@
 package yutautil;
 
-class CategorizedMap<T> {
+class CatagorizedMap<T> {
 
     private var map:Map<String, Array<T>> = new Map();
     private final stuck:Bool = false;

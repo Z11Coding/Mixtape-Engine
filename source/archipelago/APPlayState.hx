@@ -393,7 +393,7 @@ effectMap = [
     },
     'cover' => function() {
         var ttl:Float = 12;
-        var errorMessage:FlxSprite = new FlxSprite();
+        var errorMessage = new FlxSprite();
         var onEnd:(Void->Void) = function() {
             errorMessage.kill();
             errorMessages.remove(errorMessage);
@@ -404,7 +404,6 @@ effectMap = [
         var noIcon:Bool = false;
         var alwaysEnd:Bool = true;
 
-        var errorMessage = new FlxSprite();
         var random = FlxG.random.int(0, 14);
         var randomPosition:Bool = true;
 
@@ -1883,16 +1882,20 @@ public function doEffect(effect:String)
             ArchPopup.startPopupCustom('You Used A Shield!', '-1 Shield ( ' + activeItems[0] + ' Left)', 'archWhite');
         }
 
-        if (activeItems[1] == 1)
+        if (activeItems[1] >= 1)
         {
-            activeItems[1] = 0;
+            activeItems[1] -= 1;
 			if (activeItems[0] > 0 && health <= 0)
 			{
 				health = 1;
 				activeItems[0]--;
 				ArchPopup.startPopupCustom('You Used A Shield!', '-1 Shield ( ' + activeItems[0] + ' Left)', 'archColor');
 			}
-			else die();
+			else 
+            {
+                die();
+                COD.setCOD(null, 'Blue Balls Curse\n[pause:0.2](Better luck next time!)');
+            }
         }
 
         if (drainHealth)

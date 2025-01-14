@@ -80,6 +80,9 @@ class APEntryState extends FlxState
 	public static var unlockable:Array<String> = [];
 	public static var inArchipelagoMode:Bool = false;
 	public static var lowFilterAmount:Float = 1;
+	public static var deathLink:Bool = false;
+	public static var victorySong:String = '???';
+	public static var fullSongCount:Int = 1;
 
 	var fileDialog:FileDialogHandler = new FileDialogHandler();
 	var bpmTxt:FlxText;
@@ -373,6 +376,9 @@ class APEntryState extends FlxState
 		ap.onSlotRefused.remove(onSlotRefused);
 		ap.onSocketDisconnected.remove(onSocketDisconnected);
 		ap.onSlotConnected.remove(onSlotConnected);
+		deathLink = slotData.deathlink == 0 ? false : true;
+		victorySong = slotData.victoryLocation;
+		fullSongCount = slotData.fullSongCount;
 		closeSubState();
 		inArchipelagoMode = true;
 		var FNF = new FlxSave();
@@ -557,6 +563,7 @@ class APEntryState extends FlxState
 		FlxG.save.data.storyDifficulty = null;
 		FlxG.save.data.songPos = null;
 		FlxG.save.flush();
+		apGame.info().GetDataPackage(['Friday Night Funkin']);
 		FlxG.switchState(new archipelago.APCategoryState(apGame, ap));
 	}
 

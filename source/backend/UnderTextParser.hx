@@ -90,7 +90,7 @@ class UnderTextParser extends FlxTypeText {
 
         for (sound in soundOnChars.keys())
         {
-            if (soundOnChars.get(sound) != null && soundOnChars.get(sound).playing && _finalText.charAt(_length) == sound)
+            if (soundOnChars.get(sound) != null && soundOnChars.get(sound).playing && _finalText.charAt(_length).toLowerCase() == sound)
             {
                 soundOnChars.get(sound).play();
             }

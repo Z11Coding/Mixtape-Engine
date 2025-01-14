@@ -158,15 +158,9 @@ class APGameState {
 				case "player_id":
 					theMessageFM += _ap.get_player_alias(Std.parseInt(message.text));
 				case "item_id":
-					if (_ap.get_player_game(message.player) != "Friday Night Funkin")
-						theMessageFM += _ap.get_item_name(Std.parseInt(message.text), _ap.get_player_game(message.player));
-					else
-						theMessageFM += APInfo.locationIDSongList.get(Std.parseInt(message.text));
+					theMessageFM += _ap.get_item_name(Std.parseInt(message.text), _ap.get_player_game(message.player));
 				case "location_id":
-					if (_ap.get_player_game(message.player) != "Friday Night Funkin")
-						theMessageFM += _ap.get_location_name(Std.parseInt(message.text), _ap.get_player_game(message.player));
-					else
-						theMessageFM += APInfo.locationIDSongList.get(Std.parseInt(message.text));
+					theMessageFM += _ap.get_location_name(Std.parseInt(message.text), _ap.get_player_game(message.player));
 				default:
 					theMessageFM += message.text;
 			}
@@ -184,13 +178,16 @@ class APGameState {
 
     function addSongs(song:Array<NetworkItem>)
 	{
-		if (APInfo.locationIDSongList.get(song[0].location) != null)
-		{
-			ArchPopup.startPopupSong(APInfo.locationIDSongList.get(song[0].location), 'archColor');
-			//states.FreeplayState.curUnlocked.push(APInfo.itemIDSongList.get(song[0].location));
-			//if (states.FreeplayState.instance != null) states.FreeplayState.instance.reloadSongs(true);
-			trace("Unlocked: "+APInfo.locationIDSongList.get(song[0].location));
-		}
+        for (songName in song)
+        {
+            if (!states.FreeplayState.curUnlocked.contains(info().get_item_name(songName.item)))
+            {
+                ArchPopup.startPopupSong(info().get_item_name(songName.item), 'archColor');
+                //states.FreeplayState.curUnlocked.push(APInfo.itemIDSongList.get(song[0].location));
+                //if (states.FreeplayState.instance != null) states.FreeplayState.instance.reloadSongs(true);
+                trace("Unlocked: "+info().get_item_name(songName.item));
+            }
+        }
 	}
 
     // public function onRoomInfo(roomInfo:RoomInfoPacket)

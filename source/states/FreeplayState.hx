@@ -105,7 +105,7 @@ class FreeplayState extends MusicBeatState
 			lastCategory = CategoryState.loadWeekForce;
 		} 
 
-		if (APEntryState.apGame != null && APEntryState.apGame.info() != null) {
+		/*if (APEntryState.apGame != null && APEntryState.apGame.info() != null) {
 			//APEntryState.apGame.info().Sync();
 			trace(APEntryState.apGame.info().checkedLocations);
 			for (checkID in APEntryState.apGame.info().checkedLocations)
@@ -113,7 +113,7 @@ class FreeplayState extends MusicBeatState
 				if (!curUnlocked.contains(APInfo.locationIDSongList.get(checkID)))
 				{
 					trace('adding missing song: ' + APInfo.locationIDSongList.get(checkID));
-					trace('Song name in acrhipelago: ' + APEntryState.apGame.info().get_location_name(checkID));
+					trace('Song name in acrhipelago: ' + APEntryState.apGame.info().get_location_name(APEntryState.apGame.info().get_location_id(APInfo.locationIDSongList.get(checkID))));
 					trace('song ID: ' + checkID);
 					if (APInfo.locationIDSongList.exists(checkID))
 					{
@@ -124,7 +124,7 @@ class FreeplayState extends MusicBeatState
 					}
 				}
 			}
-		}
+		}*/
 		Highscore.reloadModifiers();
 		//Paths.clearStoredMemory();
 		//Paths.clearUnusedMemory();

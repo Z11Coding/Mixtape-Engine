@@ -50,6 +50,9 @@ class APInfo {
 	public static var itemIDSongList:Map<Int, String> = [];
 	public static var itemIDSongList2:Map<Int, String> = [];
 
+	public static var cataList:yutautil.CatagorizedMap<Array<Int>>;
+
+
     public static function giveSongsID(songList:Array<String>) {
         var id = 28;
 		var id2 = 51;
@@ -60,7 +63,10 @@ class APInfo {
 			locationIDSongList.set(baseIDCode + id, song);
 			trace('Song Item Name: '+ song + "\nSong Item ID: " + baseIDCode + id2);
             itemSongIDList.set(song, baseIDCode + id2);
-			itemIDSongList.set(baseIDCode + (id2 > 0 ? id2 : 0), song);
+			itemIDSongList.set(baseIDCode + id2, song);
+
+			//cataList.add(song, [baseIDCode + id, baseIDCode + id2]);
+
 			id++;
 			id2++;
         }
