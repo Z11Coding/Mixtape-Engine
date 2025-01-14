@@ -470,7 +470,7 @@ class Client {
 	public function set_data_package(data:Dynamic) {
 		// TODO: APDataPackageStore??
 		trace("Setting data package");
-		if (!dataPackageValid && data.games) {
+		if (!dataPackageValid && data.games.toArray().length > 0) {
 			_dataPackage = data;
 			for (game => gamedata in _dataPackage.games) {
 				_dataPackage.games[game] = gamedata;
@@ -485,7 +485,7 @@ class Client {
 					_gameLocations[game][locationId] = locationName;
 				}
 			}
-		}
+		} else trace("Data package failed...");
 		trace("Data package set");
 		trace(_dataPackage);
 	}
@@ -923,27 +923,27 @@ class Client {
 			process_queue();
 
 
-		var needDataPackage = if (_gotDataPackage) false else true;
-		try {
-			if (_ws != null && (_dataPackage.games[game] == null || _dataPackage == null || _dataPackage.games == null || _dataPackage.games[game].location_name_to_id == null || _dataPackage.games[game].item_name_to_id == null)) {
-				for (packets in _sendQueue) {
-					if (Reflect.hasField(packets, "cmd") && Reflect.field(packets, "cmd") == "GetDataPackage") {
-						needDataPackage = false;
-						break;
-					}
-				}
-				if (needDataPackage) {
-					GetDataPackage(
-						game == "Friday Night Funkin" ? ["Friday Night Funkin"] : null
-					);
-				}
-			} else {
-				needDataPackage = false;
-			}
-		} catch (e:Dynamic) {
-			trace("Error in poll: " + e + " while trying to get data package");
-			// _hOnThrow("poll", e);
-		}
+		// var needDataPackage = if (_gotDataPackage) false else true;
+		// try {
+		// 	if (_ws != null && (_dataPackage.games[game] == null || _dataPackage == null || _dataPackage.games == null || _dataPackage.games[game].location_name_to_id == null || _dataPackage.games[game].item_name_to_id == null)) {
+		// 		for (packets in _sendQueue) {
+		// 			if (Reflect.hasField(packets, "cmd") && Reflect.field(packets, "cmd") == "GetDataPackage") {
+		// 				needDataPackage = false;
+		// 				break;
+		// 			}
+		// 		}
+		// 		if (needDataPackage) {
+		// 			GetDataPackage(
+		// 				game == "Friday Night Funkin" ? ["Friday Night Funkin"] : null
+		// 			);
+		// 		}
+		// 	} else {
+		// 		needDataPackage = false;
+		// 	}
+		// } catch (e:Dynamic) {
+		// 	trace("Error in poll: " + e + " while trying to get data package");
+		// 	// _hOnThrow("poll", e);
+		// }
 
 
 		if (state < State.SOCKET_CONNECTED) {
@@ -1233,36 +1233,9 @@ class Client {
 						GetDataPackage(cast gamess);
 					}else
 						trace("DataPackage up to date");
-						GetDataPackage(games.toArray());
-						trace(_dataPackage);
-				// 		trace(games);
-				// 		function data() {
-				// 			var gamePackages:Map<String, DataPackageObject> = [];
-				// 			for (game in games.toArray()) {
-				// 				trace("Fetching data for game: " + game);
-				// 				var currentData = _dataPackage;
-				// 				var theGame:String = game;
-				// 				GetDataPackage([theGame]);
-				// 				while (_dataPackage == currentData) {
-				// 					// Wait for _dataPackage to change
-				// 					Sys.sleep(0.1);
-				// 				}
-				// 				gamePackages.set(game, _dataPackage);
-				// 			}
-				// 			var gameData = new DynamicAccess<GameData>();
-				// 			for (games => packages in gamePackages) {
-				// 				gameData.set(games, packages.games[games]);
-				// 			}
+						// GetDataPackage(games.toArray());
+						// trace(_dataPackage);
 
-				// 			APGameState.currentPackages = gameData;
-				// 			trace("Game Data: " + gameData);
-				// 		}
-
-				// backend.Threader.runInThread(data(), "DataPackageFetcher");
-
-					
-
-					
 
 
 					
@@ -1303,6 +1276,40 @@ class Client {
 						for (asHint => ids in scouts)
 							LocationScouts(ids.toArray(), asHint);
 					}
+
+					trace(players);
+					function data() {
+						var gamePackages:Map<String, DataPackageObject> = [];
+						for (game in players.mapT(function(p) return get_player_game(p.slot)).toIterable()) {
+							trace("Fetching data for game: " + game);
+							var currentData = _dataPackage;
+							var theGame:String = game;
+							GetDataPackage([theGame]);
+							while (_dataPackage == currentData) {
+								// Wait for _dataPackage to change
+								Sys.sleep(0.1);
+							}
+							gamePackages.set(game, _dataPackage);
+						}
+						var gameData = new DynamicAccess<GameData>();
+						for (games => packages in gamePackages) {
+							gameData.set(games, packages.games[games]);
+						}
+
+						APGameState.currentPackages = gameData;
+						trace("Game Data: " + gameData);
+
+						var data:DataPackageObject = {
+							games: gameData,
+						};
+						_dataPackage = data;
+					}
+
+			backend.Threader.runInThread(data(), "DataPackageFetcher");
+
+				
+
+				
 
 					_hOnSlotConnected(slot_data);
 					_hOnLocationChecked(checked_locations);
