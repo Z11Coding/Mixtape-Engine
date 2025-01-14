@@ -936,7 +936,6 @@ class Client {
 					GetDataPackage(
 						game == "Friday Night Funkin" ? ["Friday Night Funkin"] : null
 					);
-					_gotDataPackage = true;
 				}
 			} else {
 				needDataPackage = false;
@@ -1345,6 +1344,8 @@ class Client {
 					trace('Data Package:' + data);
 					dataPackageValid = true;
 					_hOnDataPackageChanged(_dataPackage);
+					_gotDataPackage = true;
+
 
 				case Print(text): // NOTE: no longer present in spec
 					_hOnPrint(text);
