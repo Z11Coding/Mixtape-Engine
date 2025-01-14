@@ -1,5 +1,6 @@
 package archipelago;
 
+import states.FreeplayState;
 import backend.modules.SyncUtils;
 #if sys
 import sys.FileSystem;
@@ -26,6 +27,7 @@ import yaml.Renderer;
 import yaml.Parser;
 import flash.net.FileFilter;
 import archipelago.PacketTypes.JSONMessagePart;
+import archipelago.PacketTypes.NetworkItem;
 
 typedef APSettings =
 {
@@ -115,7 +117,7 @@ class APEntryState extends FlxState
 		swagShader = new ColorSwap();
 
 		if (APSettingsSubState.globalSongList.length <= 0)
-			APSettingsSubState.generateSongList('A');
+			APSettingsSubState.generateSongList('Test');
 
 		// TODO: save last game's settings as default; Reset button to return to base default
 		var FNF = new FlxSave();
@@ -373,6 +375,7 @@ class APEntryState extends FlxState
 		ap.onSlotConnected.remove(onSlotConnected);
 		ap.onPrintJSON.add(sendMessage);
 		ap.onPrint.add(sendMessageSimple);
+		ap.onItemsReceived.add(addSongs);
 		closeSubState();
 		inArchipelagoMode = true;
 		var FNF = new FlxSave();
@@ -390,9 +393,41 @@ class APEntryState extends FlxState
 		runArch();
 	}
 
+	function addSongs(song:Array<NetworkItem>)
+	{
+		if (APInfo.itemIDSongList.get(song[0].location) != null)
+		{
+			ArchPopup.startPopupSong(APInfo.itemIDSongList.get(song[0].location), 'archColor');
+			states.FreeplayState.curUnlocked.push(APInfo.itemIDSongList.get(song[0].location));
+			//if (states.FreeplayState.instance != null) states.FreeplayState.instance.reloadSongs(true);
+			trace("Unlocked: "+APInfo.itemIDSongList.get(song[0].location));
+		}
+	}
+
 	function sendMessage(data:Array<JSONMessagePart>, item:Dynamic, receiving:Dynamic)
 	{
-		archipelago.console.MainTab.addMessage(data[0].text);
+		var theMessageFM:String = "";
+		for (message in data)
+		{
+			switch (message.type)
+			{
+				case "player_id":
+					theMessageFM += ap.get_player_alias(Std.parseInt(message.text));
+				case "item_id":
+					if (ap.get_player_game(message.player) != "Friday Night Funkin")
+						theMessageFM += ap.get_item_name(Std.parseInt(message.text), ap.get_player_game(message.player));
+					else
+						theMessageFM += APInfo.itemIDSongList.get(Std.parseInt(message.text));
+				case "location_id":
+					if (ap.get_player_game(message.player) != "Friday Night Funkin")
+						theMessageFM += ap.get_location_name(Std.parseInt(message.text), ap.get_player_game(message.player));
+					else
+						theMessageFM += APInfo.locationIDSongList.get(Std.parseInt(message.text));
+				default:
+					theMessageFM += message.text;
+			}
+		}
+		archipelago.console.MainTab.addMessage(theMessageFM);
 		trace(data[0].text);
 		trace(data);
 	}
@@ -558,7 +593,10 @@ class APEntryState extends FlxState
 		WeekData.reloadWeekFiles(false);
 		unlockable = APSettingsSubState.globalSongList;
 		APInfo.giveSongsID(APSettingsSubState.globalSongList);
-		trace(APInfo.songIDList.toString());
+		trace(APInfo.locationSongIDList.toString());
+		trace(APInfo.itemSongIDList.toString());
+		if (!FreeplayState.curUnlocked.contains(gameSettings.starting_song)) 
+			FreeplayState.curUnlocked.push(gameSettings.starting_song);
 		FlxG.save.data.closeDuringOverRide = false;
 		FlxG.save.data.manualOverride = false;
 		FlxG.save.data.storyWeek = null;
@@ -568,7 +606,7 @@ class APEntryState extends FlxState
 		FlxG.save.data.storyDifficulty = null;
 		FlxG.save.data.songPos = null;
 		FlxG.save.flush();
-		MusicBeatState.switchState(new archipelago.APCategoryState(apGame, ap));
+		FlxG.switchState(new archipelago.APCategoryState(apGame, ap));
 	}
 
 	override function update(elapsed:Float)

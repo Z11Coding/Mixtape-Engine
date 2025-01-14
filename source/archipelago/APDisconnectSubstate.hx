@@ -23,7 +23,7 @@ class APDisconnectSubstate extends FlxSubState
 	{
 		super(FlxColor.fromRGBFloat(0, 0, 0, .5));
 		_ap = ap;
-
+		Cursor.show();
 	}
 
 	public function setSeed(seed:String):Void {
@@ -72,7 +72,7 @@ class APDisconnectSubstate extends FlxSubState
 
 	override function create()
 	{
-		var dcText = new FlxText(0, 0, 0, "Disconnected", 20);
+		var dcText = new FlxText(0, 0, 0, "Disconnected! Attempting to Reconnect...\n(It might lag a bit. Don't worry, that's normal!)", 20);
 		dcText.color = FlxColor.WHITE;
 
 		var dcCaption = new FlxText(0, 0, 0, 
@@ -91,7 +91,7 @@ class APDisconnectSubstate extends FlxSubState
 
         var backdrop = new FlxSprite(-11, -11);
 		backdrop.makeGraphic(Math.round(dcText.width + 22), Math.round(dcText.height + cancelButton.height + 27), FlxColor.TRANSPARENT);
-		backdrop.drawRoundRect(1, 1, backdrop.width - 2, backdrop.height - 2, 20, 20, FlxColor.BLACK, {color: FlxColor.WHITE, thickness: 3});
+		backdrop.drawRoundRect(1, 1, dcCaption.width - 2, dcCaption.height - 2, 20, 20, FlxColor.BLACK, {color: FlxColor.WHITE, thickness: 3});
 		backdrop.screenCenter();
 		for (item in [dcText, dcCaption, cancelButton])
 			item.screenCenter(X);
