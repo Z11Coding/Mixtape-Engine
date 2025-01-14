@@ -1,5 +1,6 @@
 package archipelago;
 
+import haxe.DynamicAccess;
 import states.FreeplayState;
 import yutautil.MemoryHelper;
 import flixel.FlxState;
@@ -100,6 +101,8 @@ class APGameState {
     private var _saveData:yutautil.save.MixSaveWrapper;
     public var connected(get, never):Bool;
 
+    public static var currentPackages:DynamicAccess<GameData> = new DynamicAccess<GameData>();
+
     public var itemManager(get, set):Dynamic;    
     function get_itemManager():Dynamic {
         return null;
@@ -137,15 +140,27 @@ class APGameState {
         _ap.onPrintJSON.add(sendMessage);
 		_ap.onPrint.add(sendMessageSimple);
 		_ap.onItemsReceived.add(addSongs);
+        // _ap.onConnect.add(function() {
+        //     _ap.clientStatus = ClientStatus.CONNECTED;
+        // });
 
 		// _ap.onRoomInfo.add(onRoomInfo);
 		// _ap.onSlotRefused.add(onSlotRefused);
-		// _ap.onSlotConnected.add(onSlotConnected);
+		_ap.onSlotConnected.add(onSlotConnected);
+        
+
+
     }
 
     public function info()
     {
         return _ap;
+    }
+
+    function onSlotConnected(slotData:Dynamic)
+    {
+        if (slotData.deathlink)
+            _ap.tags.push("DeathLink");
     }
 
     function sendMessage(data:Array<JSONMessagePart>, item:Dynamic, receiving:Dynamic)
