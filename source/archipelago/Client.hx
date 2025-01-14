@@ -1279,6 +1279,7 @@ class Client {
 						data.games[game] = gameData;
 					dataPackageValid = false;
 					set_data_package(data);
+					trace('Data Package:' + data);
 					dataPackageValid = true;
 					_hOnDataPackageChanged(_dataPackage);
 

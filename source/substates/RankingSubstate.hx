@@ -153,19 +153,19 @@ class RankingSubstate extends MusicBeatSubstate
 				    Mods.loadTopMod();
 				    FlxG.sound.playMusic(Paths.music('panixPress'));
 					TransitionState.transitionState(states.FreeplayState, {transitionType: "stickers"});
-					trace(APEntryState.apGame.info().LocationChecks([APInfo.itemSongIDList.get(PlayState.SONG.song)]));
-					trace(APEntryState.apGame.info().get_location_id(PlayState.SONG.song));
-					trace(APInfo.itemSongIDList.get(PlayState.SONG.song));
-					trace(PlayState.SONG.song);
 				case "APFreeplay":	
 					trace('WENT BACK TO ARCHIPELAGO FREEPLAY??');
 				    Mods.loadTopMod();
 				    FlxG.sound.playMusic(Paths.music('panixPress'));
 					TransitionState.transitionState(states.FreeplayState, {transitionType: "stickers"});
 					APEntryState.apGame.info().Sync();
-					trace(APEntryState.apGame.info().LocationChecks([APInfo.locationSongIDList.get(PlayState.SONG.song)]));
-					trace(APEntryState.apGame.info().get_location_id(PlayState.SONG.song));
-					trace(APInfo.itemSongIDList.get(PlayState.SONG.song));
+					var itemID = APInfo.locationSongIDList.get(PlayState.SONG.song)[1];
+					trace(itemID);
+					var songID = APInfo.itemIDSongList.get(itemID);
+					trace(songID);
+					trace(APEntryState.apGame.info().LocationChecks([APInfo.locationSongIDList.get(songID)[0]]));
+					trace(APEntryState.apGame.info().get_location_name(APInfo.locationSongIDList.get(PlayState.SONG.song)[0]));
+					trace(APInfo.locationSongIDList.get(PlayState.SONG.song)[1]);
 					trace(PlayState.SONG.song);
 			}
 		}

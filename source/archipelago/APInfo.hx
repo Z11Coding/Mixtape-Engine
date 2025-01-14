@@ -44,30 +44,25 @@ class APInfo {
 	];
 
     public static final baseIDCode:Int = 6900000;
-    public static var locationSongIDList:Map<String, Int> = [];
+    public static var locationSongIDList:Map<String, Array<Int>> = [];
 	public static var locationIDSongList:Map<Int, String> = [];
 	public static var itemSongIDList:Map<String, Int> = [];
 	public static var itemIDSongList:Map<Int, String> = [];
+	public static var itemIDSongList2:Map<Int, String> = [];
 
     public static function giveSongsID(songList:Array<String>) {
         var id = 28;
+		var id2 = 51;
         for (song in songList)
         {
 			trace('Song Location Name: '+ song + "\nSong Location ID: " + baseIDCode + id);
-            locationSongIDList.set(song, baseIDCode + (id > 0 ? id : 0));
+            locationSongIDList.set(song, [baseIDCode + id, baseIDCode + id2]);
 			locationIDSongList.set(baseIDCode + id, song);
-            id++;
+			trace('Song Item Name: '+ song + "\nSong Item ID: " + baseIDCode + id2);
+            itemSongIDList.set(song, baseIDCode + id2);
+			itemIDSongList.set(baseIDCode + (id2 > 0 ? id2 : 0), song);
+			id++;
+			id2++;
         }
-
-		id = 50;
-		for (song in songList)
-        {
-			trace('Song Item Name: '+ song + "\nSong Item ID: " + baseIDCode + id);
-            itemSongIDList.set(song, baseIDCode + id);
-			itemIDSongList.set(baseIDCode + (id > 0 ? id : 0), song);
-            id++;
-        }
-
     }
-
 }

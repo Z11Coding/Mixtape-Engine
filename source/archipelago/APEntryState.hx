@@ -373,9 +373,6 @@ class APEntryState extends FlxState
 		ap.onSlotRefused.remove(onSlotRefused);
 		ap.onSocketDisconnected.remove(onSocketDisconnected);
 		ap.onSlotConnected.remove(onSlotConnected);
-		ap.onPrintJSON.add(sendMessage);
-		ap.onPrint.add(sendMessageSimple);
-		ap.onItemsReceived.add(addSongs);
 		closeSubState();
 		inArchipelagoMode = true;
 		var FNF = new FlxSave();
@@ -391,51 +388,6 @@ class APEntryState extends FlxState
 		//FlxG.switchState(new APGameState(ap, slotData));
 		apGame = new APGameState(ap, slotData);
 		runArch();
-	}
-
-	function addSongs(song:Array<NetworkItem>)
-	{
-		if (APInfo.itemIDSongList.get(song[0].location) != null)
-		{
-			ArchPopup.startPopupSong(APInfo.itemIDSongList.get(song[0].location), 'archColor');
-			states.FreeplayState.curUnlocked.push(APInfo.itemIDSongList.get(song[0].location));
-			//if (states.FreeplayState.instance != null) states.FreeplayState.instance.reloadSongs(true);
-			trace("Unlocked: "+APInfo.itemIDSongList.get(song[0].location));
-		}
-	}
-
-	function sendMessage(data:Array<JSONMessagePart>, item:Dynamic, receiving:Dynamic)
-	{
-		var theMessageFM:String = "";
-		for (message in data)
-		{
-			switch (message.type)
-			{
-				case "player_id":
-					theMessageFM += ap.get_player_alias(Std.parseInt(message.text));
-				case "item_id":
-					if (ap.get_player_game(message.player) != "Friday Night Funkin")
-						theMessageFM += ap.get_item_name(Std.parseInt(message.text), ap.get_player_game(message.player));
-					else
-						theMessageFM += APInfo.itemIDSongList.get(Std.parseInt(message.text));
-				case "location_id":
-					if (ap.get_player_game(message.player) != "Friday Night Funkin")
-						theMessageFM += ap.get_location_name(Std.parseInt(message.text), ap.get_player_game(message.player));
-					else
-						theMessageFM += APInfo.locationIDSongList.get(Std.parseInt(message.text));
-				default:
-					theMessageFM += message.text;
-			}
-		}
-		archipelago.console.MainTab.addMessage(theMessageFM);
-		trace(data[0].text);
-		trace(data);
-	}
-
-	function sendMessageSimple(text:Dynamic)
-	{
-		archipelago.console.MainTab.addMessage(text);
-		trace(text);
 	}
 
 	public static function installAPWorld():Void
@@ -594,7 +546,6 @@ class APEntryState extends FlxState
 		unlockable = APSettingsSubState.globalSongList;
 		APInfo.giveSongsID(APSettingsSubState.globalSongList);
 		trace(APInfo.locationSongIDList.toString());
-		trace(APInfo.itemSongIDList.toString());
 		if (!FreeplayState.curUnlocked.contains(gameSettings.starting_song)) 
 			FreeplayState.curUnlocked.push(gameSettings.starting_song);
 		FlxG.save.data.closeDuringOverRide = false;

@@ -132,7 +132,11 @@ class APGameState {
         _disconnectSubstate.setSeed(_seed);
         _disconnectSubstate.onCancel.add(onCancel);
         _disconnectSubstate.onReconnect.add(onReconnect);
+
         _ap.onSocketDisconnected.add(onSocketDisconnected);
+        _ap.onPrintJSON.add(sendMessage);
+		_ap.onPrint.add(sendMessageSimple);
+		_ap.onItemsReceived.add(addSongs);
 
 		// _ap.onRoomInfo.add(onRoomInfo);
 		// _ap.onSlotRefused.add(onSlotRefused);
@@ -143,6 +147,51 @@ class APGameState {
     {
         return _ap;
     }
+
+    function sendMessage(data:Array<JSONMessagePart>, item:Dynamic, receiving:Dynamic)
+	{
+		var theMessageFM:String = "";
+		for (message in data)
+		{
+			switch (message.type)
+			{
+				case "player_id":
+					theMessageFM += _ap.get_player_alias(Std.parseInt(message.text));
+				case "item_id":
+					if (_ap.get_player_game(message.player) != "Friday Night Funkin")
+						theMessageFM += _ap.get_item_name(Std.parseInt(message.text), _ap.get_player_game(message.player));
+					else
+						theMessageFM += APInfo.locationIDSongList.get(Std.parseInt(message.text));
+				case "location_id":
+					if (_ap.get_player_game(message.player) != "Friday Night Funkin")
+						theMessageFM += _ap.get_location_name(Std.parseInt(message.text), _ap.get_player_game(message.player));
+					else
+						theMessageFM += APInfo.locationIDSongList.get(Std.parseInt(message.text));
+				default:
+					theMessageFM += message.text;
+			}
+		}
+		archipelago.console.MainTab.addMessage(theMessageFM);
+		trace(data[0].text);
+		trace(data);
+	}
+
+	function sendMessageSimple(text:Dynamic)
+	{
+		archipelago.console.MainTab.addMessage(text);
+		trace(text);
+	}
+
+    function addSongs(song:Array<NetworkItem>)
+	{
+		if (APInfo.locationIDSongList.get(song[0].location) != null)
+		{
+			ArchPopup.startPopupSong(APInfo.locationIDSongList.get(song[0].location), 'archColor');
+			//states.FreeplayState.curUnlocked.push(APInfo.itemIDSongList.get(song[0].location));
+			//if (states.FreeplayState.instance != null) states.FreeplayState.instance.reloadSongs(true);
+			trace("Unlocked: "+APInfo.locationIDSongList.get(song[0].location));
+		}
+	}
 
     // public function onRoomInfo(roomInfo:RoomInfoPacket)
     // {

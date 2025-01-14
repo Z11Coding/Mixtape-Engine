@@ -5988,7 +5988,7 @@ class PlayState extends MusicBeatState
 
 		if (!inCutscene && !paused && !freezeCamera)
 		{
-			FlxG.camera.followLerp = 2.4 * cameraSpeed * playbackRate;
+			FlxG.camera.followLerp = 0.1 * cameraSpeed * playbackRate;
 			if (!startingSong && !endingSong && boyfriend.getAnimationName().startsWith('idle'))
 			{
 				boyfriendIdleTime += elapsed;
@@ -8873,7 +8873,7 @@ class PlayState extends MusicBeatState
 				{
 					camHUD.alpha -= 1 / 10;
 				}, 10);
-				gameplayArea = APEntryState.inArchipelagoMode ? "APFreeplay" : "Freeplay";
+				gameplayArea = "Freeplay";
 				#if DISCORD_ALLOWED DiscordClient.resetClientID(); #end
 				openSubState(new substates.RankingSubstate());
 				changedDifficulty = false;

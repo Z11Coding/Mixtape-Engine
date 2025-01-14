@@ -2009,7 +2009,7 @@ public function doEffect(effect:String)
 			// For Later
 		}
         super.endSong();
-		PlayState.gameplayArea = "Freeplay";
+		PlayState.gameplayArea = "APFreeplay";
         paused = true;
 		openSubState(new substates.RankingSubstate());
         return true; //why does endsong need this?????

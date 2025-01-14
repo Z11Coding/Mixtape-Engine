@@ -107,6 +107,7 @@ class FreeplayState extends MusicBeatState
 
 		if (APEntryState.apGame != null && APEntryState.apGame.info() != null) {
 			//APEntryState.apGame.info().Sync();
+			trace(APEntryState.apGame.info().checkedLocations);
 			for (checkID in APEntryState.apGame.info().checkedLocations)
 			{
 				if (!curUnlocked.contains(APInfo.locationIDSongList.get(checkID)))
