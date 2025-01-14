@@ -19,6 +19,7 @@ class CategoryState extends MusicBeatState
 	private var showMods:Bool = true;
 	private var showSecrets:Bool = true;
 	private var showAll:Bool = true;
+	private var softCoded:Bool = true;
 
 	//I'll softcode this eventually
 	public var menuLocks:Array<Bool> = [
@@ -42,8 +43,9 @@ class CategoryState extends MusicBeatState
 
 	// TODO: later, change to OneOfTwo<Array<String>, Map<String, Void -> Bool>> for categories, so it specifies that it must be one of the two types.
 
-	public function new(?categories:Dynamic, ?showmods:Bool = true, ?showsecrets:Bool = true, ?showall:Bool = true, ?h:Bool = true) {
+	public function new(?categories:Dynamic, ?showmods:Bool = true, ?showsecrets:Bool = true, ?showall:Bool = true, ?h:Bool = true, ?softCoded:Bool = true) {
 		super();
+		this.softCoded = softCoded;
 		if (categories != null) {
 			menuItems = [];
 			if (Std.is(categories, Array)) {
@@ -147,6 +149,7 @@ class CategoryState extends MusicBeatState
 			existingCategories.push(item.toLowerCase());
 		}
 
+			if (softCoded)
 		for (week in weeks) {
 			if (week.category != null && !existingCategories.contains(week.category.toLowerCase())) {
 				menuItems.push(week.category);
