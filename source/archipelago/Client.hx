@@ -59,6 +59,7 @@ class Client {
 
 	/** A copy of the Data Package used by the client. **/
 	private var _dataPackage:DataPackageObject;
+	private var _gotDataPackage = false;
 
 	/** The current server state for this client. **/
 	public var clientStatus(default, set):ClientStatus = ClientStatus.UNKNOWN;
@@ -468,6 +469,7 @@ class Client {
 	**/
 	public function set_data_package(data:Dynamic) {
 		// TODO: APDataPackageStore??
+		trace("Setting data package");
 		if (!dataPackageValid && data.games) {
 			_dataPackage = data;
 			for (game => gamedata in _dataPackage.games) {
@@ -484,6 +486,8 @@ class Client {
 				}
 			}
 		}
+		trace("Data package set");
+		trace(_dataPackage);
 	}
 
 	#if sys
@@ -917,6 +921,32 @@ class Client {
 		}
 		if (_ws != null)
 			process_queue();
+
+
+		var needDataPackage = if (_gotDataPackage) false else true;
+		try {
+			if (_ws != null && (_dataPackage.games[game] == null || _dataPackage == null || _dataPackage.games == null || _dataPackage.games[game].location_name_to_id == null || _dataPackage.games[game].item_name_to_id == null)) {
+				for (packets in _sendQueue) {
+					if (Reflect.hasField(packets, "cmd") && Reflect.field(packets, "cmd") == "GetDataPackage") {
+						needDataPackage = false;
+						break;
+					}
+				}
+				if (needDataPackage) {
+					GetDataPackage(
+						game == "Friday Night Funkin" ? ["Friday Night Funkin"] : null
+					);
+					_gotDataPackage = true;
+				}
+			} else {
+				needDataPackage = false;
+			}
+		} catch (e:Dynamic) {
+			trace("Error in poll: " + e + " while trying to get data package");
+			// _hOnThrow("poll", e);
+		}
+
+
 		if (state < State.SOCKET_CONNECTED) {
 			var t = Timer.stamp();
 			if (t - _lastSocketConnect > _socketReconnectInterval) {
@@ -1199,10 +1229,43 @@ class Client {
 							games.add(game);
 						}
 					}
-					if (!(dataPackageValid = games.length > 0))
-						GetDataPackage(games.toArray());
-					else
+					if (!(dataPackageValid = games.length > 0)){
+						var gamess = yutautil.CollectionUtils.toArray(games, String);
+						GetDataPackage(cast gamess);
+					}else
 						trace("DataPackage up to date");
+						GetDataPackage(games.toArray());
+						trace(_dataPackage);
+				// 		trace(games);
+				// 		function data() {
+				// 			var gamePackages:Map<String, DataPackageObject> = [];
+				// 			for (game in games.toArray()) {
+				// 				trace("Fetching data for game: " + game);
+				// 				var currentData = _dataPackage;
+				// 				var theGame:String = game;
+				// 				GetDataPackage([theGame]);
+				// 				while (_dataPackage == currentData) {
+				// 					// Wait for _dataPackage to change
+				// 					Sys.sleep(0.1);
+				// 				}
+				// 				gamePackages.set(game, _dataPackage);
+				// 			}
+				// 			var gameData = new DynamicAccess<GameData>();
+				// 			for (games => packages in gamePackages) {
+				// 				gameData.set(games, packages.games[games]);
+				// 			}
+
+				// 			APGameState.currentPackages = gameData;
+				// 			trace("Game Data: " + gameData);
+				// 		}
+
+				// backend.Threader.runInThread(data(), "DataPackageFetcher");
+
+					
+
+					
+
+
 					
 				case ConnectionRefused(errors):
 					_hOnSlotRefused(errors);
