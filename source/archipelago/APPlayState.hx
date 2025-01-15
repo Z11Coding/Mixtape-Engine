@@ -1760,12 +1760,12 @@ public function doEffect(effect:String)
         if (startedCountdown && deathByLink) {
             var cause:String = "";
             try {
-                if (deathLinkPacket.cause != null) cause = deathLinkPacket.cause;
+                if (deathLinkPacket.cause != null) cause = deathLinkPacket.cause + "\n[pause:0.5](Sounds like a skill issue...)";
             }
             catch(e) {}
             if (cause.trim() == "") cause = deathLinkPacket.source + " has died.\n[pause:0.5](How Unfortunate...)";
             COD.setCOD(null, cause);
-            deathByLink = false;
+            // deathByLink = false;
             die();  
         }
         #if cpp			
@@ -1995,7 +1995,9 @@ public function doEffect(effect:String)
             }
         }
         super.doDeathCheck();
-        if (health <= 0 && bfkilledcheck) APEntryState.apGame.info().sendDeathLink(COD.COD.COD);
+        if (health <= 0 && bfkilledcheck && !deathByLink) APEntryState.apGame.info().sendDeathLink(COD.COD.COD);
+
+        deathByLink = false;
         return true;
     }
 
