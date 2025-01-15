@@ -440,7 +440,7 @@ class Client {
 
 	public function sendDeathLink(COD:String) {
 		if (state == State.SLOT_CONNECTED)
-			InternalSend(Outg	oingPacket.Bounce(null,null,['DeathLink'], {time: Timer.stamp(), cause: COD, source: slot}));
+			InternalSend(OutgoingPacket.Bounce(null,null,['DeathLink'], {time: Timer.stamp(), cause: COD, source: slot}));
 	}
 
 	public inline function get_server_time()
@@ -774,10 +774,10 @@ class Client {
 				obj.games = games;
 				obj.cmd = "GetDataPackage";
 			case OutgoingPacket.Bounce(games, slots, tags, data):
-				obj.games = games;
-				obj.slots = slots;
-				obj.tags = tags;
-				obj.data = data;
+				obj.games = games != null ? games : [];
+				obj.slots = slots != null ? slots : [];
+				obj.tags = tags != null ? tags : [];
+				obj.data = data != null ? data : {};
 				obj.cmd = "Bounce";
 			case OutgoingPacket.Get(keys):
 				obj.keys = keys;
