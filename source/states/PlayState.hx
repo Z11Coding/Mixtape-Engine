@@ -608,6 +608,13 @@ class PlayState extends MusicBeatState
 
 	override public function create()
 	{
+
+		if (APEntryState.inArchipelagoMode && !(this is APPlayState))
+		{
+			FlxG.switchState(new APPlayState());
+			return;
+		}
+
 		try
 		{
 			if ((PlayState.SONG == null || PlayState.storyPlaylist.length == 0)
