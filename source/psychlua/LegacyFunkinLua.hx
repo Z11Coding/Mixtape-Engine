@@ -133,7 +133,7 @@ class LegacyFunkinLua {
 		set('isStoryMode', PlayState.isStoryMode);
 		set('difficulty', PlayState.storyDifficulty);
 
-		var difficultyName:String = CoolUtil.difficulties[PlayState.storyDifficulty];
+		var difficultyName:String = Difficulty.list[PlayState.storyDifficulty];
 		set('difficultyName', difficultyName);
 		set('difficultyPath', Paths.formatToSongPath(difficultyName));
 		set('weekRaw', PlayState.storyWeek);
@@ -161,7 +161,8 @@ class LegacyFunkinLua {
 		set('rating', 0);
 		set('ratingName', '');
 		set('ratingFC', '');
-		set('version', MainMenuState.psychEngineVersion.trim());
+		set('version', states.MainMenuState.psychEngineVersion.trim());
+		set('version', states.MainMenuState.mixtapeEngineVersion.trim());
 
 		set('inGameOver', false);
 		set('mustHitSection', false);
@@ -197,22 +198,22 @@ class LegacyFunkinLua {
 		set('gfName', PlayState.SONG.gfVersion);
 
 		// Some settings, no jokes
-		set('downscroll', ClientPrefs.downScroll);
-		set('middlescroll', ClientPrefs.middleScroll);
-		set('framerate', ClientPrefs.framerate);
-		set('ghostTapping', ClientPrefs.ghostTapping);
-		set('hideHud', ClientPrefs.hideHud);
-		set('timeBarType', ClientPrefs.timeBarType);
-		set('scoreZoom', ClientPrefs.scoreZoom);
-		set('cameraZoomOnBeat', ClientPrefs.camZooms);
-		set('flashingLights', ClientPrefs.flashing);
-		set('noteOffset', ClientPrefs.noteOffset);
-		set('healthBarAlpha', ClientPrefs.healthBarAlpha);
-		set('noResetButton', ClientPrefs.noReset);
-		set('lowQuality', ClientPrefs.lowQuality);
-		set('shadersEnabled', ClientPrefs.shaders);
+		set('downscroll', ClientPrefs.data.downScroll);
+		set('middlescroll', ClientPrefs.data.middleScroll);
+		set('framerate', ClientPrefs.data.framerate);
+		set('ghostTapping', ClientPrefs.data.ghostTapping);
+		set('hideHud', ClientPrefs.data.hideHud);
+		set('timeBarType', ClientPrefs.data.timeBarType);
+		set('scoreZoom', ClientPrefs.data.scoreZoom);
+		set('cameraZoomOnBeat', ClientPrefs.data.camZooms);
+		set('flashingLights', ClientPrefs.data.flashing);
+		set('noteOffset', ClientPrefs.data.noteOffset);
+		set('healthBarAlpha', ClientPrefs.data.healthBarAlpha);
+		set('noResetButton', ClientPrefs.data.noReset);
+		set('lowQuality', ClientPrefs.data.lowQuality);
+		set('shadersEnabled', ClientPrefs.data.shaders);
 		set('scriptName', scriptName);
-		set('currentModDirectory', Paths.currentModDirectory);
+		set('currentModDirectory', Mods.currentModDirectory);
 
 		#if windows
 		set('buildTarget', 'windows');
@@ -262,7 +263,7 @@ class LegacyFunkinLua {
 
 		// shader shit
 		Lua_helper.add_callback(lua, "initLuaShader", function(name:String, glslVersion:Int = 120) {
-			if(!ClientPrefs.shaders) return false;
+			if(!ClientPrefs.data.shaders) return false;
 
 			#if (!flash && MODS_ALLOWED && sys)
 			return initLuaShader(name, glslVersion);
@@ -273,7 +274,7 @@ class LegacyFunkinLua {
 		});
 		
 		Lua_helper.add_callback(lua, "setSpriteShader", function(obj:String, shader:String) {
-			if(!ClientPrefs.shaders) return false;
+			if(!ClientPrefs.data.shaders) return false;
 
 			#if (!flash && MODS_ALLOWED && sys)
 			if(!PlayState.instance.runtimeShaders.exists(shader) && !initLuaShader(shader))
@@ -1546,7 +1547,7 @@ class LegacyFunkinLua {
 		Lua_helper.add_callback(lua, "triggerEvent", function(name:String, arg1:Dynamic, arg2:Dynamic) {
 			var value1:String = arg1;
 			var value2:String = arg2;
-			PlayState.instance.triggerEventNote(name, value1, value2);
+			PlayState.instance.triggerEvent(name, value1, value2);
 			//trace('Triggered event: ' + name + ', ' + value1 + ', ' + value2);
 			return true;
 		});
@@ -1562,7 +1563,7 @@ class LegacyFunkinLua {
 		});
 		Lua_helper.add_callback(lua, "restartSong", function(?skipTransition:Bool = false) {
 			PlayState.instance.persistentUpdate = false;
-			PauseSubState.restartSong(skipTransition);
+			substates.PauseSubState.restartSong(skipTransition);
 			return true;
 		});
 		Lua_helper.add_callback(lua, "exitSong", function(?skipTransition:Bool = false) {
@@ -1572,21 +1573,19 @@ class LegacyFunkinLua {
 				FlxTransitionableState.skipNextTransOut = true;
 			}
 
-			PlayState.cancelMusicFadeTween();
-			CustomFadeTransition.nextCamera = PlayState.instance.camOther;
-			if(FlxTransitionableState.skipNextTransIn)
-				CustomFadeTransition.nextCamera = null;
-
 			if(PlayState.isStoryMode)
-				MusicBeatState.switchState(new StoryMenuState());
+				MusicBeatState.switchState(new states.StoryMenuState());
 			else
-				MusicBeatState.switchState(new FreeplayState());
+				MusicBeatState.switchState(new states.FreeplayState());
 
-			FlxG.sound.playMusic(Paths.music('freakyMenu'));
+			#if DISCORD_ALLOWED DiscordClient.resetClientID(); #end
+
+			FlxG.sound.playMusic(Paths.music('panixPress'));
 			PlayState.changedDifficulty = false;
 			PlayState.chartingMode = false;
 			PlayState.instance.transitioning = true;
-			WeekData.loadTheFirstEnabledMod();
+			FlxG.camera.followLerp = 0;
+			Mods.loadTopMod();
 			return true;
 		});
 		Lua_helper.add_callback(lua, "getSongPosition", function() {
@@ -1749,7 +1748,7 @@ class LegacyFunkinLua {
 			{
 				leSprite.loadGraphic(Paths.image(image));
 			}
-			leSprite.antialiasing = ClientPrefs.globalAntialiasing;
+			leSprite.antialiasing = ClientPrefs.data.globalAntialiasing;
 			PlayState.instance.modchartSprites.set(tag, leSprite);
 			leSprite.active = true;
 		});
@@ -1759,7 +1758,7 @@ class LegacyFunkinLua {
 			var leSprite:ModchartSprite = new ModchartSprite(x, y);
 
 			loadFrames(leSprite, image, spriteType);
-			leSprite.antialiasing = ClientPrefs.globalAntialiasing;
+			leSprite.antialiasing = ClientPrefs.data.globalAntialiasing;
 			PlayState.instance.modchartSprites.set(tag, leSprite);
 		});
 
@@ -1902,7 +1901,7 @@ class LegacyFunkinLua {
 					{
 						if(PlayState.instance.isDead)
 						{
-							GameOverSubstate.instance.insert(GameOverSubstate.instance.members.indexOf(GameOverSubstate.instance.boyfriend), shit);
+							substates.GameOverSubstate.instance.insert(substates.GameOverSubstate.instance.members.indexOf(substates.GameOverSubstate.instance.boyfriend), shit);
 						}
 						else
 						{
@@ -2021,7 +2020,8 @@ class LegacyFunkinLua {
 			var right:FlxColor = Std.parseInt(rightHex);
 			if(!rightHex.startsWith('0x')) right = Std.parseInt('0xff' + rightHex);
 
-			PlayState.instance.healthBar.createFilledBar(left, right);
+			PlayState.instance.healthBar.leftBar.color = left;
+			PlayState.instance.healthBar.rightBar.color = right;
 			PlayState.instance.healthBar.updateBar();
 		});
 		Lua_helper.add_callback(lua, "setTimeBarColors", function(leftHex:String, rightHex:String) {
@@ -2030,19 +2030,12 @@ class LegacyFunkinLua {
 			var right:FlxColor = Std.parseInt(rightHex);
 			if(!rightHex.startsWith('0x')) right = Std.parseInt('0xff' + rightHex);
 
-			PlayState.instance.timeBar.createFilledBar(right, left);
+			PlayState.instance.timeBar.leftBar.color = left;
+			PlayState.instance.timeBar.rightBar.color = right;
 			PlayState.instance.timeBar.updateBar();
 		});
 
 		Lua_helper.add_callback(lua, "setObjectCamera", function(obj:String, camera:String = '') {
-			/*if(PlayState.instance.modchartSprites.exists(obj)) {
-				PlayState.instance.modchartSprites.get(obj).cameras = [cameraFromString(camera)];
-				return true;
-			}
-			else if(PlayState.instance.modchartTexts.exists(obj)) {
-				PlayState.instance.modchartTexts.get(obj).cameras = [cameraFromString(camera)];
-				return true;
-			}*/
 			var real = PlayState.instance.getLuaObject(obj);
 			if(real!=null){
 				real.cameras = [cameraFromString(camera)];
@@ -2338,92 +2331,115 @@ class LegacyFunkinLua {
 
 
 		// LUA TEXTS
+		//we can get away with this because ironically enough these haven't changed
+		var game:PlayState = PlayState.instance;
 		Lua_helper.add_callback(lua, "makeLuaText", function(tag:String, text:String, width:Int, x:Float, y:Float) {
 			tag = tag.replace('.', '');
-			resetTextTag(tag);
-			var leText:ModchartText = new ModchartText(x, y, text, width);
-			PlayState.instance.modchartTexts.set(tag, leText);
+			LuaUtils.resetTextTag(tag);
+			var leText:FlxText = new FlxText(x, y, width, text, 16);
+			leText.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			leText.cameras = [game.camHUD];
+			leText.scrollFactor.set();
+			leText.borderSize = 2;
+			game.modchartTexts.set(tag, leText);
 		});
 
 		Lua_helper.add_callback(lua, "setTextString", function(tag:String, text:String) {
-			var obj:FlxText = getTextObject(tag);
+			var obj:FlxText = LuaUtils.getTextObject(tag);
 			if(obj != null)
 			{
 				obj.text = text;
 				return true;
 			}
-			luaTrace("setTextString: Object " + tag + " doesn't exist!", false, false, FlxColor.RED);
+			FunkinLua.luaTrace("setTextString: Object " + tag + " doesn't exist!", false, false, FlxColor.RED);
 			return false;
 		});
 		Lua_helper.add_callback(lua, "setTextSize", function(tag:String, size:Int) {
-			var obj:FlxText = getTextObject(tag);
+			var obj:FlxText = LuaUtils.getTextObject(tag);
 			if(obj != null)
 			{
 				obj.size = size;
 				return true;
 			}
-			luaTrace("setTextSize: Object " + tag + " doesn't exist!", false, false, FlxColor.RED);
+			FunkinLua.luaTrace("setTextSize: Object " + tag + " doesn't exist!", false, false, FlxColor.RED);
 			return false;
 		});
 		Lua_helper.add_callback(lua, "setTextWidth", function(tag:String, width:Float) {
-			var obj:FlxText = getTextObject(tag);
+			var obj:FlxText = LuaUtils.getTextObject(tag);
 			if(obj != null)
 			{
 				obj.fieldWidth = width;
 				return true;
 			}
-			luaTrace("setTextWidth: Object " + tag + " doesn't exist!", false, false, FlxColor.RED);
+			FunkinLua.luaTrace("setTextWidth: Object " + tag + " doesn't exist!", false, false, FlxColor.RED);
 			return false;
 		});
-		Lua_helper.add_callback(lua, "setTextBorder", function(tag:String, size:Int, color:String) {
-			var obj:FlxText = getTextObject(tag);
+		Lua_helper.add_callback(lua, "setTextHeight", function(tag:String, height:Float) {
+			var obj:FlxText = LuaUtils.getTextObject(tag);
 			if(obj != null)
 			{
-				var colorNum:Int = Std.parseInt(color);
-				if(!color.startsWith('0x')) colorNum = Std.parseInt('0xff' + color);
-
-				obj.borderSize = size;
-				obj.borderColor = colorNum;
+				obj.fieldHeight = height;
 				return true;
 			}
-			luaTrace("setTextBorder: Object " + tag + " doesn't exist!", false, false, FlxColor.RED);
+			FunkinLua.luaTrace("setTextHeight: Object " + tag + " doesn't exist!", false, false, FlxColor.RED);
+			return false;
+		});
+		Lua_helper.add_callback(lua, "setTextAutoSize", function(tag:String, value:Bool) {
+			var obj:FlxText = LuaUtils.getTextObject(tag);
+			if(obj != null)
+			{
+				obj.autoSize = value;
+				return true;
+			}
+			FunkinLua.luaTrace("setTextAutoSize: Object " + tag + " doesn't exist!", false, false, FlxColor.RED);
+			return false;
+		});
+		Lua_helper.add_callback(lua, "setTextBorder", function(tag:String, size:Float, color:String, ?style:String = 'outline') {
+			var obj:FlxText = LuaUtils.getTextObject(tag);
+			if(obj != null)
+			{
+				CoolUtil.setTextBorderFromString(obj, (size > 0 ? style : 'none'));
+				if(size > 0)
+					obj.borderSize = size;
+				
+				obj.borderColor = CoolUtil.colorFromString(color);
+				return true;
+			}
+			FunkinLua.luaTrace("setTextBorder: Object " + tag + " doesn't exist!", false, false, FlxColor.RED);
 			return false;
 		});
 		Lua_helper.add_callback(lua, "setTextColor", function(tag:String, color:String) {
-			var obj:FlxText = getTextObject(tag);
+			var obj:FlxText = LuaUtils.getTextObject(tag);
 			if(obj != null)
 			{
-				var colorNum:Int = Std.parseInt(color);
-				if(!color.startsWith('0x')) colorNum = Std.parseInt('0xff' + color);
-
-				obj.color = colorNum;
+				obj.color = CoolUtil.colorFromString(color);
 				return true;
 			}
-			luaTrace("setTextColor: Object " + tag + " doesn't exist!", false, false, FlxColor.RED);
+			FunkinLua.luaTrace("setTextColor: Object " + tag + " doesn't exist!", false, false, FlxColor.RED);
 			return false;
 		});
 		Lua_helper.add_callback(lua, "setTextFont", function(tag:String, newFont:String) {
-			var obj:FlxText = getTextObject(tag);
+			var obj:FlxText = LuaUtils.getTextObject(tag);
 			if(obj != null)
 			{
 				obj.font = Paths.font(newFont);
 				return true;
 			}
-			luaTrace("setTextFont: Object " + tag + " doesn't exist!", false, false, FlxColor.RED);
+			FunkinLua.luaTrace("setTextFont: Object " + tag + " doesn't exist!", false, false, FlxColor.RED);
 			return false;
 		});
 		Lua_helper.add_callback(lua, "setTextItalic", function(tag:String, italic:Bool) {
-			var obj:FlxText = getTextObject(tag);
+			var obj:FlxText = LuaUtils.getTextObject(tag);
 			if(obj != null)
 			{
 				obj.italic = italic;
 				return true;
 			}
-			luaTrace("setTextItalic: Object " + tag + " doesn't exist!", false, false, FlxColor.RED);
+			FunkinLua.luaTrace("setTextItalic: Object " + tag + " doesn't exist!", false, false, FlxColor.RED);
 			return false;
 		});
 		Lua_helper.add_callback(lua, "setTextAlignment", function(tag:String, alignment:String = 'left') {
-			var obj:FlxText = getTextObject(tag);
+			var obj:FlxText = LuaUtils.getTextObject(tag);
 			if(obj != null)
 			{
 				obj.alignment = LEFT;
@@ -2436,77 +2452,67 @@ class LegacyFunkinLua {
 				}
 				return true;
 			}
-			luaTrace("setTextAlignment: Object " + tag + " doesn't exist!", false, false, FlxColor.RED);
+			FunkinLua.luaTrace("setTextAlignment: Object " + tag + " doesn't exist!", false, false, FlxColor.RED);
 			return false;
 		});
 
 		Lua_helper.add_callback(lua, "getTextString", function(tag:String) {
-			var obj:FlxText = getTextObject(tag);
+			var obj:FlxText = LuaUtils.getTextObject(tag);
 			if(obj != null && obj.text != null)
 			{
 				return obj.text;
 			}
-			luaTrace("getTextString: Object " + tag + " doesn't exist!", false, false, FlxColor.RED);
-			Lua.pushnil(lua);
+			FunkinLua.luaTrace("getTextString: Object " + tag + " doesn't exist!", false, false, FlxColor.RED);
 			return null;
 		});
 		Lua_helper.add_callback(lua, "getTextSize", function(tag:String) {
-			var obj:FlxText = getTextObject(tag);
+			var obj:FlxText = LuaUtils.getTextObject(tag);
 			if(obj != null)
 			{
 				return obj.size;
 			}
-			luaTrace("getTextSize: Object " + tag + " doesn't exist!", false, false, FlxColor.RED);
+			FunkinLua.luaTrace("getTextSize: Object " + tag + " doesn't exist!", false, false, FlxColor.RED);
 			return -1;
 		});
 		Lua_helper.add_callback(lua, "getTextFont", function(tag:String) {
-			var obj:FlxText = getTextObject(tag);
+			var obj:FlxText = LuaUtils.getTextObject(tag);
 			if(obj != null)
 			{
 				return obj.font;
 			}
-			luaTrace("getTextFont: Object " + tag + " doesn't exist!", false, false, FlxColor.RED);
-			Lua.pushnil(lua);
+			FunkinLua.luaTrace("getTextFont: Object " + tag + " doesn't exist!", false, false, FlxColor.RED);
 			return null;
 		});
 		Lua_helper.add_callback(lua, "getTextWidth", function(tag:String) {
-			var obj:FlxText = getTextObject(tag);
+			var obj:FlxText = LuaUtils.getTextObject(tag);
 			if(obj != null)
 			{
 				return obj.fieldWidth;
 			}
-			luaTrace("getTextWidth: Object " + tag + " doesn't exist!", false, false, FlxColor.RED);
+			FunkinLua.luaTrace("getTextWidth: Object " + tag + " doesn't exist!", false, false, FlxColor.RED);
 			return 0;
 		});
 
 		Lua_helper.add_callback(lua, "addLuaText", function(tag:String) {
-			if(PlayState.instance.modchartTexts.exists(tag)) {
-				var shit:ModchartText = PlayState.instance.modchartTexts.get(tag);
-				if(!shit.wasAdded) {
-					getInstance().add(shit);
-					shit.wasAdded = true;
-					//trace('added a thing: ' + tag);
-				}
+			if(game.modchartTexts.exists(tag)) {
+				var shit:FlxText = game.modchartTexts.get(tag);
+				LuaUtils.getTargetInstance().add(shit);
 			}
 		});
 		Lua_helper.add_callback(lua, "removeLuaText", function(tag:String, destroy:Bool = true) {
-			if(!PlayState.instance.modchartTexts.exists(tag)) {
+			if(!game.modchartTexts.exists(tag)) {
 				return;
 			}
 
-			var pee:ModchartText = PlayState.instance.modchartTexts.get(tag);
+			var pee:FlxText = game.modchartTexts.get(tag);
 			if(destroy) {
 				pee.kill();
 			}
 
-			if(pee.wasAdded) {
-				getInstance().remove(pee, true);
-				pee.wasAdded = false;
-			}
-
+			LuaUtils.getTargetInstance().remove(pee, true);
 			if(destroy) {
 				pee.destroy();
-				PlayState.instance.modchartTexts.remove(tag);
+				game.modchartTexts.remove(tag);
 			}
 		});
 
@@ -2898,7 +2904,7 @@ class LegacyFunkinLua {
 	
 	function initLuaShader(name:String, ?glslVersion:Int = 120)
 	{
-		if(!ClientPrefs.shaders) return false;
+		if(!ClientPrefs.data.shaders) return false;
 
 		#if (!flash && sys)
 		if(PlayState.instance.runtimeShaders.exists(name))
@@ -2908,10 +2914,10 @@ class LegacyFunkinLua {
 		}
 
 		var foldersToCheck:Array<String> = [Paths.mods('shaders/')];
-		if(Paths.currentModDirectory != null && Paths.currentModDirectory.length > 0)
-			foldersToCheck.insert(0, Paths.mods(Paths.currentModDirectory + '/shaders/'));
+		if(Mods.currentModDirectory != null && Mods.currentModDirectory.length > 0)
+			foldersToCheck.insert(0, Paths.mods(Mods.currentModDirectory + '/shaders/'));
 
-		for(mod in Paths.getGlobalMods())
+		for(mod in Mods.getGlobalMods())
 			foldersToCheck.insert(0, Paths.mods(mod + '/shaders/'));
 		
 		for (folder in foldersToCheck)
@@ -3001,20 +3007,6 @@ class LegacyFunkinLua {
 			return;
 		}
 		Reflect.setProperty(leArray, variable, value);
-	}
-
-	function resetTextTag(tag:String) {
-		if(!PlayState.instance.modchartTexts.exists(tag)) {
-			return;
-		}
-
-		var pee:ModchartText = PlayState.instance.modchartTexts.get(tag);
-		pee.kill();
-		if(pee.wasAdded) {
-			PlayState.instance.remove(pee, true);
-		}
-		pee.destroy();
-		PlayState.instance.modchartTexts.remove(tag);
 	}
 
 	function resetSpriteTag(tag:String) {

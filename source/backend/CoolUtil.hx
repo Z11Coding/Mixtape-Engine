@@ -224,6 +224,15 @@ class CoolUtil
 		return convertedValue;
 	}
 
+	//uhhhh does this even work at all? i'm starting to doubt
+	public static function precacheSound(sound:String, ?library:String = null):Void {
+		Paths.sound(sound);
+	}
+
+	public static function precacheMusic(sound:String, ?library:String = null):Void {
+		Paths.music(sound);
+	}
+
 	public static function updateTheEngine():Void
 	{
 		// Get the directory of the executable

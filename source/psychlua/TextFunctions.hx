@@ -1,5 +1,6 @@
 package psychlua;
 import llua.State;
+import states.PlayState.LuaScript;
 class TextFunctions
 {
 	public static function implement(funk:FunkinLua)

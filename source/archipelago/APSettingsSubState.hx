@@ -330,11 +330,10 @@ class APSettingsSubState extends MusicBeatSubstate {
             Reflect.setField(yamlThing, thing, Reflect.field(APEntryState.gameSettings.FNF, thing));
         }
 
-        var mainSettings = {name: APEntryState.yamlName, description: APEntryState.gameSettings.description, game: APEntryState.gameSettings.game};
-
-		globalSongList.remove(APEntryState.gameSettings.FNF.starting_song);
+        globalSongList.remove(APEntryState.gameSettings.FNF.starting_song);
 		APEntryState.gameSettings.FNF.songList = globalSongList;
-		var document = Yaml.render(mainSettings, Renderer.options().setFlowLevel(1));
+        var mainSettings = {name: APEntryState.yamlName, description: APEntryState.gameSettings.description, game: APEntryState.gameSettings.game};
+        var document = Yaml.render(mainSettings, Renderer.options().setFlowLevel(1));
 		trace(document);
 
 

@@ -518,6 +518,103 @@ class Paths
 		return null;
 	}
 
+	/**
+	 * The older verson of the image function
+	 * @deprecated Please dont actually use this.
+	 */
+	static public function returnGraphic(key:String, ?library:String = null, ?allowGPU:Bool = false):FlxGraphic
+	{
+		try
+		{
+			if((CacheState.imageCache.getGraphic(getPath('images/$key', IMAGE, library)) != null) && !(allowGPU && ClientPrefs.data.cacheOnGPU)){
+				// trace(key + " is in the cache");
+				//trace(getPath('images/$key', IMAGE, library));
+				return CacheState.imageCache.getGraphic(getPath('images/$key', IMAGE, library));
+			}
+			else if((CacheState.imageCache.getGraphic(modsImages(key)) != null) && !(allowGPU && ClientPrefs.data.cacheOnGPU)){
+				// trace(key + " is in the mods cache");
+				//trace(getPath('images/$key', IMAGE, library));
+				return CacheState.imageCache.getGraphic(modsImages(key));
+			}
+			else
+			{
+				//if (allowGPU) trace(key + " can't be loaded due to GPU Cache being on");
+				//else 
+				// trace(key + " is NOT in the cache");
+			
+				var bitmap:BitmapData = null;
+				var file:String = null;
+
+				#if MODS_ALLOWED
+				file = modsImages(key);
+				if (currentTrackedAssets.exists(file))
+				{
+					localTrackedAssets.push(file);
+					return currentTrackedAssets.get(file);
+				}
+				else if (FileSystem.exists(file))
+					bitmap = BitmapData.fromFile(file);
+				else
+				#end
+				{
+					file = getPath('images/$key.png', IMAGE, library);
+					if (currentTrackedAssets.exists(file))
+					{
+						localTrackedAssets.push(file);
+						return currentTrackedAssets.get(file);
+					}
+					else if (OpenFlAssets.exists(file, IMAGE))
+						bitmap = OpenFlAssets.getBitmapData(file);
+				}
+
+				if (bitmap != null)
+				{
+					var retVal = cacheBitmap(file, bitmap, (allowGPU && ClientPrefs.data.cacheOnGPU));
+					if(retVal != null) return retVal;
+				}
+
+				trace('oh no its returning null NOOOO ($file)');
+			}
+		}
+		catch(e:Dynamic)
+		{
+			trace('Couldn\'t Load the image (Probably in the Cache)\nLoading from Base Image Loader...');
+			var bitmap:BitmapData = null;
+			var file:String = null;
+
+			#if MODS_ALLOWED
+			file = modsImages(key);
+			if (currentTrackedAssets.exists(file))
+			{
+				localTrackedAssets.push(file);
+				return currentTrackedAssets.get(file);
+			}
+			else if (FileSystem.exists(file))
+				bitmap = BitmapData.fromFile(file);
+			else
+			#end
+			{
+				file = getPath('images/$key.png', IMAGE, library);
+				if (currentTrackedAssets.exists(file))
+				{
+					localTrackedAssets.push(file);
+					return currentTrackedAssets.get(file);
+				}
+				else if (OpenFlAssets.exists(file, IMAGE))
+					bitmap = OpenFlAssets.getBitmapData(file);
+			}
+
+			if (bitmap != null)
+			{
+				var retVal = cacheBitmap(file, bitmap, (allowGPU && ClientPrefs.data.cacheOnGPU));
+				if(retVal != null) return retVal;
+			}
+
+			trace('oh no its returning null NOOOO ($file)');
+		}
+		return null;
+	}
+
 	public static function cacheBitmap(file:String, ?parentFolder:String = null, ?bitmap:BitmapData, ?allowGPU:Bool = false):FlxGraphic
 	{
 		if(bitmap == null)

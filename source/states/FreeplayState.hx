@@ -492,11 +492,11 @@ class FreeplayState extends MusicBeatState
 				{
 					if (refresh)
 					{
-						if (curUnlocked.contains('Small Argument'.toLowerCase()) && FlxG.save.data.gotIntoAnArgument && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
+						if (curUnlocked.contains('Small Argument'.toLowerCase())) 
 							addSong('Small Argument', 0, "gfchibi", FlxColor.fromRGB(235, 100, 161));
-						if (curUnlocked.contains('Beat Battle'.toLowerCase()) && FlxG.save.data.gotbeatbattle && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
+						if (curUnlocked.contains('Beat Battle'.toLowerCase())) 
 							addSong('Beat Battle', 0, "gf", FlxColor.fromRGB(165, 0, 77));
-						if (curUnlocked.contains('Beat Battle 2'.toLowerCase()) && FlxG.save.data.gotbeatbattle2 && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
+						if (curUnlocked.contains('Beat Battle 2'.toLowerCase())) 
 							addSong('Beat Battle 2', 0, "gf", FlxColor.fromRGB(165, 0, 77));
 					}
 					else
