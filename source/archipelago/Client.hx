@@ -438,13 +438,18 @@ class Client {
 		return clientStatus = status;
 	}
 
+	public function sendDeathLink(COD:String) {
+		if (state == State.SLOT_CONNECTED)
+			InternalSend(Outg	oingPacket.Bounce(null,null,['DeathLink'], {time: Timer.stamp(), cause: COD, source: slot}));
+	}
+
 	public inline function get_server_time()
 		return serverConnectTime + (Timer.stamp() - localConnectTime);
 
 	inline function get_tags()
 		return _tags.slice(0);
 
-	function set_tags(tags) {
+	public function set_tags(tags) {
 		ConnectUpdate(null, tags);
 		return tags;
 	}

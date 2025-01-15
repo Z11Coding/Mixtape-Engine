@@ -36,8 +36,6 @@ class ArchPopup extends openfl.display.Sprite {
 		var graphic = null;
 		var hasAntialias:Bool = ClientPrefs.data.globalAntialiasing;
 		var image:String = 'globalIcons/$image';
-		
-		unlockSong(song);
 
 		graphic = Paths.image(image);
 
@@ -79,12 +77,6 @@ class ArchPopup extends openfl.display.Sprite {
 		this.scaleY = lastScale;
 		intendedY = 20;
 	}
-
-    function unlockSong(daSong:String)
-    {
-        states.FreeplayState.curUnlocked.push(daSong);
-        APEntryState.unlockable.remove(daSong);
-    }
 
 	var bitmaps:Array<BitmapData> = [];
 	function drawTextAt(text:FlxText, str:String, textX:Float, textY:Float)

@@ -158,14 +158,6 @@ class RankingSubstate extends MusicBeatSubstate
 				    Mods.loadTopMod();
 				    FlxG.sound.playMusic(Paths.music('panixPress'));
 					TransitionState.transitionState(states.FreeplayState, {transitionType: "stickers"});
-					APEntryState.apGame.info().Sync();
-					/*var itemID = APEntryState.apGame.info().get_location_id(PlayState.SONG.song);
-					trace(itemID + ' : ' + APEntryState.apGame.info().get_location_id(itemID));
-					var songID = APInfo.locationIDSongList.get(itemID);
-					trace(songID);
-					trace('Item ID:' + APInfo.locationSongIDList.get(songID)[0]);
-					var unlockedID = APInfo.locationSongIDList.get(songID)[0];
-					trace('Song Unlocked: ' + APInfo.locationIDSongList.get(unlockedID));*/
 					trace(APEntryState.apGame.info().LocationChecks([APEntryState.apGame.info().get_location_id(PlayState.SONG.song)]));
 					trace(APEntryState.apGame.info().get_location_name(APEntryState.apGame.info().get_location_id(PlayState.SONG.song)));
 					trace(PlayState.SONG.song);

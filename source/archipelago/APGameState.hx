@@ -160,11 +160,13 @@ class APGameState {
 
     function bouncy(data:Dynamic)
     {
-        if ((data.tags == ["DeathLink"]) && !APPlayState.deathByLink)
+        if ((Reflect.hasField(data, "cause") && Reflect.hasField(data, "source") && Reflect.hasField(data, "time")) && !APPlayState.deathByLink)
         {
-            var dl:Dynamic = data.data;
+            var dl:Dynamic = data;
             APPlayState.deathLinkPacket = dl;
+            APPlayState.deathByLink = true;
         }
+        trace(data);
     }
 
     function onSlotConnected(slotData:Dynamic)
@@ -209,9 +211,11 @@ class APGameState {
             if (!states.FreeplayState.curUnlocked.contains(info().get_item_name(songName.item)))
             {
                 if (!isSync) ArchPopup.startPopupSong(info().get_item_name(songName.item), 'archColor');
-                states.FreeplayState.curUnlocked.push(APInfo.itemIDSongList.get(song[0].location));
-                //if (states.FreeplayState.instance != null) states.FreeplayState.instance.reloadSongs(true);
+                states.FreeplayState.curUnlocked.push(info().get_item_name(songName.item));
+                if (states.FreeplayState.instance != null) states.FreeplayState.instance.reloadSongs(true);
                 trace("Unlocked: "+info().get_item_name(songName.item));
+                trace(states.FreeplayState.curUnlocked);
+                trace(song);
             }
         }
         isSync = false;

@@ -412,60 +412,43 @@ class FreeplayState extends MusicBeatState
 
 	public function reloadSongs(?refresh:Bool = false)
 	{
-		grpSongs.clear();
-		songs = [];
-		iconArray = [];
-		iconList.clear();
-		
-		for (i in 0...iconArray.length)
+		if (instance != null)
 		{
-			iconArray.pop();
-		}
-
-		for (i in 0...WeekData.weeksList.length) {
-			if(weekIsLocked(WeekData.weeksList[i])) continue;
-
-			var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
-			var leSongs:Array<String> = [];
-			var leChars:Array<String> = [];
-
-			for (j in 0...leWeek.songs.length)
+			grpSongs.clear();
+			songs = [];
+			iconArray = [];
+			iconList.clear();
+			
+			for (i in 0...iconArray.length)
 			{
-				leSongs.push(leWeek.songs[j][0]);
-				leChars.push(leWeek.songs[j][1]);
+				iconArray.pop();
 			}
 
-			WeekData.setDirectoryFromWeek(leWeek);
-			for (song in leWeek.songs)
-			{
-				var categoryWhaat:String = leWeek.category;
-				var colors:Array<Int> = song[2];
-				if(colors == null || colors.length < 3)
+			for (i in 0...WeekData.weeksList.length) {
+				if(weekIsLocked(WeekData.weeksList[i])) continue;
+
+				var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
+				var leSongs:Array<String> = [];
+				var leChars:Array<String> = [];
+
+				for (j in 0...leWeek.songs.length)
 				{
-					colors = [146, 113, 253];
+					leSongs.push(leWeek.songs[j][0]);
+					leChars.push(leWeek.songs[j][1]);
 				}
-				if (categoryWhaat.toLowerCase() == CategoryState.loadWeekForce || (CategoryState.loadWeekForce == "mods" && categoryWhaat == null) || CategoryState.loadWeekForce == "all")
+
+				WeekData.setDirectoryFromWeek(leWeek);
+				for (song in leWeek.songs)
 				{
-					if (refresh)
+					var categoryWhaat:String = leWeek.category;
+					var colors:Array<Int> = song[2];
+					if(colors == null || colors.length < 3)
 					{
-						var colors:Array<Int> = song[2];
-						if(colors == null || colors.length < 3)
-						{
-							colors = [146, 113, 253];
-						}
-						if (APEntryState.inArchipelagoMode)
-						{
-							for (ii in 0...curUnlocked.length)
-							{
-								if (song[0] == curUnlocked[ii])
-									addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
-							}
-						}
-						else addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
+						colors = [146, 113, 253];
 					}
-					else
-					{	
-						if (Std.string(song[0]).toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()))
+					if (categoryWhaat.toLowerCase() == CategoryState.loadWeekForce || (CategoryState.loadWeekForce == "mods" && categoryWhaat == null) || CategoryState.loadWeekForce == "all")
+					{
+						if (refresh)
 						{
 							var colors:Array<Int> = song[2];
 							if(colors == null || colors.length < 3)
@@ -482,90 +465,110 @@ class FreeplayState extends MusicBeatState
 							}
 							else addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
 						}
+						else
+						{	
+							if (Std.string(song[0]).toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()))
+							{
+								var colors:Array<Int> = song[2];
+								if(colors == null || colors.length < 3)
+								{
+									colors = [146, 113, 253];
+								}
+								if (APEntryState.inArchipelagoMode)
+								{
+									for (ii in 0...curUnlocked.length)
+									{
+										if (song[0] == curUnlocked[ii])
+											addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
+									}
+								}
+								else addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
+							}
+						}
+					}
+				}
+
+				if (APEntryState.inArchipelagoMode)
+				{
+					if (refresh)
+					{
+						if (curUnlocked.contains('Small Argument'.toLowerCase()) && FlxG.save.data.gotIntoAnArgument && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
+							addSong('Small Argument', 0, "gfchibi", FlxColor.fromRGB(235, 100, 161));
+						if (curUnlocked.contains('Beat Battle'.toLowerCase()) && FlxG.save.data.gotbeatbattle && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
+							addSong('Beat Battle', 0, "gf", FlxColor.fromRGB(165, 0, 77));
+						if (curUnlocked.contains('Beat Battle 2'.toLowerCase()) && FlxG.save.data.gotbeatbattle2 && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
+							addSong('Beat Battle 2', 0, "gf", FlxColor.fromRGB(165, 0, 77));
+					}
+					else
+					{
+						if (curUnlocked.contains('Small Argument'.toLowerCase()) && Std.string('Small Argument').toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()) && FlxG.save.data.gotIntoAnArgument && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
+							addSong('Small Argument', 0, "gfchibi", FlxColor.fromRGB(235, 100, 161));
+						if (curUnlocked.contains('Beat Battle'.toLowerCase()) && Std.string('Beat Battle').toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()) && FlxG.save.data.gotbeatbattle && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
+							addSong('Beat Battle', 0, "gf", FlxColor.fromRGB(165, 0, 77));
+						if (curUnlocked.contains('Beat Battle 2'.toLowerCase()) && Std.string('Beat Battle 2').toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()) && FlxG.save.data.gotbeatbattle2 && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
+							addSong('Beat Battle 2', 0, "gf", FlxColor.fromRGB(165, 0, 77));
+					}
+				}
+				else
+				{
+					if (refresh)
+					{
+						if (FlxG.save.data.gotIntoAnArgument && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
+							addSong('Small Argument', 0, "gfchibi", FlxColor.fromRGB(235, 100, 161));
+						if (FlxG.save.data.gotbeatbattle && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
+							addSong('Beat Battle', 0, "gf", FlxColor.fromRGB(165, 0, 77));
+						if (FlxG.save.data.gotbeatbattle2 && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
+							addSong('Beat Battle 2', 0, "gf", FlxColor.fromRGB(165, 0, 77));
+					}
+					else
+					{
+						if (Std.string('Small Argument').toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()) && FlxG.save.data.gotIntoAnArgument && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
+							addSong('Small Argument', 0, "gfchibi", FlxColor.fromRGB(235, 100, 161));
+						if (Std.string('Beat Battle').toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()) && FlxG.save.data.gotbeatbattle && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
+							addSong('Beat Battle', 0, "gf", FlxColor.fromRGB(165, 0, 77));
+						if (Std.string('Beat Battle 2').toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()) && FlxG.save.data.gotbeatbattle2 && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
+							addSong('Beat Battle 2', 0, "gf", FlxColor.fromRGB(165, 0, 77));
 					}
 				}
 			}
-
-			if (APEntryState.inArchipelagoMode)
-			{
-				if (refresh)
-				{
-					if (curUnlocked.contains('Small Argument'.toLowerCase()) && FlxG.save.data.gotIntoAnArgument && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
-						addSong('Small Argument', 0, "gfchibi", FlxColor.fromRGB(235, 100, 161));
-					if (curUnlocked.contains('Beat Battle'.toLowerCase()) && FlxG.save.data.gotbeatbattle && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
-						addSong('Beat Battle', 0, "gf", FlxColor.fromRGB(165, 0, 77));
-					if (curUnlocked.contains('Beat Battle 2'.toLowerCase()) && FlxG.save.data.gotbeatbattle2 && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
-						addSong('Beat Battle 2', 0, "gf", FlxColor.fromRGB(165, 0, 77));
-				}
-				else
-				{
-					if (curUnlocked.contains('Small Argument'.toLowerCase()) && Std.string('Small Argument').toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()) && FlxG.save.data.gotIntoAnArgument && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
-						addSong('Small Argument', 0, "gfchibi", FlxColor.fromRGB(235, 100, 161));
-					if (curUnlocked.contains('Beat Battle'.toLowerCase()) && Std.string('Beat Battle').toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()) && FlxG.save.data.gotbeatbattle && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
-						addSong('Beat Battle', 0, "gf", FlxColor.fromRGB(165, 0, 77));
-					if (curUnlocked.contains('Beat Battle 2'.toLowerCase()) && Std.string('Beat Battle 2').toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()) && FlxG.save.data.gotbeatbattle2 && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
-						addSong('Beat Battle 2', 0, "gf", FlxColor.fromRGB(165, 0, 77));
-				}
-			}
-			else
-			{
-				if (refresh)
-				{
-					if (FlxG.save.data.gotIntoAnArgument && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
-						addSong('Small Argument', 0, "gfchibi", FlxColor.fromRGB(235, 100, 161));
-					if (FlxG.save.data.gotbeatbattle && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
-						addSong('Beat Battle', 0, "gf", FlxColor.fromRGB(165, 0, 77));
-					if (FlxG.save.data.gotbeatbattle2 && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
-						addSong('Beat Battle 2', 0, "gf", FlxColor.fromRGB(165, 0, 77));
-				}
-				else
-				{
-					if (Std.string('Small Argument').toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()) && FlxG.save.data.gotIntoAnArgument && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
-						addSong('Small Argument', 0, "gfchibi", FlxColor.fromRGB(235, 100, 161));
-					if (Std.string('Beat Battle').toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()) && FlxG.save.data.gotbeatbattle && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
-						addSong('Beat Battle', 0, "gf", FlxColor.fromRGB(165, 0, 77));
-					if (Std.string('Beat Battle 2').toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()) && FlxG.save.data.gotbeatbattle2 && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
-						addSong('Beat Battle 2', 0, "gf", FlxColor.fromRGB(165, 0, 77));
-				}
-			}
-		}
-		
-		for (i in 0...songs.length)
-		{
-			var songText:Alphabet = new Alphabet(90, 320, songs[i].songName, true);
-			songText.targetY = i;
-			grpSongs.add(songText);
-
-			songText.scaleX = Math.min(1, 980 / songText.width);
-			songText.snapToPosition();
-
-			Mods.currentModDirectory = songs[i].folder;
-			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
-			icon.sprTracker = songText;
-
 			
-			// too laggy with a lot of songs, so i had to recode the logic for it
-			songText.visible = songText.active = songText.isMenuItem = false;
-			icon.visible = icon.active = false;
+			for (i in 0...songs.length)
+			{
+				var songText:Alphabet = new Alphabet(90, 320, songs[i].songName, true);
+				songText.targetY = i;
+				grpSongs.add(songText);
 
-			// using a FlxGroup is too much fuss!
-			// but over on mixtape engine we do arrays better
-			iconArray.push(icon);
-			iconList.add(icon);
+				songText.scaleX = Math.min(1, 980 / songText.width);
+				songText.snapToPosition();
 
-			// songText.x += 40;
-			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
-			// songText.screenCenter(X);
+				Mods.currentModDirectory = songs[i].folder;
+				var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
+				icon.sprTracker = songText;
+
+				
+				// too laggy with a lot of songs, so i had to recode the logic for it
+				songText.visible = songText.active = songText.isMenuItem = false;
+				icon.visible = icon.active = false;
+
+				// using a FlxGroup is too much fuss!
+				// but over on mixtape engine we do arrays better
+				iconArray.push(icon);
+				iconList.add(icon);
+
+				// songText.x += 40;
+				// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
+				// songText.screenCenter(X);
+			}
+			WeekData.setDirectoryFromWeek();
+			if (songs.length == -1 || songs.length == 0)
+			{
+				addSong('SONG NOT FOUND', -999, 'face', FlxColor.fromRGB(255, 255, 255));
+			}
+			changeSelection();
+			updateTexts();
+			changeDiff();
+			if (PlayState.SONG != null) Conductor.bpm = PlayState.SONG.bpm;
 		}
-		WeekData.setDirectoryFromWeek();
-		if (songs.length == -1 || songs.length == 0)
-		{
-			addSong('SONG NOT FOUND', -999, 'face', FlxColor.fromRGB(255, 255, 255));
-		}
-		changeSelection();
-		updateTexts();
-		changeDiff();
-		if (PlayState.SONG != null) Conductor.bpm = PlayState.SONG.bpm;
 	}
 
 	var instPlaying:Int = -1;
@@ -1286,6 +1289,7 @@ class FreeplayState extends MusicBeatState
 	{
 		super.destroy();
 
+		instance = null;
 		FlxG.autoPause = ClientPrefs.data.autoPause;
 		if (!FlxG.sound.music.playing && !stopMusicPlay)
 			FlxG.sound.playMusic(Paths.music('panixPress'));

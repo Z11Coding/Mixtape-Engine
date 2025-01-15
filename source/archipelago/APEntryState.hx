@@ -580,8 +580,6 @@ class APEntryState extends FlxState
 		inArchipelagoMode = true;
 		WeekData.reloadWeekFiles(false);
 		unlockable = APSettingsSubState.globalSongList;
-		APInfo.giveSongsID(APSettingsSubState.globalSongList);
-		trace(APInfo.locationSongIDList.toString());
 		if (!FreeplayState.curUnlocked.contains(gameSettings.FNF.starting_song)) 
 			FreeplayState.curUnlocked.push(gameSettings.FNF.starting_song);
 		FlxG.save.data.closeDuringOverRide = false;

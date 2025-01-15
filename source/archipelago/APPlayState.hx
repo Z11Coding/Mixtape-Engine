@@ -1758,7 +1758,13 @@ public function doEffect(effect:String)
     override public function update(elapsed:Float)
 	{
         if (startedCountdown && deathByLink) {
-            COD.setCOD(null, deathLinkPacket.cause);
+            var cause:String = "";
+            try {
+                if (deathLinkPacket.cause != null) cause = deathLinkPacket.cause;
+                if (cause.trim() == "") cause = deathLinkPacket.source + " has died.\n[pause:0.5](How Unfortunate...)";
+            }
+            catch(e) {}
+            COD.setCOD(null, cause);
             deathByLink = false;
             die();
         }
@@ -1989,6 +1995,7 @@ public function doEffect(effect:String)
             }
         }
         super.doDeathCheck();
+        if (health <= 0 && bfkilledcheck) APEntryState.apGame.info().sendDeathLink(COD.COD.COD);
         return true;
     }
 
