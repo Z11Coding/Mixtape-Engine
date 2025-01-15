@@ -87,6 +87,8 @@ typedef SpeedEvent =
 	speed:Float // speed mult after the change
 }
 
+typedef LuaScript = flixel.util.typeLimit.OneOfTwo<FunkinLua, LegacyFunkinLua>;
+
 class PlayState extends MusicBeatState
 {
 	public var delayOffset:Float = 0; // for the delay effect
@@ -403,7 +405,7 @@ class PlayState extends MusicBeatState
 	// Lua shit
 	public static var instance:PlayState;
 
-	#if LUA_ALLOWED public var luaArray:Array<FunkinLua> = []; #end
+	#if LUA_ALLOWED public var luaArray:Array<LuaScript> = []; #end
 
 	#if LUA_ALLOWED
 	private var luaDebugGroup:FlxTypedGroup<DebugLuaText>;
@@ -2221,7 +2223,7 @@ class PlayState extends MusicBeatState
 		if (doPush)
 		{
 			for (script in luaArray)
-			{
+			{  var script:Dynamic = cast(script);
 				if (script.scriptName == luaFile)
 				{
 					doPush = false;
@@ -7970,7 +7972,7 @@ class PlayState extends MusicBeatState
 				// var newStageDatas = new Array<Dynamic>();
 
 				for (lua in luaArray)
-				{
+				{ var lua:Dynamic = cast(lua);
 					if (lua.scriptName == 'stages/' + stageName + '.lua')
 					{
 						return;
@@ -10551,7 +10553,7 @@ class PlayState extends MusicBeatState
 
 		#if LUA_ALLOWED
 		for (lua in luaArray)
-		{
+		{ var lua:Dynamic = cast(lua);
 			lua.call('onDestroy', []);
 			lua.stop();
 		}
@@ -11037,9 +11039,9 @@ class PlayState extends MusicBeatState
 		if (OpenFlAssets.exists(luaToLoad))
 		#end
 		{
-			for (script in luaArray)
+			for (script in luaArray){ var script:Dynamic = cast(script);
 				if (script.scriptName == luaToLoad)
-					return false;
+					return false;}
 
 			new FunkinLua(luaToLoad);
 			return true;
@@ -11126,7 +11128,7 @@ class PlayState extends MusicBeatState
 
 		var arr:Array<FunkinLua> = [];
 		for (script in luaArray)
-		{
+		{ var script:Dynamic = cast(script);
 			if (script.closed)
 			{
 				arr.push(script);
@@ -11153,8 +11155,8 @@ class PlayState extends MusicBeatState
 		}
 
 		if (arr.length > 0)
-			for (script in arr)
-				luaArray.remove(script);
+			for (script in arr){ var script:Dynamic = cast(script);
+				luaArray.remove(script);}
 		#end
 		return returnVal;
 	}
@@ -11221,7 +11223,7 @@ class PlayState extends MusicBeatState
 		if (exclusions == null)
 			exclusions = [];
 		for (script in luaArray)
-		{
+		{ var script:Dynamic = cast(script);
 			if (exclusions.contains(script.scriptName))
 				continue;
 

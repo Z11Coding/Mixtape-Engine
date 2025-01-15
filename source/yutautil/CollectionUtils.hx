@@ -1,6 +1,7 @@
 package yutautil;
 
 import cpp.Float32;
+import states.PlayState.LuaScript;
 import backend.Threader;
 import backend.modules.SyncUtils;
 import cpp.abi.Abi;
@@ -1090,6 +1091,44 @@ class CollectionUtils
 		else
 		{
 			return 1;
+		}
+	}
+
+	// Only for Funkin Lua Legacy...
+
+	public static inline function getScriptName(s:LuaScript):String
+	{
+		return switch (Type.getClass(s)) {
+		case psychlua.FunkinLua:
+			(s : psychlua.FunkinLua).scriptName;
+		case psychlua.LegacyFunkinLua:
+			(s : psychlua.LegacyFunkinLua).scriptName;
+		default:
+			throw "Unsupported LuaScript type";
+		}
+	}
+
+	public static inline function callScript(s:LuaScript, funcName:String, args:Array<Dynamic>):Dynamic
+	{
+		return switch (Type.getClass(s)) {
+		case psychlua.FunkinLua:
+			(s : psychlua.FunkinLua).call(funcName, args);
+		case psychlua.LegacyFunkinLua:
+			(s : psychlua.LegacyFunkinLua).call(funcName, args);
+		default:
+			throw "Unsupported LuaScript type";
+		}
+	}
+
+	public static inline function getScript(s:LuaScript):Dynamic
+	{
+		return switch (Type.getClass(s)) {
+		case psychlua.FunkinLua:
+			(s : psychlua.FunkinLua);
+		case psychlua.LegacyFunkinLua:
+			(s : psychlua.LegacyFunkinLua);
+		default:
+			throw "Unsupported LuaScript type";
 		}
 	}
 

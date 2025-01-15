@@ -23,6 +23,7 @@ import objects.Note;
 import objects.NoteSplash;
 import objects.Character;
 
+
 import states.MainMenuState;
 import states.StoryMenuState;
 import states.FreeplayState;
@@ -47,6 +48,8 @@ import llua.State;
 import backend.modchart.SubModifier;
 
 typedef ValueType = Type.ValueType;
+
+
 
 class FunkinLua {
 	public var lua:State = null;
@@ -240,7 +243,12 @@ class FunkinLua {
 		var names:Array<String> = ["user", "player", "boyfriend"];
 		set('username', ClientPrefs.data.username ? #if desktop Sys.environment()["USERNAME"] #else Sys.environment()["USER"] #end : names[Math.floor(Math.random() * names.length)]);
 
-
+		Lua_helper.add_callback(lua, "runInLegacyMode", function() {
+			this.closed = true;
+			PlayState.instance.luaArray.remove(this);
+			new LegacyFunkinLua(scriptName);
+			trace('A script has been converted to Legacy mode: ' + scriptName);
+		});
 
 		Lua_helper.add_callback(lua, "set", function(varName:String, value:Dynamic) {
 			set(varName, value);
@@ -342,7 +350,7 @@ class FunkinLua {
 		Lua_helper.add_callback(lua, "getRunningScripts", function(){
 			var runningScripts:Array<String> = [];
 			for (script in game.luaArray)
-				runningScripts.push(script.scriptName);
+				runningScripts.push(script.getScriptName());
 
 			return runningScripts;
 		});
@@ -390,9 +398,9 @@ class FunkinLua {
 			var foundScript:String = findScript(luaFile);
 			if(foundScript != null)
 				for (luaInstance in game.luaArray)
-					if(luaInstance.scriptName == foundScript)
+					if(luaInstance.getScriptName() == foundScript)
 					{
-						luaInstance.call(funcName, args);
+						luaInstance.callScript(funcName, args);
 						return;
 					}
 		});
@@ -401,8 +409,8 @@ class FunkinLua {
 			var foundScript:String = findScript(luaFile);
 			if(foundScript != null)
 				for (luaInstance in game.luaArray)
-					if(luaInstance.scriptName == foundScript)
-					{
+					if(luaInstance.getScriptName() == foundScript)
+					{ var luaInstance = cast(luaInstance);
 						Lua.getglobal(luaInstance.lua, global);
 						if(Lua.isnumber(luaInstance.lua,-1))
 							Lua.pushnumber(lua, Lua.tonumber(luaInstance.lua, -1));
@@ -424,8 +432,8 @@ class FunkinLua {
 			var foundScript:String = findScript(luaFile);
 			if(foundScript != null)
 				for (luaInstance in game.luaArray)
-					if(luaInstance.scriptName == foundScript)
-						luaInstance.set(global, val);
+					if(luaInstance.getScriptName() == foundScript)
+						luaInstance.getScript().set(global, val);
 		});
 		/*Lua_helper.add_callback(lua, "getGlobals", function(luaFile:String) { // returns a copy of the specified file's globals
 			var foundScript:String = findScript(luaFile);
@@ -433,7 +441,7 @@ class FunkinLua {
 			{
 				for (luaInstance in game.luaArray)
 				{
-					if(luaInstance.scriptName == foundScript)
+					if(luaInstance.getScriptName() == foundScript)
 					{
 						Lua.newtable(lua);
 						var tableIdx = Lua.gettop(lua);
@@ -489,7 +497,7 @@ class FunkinLua {
 			var foundScript:String = findScript(luaFile);
 			if(foundScript != null)
 				for (luaInstance in game.luaArray)
-					if(luaInstance.scriptName == foundScript)
+					if(luaInstance.getScriptName() == foundScript)
 						return true;
 			return false;
 		});
@@ -508,7 +516,7 @@ class FunkinLua {
 			{
 				if(!ignoreAlreadyRunning)
 					for (luaInstance in game.luaArray)
-						if(luaInstance.scriptName == foundScript)
+						if(luaInstance.getScriptName() == foundScript)
 						{
 							luaTrace('addLuaScript: The script "' + foundScript + '" is already running!');
 							return;
@@ -546,10 +554,10 @@ class FunkinLua {
 			{
 				if(!ignoreAlreadyRunning)
 					for (luaInstance in game.luaArray)
-						if(luaInstance.scriptName == foundScript)
+						if(luaInstance.getScriptName() == foundScript)
 						{
-							luaInstance.stop();
-							trace('Closing script ' + luaInstance.scriptName);
+							luaInstance.getScript().stop();
+							trace('Closing script ' + luaInstance.getScriptName());
 							return true;
 						}
 			}
