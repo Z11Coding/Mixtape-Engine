@@ -449,6 +449,32 @@ class Client {
 		return tags;
 	}
 
+	public function update_tags(tags:Array<String>) {
+		_tags = tags;
+	}
+
+	public function add_tag(tag:String) {
+		if (_tags.indexOf(tag) == -1) {
+			var t = _tags.copy();
+			t.push(tag);
+			_tags = t;
+		}
+	}
+
+	public function remove_tag(tag:String) {
+		var i = _tags.indexOf(tag);
+		if (i >= 0) {
+			var t = _tags.copy();
+			t.splice(i, 1);
+			_tags = t;
+		}
+	}
+
+	public function add_tags(tags:Array<String>) {
+		for (tag in tags)
+			add_tag(tag);
+	}
+
 	function get_hintCostPoints() {
 		if (hintCostPercent <= 0)
 			return hintCostPercent;
@@ -562,7 +588,7 @@ class Client {
 		@param game The game to which the location belongs. Defaults to a blank string, which will attempt to devine a location name which may be incorrect if there is an ID collision.
 		@return The name of the location attached to the given ID, or "Unknown" if it was not found.
 	**/
-	public function get_location_name(code:Int, game = ""):String {
+	public function get_location_name(code:Int, game = "Friday Night Funkin"):String {
 		if (game.length == 0) {
 			if (_locations.exists(code))
 				return _locations.get(code);
@@ -578,7 +604,7 @@ class Client {
 		@param game The game to which the location belongs. Defaults to a blank string, which will attempt to devine a location ID which may be incorrect if there is a name collision.
 		@return The ID associated with the location name, or `null` if it was not found.
 	**/
-	public function get_location_id(name:String, game = ""):Null<Int> {
+	public function get_location_id(name:String, game = "Friday Night Funkin"):Null<Int> {
 		if (game.length == 0)
 			game = this.game;
 		if (_dataPackage.games.exists(game) && _dataPackage.games[game].location_name_to_id.exists(name))
@@ -592,13 +618,12 @@ class Client {
 		@param game The game to which the item belongs. Defaults to a blank string, which will attempt to devine an item name which may be incorrect if there is an ID collision.
 		@return The name of the item attached to the given ID, or "Unknown" if it was not found.
 	**/
-	public function get_item_name(code:Int, game = ""):String {
+	public function get_item_name(code:Int, game = "Friday Night Funkin"):String {
 		if (game.length == 0) {
 			if (_items.exists(code))
 				return _items.get(code);
 		} else if (_gameItems.exists(game) && _gameItems[game].exists(code))
 			return _gameItems[game][code];
-		trace(_gameItems[game]);
 		return "Unknown";
 	}
 
@@ -609,10 +634,9 @@ class Client {
 		@param game The game to which the item belongs. Defaults to a blank string, which will attempt to devine an item ID which may be incorrect if there is a name collision.
 		@return The ID associated with the item name, or `null` if it was not found.
 	**/
-	public function get_item_id(name:String, ?game = ""):Null<Int> {
+	public function get_item_id(name:String, ?game = "Friday Night Funkin"):Null<Int> {
 		if (game.length == 0)
 			game = this.game;
-		trace(_dataPackage.games[game].item_name_to_id);
 		if (_dataPackage.games.exists(game) && _dataPackage.games[game].item_name_to_id.exists(name))
 			return _dataPackage.games[game].item_name_to_id[name];
 		return null;
@@ -1025,10 +1049,6 @@ class Client {
 				packet.hint_points
 			);
 		} else if (Reflect.hasField(packet, "data")) {
-			dataPackageValid = false;
-			set_data_package(packet.data);
-			//trace('Data Package:' + data);
-			dataPackageValid = true;
 			return IncomingPacket.DataPackage(packet.data);
 		} else if (Reflect.hasField(packet, "text")) {
 			return IncomingPacket.Print(packet.text);
@@ -1223,16 +1243,14 @@ class Client {
 						try {
 							if (!_dataPackage.games.exists(game)) { // new game
 								games.add(game);
-								trace("Added Game:" + game);
 								continue;
 							}
 							if (_dataPackage.games[game].checksum != csum) { // existing update
 								games.add(game);
-								trace("Added Game:" + game);
 								continue;
 							}
 						} catch (e) {
-							trace("Error! :" + e.message);
+							trace(e.message);
 							games.add(game);
 						}
 					}
@@ -1313,8 +1331,11 @@ class Client {
 						_dataPackage = data;
 					}
 
-					backend.Threader.runInThread(data(), "DataPackageFetcher");
-					trace("Data: " + slot_data);
+			backend.Threader.runInThread(data(), "DataPackageFetcher");
+
+				
+
+				trace("Data: " + slot_data);
 
 					_hOnSlotConnected(slot_data);
 					_hOnLocationChecked(checked_locations);
@@ -1353,7 +1374,7 @@ class Client {
 						data.games[game] = gameData;
 					dataPackageValid = false;
 					set_data_package(data);
-					//trace('Data Package:' + data);
+					trace('Data Package:' + data);
 					dataPackageValid = true;
 					_hOnDataPackageChanged(_dataPackage);
 					_gotDataPackage = true;
