@@ -1761,12 +1761,12 @@ public function doEffect(effect:String)
             var cause:String = "";
             try {
                 if (deathLinkPacket.cause != null) cause = deathLinkPacket.cause;
-                if (cause.trim() == "") cause = deathLinkPacket.source + " has died.\n[pause:0.5](How Unfortunate...)";
             }
             catch(e) {}
+            if (cause.trim() == "") cause = deathLinkPacket.source + " has died.\n[pause:0.5](How Unfortunate...)";
             COD.setCOD(null, cause);
             deathByLink = false;
-            die();
+            die();  
         }
         #if cpp			
 		if(FlxG.sound.music != null && FlxG.sound.music.playing)
