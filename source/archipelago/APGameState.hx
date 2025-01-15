@@ -157,11 +157,11 @@ class APGameState {
         return _ap;
     }
 
-    // function onSlotConnected(slotData:Dynamic)
-    // {
+    function onSlotConnected(slotData:Dynamic)
+    {
     //     if (APEntryState.deathLink)
     //         _ap.tags.push("DeathLink");
-    // }
+    }
 
     function sendMessage(data:Array<JSONMessagePart>, item:Dynamic, receiving:Dynamic)
 	{

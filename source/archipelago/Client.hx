@@ -450,23 +450,23 @@ class Client {
 	}
 
 	public function update_tags(tags:Array<String>) {
-		_tags = tags;
+		set_tags(tags);
 	}
 
 	public function add_tag(tag:String) {
 		if (_tags.indexOf(tag) == -1) {
-			var t = _tags.copy();
+			var t = get_tags().copy();
 			t.push(tag);
-			_tags = t;
+			set_tags(t);
 		}
 	}
 
 	public function remove_tag(tag:String) {
 		var i = _tags.indexOf(tag);
 		if (i >= 0) {
-			var t = _tags.copy();
+			var t = get_tags().copy();
 			t.splice(i, 1);
-			_tags = t;
+			set_tags(t);
 		}
 	}
 
