@@ -35,7 +35,8 @@ class APSettingsSubState extends MusicBeatSubstate {
 
     public static function generateSongList(?type:String)
 	{
-        globalSongList = [];
+        for (song in globalSongList)
+            globalSongList.remove(song);
         switch (type)
         {
             case "A":

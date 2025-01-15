@@ -1313,11 +1313,8 @@ class Client {
 						_dataPackage = data;
 					}
 
-			backend.Threader.runInThread(data(), "DataPackageFetcher");
-
-				
-
-				trace("Data: " + slot_data);
+					backend.Threader.runInThread(data(), "DataPackageFetcher");
+					trace("Data: " + slot_data);
 
 					_hOnSlotConnected(slot_data);
 					_hOnLocationChecked(checked_locations);

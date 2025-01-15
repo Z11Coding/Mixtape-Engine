@@ -2014,6 +2014,7 @@ public function doEffect(effect:String)
         super.endSong();
 		PlayState.gameplayArea = "APFreeplay";
         paused = true;
+        callVictory = SONG
 		openSubState(new substates.RankingSubstate());
         return true; //why does endsong need this?????
     }

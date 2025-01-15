@@ -191,18 +191,20 @@ class APGameState {
 		trace(text);
 	}
 
+    public static var isSync:Bool = false;
     function addSongs(song:Array<NetworkItem>)
 	{
         for (songName in song)
         {
             if (!states.FreeplayState.curUnlocked.contains(info().get_item_name(songName.item)))
             {
-                ArchPopup.startPopupSong(info().get_item_name(songName.item), 'archColor');
-                //states.FreeplayState.curUnlocked.push(APInfo.itemIDSongList.get(song[0].location));
+                if (!isSync) ArchPopup.startPopupSong(info().get_item_name(songName.item), 'archColor');
+                states.FreeplayState.curUnlocked.push(APInfo.itemIDSongList.get(song[0].location));
                 //if (states.FreeplayState.instance != null) states.FreeplayState.instance.reloadSongs(true);
                 trace("Unlocked: "+info().get_item_name(songName.item));
             }
         }
+        isSync = false;
 	}
 
     // public function onRoomInfo(roomInfo:RoomInfoPacket)
