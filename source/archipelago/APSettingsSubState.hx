@@ -48,7 +48,7 @@ class APSettingsSubState extends MusicBeatSubstate {
                 for (secret in APInfo.secrets)
                     globalSongList.push(secret);
             case "B":
-                if (APEntryState.gameSettings.mods_enabled)
+                if (APEntryState.gameSettings.FNF.mods_enabled)
                 {
                     for (i in 0...WeekData.weeksList.length) {
                         var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
@@ -71,7 +71,7 @@ class APSettingsSubState extends MusicBeatSubstate {
                     globalSongList.push(pico);
                 for (secret in APInfo.secrets)
                     globalSongList.push(secret);
-                if (APEntryState.gameSettings.mods_enabled)
+                if (APEntryState.gameSettings.FNF.mods_enabled)
                 {
                     for (i in 0...WeekData.weeksList.length) {
                         var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
@@ -80,7 +80,7 @@ class APSettingsSubState extends MusicBeatSubstate {
                         {
                             globalSongList.remove(song[0]); // To remove dups
                             globalSongList.push(song[0]);
-                            globalSongList.remove(APEntryState.gameSettings.starting_song); // To remove Tutorial because it keeps re-adding itself
+                            globalSongList.remove(APEntryState.gameSettings.FNF.starting_song); // To remove Tutorial because it keeps re-adding itself
                         }
                     }
                 }
@@ -146,46 +146,46 @@ class APSettingsSubState extends MusicBeatSubstate {
 
         progression_balancing = new PsychUIDropDownMenu(objX, objY, [''], function(id:Int, prog:String)
         {
-            APEntryState.gameSettings.progression_balancing = prog;
+            APEntryState.gameSettings.FNF.progression_balancing = prog;
         });
-        progression_balancing.selectedLabel = APEntryState.gameSettings.progression_balancing;
+        progression_balancing.selectedLabel = APEntryState.gameSettings.FNF.progression_balancing;
 
         accessibility = new PsychUIDropDownMenu(objX + 150, objY, [''], function(id:Int, acc:String)
         {
-            APEntryState.gameSettings.accessibility = acc;
+            APEntryState.gameSettings.FNF.accessibility = acc;
         });
-        accessibility.selectedLabel = APEntryState.gameSettings.accessibility;
+        accessibility.selectedLabel = APEntryState.gameSettings.FNF.accessibility;
 
         objY += 50;
         unlockType = new PsychUIDropDownMenu(objX, objY, [''], function(id:Int, unlock:String)
         {
-            APEntryState.gameSettings.unlock_type = unlock;
+            APEntryState.gameSettings.FNF.unlock_type = unlock;
         });
-        unlockType.selectedLabel = APEntryState.gameSettings.unlock_type;
+        unlockType.selectedLabel = APEntryState.gameSettings.FNF.unlock_type;
 
         unlockMethod = new PsychUIDropDownMenu(objX + 150, objY, [''], function(id:Int, unlock:String)
         {
-            APEntryState.gameSettings.unlock_method = unlock;
+            APEntryState.gameSettings.FNF.unlock_method = unlock;
         });
-        unlockMethod.selectedLabel = APEntryState.gameSettings.unlock_method;
+        unlockMethod.selectedLabel = APEntryState.gameSettings.FNF.unlock_method;
 
         objY += 70;
-        deathlink = new PsychUICheckBox(objX, objY, 'DeathLink', 100, function() APEntryState.gameSettings.deathlink = deathlink.checked);
-        deathlink.checked = APEntryState.gameSettings.deathlink;
+        deathlink = new PsychUICheckBox(objX, objY, 'DeathLink', 100, function() APEntryState.gameSettings.FNF.deathlink = deathlink.checked);
+        deathlink.checked = APEntryState.gameSettings.FNF.deathlink;
         
         objY += 50;
-        ticketPercent = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.ticket_percentage = Std.int(v));
+        ticketPercent = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.FNF.ticket_percentage = Std.int(v));
         ticketPercent.decimals = 0;
         ticketPercent.min = 10;
         ticketPercent.max = 50;
-        ticketPercent.value = APEntryState.gameSettings.ticket_percentage;
+        ticketPercent.value = APEntryState.gameSettings.FNF.ticket_percentage;
 
         objY += 50;
-        ticketWinPercent = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.ticket_win_percentage = Std.int(v));
+        ticketWinPercent = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.FNF.ticket_win_percentage = Std.int(v));
         ticketWinPercent.decimals = 0;
         ticketWinPercent.min = 50;
         ticketWinPercent.max = 100;
-        ticketWinPercent.value = APEntryState.gameSettings.ticket_win_percentage;
+        ticketWinPercent.value = APEntryState.gameSettings.FNF.ticket_win_percentage;
 
         tab_group.add(new FlxText(progression_balancing.x, progression_balancing.y - 15, 120, 'Progression Balancing:'));
         tab_group.add(new FlxText(accessibility.x, accessibility.y - 15, 120, 'Accessibility:'));
@@ -211,21 +211,21 @@ class APSettingsSubState extends MusicBeatSubstate {
         allowMods = new PsychUICheckBox(objX, objY, 'Allow Mods', 100, 
         function() 
         {
-            APEntryState.gameSettings.mods_enabled = allowMods.checked;
+            APEntryState.gameSettings.FNF.mods_enabled = allowMods.checked;
             generateSongList();
             startingSong.selectedLabel = ''; //So it can reset
             var tempList = globalSongList;
             tempList.sort((a:String, b:String) -> (a.toUpperCase() < b.toUpperCase()) ? -1 : 1); //Sort alphabetically descending
             startingSong.list = tempList;
         });
-        allowMods.checked = APEntryState.gameSettings.mods_enabled;
+        allowMods.checked = APEntryState.gameSettings.FNF.mods_enabled;
 
         objY += 50;
         startingSong = new PsychUIDropDownMenu(objX, objY, [''], function(id:Int, song:String)
         {
-            APEntryState.gameSettings.starting_song = song;
+            APEntryState.gameSettings.FNF.starting_song = song;
         });
-        startingSong.selectedLabel = APEntryState.gameSettings.starting_song;
+        startingSong.selectedLabel = APEntryState.gameSettings.FNF.starting_song;
 
         tab_group.add(new FlxText(startingSong.x, startingSong.y - 15, 120, 'Starting Song:'));
         tab_group.add(allowMods);
@@ -238,67 +238,67 @@ class APSettingsSubState extends MusicBeatSubstate {
         var objX = 10;
         var objY = 20;
 
-        trapAmount = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.trapAmount = Std.int(v));
+        trapAmount = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.FNF.trapAmount = Std.int(v));
         trapAmount.min = 0;
         trapAmount.max = 60;
         trapAmount.decimals = 0;
-        trapAmount.value = APEntryState.gameSettings.trapAmount;
+        trapAmount.value = APEntryState.gameSettings.FNF.trapAmount;
 
         objY += 40;
-        bbcWeight = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.bbcWeight = Std.int(v));
+        bbcWeight = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.FNF.bbcWeight = Std.int(v));
         bbcWeight.min = 0;
         bbcWeight.max = 10;
         bbcWeight.decimals = 0;
-        bbcWeight.value = APEntryState.gameSettings.bbcWeight;
+        bbcWeight.value = APEntryState.gameSettings.FNF.bbcWeight;
 
         objY += 40;
-        ghostChatWeight = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.ghostChatWeight = Std.int(v));
+        ghostChatWeight = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.FNF.ghostChatWeight = Std.int(v));
         ghostChatWeight.min = 0;
         ghostChatWeight.max = 10;
         ghostChatWeight.decimals = 0;
-        ghostChatWeight.value = APEntryState.gameSettings.ghostChatWeight;
+        ghostChatWeight.value = APEntryState.gameSettings.FNF.ghostChatWeight;
 
         objY += 40;
-        tutorialWeight = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.svcWeight = Std.int(v));
+        tutorialWeight = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.FNF.svcWeight = Std.int(v));
         tutorialWeight.min = 0;
         tutorialWeight.max = 10;
         tutorialWeight.decimals = 0;
-        tutorialWeight.value = APEntryState.gameSettings.svcWeight;
+        tutorialWeight.value = APEntryState.gameSettings.FNF.svcWeight;
 
         objY += 40;
-        svcWeight = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.tutorialWeight = Std.int(v));
+        svcWeight = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.FNF.tutorialWeight = Std.int(v));
         svcWeight.min = 0;
         svcWeight.max = 10;
         svcWeight.decimals = 0;
-        svcWeight.value = APEntryState.gameSettings.tutorialWeight;
+        svcWeight.value = APEntryState.gameSettings.FNF.tutorialWeight;
 
         objY += 40;
-        fakeTransWeight = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.fakeTransWeight = Std.int(v));
+        fakeTransWeight = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.FNF.fakeTransWeight = Std.int(v));
         fakeTransWeight.min = 0;
         fakeTransWeight.max = 10;
         fakeTransWeight.decimals = 0;
-        fakeTransWeight.value = APEntryState.gameSettings.fakeTransWeight;
+        fakeTransWeight.value = APEntryState.gameSettings.FNF.fakeTransWeight;
 
         objY += 40;
-        chartmodifierchance = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.chart_modifier_change_chance = Std.int(v));
+        chartmodifierchance = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.FNF.chart_modifier_change_chance = Std.int(v));
         chartmodifierchance.min = 0;
         chartmodifierchance.max = 10;
         chartmodifierchance.decimals = 0;
-        chartmodifierchance.value = APEntryState.gameSettings.chart_modifier_change_chance;
+        chartmodifierchance.value = APEntryState.gameSettings.FNF.chart_modifier_change_chance;
 
         objY += 40;
-        shieldWeight = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.shieldWeight = Std.int(v));
+        shieldWeight = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.FNF.shieldWeight = Std.int(v));
         shieldWeight.min = 0;
         shieldWeight.max = 10;
         shieldWeight.decimals = 0;
-        shieldWeight.value = APEntryState.gameSettings.shieldWeight;
+        shieldWeight.value = APEntryState.gameSettings.FNF.shieldWeight;
 
         objY += 40;
-        MHPWeight = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.MHPWeight = Std.int(v));
+        MHPWeight = new PsychUISlider(objX, objY, function(v:Float) APEntryState.gameSettings.FNF.MHPWeight = Std.int(v));
         MHPWeight.min = 0;
         MHPWeight.max = 10;
         MHPWeight.decimals = 0;
-        MHPWeight.value = APEntryState.gameSettings.MHPWeight;
+        MHPWeight.value = APEntryState.gameSettings.FNF.MHPWeight;
 
         tab_group.add(new FlxText(chartmodifierchance.x, chartmodifierchance.y - 15, 300, 'Chart Modifier Chance:'));
         tab_group.add(new FlxText(trapAmount.x, trapAmount.y - 15, 300, 'Trap Amount:'));
@@ -323,19 +323,43 @@ class APSettingsSubState extends MusicBeatSubstate {
     var testMap:Map<String, Dynamic>;
     function onGenYaml()
 	{
-		globalSongList.remove(APEntryState.gameSettings.starting_song);
-		APEntryState.gameSettings.songList = globalSongList;
-		var document = Yaml.render(APEntryState.gameSettings);
+
+        var yamlThing = {}
+        for (thing in Reflect.fields(APEntryState.gameSettings.FNF))
+        {
+            Reflect.setField(yamlThing, thing, Reflect.field(APEntryState.gameSettings.FNF, thing));
+        }
+
+        var mainSettings = {name: APEntryState.yamlName, description: APEntryState.gameSettings.description, game: APEntryState.gameSettings.game};
+
+		globalSongList.remove(APEntryState.gameSettings.FNF.starting_song);
+		APEntryState.gameSettings.FNF.songList = globalSongList;
+		var document = Yaml.render(mainSettings, Renderer.options().setFlowLevel(1));
 		trace(document);
+
 
 		#if sys
 		// This time write that same document to disk and adjust the flow level giving
 		// a more compact result.
 		if (!FileSystem.exists("./PlayerSettings/"))
 			FileSystem.createDirectory("./PlayerSettings/");
-		Yaml.write("PlayerSettings/" + APEntryState.yamlName + ".yaml", APEntryState.gameSettings, Renderer.options().setFlowLevel(1));
+		Yaml.write("PlayerSettings/" + APEntryState.yamlName + ".yaml", mainSettings, Renderer.options().setFlowLevel(1));
 		#end
 		openSubState(new Prompt("Settings Exported Successfully!", 0, null, null, false));
+
+    // Add actual settings.
+
+    var yamlString = "Friday Night Funkin:\n";
+    for (key in Reflect.fields(yamlThing)) {
+        yamlString += "  " + key + ": " + Reflect.field(yamlThing, key) + "\n";
+    }
+
+    var finalDocument = document + "\n" + yamlString;
+    trace(finalDocument);
+
+    #if sys
+    sys.io.File.saveContent("PlayerSettings/" + APEntryState.yamlName + ".yaml", finalDocument);
+    #end
         close();
 	}
 
