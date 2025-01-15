@@ -421,6 +421,8 @@ class APEntryState extends FlxState
 		//APGameState
 		//FlxG.switchState(new APGameState(ap, slotData));
 		apGame = new APGameState(ap, slotData);
+		if (deathLink)
+            _ap.tags.push("DeathLink");
 		runArch();
 	}
 
