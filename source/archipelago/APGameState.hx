@@ -140,6 +140,7 @@ class APGameState {
         _ap.onPrintJSON.add(sendMessage);
 		_ap.onPrint.add(sendMessageSimple);
 		_ap.onItemsReceived.add(addSongs);
+        _ap.onBounced.add(bouncy);
         // _ap.onConnect.add(function() {
         //     _ap.clientStatus = ClientStatus.CONNECTED;
         // });
@@ -155,6 +156,15 @@ class APGameState {
     public function info()
     {
         return _ap;
+    }
+
+    function bouncy(data:Dynamic)
+    {
+        if ((data.tags == ["DeathLink"]) && !APPlayState.deathByLink)
+        {
+            var dl:Dynamic = data.data;
+            APPlayState.deathLinkPacket = dl;
+        }
     }
 
     function onSlotConnected(slotData:Dynamic)

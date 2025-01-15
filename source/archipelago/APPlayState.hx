@@ -15,6 +15,8 @@ import openfl.filters.BlurFilter;
 import openfl.filters.ColorMatrixFilter;
 class APPlayState extends PlayState {
     public static var apGame:APGameState;
+    public static var deathByLink:Bool = false;
+    public static var deathLinkPacket:Dynamic;
     public static var effectiveScrollSpeed:Float;
 	public static var effectiveDownScroll:Bool;
     public static var xWiggle:Array<Float> = [0, 0, 0, 0];
@@ -1755,6 +1757,11 @@ public function doEffect(effect:String)
 	var doRandomize:Bool = false;
     override public function update(elapsed:Float)
 	{
+        if (startedCountdown && deathByLink) {
+            COD.setCOD(null, deathLinkPacket.cause);
+            deathByLink = false;
+            die();
+        }
         #if cpp			
 		if(FlxG.sound.music != null && FlxG.sound.music.playing)
 		{

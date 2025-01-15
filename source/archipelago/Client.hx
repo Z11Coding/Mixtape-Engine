@@ -454,7 +454,7 @@ class Client {
 	}
 
 	public function add_tag(tag:String) {
-		if (_tags.indexOf(tag) == -1) {
+		if (get_tags().indexOf(tag) == -1) {
 			var t = get_tags().copy();
 			t.push(tag);
 			set_tags(t);
@@ -462,7 +462,7 @@ class Client {
 	}
 
 	public function remove_tag(tag:String) {
-		var i = _tags.indexOf(tag);
+		var i = get_tags().indexOf(tag);
 		if (i >= 0) {
 			var t = get_tags().copy();
 			t.splice(i, 1);
