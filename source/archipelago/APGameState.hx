@@ -159,7 +159,7 @@ class APGameState {
 
     function onSlotConnected(slotData:Dynamic)
     {
-        if (slotData.deathlink)
+        if (APEntryState.deathLink)
             _ap.tags.push("DeathLink");
     }
 
