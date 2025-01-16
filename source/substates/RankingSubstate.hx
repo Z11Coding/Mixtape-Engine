@@ -160,7 +160,7 @@ class RankingSubstate extends MusicBeatSubstate
 					TransitionState.transitionState(states.FreeplayState, {transitionType: "stickers"});
 					var locationId = PlayState.SONG.song;
 					if (Mods.currentModDirectory.trim() != "") {
-						locationId += " (/" + Mods.currentModDirectory + "/)";
+						locationId += " (-" + Mods.currentModDirectory + "-)";
 					}
 					trace(APEntryState.apGame.info().LocationChecks([APEntryState.apGame.info().get_location_id(locationId)]));
 					trace(APEntryState.apGame.info().get_location_name(APEntryState.apGame.info().get_location_id(locationId)));
