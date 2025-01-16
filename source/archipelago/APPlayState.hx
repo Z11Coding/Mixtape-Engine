@@ -142,10 +142,7 @@ class APPlayState extends PlayState {
             return;
         }
 
-        if (cpuControlled)
-        {
-            set_cpuControlled(false);
-        }
+
 
 		
 effectMap = [
@@ -1258,6 +1255,11 @@ addEffect("freeze");
 		}
 		shieldSprite.visible = false;
 		add(shieldSprite);
+        
+        if (cpuControlled)
+            {
+                set_cpuControlled(false);
+            }
     }
 
     public function addEffect(e:String)
