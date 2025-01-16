@@ -667,7 +667,7 @@ class LegacyFunkinLua {
 				for (luaInstance in PlayState.instance.luaArray)
 				{
 					if(luaInstance.getScriptName() == cervix)
-					{
+					{ var luaInstance = cast(luaInstance);
 						luaInstance.set(global, val);
 					}
 

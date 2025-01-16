@@ -21,10 +21,15 @@ class CallbackHandler
 				{
 					//trace('looping thru scripts');
 					for (script in PlayState.instance.luaArray)
-						if(script != FunkinLua.lastCalledScript && script != null && script.lua == l)
+						if(script != FunkinLua.lastCalledScript && script != null && script.getScript().lua == l)
 						{
 							//trace('found script');
-							cbf = script.callbacks.get(fname);
+							try {
+								cbf = script.getScript().callbacks.get(fname);
+							} catch (e:haxe.Exception) {
+								// Handle the exception if needed
+								cbf = null;
+							}
 							break;
 						}
 				}
