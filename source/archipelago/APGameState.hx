@@ -209,11 +209,11 @@ class APGameState {
         for (songName in song)
         {
             var itemName = info().get_item_name(songName.item);
-            var lastParenIndex = itemName.lastIndexOf("(");
+            var lastParenIndex = itemName.lastIndexOf("(/");
             if (lastParenIndex != -1) {
-                var lastCloseParenIndex = itemName.indexOf(")", lastParenIndex);
+                var lastCloseParenIndex = itemName.indexOf("/)", lastParenIndex);
                 if (lastCloseParenIndex != -1) {
-                    itemName = itemName.substring(0, lastParenIndex) + itemName.substring(lastCloseParenIndex + 1);
+                    itemName = itemName.substring(0, lastParenIndex) + itemName.substring(lastCloseParenIndex + 1).trim();
                 }
             }
             if (!states.FreeplayState.curUnlocked.contains(itemName))
