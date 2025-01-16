@@ -1255,7 +1255,7 @@ addEffect("freeze");
 		}
 		shieldSprite.visible = false;
 		add(shieldSprite);
-        
+
         if (cpuControlled)
             {
                 set_cpuControlled(false);
@@ -2008,7 +2008,7 @@ public function doEffect(effect:String)
             }
         }
         super.doDeathCheck();
-        if (health <= 0 && bfkilledcheck && !deathByLink) APEntryState.apGame.info().sendDeathLink(COD.COD.COD);
+        if (health <= 0 && bfkilledcheck && !deathByLink) APEntryState.apGame.info().sendDeathLink(COD.COD.COD); // Don't ask why it works like this...
 
         deathByLink = false;
         return true;

@@ -245,6 +245,15 @@ class CollectionUtils
 		return a;
 	}
 
+	public static inline function concatPush<T>(a:Array<T>, items:Array<Array<T>>):Array<T>
+	{
+		for (array in items)
+		{
+			a.pushMulti(array);
+		}
+		return a;
+	}
+
 	public static inline function maybePush<T>(a:Array<T>, item:T, chance:Float):Bool
 	{
 		if (ChanceExtensions.chanceBool(true, chance))
