@@ -236,6 +236,15 @@ class CollectionUtils
 		return {indices: indices, length: a.length};
 	}
 
+	public static inline function concatMulti<T>(a:Array<T>, items:Array<T>):Array<T>
+	{
+		for (item in items)
+		{
+			a.concat(item);
+		}
+		return a;
+	}
+
 	public static inline function maybePush<T>(a:Array<T>, item:T, chance:Float):Bool
 	{
 		if (ChanceExtensions.chanceBool(true, chance))
