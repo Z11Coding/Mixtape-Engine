@@ -335,6 +335,26 @@ class APSettingsSubState extends MusicBeatSubstate {
         var document = Yaml.render(mainSettings, Renderer.options().setFlowLevel(1));
 		trace(document);
 
+        if (Reflect.hasField(yamlThing, "ticket_percentage"))
+            if (Reflect.field(yamlThing, "ticket_percentage") < 10)
+                Reflect.setField(yamlThing, "ticket_percentage", 10);
+
+        if (Reflect.hasField(yamlThing, "ticket_win_percentage"))
+            if (Reflect.field(yamlThing, "ticket_win_percentage") < 50)
+                Reflect.setField(yamlThing, "ticket_win_percentage", 50);
+
+        if (Reflect.hasField(yamlThing, "unlock_type"))
+            if (Reflect.field(yamlThing, "unlock_type") != "Per Song" && Reflect.field(yamlThing, "unlock_type") != "Per Week")
+                Reflect.setField(yamlThing, "unlock_type", "Per Song");
+
+        if (Reflect.hasField(yamlThing, "unlock_method"))
+            if (Reflect.field(yamlThing, "unlock_method") != "Note Checks" && Reflect.field(yamlThing, "unlock_method") != "Song Completion" && Reflect.field(yamlThing, "unlock_method") != "Both")
+                Reflect.setField(yamlThing, "unlock_method", "Song Completion");
+
+        if (Reflect.hasField(yamlThing, "progression_balancing"))
+            if (Reflect.field(yamlThing, "progression_balancing") != "disabled" && Reflect.field(yamlThing, "progression_balancing") != "normal" && Reflect.field(yamlThing, "progression_balancing") != "extreme")
+                Reflect.setField(yamlThing, "progression_balancing", "normal");
+
 
 		#if sys
 		// This time write that same document to disk and adjust the flow level giving

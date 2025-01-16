@@ -208,25 +208,57 @@ class APGameState {
     {
         for (songName in song)
         {
-            if (info().get_item_name(songName.item) == "Ticket")
-            {
-                
-            }
-            else
-            {
-                var itemName = info().get_item_name(songName.item);
-                if (!states.FreeplayState.curUnlocked.contains(itemName))
-                {
-                    if (!isSync) ArchPopup.startPopupSong(itemName, 'archColor');
-                    states.FreeplayState.curUnlocked.push(itemName);
-                    if (states.FreeplayState.instance != null) states.FreeplayState.instance.reloadSongs(true);
-                    trace("Unlocked: " + itemName);
-                    trace(states.FreeplayState.curUnlocked);
-                    trace(song);
+            var itemName = info().get_item_name(songName.item);
+            var lastParenIndex = itemName.lastIndexOf("(");
+            if (lastParenIndex != -1) {
+                var modName = itemName.substring(lastParenIndex + 1, itemName.indexOf(")", lastParenIndex));
+                if (isModName(modName)) {
+                    itemName = itemName.substring(0, lastParenIndex).trim();
                 }
+            }
+            if (!states.FreeplayState.curUnlocked.contains(itemName))
+            {
+                if (!isSync) ArchPopup.startPopupSong(itemName, 'archColor');
+                states.FreeplayState.curUnlocked.push(itemName);
+                if (states.FreeplayState.instance != null) states.FreeplayState.instance.reloadSongs(true);
+                trace("Unlocked: " + itemName);
+                trace(states.FreeplayState.curUnlocked);
+                trace(song);
             }
         }
         isSync = false;
+    }
+
+    function isModName(name:String):Bool {
+    for (mod in Mods.parseList().enabled) {
+        if (mod == name) {
+            return true;
+        }
+    }
+    return false;
+    }
+    
+    function validateMods()
+    {
+        var mods = Mods.parseList().enabled;
+        var APItems = [];
+        var validatedMods = [];
+        for (item in currentPackages["Friday Night Funkin"].item_name_to_id.keys())
+        {
+            if (item.indexOf("(") != -1)
+            {
+                var modName = item.substring(item.indexOf("(") + 1, item.indexOf(")"));
+                if (mods.contains(modName))
+                {
+                    APItems.push(item);
+                    validatedMods.push(modName);
+                }
+            }
+        }
+        if (mods != validatedMods)
+        {
+            throw "There seems to be missing mods. You can't access an APWorld without the mods that were used to generate it.";
+        }
     }
 
     // public function onRoomInfo(roomInfo:RoomInfoPacket)
