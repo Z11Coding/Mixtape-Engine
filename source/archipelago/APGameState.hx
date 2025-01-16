@@ -205,21 +205,29 @@ class APGameState {
 
     public static var isSync:Bool = false;
     function addSongs(song:Array<NetworkItem>)
-	{
+    {
         for (songName in song)
         {
-            if (!states.FreeplayState.curUnlocked.contains(info().get_item_name(songName.item)))
+            var itemName = info().get_item_name(songName.item);
+            var lastParenIndex = itemName.lastIndexOf("(");
+            if (lastParenIndex != -1) {
+                var lastCloseParenIndex = itemName.indexOf(")", lastParenIndex);
+                if (lastCloseParenIndex != -1) {
+                    itemName = itemName.substring(0, lastParenIndex) + itemName.substring(lastCloseParenIndex + 1);
+                }
+            }
+            if (!states.FreeplayState.curUnlocked.contains(itemName))
             {
-                if (!isSync) ArchPopup.startPopupSong(info().get_item_name(songName.item), 'archColor');
-                states.FreeplayState.curUnlocked.push(info().get_item_name(songName.item));
+                if (!isSync) ArchPopup.startPopupSong(itemName, 'archColor');
+                states.FreeplayState.curUnlocked.push(itemName);
                 if (states.FreeplayState.instance != null) states.FreeplayState.instance.reloadSongs(true);
-                trace("Unlocked: "+info().get_item_name(songName.item));
+                trace("Unlocked: " + itemName);
                 trace(states.FreeplayState.curUnlocked);
                 trace(song);
             }
         }
         isSync = false;
-	}
+    }
 
     // public function onRoomInfo(roomInfo:RoomInfoPacket)
     // {
