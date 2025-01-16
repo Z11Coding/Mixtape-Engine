@@ -136,6 +136,17 @@ class APPlayState extends PlayState {
             }
         }
 
+        if (!APEntryState.inArchipelagoMode)
+        {
+            FlxG.switchState(new PlayState());
+            return;
+        }
+
+        if (cpuControlled)
+        {
+            set_cpuControlled(false);
+        }
+
 		
 effectMap = [
     'colorblind' => function() {
