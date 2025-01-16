@@ -52,7 +52,6 @@ class APSettingsSubState extends MusicBeatSubstate {
                 {
                     for (i in 0...WeekData.weeksList.length) {
                         var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
-                        
                         for (song in leWeek.songs)
                         {
                             globalSongList.remove(song[0]); // To remove dups
@@ -75,11 +74,11 @@ class APSettingsSubState extends MusicBeatSubstate {
                 {
                     for (i in 0...WeekData.weeksList.length) {
                         var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
-                        
+                        trace(leWeek.folder);
                         for (song in leWeek.songs)
                         {
                             globalSongList.remove(song[0]); // To remove dups
-                            globalSongList.push(song[0]);
+                            globalSongList.push(song[0] + (StringTools.trim(leWeek.folder) != "" ? " (" + leWeek.folder + ")" : "")); // To add the folder name if it's not empty
                             globalSongList.remove(APEntryState.gameSettings.FNF.starting_song); // To remove Tutorial because it keeps re-adding itself
                         }
                     }

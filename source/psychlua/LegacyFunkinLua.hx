@@ -1068,6 +1068,9 @@ class LegacyFunkinLua {
 				}
 				return getVarInArray(coverMeInPiss, killMe[killMe.length-1]);
 			}
+			if (classVar == "ClientPrefs") {
+				return getVarInArray(Type.getClassName(ClientPrefs), "data." + variable);
+			}
 			return getVarInArray(Type.resolveClass(classVar), variable);
 		});
 		Lua_helper.add_callback(lua, "setPropertyFromClass", function(classVar:String, variable:String, value:Dynamic) {
@@ -1079,6 +1082,14 @@ class LegacyFunkinLua {
 					coverMeInPiss = getVarInArray(coverMeInPiss, killMe[i]);
 				}
 				setVarInArray(coverMeInPiss, killMe[killMe.length-1], value);
+				return true;
+			}
+			if (classVar == "ClientPrefs") {
+				setVarInArray(Type.getClassName(ClientPrefs), "data." + variable, value);
+				return true;
+			}
+			if (classVar == "GameOverSubstate") {
+				setVarInArray(Type.getClassName(substates.GameOverSubstate), variable, value);
 				return true;
 			}
 			setVarInArray(Type.resolveClass(classVar), variable, value);

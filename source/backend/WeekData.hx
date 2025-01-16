@@ -161,6 +161,14 @@ class WeekData {
 		}
 	}
 
+	public static function modFolderName(weekName:String):String {
+		var week:WeekData = weeksLoaded.get(weekName);
+		if(week != null && week.folder != null && week.folder.length > 0) {
+			return week.folder;
+		}
+		return '';
+	}
+
 	private static function getWeekFile(path:String):WeekFile {
 		var rawJson:String = null;
 		#if MODS_ALLOWED

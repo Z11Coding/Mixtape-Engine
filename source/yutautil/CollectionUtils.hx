@@ -236,7 +236,7 @@ class CollectionUtils
 		return {indices: indices, length: a.length};
 	}
 
-	public static inline function concatMulti<T>(a:Array<T>, items:Array<T>):Array<T>
+	public static inline function concatMulti<T>(a:Array<T>, items:Array<Array<T>>):Array<T>
 	{
 		for (item in items)
 		{
