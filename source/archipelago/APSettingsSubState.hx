@@ -78,7 +78,7 @@ class APSettingsSubState extends MusicBeatSubstate {
                         for (song in leWeek.songs)
                         {
                             globalSongList.remove(song[0]); // To remove dups
-                            globalSongList.push(song[0] + (StringTools.trim(leWeek.folder) != "" ? " (-" + leWeek.folder + "-)" : "")); // To add the folder name if it's not empty
+                            globalSongList.push(song[0] + (StringTools.trim(leWeek.folder) != "" ? " (" + leWeek.folder + ")" : "")); // To add the folder name if it's not empty
                             globalSongList.remove(APEntryState.gameSettings.FNF.starting_song); // To remove Tutorial because it keeps re-adding itself
                         }
                     }
@@ -345,19 +345,19 @@ class APSettingsSubState extends MusicBeatSubstate {
 		#end
 		openSubState(new Prompt("Settings Exported Successfully!", 0, null, null, false));
 
-    // Add actual settings.
+        // Add actual settings.
 
-    var yamlString = "Friday Night Funkin:\n";
-    for (key in Reflect.fields(yamlThing)) {
-        yamlString += "  " + key + ": " + Reflect.field(yamlThing, key) + "\n";
-    }
+        var yamlString = "Friday Night Funkin:\n";
+        for (key in Reflect.fields(yamlThing)) {
+            yamlString += "  " + key + ": " + Reflect.field(yamlThing, key) + "\n";
+        }
 
-    var finalDocument = document + "\n" + yamlString;
-    trace(finalDocument);
+        var finalDocument = document + "\n" + yamlString;
+        trace(finalDocument);
 
-    #if sys
-    sys.io.File.saveContent("PlayerSettings/" + APEntryState.yamlName + ".yaml", finalDocument);
-    #end
+        #if sys
+        sys.io.File.saveContent("PlayerSettings/" + APEntryState.yamlName + ".yaml", finalDocument);
+        #end
         close();
 	}
 

@@ -518,7 +518,7 @@ class Client {
 			}
 		} else trace("Data package failed...");
 		trace("Data package set");
-		trace(_dataPackage);
+		//trace(_dataPackage);
 	}
 
 	#if sys
@@ -1328,7 +1328,7 @@ class Client {
 						}
 
 						APGameState.currentPackages = gameData;
-						trace("Game Data: " + gameData);
+						//trace("Game Data: " + gameData);
 
 						var data:DataPackageObject = {
 							games: gameData,
@@ -1379,7 +1379,7 @@ class Client {
 						data.games[game] = gameData;
 					dataPackageValid = false;
 					set_data_package(data);
-					trace('Data Package:' + data);
+					//trace('Data Package:' + data);
 					dataPackageValid = true;
 					_hOnDataPackageChanged(_dataPackage);
 					_gotDataPackage = true;

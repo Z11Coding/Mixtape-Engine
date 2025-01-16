@@ -148,7 +148,7 @@ class APGameState {
 		// _ap.onRoomInfo.add(onRoomInfo);
 		// _ap.onSlotRefused.add(onSlotRefused);
 		_ap.onSlotConnected.add(onSlotConnected);
-        
+        APPlayState.deathByLink = false;
 
 
     }
@@ -208,22 +208,22 @@ class APGameState {
     {
         for (songName in song)
         {
-            var itemName = info().get_item_name(songName.item);
-            var lastParenIndex = itemName.lastIndexOf("(-");
-            if (lastParenIndex != -1) {
-                var lastCloseParenIndex = itemName.indexOf("-)", lastParenIndex);
-                if (lastCloseParenIndex != -1) {
-                    itemName = itemName.substring(0, lastParenIndex) + itemName.substring(lastCloseParenIndex + 1).trim();
-                }
-            }
-            if (!states.FreeplayState.curUnlocked.contains(itemName))
+            if (info().get_item_name(songName.item) == "Ticket")
             {
-                if (!isSync) ArchPopup.startPopupSong(itemName, 'archColor');
-                states.FreeplayState.curUnlocked.push(itemName);
-                if (states.FreeplayState.instance != null) states.FreeplayState.instance.reloadSongs(true);
-                trace("Unlocked: " + itemName);
-                trace(states.FreeplayState.curUnlocked);
-                trace(song);
+                
+            }
+            else
+            {
+                var itemName = info().get_item_name(songName.item);
+                if (!states.FreeplayState.curUnlocked.contains(itemName))
+                {
+                    if (!isSync) ArchPopup.startPopupSong(itemName, 'archColor');
+                    states.FreeplayState.curUnlocked.push(itemName);
+                    if (states.FreeplayState.instance != null) states.FreeplayState.instance.reloadSongs(true);
+                    trace("Unlocked: " + itemName);
+                    trace(states.FreeplayState.curUnlocked);
+                    trace(song);
+                }
             }
         }
         isSync = false;

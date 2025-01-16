@@ -67,7 +67,7 @@ class APPlayState extends PlayState {
 	var effectArray:Array<String> = [
 		'colorblind', 'blur', 'lag', 'mine', 'warning', 'heal', 'spin', 'songslower', 'songfaster', 'scrollswitch', 'scrollfaster', 'scrollslower', 'rainbow',
 		'cover', 'ghost', 'flashbang', 'nostrum', 'jackspam', 'spam', 'sever', 'shake', 'poison', 'dizzy', 'noise', 'flip', 'invuln',
-		'desync', 'mute', 'ice', 'randomize', 'randomizeAlt', 'opponentPlay', 'bothplay', 'fakeheal', 'spell', 'terminate', 'lowpass', 'songSwitch', 'notif'
+		'desync', 'mute', 'ice', 'randomize', 'randomizeAlt', 'opponentPlay', 'bothplay', 'fakeheal', 'spell', 'terminate', 'lowpass', 'notif'
 	];
 	var notifs:Array<String> = [
 		"You're crazy...",
@@ -1778,7 +1778,7 @@ public function doEffect(effect:String)
             catch(e) {}
             if (cause.trim() == "") cause = deathLinkPacket.source + " has died.\n[pause:0.5](How Unfortunate...)";
             COD.setCOD(null, cause);
-            // deathByLink = false;
+            deathByLink = false;
             die();  
         }
         #if cpp			

@@ -160,8 +160,9 @@ class RankingSubstate extends MusicBeatSubstate
 					var locationId = PlayState.SONG.song;
 					trace(Mods.currentModDirectory);
 					if (Mods.currentModDirectory.trim() != "") {
-						locationId += " (-" + Mods.currentModDirectory + "-)";
+						locationId += " (" + Mods.currentModDirectory + ")";
 					}
+					trace(locationId);
 					trace(APEntryState.apGame.info().LocationChecks([APEntryState.apGame.info().get_location_id(locationId)]));
 					trace(APEntryState.apGame.info().get_location_name(APEntryState.apGame.info().get_location_id(locationId)));
 					trace(PlayState.SONG.song);

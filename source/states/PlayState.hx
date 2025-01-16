@@ -3349,7 +3349,7 @@ class PlayState extends MusicBeatState
 		}
 		Conductor.songPosition = savedTime;
 		trace("Saved Time:" + savedTime);
-		if (savedTime <= 0)
+		if (savedTime > 0)
 		{
 			FlxG.sound.music.pause();
 			vocals.pause();
@@ -10076,13 +10076,21 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		if (note.visible)
+		try
 		{
-			var time:Float = 0.15;
-			if (note.isSustainNote && !note.animation.curAnim.name.endsWith('tail'))
-				time += 0.15;
+			if (note.visible)
+			{
+				var time:Float = 0.15;
+				if (note.isSustainNote && !note.animation.curAnim.name.endsWith('tail'))
+					time += 0.15;
 
-			StrumPlayAnim(field, Std.int(Math.abs(note.noteData)) % Note.ammo[mania], time, note);
+				StrumPlayAnim(field, Std.int(Math.abs(note.noteData)) % Note.ammo[mania], time, note);
+			}
+		}
+		catch (e:Dynamic)
+		{
+			trace("Your Tail Note Was Bugged! Skipping Note");
+			return;
 		}
 
 		note.hitByOpponent = true;
