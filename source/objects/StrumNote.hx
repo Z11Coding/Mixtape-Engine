@@ -176,9 +176,9 @@ class StrumNote extends NoteObject
 
 			setGraphicSize(Std.int(width * Note.scales[PlayState.mania]));
 	
-			animation.addByPrefix('static', 'arrow' + animationArray[0]);
-			animation.addByPrefix('pressed', animationArray[1] + ' press', 24, false);
-			animation.addByPrefix('confirm', animationArray[1] + ' confirm', 24, false);
+			attemptToAddAnimationByPrefix('static', 'arrow' + animationArray[0]);
+			attemptToAddAnimationByPrefix('pressed', animationArray[1] + ' press');
+			attemptToAddAnimationByPrefix('confirm', 'arrow' + animationArray[0]);
 		}
 		defScale.copyFrom(scale);
 		updateHitbox();

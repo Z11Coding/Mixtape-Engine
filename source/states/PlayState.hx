@@ -872,11 +872,6 @@ class PlayState extends MusicBeatState
 			camOther.filtersEnabled = true;
 			camDialogue.setFilters(camDialoguefilters);
 			camDialogue.filtersEnabled = true;
-			camHUDfilters.push(shaders.ShadersHandler.chromaticAberration);
-			camVisualfilters.push(shaders.ShadersHandler.chromaticAberration);
-			camOtherfilters.push(shaders.ShadersHandler.chromaticAberration);
-			camDialoguefilters.push(shaders.ShadersHandler.chromaticAberration);
-			camGamefilters.push(shaders.ShadersHandler.chromaticAberration);
 			camGamefilters.push(new ShaderFilter(ShadersHandler.rainShader));
 			ShadersHandler.setupRainShader();
 		}
@@ -3349,7 +3344,7 @@ class PlayState extends MusicBeatState
 		}
 		Conductor.songPosition = savedTime;
 		trace("Saved Time:" + savedTime);
-		if (savedTime != 0)
+		if (savedTime <= 0)
 		{
 			FlxG.sound.music.pause();
 			vocals.pause();
@@ -5383,6 +5378,15 @@ class PlayState extends MusicBeatState
 				{
 					Paths.sound('lightning/Lightning$i');
 				}
+				camGamefilters.push(new ShaderFilter(ShadersHandler.rainShader));
+				ShadersHandler.setupRainShader();
+			case "Chromatic Abberation":
+				camHUDfilters.push(shaders.ShadersHandler.chromaticAberration);
+				camVisualfilters.push(shaders.ShadersHandler.chromaticAberration);
+				camOtherfilters.push(shaders.ShadersHandler.chromaticAberration);
+				camDialoguefilters.push(shaders.ShadersHandler.chromaticAberration);
+				camGamefilters.push(shaders.ShadersHandler.chromaticAberration);
+			
 		}
 
 		stagesFunc(function(stage:BaseStage) stage.eventPushed(event));
@@ -6163,7 +6167,7 @@ class PlayState extends MusicBeatState
 		if (needsReset)
 		{
 			callOnScripts('onSongRestart');
-			PlayState.savedTime = 0;
+			savedTime = -1;
 
 			moveCamera(true);
 
@@ -7218,7 +7222,7 @@ class PlayState extends MusicBeatState
 			|| playAsGF
 			&& healthGF <= 0)
 		{
-			savedTime = 0;
+			savedTime = -1;
 			var ret:Dynamic = callOnScripts('onGameOver', null, true);
 			if (ret != LuaUtils.Function_Stop)
 			{
@@ -8760,7 +8764,7 @@ class PlayState extends MusicBeatState
 		updateTime = false;
 
 		deathCounter = 0;
-		savedTime = 0;
+		savedTime = -1;
 		seenCutscene = false;
 
 		#if ACHIEVEMENTS_ALLOWED
@@ -10232,23 +10236,28 @@ class PlayState extends MusicBeatState
 		if (ClientPrefs.data.hitsoundVolume > 0 && !note.hitsoundDisabled)
 			FlxG.sound.play(Paths.sound('hitsound'), ClientPrefs.data.hitsoundVolume);
 
-		// Strum animations
-		if (note.visible)
-		{
-			if (field.autoPlayed)
+		try {
+			// Strum animations
+			if (note.visible)
 			{
-				var time:Float = 0.15;
-				if (note.isSustainNote && !note.animation.curAnim.name.endsWith('tail'))
-					time += 0.15;
+				if (field.autoPlayed)
+				{
+					var time:Float = 0.15;
+					if (note.isSustainNote && !note.animation.curAnim.name.endsWith('tail'))
+						time += 0.15;
 
-				StrumPlayAnim(field, Std.int(Math.abs(note.noteData)) % Note.ammo[mania], time, note);
+					StrumPlayAnim(field, Std.int(Math.abs(note.noteData)) % Note.ammo[mania], time, note);
+				}
+				else
+				{
+					var spr = field.strumNotes[note.noteData];
+					if (spr != null && field.keysPressed[note.noteData])
+						spr.playAnim('confirm', true, note);
+				}
 			}
-			else
-			{
-				var spr = field.strumNotes[note.noteData];
-				if (spr != null && field.keysPressed[note.noteData])
-					spr.playAnim('confirm', true, note);
-			}
+		}
+		catch(e) {
+			trace('TAIL WAS NULL! Skipping!');
 		}
 
 		if (ClientPrefs.data.inputSystem == "Mic'ed Up Engine")
