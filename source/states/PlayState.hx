@@ -872,6 +872,11 @@ class PlayState extends MusicBeatState
 			camOther.filtersEnabled = true;
 			camDialogue.setFilters(camDialoguefilters);
 			camDialogue.filtersEnabled = true;
+			camHUDfilters.push(shaders.ShadersHandler.chromaticAberration);
+			camVisualfilters.push(shaders.ShadersHandler.chromaticAberration);
+			camOtherfilters.push(shaders.ShadersHandler.chromaticAberration);
+			camDialoguefilters.push(shaders.ShadersHandler.chromaticAberration);
+			camGamefilters.push(shaders.ShadersHandler.chromaticAberration);
 			camGamefilters.push(new ShaderFilter(ShadersHandler.rainShader));
 			ShadersHandler.setupRainShader();
 		}
@@ -5378,15 +5383,6 @@ class PlayState extends MusicBeatState
 				{
 					Paths.sound('lightning/Lightning$i');
 				}
-				camGamefilters.push(new ShaderFilter(ShadersHandler.rainShader));
-				ShadersHandler.setupRainShader();
-			case "Chromatic Abberation":
-				camHUDfilters.push(shaders.ShadersHandler.chromaticAberration);
-				camVisualfilters.push(shaders.ShadersHandler.chromaticAberration);
-				camOtherfilters.push(shaders.ShadersHandler.chromaticAberration);
-				camDialoguefilters.push(shaders.ShadersHandler.chromaticAberration);
-				camGamefilters.push(shaders.ShadersHandler.chromaticAberration);
-			
 		}
 
 		stagesFunc(function(stage:BaseStage) stage.eventPushed(event));
@@ -10003,78 +9999,79 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
-				if (!note.exNote && !note.gfNote && note.noteType != 'GF Duet')
+				try
 				{
-					if (dad != null)
+					if (!note.exNote && !note.gfNote && note.noteType != 'GF Duet')
 					{
-						try
+						if (dad != null)
 						{
+							
 							if (note.animation != null && !note.animation.curAnim.name.endsWith('tail'))
 							{
 								dad.playAnim('sing' + Note.keysShit.get(mania).get('anims')[Std.int(Math.abs(note.noteData))] + altAnim, true);
 								dad.holdTimer = 0;
 							}
 						}
-						catch (e:Dynamic)
+					}
+
+					if (!note.exNote && !note.gfNote && note.noteType == 'GF Duet')
+					{
+						gf.playAnim('sing' + Note.keysShit.get(mania).get('anims')[Std.int(Math.abs(note.noteData))] + altAnim, true);
+						gf.holdTimer = 0;
+						dad.playAnim('sing' + Note.keysShit.get(mania).get('anims')[Std.int(Math.abs(note.noteData))] + altAnim, true);
+						dad.holdTimer = 0;
+					}
+
+					if (!note.exNote && note.gfNote && note.noteType != 'GF Duet')
+					{
+						if (gf != null)
 						{
-							trace("Your Tail Note Was Bugged! Skipping Note");
-							return;
+							if (!note.animation.curAnim.name.endsWith('tail'))
+							{
+								gf.playAnim('sing' + Note.keysShit.get(mania).get('anims')[Std.int(Math.abs(note.noteData))] + altAnim, true);
+								gf.holdTimer = 0;
+							}
+						}
+					}
+
+					if (note.exNote && !note.gfNote && note.noteType != 'GF Duet')
+					{
+						if (dad2 != null)
+						{
+							if (!note.animation.curAnim.name.endsWith('tail'))
+							{
+								dad2.playAnim('sing' + Note.keysShit.get(mania).get('anims')[Std.int(Math.abs(note.noteData))] + altAnim, true);
+								dad2.holdTimer = 0;
+							}
+						}
+					}
+
+					if (note.noteType == 'Hey!')
+					{
+						if (dad.animOffsets.exists('hey'))
+						{
+							dad.playAnim('hey', true);
+							dad.specialAnim = true;
+							dad.heyTimer = 0.6;
+						}
+						if (dad2 != null && bf2.animOffsets.exists('hey'))
+						{
+							dad2.playAnim('hey', true);
+							dad2.specialAnim = true;
+							dad2.heyTimer = 0.6;
+						}
+						if (gf != null && gf.animOffsets.exists('cheer'))
+						{
+							gf.playAnim('cheer', true);
+							gf.specialAnim = true;
+							gf.heyTimer = 0.6;
 						}
 					}
 				}
-
-				if (!note.exNote && !note.gfNote && note.noteType == 'GF Duet')
+				catch (e:Dynamic)
 				{
-					gf.playAnim('sing' + Note.keysShit.get(mania).get('anims')[Std.int(Math.abs(note.noteData))] + altAnim, true);
-					gf.holdTimer = 0;
-					dad.playAnim('sing' + Note.keysShit.get(mania).get('anims')[Std.int(Math.abs(note.noteData))] + altAnim, true);
-					dad.holdTimer = 0;
-				}
-
-				if (!note.exNote && note.gfNote && note.noteType != 'GF Duet')
-				{
-					if (gf != null)
-					{
-						if (!note.animation.curAnim.name.endsWith('tail'))
-						{
-							gf.playAnim('sing' + Note.keysShit.get(mania).get('anims')[Std.int(Math.abs(note.noteData))] + altAnim, true);
-							gf.holdTimer = 0;
-						}
-					}
-				}
-
-				if (note.exNote && !note.gfNote && note.noteType != 'GF Duet')
-				{
-					if (dad2 != null)
-					{
-						if (!note.animation.curAnim.name.endsWith('tail'))
-						{
-							dad2.playAnim('sing' + Note.keysShit.get(mania).get('anims')[Std.int(Math.abs(note.noteData))] + altAnim, true);
-							dad2.holdTimer = 0;
-						}
-					}
-				}
-
-				if (note.noteType == 'Hey!')
-				{
-					if (dad.animOffsets.exists('hey'))
-					{
-						dad.playAnim('hey', true);
-						dad.specialAnim = true;
-						dad.heyTimer = 0.6;
-					}
-					if (dad2 != null && bf2.animOffsets.exists('hey'))
-					{
-						dad2.playAnim('hey', true);
-						dad2.specialAnim = true;
-						dad2.heyTimer = 0.6;
-					}
-					if (gf != null && gf.animOffsets.exists('cheer'))
-					{
-						gf.playAnim('cheer', true);
-						gf.specialAnim = true;
-						gf.heyTimer = 0.6;
-					}
+					trace("Your Tail Note Was Bugged! Skipping Note");
+					return;
 				}
 			}
 		}

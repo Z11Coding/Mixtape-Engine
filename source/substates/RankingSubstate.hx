@@ -155,16 +155,17 @@ class RankingSubstate extends MusicBeatSubstate
 					TransitionState.transitionState(states.FreeplayState, {transitionType: "stickers"});
 				case "APFreeplay":	
 					trace('WENT BACK TO ARCHIPELAGO FREEPLAY??');
-				    Mods.loadTopMod();
 				    FlxG.sound.playMusic(Paths.music('panixPress'));
 					TransitionState.transitionState(states.FreeplayState, {transitionType: "stickers"});
 					var locationId = PlayState.SONG.song;
+					trace(Mods.currentModDirectory);
 					if (Mods.currentModDirectory.trim() != "") {
 						locationId += " (" + Mods.currentModDirectory + ")";
 					}
 					trace(APEntryState.apGame.info().LocationChecks([APEntryState.apGame.info().get_location_id(locationId)]));
 					trace(APEntryState.apGame.info().get_location_name(APEntryState.apGame.info().get_location_id(locationId)));
 					trace(PlayState.SONG.song);
+					Mods.loadTopMod();
 			}
 		}
 	}
