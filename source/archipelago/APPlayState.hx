@@ -136,6 +136,14 @@ class APPlayState extends PlayState {
             }
         }
 
+        if (!APEntryState.inArchipelagoMode)
+        {
+            FlxG.switchState(new PlayState());
+            return;
+        }
+
+
+
 		
 effectMap = [
     'colorblind' => function() {
@@ -1247,6 +1255,11 @@ addEffect("freeze");
 		}
 		shieldSprite.visible = false;
 		add(shieldSprite);
+        
+        if (cpuControlled)
+            {
+                set_cpuControlled(false);
+            }
     }
 
     public function addEffect(e:String)
