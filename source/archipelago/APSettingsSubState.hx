@@ -78,7 +78,7 @@ class APSettingsSubState extends MusicBeatSubstate {
                         for (song in leWeek.songs)
                         {
                             globalSongList.remove(song[0]); // To remove dups
-                            globalSongList.push(song[0]); // To add the folder name if it's not empty
+                            globalSongList.push((leWeek.folder != "") ? song[0] + " (" + leWeek.folder + ")" : song[0]);
                             globalSongList.remove(APEntryState.gameSettings.FNF.starting_song); // To remove Tutorial because it keeps re-adding itself
                         }
                     }
