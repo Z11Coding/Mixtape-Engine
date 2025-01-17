@@ -1,5 +1,6 @@
 package;
 
+import yutautil.save.FuncEmbed;
 import backend.modules.SyncUtils;
 import states.editors.content.Prompt;
 import flixel.graphics.FlxGraphic;
@@ -119,7 +120,12 @@ class Main extends Sprite
 		// trace("Test thing: " + testThing);
 
 		// archipelago.APEntryState.installAPWorld();
-
+		trace(FuncEmbed.functionToString(function() { return "Hello, world!"; }));
+		trace(FuncEmbed.runFunctionFromString(FuncEmbed.functionToString(function() { return "Hello, world!"; }), this));
+		trace(FuncEmbed.functionToString(Main.dummy, true));
+		trace(FuncEmbed.runFunctionFromString(FuncEmbed.functionToString(function() {
+			trace("This is a test function.");
+		}), this, true));
 		setupGame();
 	}
 
