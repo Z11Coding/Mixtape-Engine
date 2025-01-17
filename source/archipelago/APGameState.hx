@@ -223,7 +223,11 @@ class APGameState {
                 if (itemName != "Unknown")
                 {
                     if (!isSync) ArchPopup.startPopupSong(itemName, 'archColor');
-                    states.FreeplayState.curUnlocked.set(itemName, modName == "pico-mix" ? "" : modName);
+                    if (states.FreeplayState.curUnlocked.exists(modName)) {
+                        states.FreeplayState.curUnlocked.get(modName).push(itemName);
+                    } else {
+                        states.FreeplayState.curUnlocked.set(modName, [itemName]);
+                    }
                     if (states.FreeplayState.instance != null) states.FreeplayState.instance.reloadSongs(true);
                     trace("Unlocked: " + itemName);
                     trace(states.FreeplayState.curUnlocked);

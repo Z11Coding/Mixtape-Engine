@@ -76,7 +76,7 @@ class FreeplayState extends MusicBeatState
 	var listChoices:Array<String> = [];
 	var multiSongs:Array<String> = [];
 
-	public static var curUnlocked:Map<String, String> = new Map<String, String>();
+	public static var curUnlocked:Map<String, Array<String>> = new Map<String, Array<String>>();
 	public static var trueUnlocked:Array<String> = [];
 	public static var doChange:Bool = false;
 	public static var multisong:Bool = false;
@@ -545,8 +545,12 @@ class FreeplayState extends MusicBeatState
 									var songNameThing:String = song[0];
 									for (songName in curUnlocked.keys())
 									{
-										if ((songNameThing.trim().toLowerCase().replace('-', ' ') == songName.trim().toLowerCase().replace('-', ' ')) && leWeek.folder == curUnlocked.get(songName))
-											addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
+										var songArray:Array<String> = curUnlocked.get(songName);
+										for (songStr in songArray)
+										{
+											if ((songNameThing.trim().toLowerCase().replace('-', ' ') == songStr.trim().toLowerCase().replace('-', ' ')) && leWeek.folder == songName)
+												addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
+										}
 									}
 								}
 								else addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
