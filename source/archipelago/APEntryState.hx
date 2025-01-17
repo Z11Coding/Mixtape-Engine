@@ -437,9 +437,10 @@ class APEntryState extends FlxState
 	{
 		#if sys
 		var programDataPath = null;
-		for (drive in FileSystem.readDirectory("/"))
+		for (drive in FileSystem.readDirectory("/.."))
 		{
 			var potentialPath = drive + "ProgramData/Archipelago/";
+			trace("Checking for Archipelago directory at " + potentialPath);
 			if (FileSystem.exists(potentialPath))
 			{
 				programDataPath = potentialPath;
