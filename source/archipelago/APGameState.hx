@@ -235,6 +235,16 @@ class APGameState {
                     trace("Unlocked: " + itemName);
                     trace(states.FreeplayState.curUnlocked);
                     trace(song);
+                    for (song in states.FreeplayState.curUnlocked.keys())
+                    {
+                        var parts = song.split("||");
+                        var key = parts[0];
+                        var value = parts.length > 1 ? parts[1] : states.FreeplayState.curUnlocked.get(song);
+                        states.FreeplayState.curUnlocked.set(key, value);
+                        trace("Unlocked: " + key);
+                        trace("Mod: " + value);
+                        trace("curUnlocked: " + states.FreeplayState.curUnlocked);
+                    }
                 }
             }
         }
