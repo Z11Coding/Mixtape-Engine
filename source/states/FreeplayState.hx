@@ -122,7 +122,18 @@ class FreeplayState extends MusicBeatState
 				return "";
 			}
 
-			if ((curUnlocked.exists(APEntryState.victorySong) && (APPlayState.currentMod == curUnlocked.get(APEntryState.victorySong) || (curUnlocked.get(APEntryState.victorySong) == '' && (getLastParenthesesContent(curUnlocked.get(APEntryState.victorySong)) != '' && getLastParenthesesContent(curUnlocked.get(APEntryState.victorySong)))== APPlayState.currentMod))) && callVictory)
+			if (
+				curUnlocked.exists(APEntryState.victorySong) &&
+				(
+					APPlayState.currentMod == curUnlocked.get(APEntryState.victorySong) ||
+					(
+						curUnlocked.get(APEntryState.victorySong) == '' &&
+						getLastParenthesesContent(curUnlocked.get(APEntryState.victorySong)) != '' &&
+						getLastParenthesesContent(curUnlocked.get(APEntryState.victorySong)) == APPlayState.currentMod
+					)
+				) &&
+				callVictory
+			)
 			{
 				callVictory = false;
 				APEntryState.apGame.info().clientStatus = ClientStatus.GOAL;
