@@ -216,10 +216,10 @@ class APGameState {
         for (songName in song)
         {
             var itemName = info().get_item_name(songName.item);
-            var lastParenIndex = itemName.lastIndexOf("(Mod: ");
+            var lastParenIndex = itemName.lastIndexOf("((");
             var modName = "";
             if (lastParenIndex != -1) {
-                 modName = itemName.substring(lastParenIndex + 1, itemName.indexOf(")", lastParenIndex));
+                 modName = itemName.substring(lastParenIndex + 1, itemName.indexOf("))", lastParenIndex));
                 if (isModName(modName)) {
                     itemName = itemName.substring(0, lastParenIndex).trim();
                 }
@@ -262,7 +262,7 @@ class APGameState {
         {
             if (item.indexOf("(") != -1)
             {
-                var modName = item.substring(item.indexOf("(") + 1, item.indexOf(")"));
+                var modName = item.substring(item.indexOf("((") + 1, item.indexOf("))"));
                 if (mods.contains(modName))
                 {
                     APItems.push(item);
