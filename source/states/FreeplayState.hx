@@ -511,7 +511,7 @@ class FreeplayState extends MusicBeatState
 									var songNameThing:String = song[0];
 									for (songName in curUnlocked.keys())
 									{
-										if ((songNameThing.trim().toLowerCase().replace('-', ' ') == songName.trim().toLowerCase().replace('-', ' ')) && leWeek.folder == curUnlocked.get(songName.trim().toLowerCase().replace('-', ' ')))
+										if ((songNameThing.trim().toLowerCase().replace('-', ' ') == songName.trim().toLowerCase().replace('-', ' ')) && leWeek.folder == curUnlocked.get(songName))
 											addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
 									}
 								}
