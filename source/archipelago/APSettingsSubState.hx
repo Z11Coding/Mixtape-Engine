@@ -65,27 +65,27 @@ class APSettingsSubState extends MusicBeatSubstate {
                             }
                         }
                     }
-                case "Test":
-                    toList = APInfo.baseGame;
-                default:
-                    toList = APInfo.baseGame; //This always resets the list to just base base game
-                    for (erect in APInfo.baseErect)
-                        toList.push(erect);
-                    for (pico in APInfo.basePico)
-                        toList.push(pico);
-                    for (secret in APInfo.secrets)
-                        toList.push(secret);
-                    if (APEntryState.gameSettings.FNF.mods_enabled)
-                    {
-                        for (i in 0...WeekData.weeksList.length) {
-                            var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
-                            trace(leWeek.folder);
-                            for (song in leWeek.songs)
-                            {
-                                toList.remove(song[0]); // To remove dups
-                                toList.push(song[0] + (StringTools.trim(leWeek.folder) != "" ? " (" + leWeek.folder + ")" : "")); // To add the folder name if it's not empty
-                                toList.remove(APEntryState.gameSettings.FNF.starting_song); // To remove Tutorial because it keeps re-adding itself
-                            }
+                }
+            case "Test":
+                globalSongList = APInfo.baseGame;
+            default:
+                globalSongList = APInfo.baseGame; //This always resets the list to just base base game
+                for (erect in APInfo.baseErect)
+                    globalSongList.push(erect);
+                for (pico in APInfo.basePico)
+                    globalSongList.push(pico);
+                for (secret in APInfo.secrets)
+                    globalSongList.push(secret);
+                if (APEntryState.gameSettings.FNF.mods_enabled)
+                {
+                    for (i in 0...WeekData.weeksList.length) {
+                        var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
+                        trace(leWeek.folder);
+                        for (song in leWeek.songs)
+                        {
+                            globalSongList.remove(song[0]); // To remove dups
+                            globalSongList.push((leWeek.folder != "") ? song[0] + " (" + leWeek.folder + ")" : song[0]);
+                            globalSongList.remove(APEntryState.gameSettings.FNF.starting_song); // To remove Tutorial because it keeps re-adding itself
                         }
                     }
             }
