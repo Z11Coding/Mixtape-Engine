@@ -413,6 +413,9 @@ class APSettingsSubState extends MusicBeatSubstate {
 		openSubState(new Prompt("Settings Exported Successfully!", 0, null, null, false));
 
         // Add actual settings.
+        if (sys.io.File.exists("PlayerSettings/" + APEntryState.yamlName + ".yaml")) {
+            FileSystem.deleteFile("PlayerSettings/" + APEntryState.yamlName + ".yaml");
+        }
 
         var yamlString = "Friday Night Funkin:\n";
         for (key in Reflect.fields(yamlThing)) {
