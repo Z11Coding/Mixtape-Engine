@@ -209,13 +209,13 @@ class APGameState {
         for (songName in song)
         {
             var itemName = info().get_item_name(songName.item);
-            // var lastParenIndex = itemName.lastIndexOf("(");
-            // if (lastParenIndex != -1) {
-            //     var modName = itemName.substring(lastParenIndex + 1, itemName.indexOf(")", lastParenIndex));
-            //     if (isModName(modName)) {
-            //         itemName = itemName.substring(0, lastParenIndex).trim();
-            //     }
-            // }
+            var lastParenIndex = itemName.lastIndexOf("(");
+            if (lastParenIndex != -1) {
+                var modName = itemName.substring(lastParenIndex + 1, itemName.indexOf(")", lastParenIndex));
+                if (isModName(modName)) {
+                    itemName = itemName.substring(0, lastParenIndex).trim();
+                }
+            }
             if (!states.FreeplayState.curUnlocked.contains(itemName))
             {
                 if (!isSync) ArchPopup.startPopupSong(itemName, 'archColor');

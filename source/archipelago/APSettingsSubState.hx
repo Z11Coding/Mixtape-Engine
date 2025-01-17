@@ -8,6 +8,8 @@ import flixel.util.FlxGradient;
 import yaml.Yaml;
 import yaml.Renderer;
 import substates.Prompt;
+using yutautil.CollectionUtils;
+
 
 class APSettingsSubState extends MusicBeatSubstate {
     public static var globalSongList:Array<String> = [];
@@ -438,7 +440,7 @@ class APSettingsSubState extends MusicBeatSubstate {
         if (Reflect.hasField(yamlThing, "songList")) {
             var songList = Reflect.field(yamlThing, "songList");
             var uniqueSongList = new Array<String>();
-            for (song in songList.toArray()) {
+            for (song in yutautil.CollectionUtils.toArray(songList)) {
             if (!uniqueSongList.contains(song)) {
                 uniqueSongList.push(song);
             }

@@ -162,11 +162,6 @@ class RankingSubstate extends MusicBeatSubstate
 				    FlxG.sound.playMusic(Paths.music('panixPress'));
 					TransitionState.transitionState(states.FreeplayState, {transitionType: "stickers"});
 					var locationId = PlayState.SONG.song;
-					// trace(Mods.currentModDirectory);
-					// if (Mods.currentModDirectory.trim() != "") {
-					// 	locationId += " (" + Mods.currentModDirectory + ")";
-					// }
-					trace(locationId);
 					trace('Combo Gotten:'+comboRankLimit+" Combo Required: "+comboRankSetLimit);
 					trace('Accuracy Gotten:'+accRankLimit+" Accuracy Required: "+accRankSetLimit);
 					if (comboRankLimit >= comboRankSetLimit && accRankLimit >= accRankSetLimit)
@@ -174,7 +169,14 @@ class RankingSubstate extends MusicBeatSubstate
 						trace(APEntryState.apGame.info().LocationChecks([APEntryState.apGame.info().get_location_id(locationId)]));
 						trace(APEntryState.apGame.info().get_location_name(APEntryState.apGame.info().get_location_id(locationId)));
 						trace(PlayState.SONG.song);
+					trace(Mods.currentModDirectory);
+					if (Mods.currentModDirectory.trim() != "") {
+						locationId += " (" + Mods.currentModDirectory + ")";
 					}
+					trace(locationId);
+					trace(APEntryState.apGame.info().LocationChecks([APEntryState.apGame.info().get_location_id(locationId)]));
+					trace(APEntryState.apGame.info().get_location_name(APEntryState.apGame.info().get_location_id(locationId)));
+					trace(PlayState.SONG.song);
 					Mods.loadTopMod();
 			}
 		}
