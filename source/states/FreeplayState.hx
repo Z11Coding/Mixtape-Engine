@@ -122,11 +122,28 @@ class FreeplayState extends MusicBeatState
 				return "";
 			}
 
+			function ifAnyTrue(input:Array<Bool>):Bool {
+				for (i in 0...input.length) {
+					if (input[i]) {
+						return true;
+					}
+				}
+				return false;
+			}
+
 			if (
-				curUnlocked.keys().toArray().map(function(key) {
-					return getLastParenthesesContent(key) == APEntryState.victorySong;
-				}) &&
-				callVictory
+				(function() {
+					for (mods in curUnlocked.keys()) {
+						if (curUnlocked.get(mods).length > 0) {
+							for (song in curUnlocked.get(mods)) {
+								if (song.toLowerCase() == APEntryState.victorySong.toLowerCase() && mods == APPlayState.currentMod) {
+									return true;
+								}
+							}
+						}
+					}
+					return false;
+				})()
 			)
 			{
 				callVictory = false;
@@ -565,7 +582,7 @@ class FreeplayState extends MusicBeatState
 									{
 										for (songName in curUnlocked.keys())
 										{
-											if ((song[0] == songName || checkStringCombinations(songName, song[0])) && leWeek.folder == curUnlocked.get(songName))
+											if ((song[0] == songName || checkStringCombinations(songName, song[0])) && curUnlocked.exists(leWeek.folder) && curUnlocked.get(leWeek.folder).contains(songName))
 												for (comb in getAllStringCombinations(songName))
 													addSong(comb, i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
 										}
@@ -582,17 +599,15 @@ class FreeplayState extends MusicBeatState
 			{
 				if (refresh)
 				{
-					for (songName in curUnlocked.keys()) {
-						if (curUnlocked.get(songName) == '') {
-							if (songName.toLowerCase() == 'small argument'.toLowerCase() && curUnlocked.get(songName) == '')
+					for (song in curUnlocked.get('')) {
+							if (song.toLowerCase() == 'small argument'.toLowerCase())
 								addSong('Small Argument', 0, "gfchibi", FlxColor.fromRGB(235, 100, 161));
-							if (songName.toLowerCase() == 'beat battle'.toLowerCase() && curUnlocked.get(songName) == '')
+							if (song.toLowerCase() == 'beat battle'.toLowerCase())
 								addSong('Beat Battle', 0, "gf", FlxColor.fromRGB(165, 0, 77));
-							if (songName.toLowerCase() == 'beat battle 2'.toLowerCase() && curUnlocked.get(songName) == '')
+							if (song.toLowerCase() == 'beat battle 2'.toLowerCase())
 								addSong('Beat Battle 2', 0, "gf", FlxColor.fromRGB(165, 0, 77));
 						}
 					}
-				}
 				else
 				{
 					if (curUnlocked.exists('Small Argument'.toLowerCase()) && Std.string('Small Argument').toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()) && FlxG.save.data.gotIntoAnArgument && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 
