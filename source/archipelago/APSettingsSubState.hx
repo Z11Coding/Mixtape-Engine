@@ -128,7 +128,7 @@ class APSettingsSubState extends MusicBeatSubstate {
                             for (song in leWeek.songs)
                             {
                                 globalSongList.remove(song[0]); // To remove dups
-                                globalSongList.push(song[0] + (StringTools.trim(leWeek.folder) != "" ? " (" + leWeek.folder + ")" : "")); // To add the folder name if it's not empty
+                                globalSongList.push(Paths.formatToSongPath(song[0]) + (StringTools.trim(leWeek.folder) != "" ? " (" + leWeek.folder + ")" : "")); // To add the folder name if it's not empty
                             }
                         }
                     }
@@ -439,9 +439,9 @@ class APSettingsSubState extends MusicBeatSubstate {
             var songList = Reflect.field(yamlThing, "songList");
             var uniqueSongList = new Array<String>();
             for (song in yutautil.CollectionUtils.toArray(songList)) {
-            if (!uniqueSongList.contains(song)) {
-                uniqueSongList.push(song);
-            }
+                if (!uniqueSongList.contains(song)) {
+                    uniqueSongList.push(song);
+                }
             }
             Reflect.setField(yamlThing, "songList", uniqueSongList);
         }

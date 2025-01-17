@@ -161,22 +161,20 @@ class RankingSubstate extends MusicBeatSubstate
 					trace('WENT BACK TO ARCHIPELAGO FREEPLAY??');
 				    FlxG.sound.playMusic(Paths.music('panixPress'));
 					TransitionState.transitionState(states.FreeplayState, {transitionType: "stickers"});
-					var locationId = PlayState.SONG.song;
+					var locationId = Paths.formatToSongPath(PlayState.SONG.song);
 					trace('Combo Gotten:'+comboRankLimit+" Combo Required: "+comboRankSetLimit);
 					trace('Accuracy Gotten:'+accRankLimit+" Accuracy Required: "+accRankSetLimit);
 					if (comboRankLimit <= comboRankSetLimit && accRankLimit <= accRankSetLimit)
 					{
-						trace(APEntryState.apGame.info().LocationChecks([APEntryState.apGame.info().get_location_id(locationId)]));
-						trace(APEntryState.apGame.info().get_location_name(APEntryState.apGame.info().get_location_id(locationId)));
+						trace(Mods.currentModDirectory);
+						if (Mods.currentModDirectory.trim() != "") {
+							locationId += " (" + Mods.currentModDirectory + ")";
+						}
+						trace(locationId.trim());
+						trace(APEntryState.apGame.info().LocationChecks([APEntryState.apGame.info().get_location_id(locationId.trim())]));
+						trace(APEntryState.apGame.info().get_location_name(APEntryState.apGame.info().get_location_id(locationId.trim())));
 						trace(PlayState.SONG.song);
-					trace(Mods.currentModDirectory);
-					if (Mods.currentModDirectory.trim() != "") {
-						locationId += " (" + Mods.currentModDirectory + ")";
 					}
-					trace(locationId);
-					trace(APEntryState.apGame.info().LocationChecks([APEntryState.apGame.info().get_location_id(locationId)]));
-					trace(APEntryState.apGame.info().get_location_name(APEntryState.apGame.info().get_location_id(locationId)));
-					trace(PlayState.SONG.song);
 					Mods.loadTopMod();
 			}
 		}

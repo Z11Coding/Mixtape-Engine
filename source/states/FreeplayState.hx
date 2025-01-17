@@ -451,9 +451,17 @@ class FreeplayState extends MusicBeatState
 							}
 							if (APEntryState.inArchipelagoMode)
 							{
+								var itemName = APEntryState.apGame.info().get_item_name(song[0]);
+								var lastParenIndex = itemName.lastIndexOf("(");
+								if (lastParenIndex != -1) {
+									var modName = itemName.substring(lastParenIndex + 1, itemName.indexOf(")", lastParenIndex));
+									if (modName == Mods.currentModDirectory) {
+										itemName = itemName.substring(0, lastParenIndex).trim();
+									}
+								}
 								for (ii in 0...curUnlocked.length)
 								{
-									if (curUnlocked[ii].contains(song[0]))
+									if (song[0] == curUnlocked[ii])
 										addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
 								}
 							}
