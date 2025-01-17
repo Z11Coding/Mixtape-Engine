@@ -45,6 +45,8 @@ class APSettingsSubState extends MusicBeatSubstate {
         if (APEntryState.gameSettings.FNF.mods_enabled) {
             for (i in 0...WeekData.weeksList.length) {
                 var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
+                
+                if (Mods.parseList().enabled.contains(leWeek.folder))
                 for (song in leWeek.songs) {
                     var songName = (cast song[0] : String).toLowerCase().replace(" ", "-");
                     tempSongList.set(songName + (StringTools.trim(leWeek.folder) != "" ? " (" + leWeek.folder + ")" : ""), true);
