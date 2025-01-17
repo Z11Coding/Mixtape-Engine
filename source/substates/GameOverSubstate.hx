@@ -56,6 +56,7 @@ class GameOverSubstate extends MusicBeatSubstate
 	var overlayConfirmOffsets:FlxPoint = FlxPoint.get();
 	override function create()
 	{
+		APPlayState.deathByLink = false;
 		instance = this;
 
 		Conductor.songPosition = 0;

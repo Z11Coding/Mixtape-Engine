@@ -1172,6 +1172,7 @@ class Client {
 						packet.countdown
 					);
 				case "Bounced":
+					_hOnBounced(packet.data);	
 					return IncomingPacket.Bounced(
 						packet.games,
 						packet.slots,
@@ -1407,6 +1408,7 @@ class Client {
 							break;
 					}
 					_hOnBounced(data);
+					trace(data);
 
 				// BUG: "Cannot access non-static abstract field statically" on extracting "keys"
 				// case Retrieved(keys):

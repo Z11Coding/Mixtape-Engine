@@ -162,16 +162,9 @@ class APGameState {
     {
         if ((Reflect.hasField(data, "cause") && Reflect.hasField(data, "source") && Reflect.hasField(data, "time")) && !APPlayState.deathByLink)
         {
-            var cause:String = "";
-            try {
-                if (data.cause != null && (data.cause != "" || data.cause != " ")) cause = data.cause + "\n[pause:0.5](Sounds like a skill issue...)";
-            }
-            catch(e) {trace('DEATHLINKPACK WAS NULL!');}
-            if (cause.trim() == "") cause = data.source + " has died.\n[pause:0.5](How Unfortunate...)";
-            COD.setCOD(null, cause);
-            PlayState.instance.die();  
+            var dl:Dynamic = data;
+            APPlayState.deathLinkPacket = dl;
             APPlayState.deathByLink = true;
-            trace("Triggering DeathLink!");
         }
         trace(data);
     }

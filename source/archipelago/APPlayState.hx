@@ -1773,6 +1773,17 @@ public function doEffect(effect:String)
 	var doRandomize:Bool = false;
     override public function update(elapsed:Float)
 	{
+        if (startedCountdown && deathByLink) {
+            var cause:String = "";
+            try {
+                if (deathLinkPacket.cause != null && (deathLinkPacket.cause != "" || deathLinkPacket.cause != " ")) cause = deathLinkPacket.cause + "\n[pause:0.5](Sounds like a skill issue...)";
+            }
+            catch(e) {trace('DEATHLINKPACK WAS NULL!');}
+            if (cause.trim() == "") cause = deathLinkPacket.source + " has died.\n[pause:0.5](How Unfortunate...)";
+            COD.setCOD(null, cause);
+            die();  
+            trace("Triggering DeathLink!");
+        }
         #if cpp			
 		if(FlxG.sound.music != null && FlxG.sound.music.playing)
 		{
@@ -2000,7 +2011,6 @@ public function doEffect(effect:String)
             }
         }
         if (health <= 0 && bfkilledcheck && !deathByLink) APEntryState.apGame.info().sendDeathLink(COD.COD.COD); // Don't ask why it works like this...
-        deathByLink = false;
         super.doDeathCheck();
         return true;
     }
