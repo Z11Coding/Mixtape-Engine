@@ -1,5 +1,7 @@
 package yutautil.save;
 
+import yutautil.save.FuncEmbed as FuncE;
+
 class MixSave {
     public var content:Map<String, Dynamic>;
     private var customBehaviors:Map<String, {save:Dynamic->String, load:String->Dynamic}>;
@@ -24,6 +26,9 @@ class MixSave {
 
     public function registerBehavior(key:String, saveFunc:Dynamic->String, loadFunc:String->Dynamic):Void {
         customBehaviors.set(key, {save: saveFunc, load: loadFunc});
+        if (!content.exists(key)) {
+            content.set(key, null);
+        }
     }
 
     public function saveContent(key:String):String {

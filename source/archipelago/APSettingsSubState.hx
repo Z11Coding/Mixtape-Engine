@@ -65,6 +65,9 @@ class APSettingsSubState extends MusicBeatSubstate {
             var formattedName = parts[0].toLowerCase().replace(" ", "-");
             if (parts.length > 1) {
                 formattedName += " (" + parts[1];
+                if (!formattedName.endsWith(")")) {
+                    formattedName += ")";
+                }
             }
             if (formattedName != songName.trim().toLowerCase().replace(" ", "-")) {
                 trace('Verification failed for: ' + songName);
