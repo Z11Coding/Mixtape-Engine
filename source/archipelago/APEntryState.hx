@@ -141,7 +141,7 @@ class APEntryState extends FlxState
 				port: "38281",
 				slot: "Player"
 			};
-		if (FNF.data.gameSettings != null) gameSettings = FNF.data.gameSettings;
+		/*if (FNF.data.gameSettings != null) gameSettings = FNF.data.gameSettings;
 		if (gameSettings.FNF == null) gameSettings.FNF = {
 			progression_balancing: FNF.data.gameSettings.progression_balancing,
 			accessibility: FNF.data.gameSettings.accessibility,
@@ -163,7 +163,7 @@ class APEntryState extends FlxState
 			shieldWeight: FNF.data.gameSettings.shieldWeight,
 			MHPWeight: FNF.data.gameSettings.MHPWeight,
 			songList: []
-		};
+		};*/
 		
 		FNF.destroy();
 
@@ -413,8 +413,6 @@ class APEntryState extends FlxState
 		ap.onSlotConnected.remove(onSlotConnected);
 		deathLink = slotData.deathlink == 0 ? false : true;
 		victorySong = slotData.victoryLocation;
-		fullSongCount = slotData.fullSongCount;
-		RankingSubstate.comboRankLimit = slotData.fullSongCount;
 		fullSongCount = slotData.fullSongCount;
 		closeSubState();
 		inArchipelagoMode = true;

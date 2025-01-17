@@ -218,12 +218,15 @@ class APGameState {
             }
             if (!states.FreeplayState.curUnlocked.contains(itemName))
             {
-                if (!isSync) ArchPopup.startPopupSong(itemName, 'archColor');
-                states.FreeplayState.curUnlocked.push(itemName);
-                if (states.FreeplayState.instance != null) states.FreeplayState.instance.reloadSongs(true);
-                trace("Unlocked: " + itemName);
-                trace(states.FreeplayState.curUnlocked);
-                trace(song);
+                if (itemName != "Unknown")
+                {
+                    if (!isSync) ArchPopup.startPopupSong(itemName, 'archColor');
+                    states.FreeplayState.curUnlocked.push(itemName);
+                    if (states.FreeplayState.instance != null) states.FreeplayState.instance.reloadSongs(true);
+                    trace("Unlocked: " + itemName);
+                    trace(states.FreeplayState.curUnlocked);
+                    trace(song);
+                }
             }
         }
         isSync = false;

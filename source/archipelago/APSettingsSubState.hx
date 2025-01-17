@@ -74,11 +74,11 @@ class APSettingsSubState extends MusicBeatSubstate {
             }
             globalSongList.push(formattedName);
             } else {
-            var formattedName = songName.toLowerCase().replace(" ", "-");
-            if (formattedName != songName.trim().toLowerCase().replace(" ", "-")) {
-                trace('Verification failed for: ' + songName);
-            }
-            globalSongList.push(formattedName);
+                var formattedName = songName.toLowerCase().replace(" ", "-");
+                if (formattedName != songName.trim().toLowerCase().replace(" ", "-")) {
+                    trace('Verification failed for: ' + songName);
+                }
+                globalSongList.push(formattedName);
             }
         }
     }
@@ -234,7 +234,7 @@ class APSettingsSubState extends MusicBeatSubstate {
             APEntryState.gameSettings.FNF.mods_enabled = allowMods.checked;
             generateSongList();
         });
-        allowMods.checked = APEntryState.gameSettings.FNF.mods_enabled;
+        allowMods.checked = false;
 
         objY += 50;
         gradeRequirement = new PsychUIDropDownMenu(objX, objY, [''], function(id:Int, grade:String)
@@ -439,23 +439,6 @@ class APSettingsSubState extends MusicBeatSubstate {
     override function update(elapsed:Float) {
         super.update(elapsed);
 
-        progression_balancing.update(elapsed);
-        accessibility.update(elapsed);
-        unlockType.update(elapsed);
-        unlockMethod.update(elapsed);
-        gradeRequirement.update(elapsed);
-        accRequirement.update(elapsed);
-        ticketPercent.update(elapsed);
-        ticketWinPercent.update(elapsed);
-        chartmodifierchance.update(elapsed);
-        trapAmount.update(elapsed);
-        bbcWeight.update(elapsed);
-        ghostChatWeight.update(elapsed);
-        tutorialWeight.update(elapsed);
-        svcWeight.update(elapsed);
-        fakeTransWeight.update(elapsed);
-        shieldWeight.update(elapsed);
-        MHPWeight.update(elapsed);
         if(FlxG.sound.music != null && FlxG.sound.music.playing)
 		{
 			@:privateAccess
