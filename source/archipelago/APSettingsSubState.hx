@@ -19,7 +19,6 @@ class APSettingsSubState extends MusicBeatSubstate {
     var accessibility:PsychUIDropDownMenu;
     var unlockType:PsychUIDropDownMenu;
     var unlockMethod:PsychUIDropDownMenu;
-    var startingSong:PsychUIDropDownMenu;
     var gradeRequirement:PsychUIDropDownMenu;
     var accRequirement:PsychUIDropDownMenu;
     var allowMods:PsychUICheckBox;
@@ -97,6 +96,7 @@ class APSettingsSubState extends MusicBeatSubstate {
             switch (type)
             {
                 case "A":
+                    trace("A");
                     globalSongList = APInfo.baseGame;    
                     for (erect in APInfo.baseErect)
                         globalSongList.push(erect);
@@ -105,6 +105,7 @@ class APSettingsSubState extends MusicBeatSubstate {
                     for (secret in APInfo.secrets)
                         globalSongList.push(secret);
                 case "B":
+                    trace("B");
                     if (APEntryState.gameSettings.FNF.mods_enabled)
                     {
                         for (i in 0...WeekData.weeksList.length) {
@@ -118,15 +119,18 @@ class APSettingsSubState extends MusicBeatSubstate {
                         }
                     }
                 case "Test":
+                    trace("TEST");
                     globalSongList = APInfo.baseGame;
                 default:
+                    trace("RESORTING TO DEFAULT!");
                     if (APEntryState.gameSettings.FNF.mods_enabled)
                     {
                         for (i in 0...WeekData.weeksList.length) {
                             var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
                             trace(leWeek.folder);
                             for (song in leWeek.songs)
-                            { var songName = Paths.formatToSongPath(song[0]);
+                            { 
+                                var songName = Paths.formatToSongPath(song[0]);
                                 globalSongList.remove(songName); // To remove dups
                                 globalSongList.push(songName) + (StringTools.trim(leWeek.folder) != "" ? " (" + leWeek.folder + ")" : ""); // To add the folder name if it's not empty
                             }
@@ -134,9 +138,14 @@ class APSettingsSubState extends MusicBeatSubstate {
                     }
             }
         }
+        trace(globalSongList);
 	}
 
     override function create() {
+        FlxTween.num(1, 0.0134, 1, {ease: FlxEase.sineInOut}, function(t) {
+            APEntryState.lowFilterAmount = t;
+        });
+
         dim = new FlxSprite().makeGraphic(FlxG.width*4, FlxG.height*4, 0x000000);
         dim.scrollFactor.set();
         dim.screenCenter();
@@ -150,8 +159,6 @@ class APSettingsSubState extends MusicBeatSubstate {
         box.canMinimize = false;
         box.screenCenter();
 		add(box);
-
-        generateSongList();
 
         addMainSettings();
         addSongsSettings();
@@ -283,7 +290,7 @@ class APSettingsSubState extends MusicBeatSubstate {
         function() 
         {
             APEntryState.gameSettings.FNF.mods_enabled = allowMods.checked;
-            generateSongList(!allowMods.checked ? "A" : '');
+            //generateSongList(!allowMods.checked ? "A" : '');
         });
         allowMods.checked = APEntryState.gameSettings.FNF.mods_enabled;
 
@@ -410,7 +417,9 @@ class APSettingsSubState extends MusicBeatSubstate {
             Reflect.setField(yamlThing, thing, Reflect.field(APEntryState.gameSettings.FNF, thing));
         }
 
+        trace(globalSongList);
 		APEntryState.gameSettings.FNF.songList = globalSongList;
+        trace(globalSongList);
         var mainSettings = {name: APEntryState.yamlName, description: APEntryState.gameSettings.description, game: APEntryState.gameSettings.game};
         var document = Yaml.render(mainSettings, Renderer.options().setFlowLevel(1));
 		trace(document);
@@ -475,8 +484,40 @@ class APSettingsSubState extends MusicBeatSubstate {
     override function update(elapsed:Float) {
         super.update(elapsed);
 
+        progression_balancing.update(elapsed);
+        accessibility.update(elapsed);
+        unlockType.update(elapsed);
+        unlockMethod.update(elapsed);
+        gradeRequirement.update(elapsed);
+        accRequirement.update(elapsed);
+        allowMods.update(elapsed);
+        deathlink.update(elapsed);
+        ticketPercent.update(elapsed);
+        ticketWinPercent.update(elapsed);
+        chartmodifierchance.update(elapsed);
+        trapAmount.update(elapsed);
+        bbcWeight.update(elapsed);
+        ghostChatWeight.update(elapsed);
+        tutorialWeight.update(elapsed);
+        svcWeight.update(elapsed);
+        fakeTransWeight.update(elapsed);
+        shieldWeight.update(elapsed);
+        MHPWeight.update(elapsed);
+        if(FlxG.sound.music != null && FlxG.sound.music.playing)
+		{
+			@:privateAccess
+			{
+				var af = lime.media.openal.AL.createFilter(); // create AudioFilter
+				lime.media.openal.AL.filteri( af, lime.media.openal.AL.FILTER_TYPE, lime.media.openal.AL.FILTER_LOWPASS ); // set filter type
+				lime.media.openal.AL.filterf( af, lime.media.openal.AL.LOWPASS_GAIN, 1 ); // set gain
+				lime.media.openal.AL.filterf( af, lime.media.openal.AL.LOWPASS_GAINHF, APEntryState.lowFilterAmount ); // set gainhf
+				lime.media.openal.AL.sourcei( FlxG.sound.music._channel.__audioSource.__backend.handle, lime.media.openal.AL.DIRECT_FILTER, af ); // apply filter to source (handle)
+				//lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__audioSource.__backend.handle, lime.media.openal.AL.HIGHPASS_GAIN, 0);
+			}
+		}
         if (controls.BACK) 
         {
+            trace(globalSongList);
             onGenYaml();
             FlxTween.num(0.0134, 1, 1, {ease: FlxEase.sineInOut}, function(t) {
                 APEntryState.lowFilterAmount = t;
