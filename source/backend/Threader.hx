@@ -99,7 +99,7 @@ class Threader {
         var nameExpr = Context.makeExpr(name != "" && name != null ? name : "Thread_" + Std.random(1000000) + "_" + (stringRandomizer(8)), Context.currentPos());
         var generatedName:String = ExprTools.toString(nameExpr);
         generatedThreads.push(generatedName);
-        trace("Preparing a threaded section of code:" + expr + " with sleep duration: " + sleepDuration + " and name: " + generatedName);
+        trace("Preparing a threaded section of code:\n" + expr + " \nwith sleep duration: " + sleepDuration + " and name: " + generatedName);
         var threadExpr = macro {
             #if sys
             backend.Threader.quietThreads.push($nameExpr);
