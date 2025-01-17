@@ -49,7 +49,7 @@ class APSettingsSubState extends MusicBeatSubstate {
                 if (Mods.parseList().enabled.contains(leWeek.folder))
                 for (song in leWeek.songs) {
                     var songName = (cast song[0] : String).toLowerCase().replace(" ", "-");
-                    tempSongList.set(songName + (StringTools.trim(leWeek.folder) != "" ? " ((" + leWeek.folder + "))" : ""), true);
+                    tempSongList.set(songName + (StringTools.trim(leWeek.folder) != "" ? "||" + leWeek.folder : ""), true);
                 }
             }
         }

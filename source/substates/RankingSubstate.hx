@@ -168,7 +168,7 @@ class RankingSubstate extends MusicBeatSubstate
 					{
 						trace(APPlayState.currentMod);
 						if (APPlayState.currentMod.trim() != "") {
-							locationId += "((" + APPlayState.currentMod + "))";
+							locationId += "||" + APPlayState.currentMod.trim();
 						}
 						trace(locationId.trim());
 						trace(APEntryState.apGame.info().LocationChecks([APEntryState.apGame.info().get_location_id(locationId.trim())]));
