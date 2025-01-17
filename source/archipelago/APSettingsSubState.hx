@@ -64,7 +64,7 @@ class APSettingsSubState extends MusicBeatSubstate {
             var parts = songName.split(" (");
             var formattedName = parts[0].toLowerCase().replace(" ", "-");
             if (parts.length > 1) {
-                formattedName += " (" + parts[1];
+                formattedName += " (" + parts.slice(1).join(" (");
                 if (!formattedName.endsWith(")")) {
                     formattedName += ")";
                 }
