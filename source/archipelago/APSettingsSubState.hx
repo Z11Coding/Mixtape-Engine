@@ -78,7 +78,7 @@ class APSettingsSubState extends MusicBeatSubstate {
                         for (song in leWeek.songs)
                         {
                             globalSongList.remove(song[0]); // To remove dups
-                            globalSongList.push(song[0] + (StringTools.trim(leWeek.folder) != "" ? " (" + leWeek.folder + ")" : "")); // To add the folder name if it's not empty
+                            globalSongList.push(song[0]); // To add the folder name if it's not empty
                             globalSongList.remove(APEntryState.gameSettings.FNF.starting_song); // To remove Tutorial because it keeps re-adding itself
                         }
                     }
@@ -354,6 +354,17 @@ class APSettingsSubState extends MusicBeatSubstate {
         if (Reflect.hasField(yamlThing, "progression_balancing"))
             if (Reflect.field(yamlThing, "progression_balancing") != "disabled" && Reflect.field(yamlThing, "progression_balancing") != "normal" && Reflect.field(yamlThing, "progression_balancing") != "extreme")
                 Reflect.setField(yamlThing, "progression_balancing", "normal");
+
+        if (Reflect.hasField(yamlThing, "songList")) {
+            var songList = Reflect.field(yamlThing, "songList");
+            var uniqueSongList = new Array<String>();
+            for (song in songList) {
+            if (!uniqueSongList.contains(song)) {
+                uniqueSongList.push(song);
+            }
+            }
+            Reflect.setField(yamlThing, "songList", uniqueSongList);
+        }
 
 
 		#if sys
