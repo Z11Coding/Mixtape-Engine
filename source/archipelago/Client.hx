@@ -446,10 +446,13 @@ class Client {
 	public inline function get_server_time()
 		return serverConnectTime + (Timer.stamp() - localConnectTime);
 
+	var currentTags:Array<String> = [];
+
 	inline function get_tags()
-		return _tags.slice(0);
+		return currentTags;
 
 	public function set_tags(tags) {
+		currentTags = tags;
 		ConnectUpdate(null, tags);
 		return tags;
 	}
@@ -459,17 +462,17 @@ class Client {
 	}
 
 	public function add_tag(tag:String) {
-		if (get_tags().indexOf(tag) == -1) {
-			var t = get_tags().copy();
+		if (currentTags.indexOf(tag) == -1) {
+			var t = currentTags.copy();
 			t.push(tag);
 			set_tags(t);
 		}
 	}
 
 	public function remove_tag(tag:String) {
-		var i = get_tags().indexOf(tag);
+		var i = currentTags.indexOf(tag);
 		if (i >= 0) {
-			var t = get_tags().copy();
+			var t = currentTags.copy();
 			t.splice(i, 1);
 			set_tags(t);
 		}
