@@ -108,6 +108,10 @@ class CategoryState extends MusicBeatState
 
 	override function create()
 	{
+		if (APEntryState.inArchipelagoMode && !(this is APCategoryState)) {
+			FlxG.switchState(new archipelago.APCategoryState());
+			return;
+		}
 		MemoryUtil.clearMajor();
 		menuItems = menuItems.filter(it -> (!it.isEmpty() && Alphabet.isValidText(it)));
 		FlxTransitionableState.skipNextTransOut = false;
