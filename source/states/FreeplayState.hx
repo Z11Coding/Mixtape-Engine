@@ -123,15 +123,9 @@ class FreeplayState extends MusicBeatState
 			}
 
 			if (
-				curUnlocked.exists(APEntryState.victorySong) &&
-				(
-					APPlayState.currentMod == curUnlocked.get(APEntryState.victorySong) ||
-					(
-						curUnlocked.get(APEntryState.victorySong) == '' &&
-						getLastParenthesesContent(curUnlocked.get(APEntryState.victorySong)) != '' &&
-						getLastParenthesesContent(curUnlocked.get(APEntryState.victorySong)) == APPlayState.currentMod
-					)
-				) &&
+				curUnlocked.keys().exists(function(key) {
+					return getLastParenthesesContent(key) == APEntryState.victorySong;
+				}) &&
 				callVictory
 			)
 			{
