@@ -47,7 +47,7 @@ class APSettingsSubState extends MusicBeatSubstate {
             for (i in 0...WeekData.weeksList.length) {
                 var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
                 for (song in leWeek.songs) {
-                    var songName = song[0].toLowerCase().replace(" ", "-");
+                    var songName = (cast song[0] : String).toLowerCase().replace(" ", "-");
                     tempSongList.set(songName + (StringTools.trim(leWeek.folder) != "" ? " (" + leWeek.folder + ")" : ""), true);
                 }
             }
@@ -60,13 +60,21 @@ class APSettingsSubState extends MusicBeatSubstate {
         globalSongList = [];
         for (songName in tempSongList.keys()) {
             if (tempSongList.get(songName)) {
-                var formattedName = songName.split(" (")[0].toLowerCase().replace(" ", "-");
-                if (formattedName != songName.split(" (")[0].trim().toLowerCase().replace(" ", "-")) {
-                    trace('Verification failed for: ' + songName);
-                }
-                globalSongList.push(formattedName);
+            var parts = songName.split(" (");
+            var formattedName = parts[0].toLowerCase().replace(" ", "-");
+            if (parts.length > 1) {
+                formattedName += " (" + parts[1];
+            }
+            if (formattedName != songName.trim().toLowerCase().replace(" ", "-")) {
+                trace('Verification failed for: ' + songName);
+            }
+            globalSongList.push(formattedName);
             } else {
-                globalSongList.push(songName);
+            var formattedName = songName.toLowerCase().replace(" ", "-");
+            if (formattedName != songName.trim().toLowerCase().replace(" ", "-")) {
+                trace('Verification failed for: ' + songName);
+            }
+            globalSongList.push(formattedName);
             }
         }
     }
