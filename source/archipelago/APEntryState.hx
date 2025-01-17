@@ -43,9 +43,10 @@ typedef APOptions =
     var	accessibility:String;
     var	mods_enabled:Bool;
     var	deathlink:Bool;
-    var	starting_song:String;
     var	unlock_type:String;
     var	unlock_method:String;
+	var	graderequirement:String;
+	var	accrequirement:String;
     var	songList:Array<String>;
     var	ticket_percentage:Int;
     var	ticket_win_percentage:Int;
@@ -102,9 +103,10 @@ class APEntryState extends FlxState
 		accessibility: "full",
 		mods_enabled: false,
 		deathlink: false,
-		starting_song: 'Tutorial',
 		unlock_type: 'Songs',
 		unlock_method: 'Song Completion',
+		graderequirement: "Any",
+		accrequirement: "Any",
 		songList: [],
 		ticket_percentage: 15,
 		ticket_win_percentage: 15,
@@ -144,7 +146,8 @@ class APEntryState extends FlxState
 			accessibility: FNF.data.gameSettings.accessibility,
 			mods_enabled: FNF.data.gameSettings.mods_enabled,
 			deathlink: FNF.data.gameSettings.deathlink,
-			starting_song: FNF.data.gameSettings.starting_song,
+			graderequirement: FNF.data.gameSettings.graderequirement,
+			accrequirement: FNF.data.gameSettings.accrequirement,
 			unlock_type: FNF.data.gameSettings.unlock_type,
 			unlock_method: FNF.data.gameSettings.unlock_method,
 			ticket_percentage: FNF.data.gameSettings.ticket_percentage,
@@ -264,24 +267,25 @@ class APEntryState extends FlxState
 					trace('Name: ' + loadedFile.get('name'));
 					gameSettings.name = loadedFile.get('name');
 					_slotInput.text = loadedFile.get('name');
-					gameSettings.FNF.progression_balancing = loadedFile.get('progression_balancing');
-					gameSettings.FNF.accessibility = loadedFile.get('accessibility');
-					gameSettings.FNF.mods_enabled = stringToBool(loadedFile.get('mods_enabled'));
-					gameSettings.FNF.deathlink = stringToBool(loadedFile.get('deathlink'));
-					gameSettings.FNF.starting_song = loadedFile.get('starting_song');
-					gameSettings.FNF.unlock_type = loadedFile.get('unlock_type');
-					gameSettings.FNF.unlock_method = loadedFile.get('unlock_method');
-					gameSettings.FNF.ticket_percentage = Std.parseInt(loadedFile.get('ticket_percentage'));
-					gameSettings.FNF.ticket_win_percentage = Std.parseInt(loadedFile.get('ticket_win_percentage'));
-					gameSettings.FNF.chart_modifier_change_chance = Std.parseInt(loadedFile.get('chart_modifier_change_chance'));
-					gameSettings.FNF.trapAmount = Std.parseInt(loadedFile.get('trapAmount'));
-					gameSettings.FNF.bbcWeight = Std.parseInt(loadedFile.get('bbcWeight'));
-					gameSettings.FNF.ghostChatWeight = Std.parseInt(loadedFile.get('ghostChatWeight'));
-					gameSettings.FNF.svcWeight = Std.parseInt(loadedFile.get('svcWeight'));
-					gameSettings.FNF.tutorialWeight = Std.parseInt(loadedFile.get('tutorialWeight'));
-					gameSettings.FNF.fakeTransWeight = Std.parseInt(loadedFile.get('fakeTransWeight'));
-					gameSettings.FNF.shieldWeight = Std.parseInt(loadedFile.get('shieldWeight'));
-					gameSettings.FNF.MHPWeight = Std.parseInt(loadedFile.get('MHPWeight'));
+					var fnfData = Reflect.getProperty(loadedFile, 'Friday Night Funkin');//loadedFile.get('Friday Night Funkin');
+					trace(fnfData);
+					gameSettings.FNF.progression_balancing = fnfData.get('progression_balancing');
+					gameSettings.FNF.accessibility = fnfData.get('accessibility');
+					gameSettings.FNF.mods_enabled = stringToBool(fnfData.get('mods_enabled'));
+					gameSettings.FNF.deathlink = stringToBool(fnfData.get('deathlink'));
+					gameSettings.FNF.unlock_type = fnfData.get('unlock_type');
+					gameSettings.FNF.unlock_method = fnfData.get('unlock_method');
+					gameSettings.FNF.ticket_percentage = Std.parseInt(fnfData.get('ticket_percentage'));
+					gameSettings.FNF.ticket_win_percentage = Std.parseInt(fnfData.get('ticket_win_percentage'));
+					gameSettings.FNF.chart_modifier_change_chance = Std.parseInt(fnfData.get('chart_modifier_change_chance'));
+					gameSettings.FNF.trapAmount = Std.parseInt(fnfData.get('trapAmount'));
+					gameSettings.FNF.bbcWeight = Std.parseInt(fnfData.get('bbcWeight'));
+					gameSettings.FNF.ghostChatWeight = Std.parseInt(fnfData.get('ghostChatWeight'));
+					gameSettings.FNF.svcWeight = Std.parseInt(fnfData.get('svcWeight'));
+					gameSettings.FNF.tutorialWeight = Std.parseInt(fnfData.get('tutorialWeight'));
+					gameSettings.FNF.fakeTransWeight = Std.parseInt(fnfData.get('fakeTransWeight'));
+					gameSettings.FNF.shieldWeight = Std.parseInt(fnfData.get('shieldWeight'));
+					gameSettings.FNF.MHPWeight = Std.parseInt(fnfData.get('MHPWeight'));
 				}
 				catch(e:Exception)
 				{
@@ -580,8 +584,6 @@ class APEntryState extends FlxState
 		inArchipelagoMode = true;
 		WeekData.reloadWeekFiles(false);
 		unlockable = APSettingsSubState.globalSongList;
-		if (!FreeplayState.curUnlocked.contains(gameSettings.FNF.starting_song)) 
-			FreeplayState.curUnlocked.push(gameSettings.FNF.starting_song);
 		FlxG.save.data.closeDuringOverRide = false;
 		FlxG.save.data.manualOverride = false;
 		FlxG.save.data.storyWeek = null;
@@ -629,8 +631,6 @@ class APEntryState extends FlxState
 				+ gameSettings.FNF.mods_enabled
 				+ "\nDeathlink: "
 				+ gameSettings.FNF.deathlink
-				+ "\nStarting Song: "
-				+ gameSettings.FNF.starting_song
 				+ "\nUnlock Type: "
 				+ gameSettings.FNF.unlock_type
 				+ "\nUnlock Method: "
