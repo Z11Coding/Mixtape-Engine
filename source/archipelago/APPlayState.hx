@@ -16,6 +16,7 @@ import openfl.filters.ColorMatrixFilter;
 class APPlayState extends PlayState {
     public static var apGame:APGameState;
     public static var deathByLink:Bool = false;
+    public static var currentMod = "";
     public static var deathLinkPacket:Dynamic;
     public static var effectiveScrollSpeed:Float;
 	public static var effectiveDownScroll:Bool;
@@ -135,6 +136,8 @@ class APPlayState extends PlayState {
 				FlxG.save.flush();
             }
         }
+
+        currentMod = WeekData.getCurrentWeek().folder;
 
         if (!APEntryState.inArchipelagoMode)
         {

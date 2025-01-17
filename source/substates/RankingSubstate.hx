@@ -166,9 +166,9 @@ class RankingSubstate extends MusicBeatSubstate
 					trace('Accuracy Gotten:'+accRankLimit+" Accuracy Required: "+accRankSetLimit);
 					if (comboRankLimit <= comboRankSetLimit && accRankLimit <= accRankSetLimit)
 					{
-						trace(Mods.currentModDirectory);
-						if (Mods.currentModDirectory.trim() != "") {
-							locationId += " (" + Mods.currentModDirectory + ")";
+						trace(APPlayState.currentMod);
+						if (APPlayState.currentMod.trim() != "") {
+							locationId += " (" + APPlayState.currentMod + ")";
 						}
 						trace(locationId.trim());
 						trace(APEntryState.apGame.info().LocationChecks([APEntryState.apGame.info().get_location_id(locationId.trim())]));
