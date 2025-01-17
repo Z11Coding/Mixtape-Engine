@@ -46,6 +46,22 @@ class FuncEmbed {
         return macro $v{funcStr};
     }
 
+    // public static function functionRefToString(funcRef:String, ?unsafe:Bool = false):String {
+    //     var func = Context.getLocalFunction(funcRef);
+    //     if (func == null) {
+    //         Context.error("Function reference not found: " + funcRef, Context.currentPos());
+    //     }
+    //     var funcStr = func.toString();
+    //     if (!unsafe) {
+    //         var result = testForErrors(func);
+    //         if (!result.success) {
+    //             var errorMsg = Std.string(result.error).replace("hscript:", "Line -").replace(":", " -");
+    //             Context.error("Error in function expression: " + errorMsg, func.pos);
+    //         }
+    //     }
+    //     return funcStr;
+    // }
+
     /**
      * Executes a function from a string representation within a given context.
      *

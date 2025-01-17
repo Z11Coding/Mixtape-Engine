@@ -216,7 +216,7 @@ class APGameState {
         for (songName in song)
         {
             var itemName = info().get_item_name(songName.item);
-            var lastParenIndex = itemName.lastIndexOf("(");
+            var lastParenIndex = itemName.lastIndexOf("(Mod: ");
             var modName = "";
             if (lastParenIndex != -1) {
                  modName = itemName.substring(lastParenIndex + 1, itemName.indexOf(")", lastParenIndex));
