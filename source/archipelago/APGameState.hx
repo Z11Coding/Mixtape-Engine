@@ -239,15 +239,12 @@ class APGameState {
     }
 
     function isModName(name:String):Bool {
-        var mods = Mods.parseList().enabled;
-        if (mods != null && mods.length > 0) {
-            for (mod in mods) {
-                if (mod == name) {
-                    return true;
-                }
-            }
+    for (mod in Mods.parseList().enabled) {
+        if (mod == name) {
+            return true;
         }
-        return false;
+    }
+    return false;
     }
 
     function validateMods()

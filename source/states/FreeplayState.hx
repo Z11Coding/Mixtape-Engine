@@ -224,7 +224,8 @@ class FreeplayState extends MusicBeatState
 						for (songName in curUnlocked.keys())
 						{
 							if ((song[0] == songName || checkStringCombinations(songName, song[0])) && leWeek.folder == curUnlocked.get(songName))
-									addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
+								for (comb in getAllStringCombinations(songName))
+									addSong(comb, i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
 						}
 					}
 					else addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
@@ -438,41 +439,6 @@ class FreeplayState extends MusicBeatState
 		}
 
 		return finalCombinations;
-	}
-
-	public function getMatchingCombination(input:String, target:String):String
-	{
-		var combinations:Array<String> = [];
-		var chars:Array<String> = input.split('');
-		
-		// Generate all combinations of capital letters
-		for (i in 0...Std.int(Math.pow(2, chars.length))) {
-			var combination:String = '';
-			for (j in 0...chars.length) {
-				if ((i >> j) & 1 == 1) {
-					combination += chars[j].toUpperCase();
-				} else {
-					combination += chars[j].toLowerCase();
-				}
-			}
-			combinations.push(combination);
-		}
-
-		// Generate combinations with dashes and spaces
-		var finalCombinations:Array<String> = [];
-		for (comb in combinations) {
-			finalCombinations.push(comb);
-			finalCombinations.push(comb.replace('-', ' '));
-			finalCombinations.push(comb.replace(' ', '-'));
-		}
-
-		// Check if target matches any combination
-		for (comb in finalCombinations) {
-			if (comb == target) {
-				return comb;
-			}
-		}
-		return '';
 	}
 
 	function collectAndRelease()
