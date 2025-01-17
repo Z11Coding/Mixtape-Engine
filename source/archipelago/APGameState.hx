@@ -210,18 +210,19 @@ class APGameState {
         {
             var itemName = info().get_item_name(songName.item);
             var lastParenIndex = itemName.lastIndexOf("(");
+            var modName = "";
             if (lastParenIndex != -1) {
-                var modName = itemName.substring(lastParenIndex + 1, itemName.indexOf(")", lastParenIndex));
+                 modName = itemName.substring(lastParenIndex + 1, itemName.indexOf(")", lastParenIndex));
                 if (isModName(modName)) {
                     itemName = itemName.substring(0, lastParenIndex).trim();
                 }
             }
-            if (!states.FreeplayState.curUnlocked.contains(itemName))
+            if (!states.FreeplayState.curUnlocked.exists(itemName))
             {
-                if (itemName != "Unknown")
+                if (itemName != "Unknown" && modName != "")
                 {
                     if (!isSync) ArchPopup.startPopupSong(itemName, 'archColor');
-                    states.FreeplayState.curUnlocked.push(itemName);
+                    states.FreeplayState.curUnlocked.set(itemName, modName);
                     if (states.FreeplayState.instance != null) states.FreeplayState.instance.reloadSongs(true);
                     trace("Unlocked: " + itemName);
                     trace(states.FreeplayState.curUnlocked);
