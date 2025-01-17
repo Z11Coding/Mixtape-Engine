@@ -128,7 +128,7 @@ class APEntryState extends FlxState
 		swagShader = new ColorSwap();
 
 		if (APSettingsSubState.globalSongList.length <= 0)
-			APSettingsSubState.generateSongList('Test');
+			APSettingsSubState.generateSongList();
 
 		// TODO: save last game's settings as default; Reset button to return to base default
 		var FNF = new FlxSave();

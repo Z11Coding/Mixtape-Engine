@@ -38,103 +38,38 @@ class APSettingsSubState extends MusicBeatSubstate {
     var gradientBar:FlxSprite;
     var dim:FlxSprite;
 
-    public static function generateSongList(?type:String, ?toList:Array<String>)
-	{
-        for (song in globalSongList)
-            globalSongList.remove(song);
-        if (toList != null)
-        {
-            switch (type)
-            {
-                case "A":
-                    toList = APInfo.baseGame;    
-                    for (erect in APInfo.baseErect)
-                        toList.push(erect);
-                    for (pico in APInfo.basePico)
-                        toList.push(pico);
-                    for (secret in APInfo.secrets)
-                        toList.push(secret);
-                case "B":
-                    if (APEntryState.gameSettings.FNF.mods_enabled)
-                    {
-                        for (i in 0...WeekData.weeksList.length) {
-                            var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
-                            for (song in leWeek.songs)
-                            {
-                                toList.remove(song[0]); // To remove dups
-                                toList.push(song[0]);
-                                toList.remove('Tutorial'); // To remove Tutorial because it keeps re-adding itself
-                            }
-                        }
-                    }
-                
-                case "Test":
-                    toList = APInfo.baseGame;
-                default:
-                    toList = APInfo.baseGame; //This always resets the list to just base base game
-                    for (erect in APInfo.baseErect)
-                        toList.push(erect);
-                    for (pico in APInfo.basePico)
-                        toList.push(pico);
-                    for (secret in APInfo.secrets)
-                        toList.push(secret);
-                    if (APEntryState.gameSettings.FNF.mods_enabled)
-                    {
-                        for (i in 0...WeekData.weeksList.length) {
-                            var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
-                            trace(leWeek.folder);
-                            for (song in leWeek.songs)
-                            {
-                                toList.remove(song[0]); // To remove dups
-                                toList.push((leWeek.folder != "") ? song[0] + " (" + leWeek.folder + ")" : song[0]);
-                            }
-                        }
-                    }
+    public static function generateSongList() {
+        globalSongList = APInfo.baseGame.concat(APInfo.baseErect).concat(APInfo.basePico).concat(APInfo.secrets);
+
+        var tempSongList:Map<String, Bool> = new Map();
+
+        if (APEntryState.gameSettings.FNF.mods_enabled) {
+            for (i in 0...WeekData.weeksList.length) {
+                var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
+                for (song in leWeek.songs) {
+                    var songName = song[0].toLowerCase().replace(" ", "-");
+                    tempSongList.set(songName + (StringTools.trim(leWeek.folder) != "" ? " (" + leWeek.folder + ")" : ""), true);
+                }
             }
         }
-        else
-        {
-            switch (type)
-            {
-                case "A":
-                    globalSongList = APInfo.baseGame;    
-                    for (erect in APInfo.baseErect)
-                        globalSongList.push(erect);
-                    for (pico in APInfo.basePico)
-                        globalSongList.push(pico);
-                    for (secret in APInfo.secrets)
-                        globalSongList.push(secret);
-                case "B":
-                    if (APEntryState.gameSettings.FNF.mods_enabled)
-                    {
-                        for (i in 0...WeekData.weeksList.length) {
-                            var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
-                            for (song in leWeek.songs)
-                            {
-                                globalSongList.remove(song[0]); // To remove dups
-                                globalSongList.push(song[0]);
-                                globalSongList.remove('Tutorial'); // To remove Tutorial because it keeps re-adding itself
-                            }
-                        }
-                    }
-                case "Test":
-                    globalSongList = APInfo.baseGame;
-                default:
-                    if (APEntryState.gameSettings.FNF.mods_enabled)
-                    {
-                        for (i in 0...WeekData.weeksList.length) {
-                            var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
-                            trace(leWeek.folder);
-                            for (song in leWeek.songs)
-                            { var songName = Paths.formatToSongPath(song[0]);
-                                globalSongList.remove(songName); // To remove dups
-                                globalSongList.push(songName) + (StringTools.trim(leWeek.folder) != "" ? " (" + leWeek.folder + ")" : ""); // To add the folder name if it's not empty
-                            }
-                        }
-                    }
+
+        for (song in globalSongList) {
+            tempSongList.set(song.toLowerCase().replace(" ", "-"), false);
+        }
+
+        globalSongList = [];
+        for (songName in tempSongList.keys()) {
+            if (tempSongList.get(songName)) {
+                var formattedName = songName.split(" (")[0].toLowerCase().replace(" ", "-");
+                if (formattedName != songName.split(" (")[0].trim().toLowerCase().replace(" ", "-")) {
+                    trace('Verification failed for: ' + songName);
+                }
+                globalSongList.push(formattedName);
+            } else {
+                globalSongList.push(songName);
             }
         }
-	}
+    }
 
     override function create() {
         dim = new FlxSprite().makeGraphic(FlxG.width*4, FlxG.height*4, 0x000000);
@@ -283,7 +218,7 @@ class APSettingsSubState extends MusicBeatSubstate {
         function() 
         {
             APEntryState.gameSettings.FNF.mods_enabled = allowMods.checked;
-            generateSongList(!allowMods.checked ? "A" : '');
+            generateSongList();
         });
         allowMods.checked = APEntryState.gameSettings.FNF.mods_enabled;
 
