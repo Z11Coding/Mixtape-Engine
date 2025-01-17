@@ -1781,7 +1781,6 @@ public function doEffect(effect:String)
             catch(e) {}
             if (cause.trim() == "") cause = deathLinkPacket.source + " has died.\n[pause:0.5](How Unfortunate...)";
             COD.setCOD(null, cause);
-            deathByLink = false;
             die();  
         }
         #if cpp			
