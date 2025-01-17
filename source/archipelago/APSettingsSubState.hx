@@ -442,8 +442,6 @@ class APSettingsSubState extends MusicBeatSubstate {
         unlockMethod.update(elapsed);
         gradeRequirement.update(elapsed);
         accRequirement.update(elapsed);
-        allowMods.update(elapsed);
-        deathlink.update(elapsed);
         ticketPercent.update(elapsed);
         ticketWinPercent.update(elapsed);
         chartmodifierchance.update(elapsed);
@@ -467,7 +465,7 @@ class APSettingsSubState extends MusicBeatSubstate {
 				//lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__audioSource.__backend.handle, lime.media.openal.AL.HIGHPASS_GAIN, 0);
 			}
 		}
-        if (controls.BACK) 
+        if (FlxG.keys.justPressed.ESCAPE) 
         {
             trace(globalSongList);
             onGenYaml();
