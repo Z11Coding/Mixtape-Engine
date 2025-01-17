@@ -126,9 +126,9 @@ class APSettingsSubState extends MusicBeatSubstate {
                             var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
                             trace(leWeek.folder);
                             for (song in leWeek.songs)
-                            {
-                                globalSongList.remove(song[0]); // To remove dups
-                                globalSongList.push(Paths.formatToSongPath(song[0]) + (StringTools.trim(leWeek.folder) != "" ? " (" + leWeek.folder + ")" : "")); // To add the folder name if it's not empty
+                            { var songName = Paths.formatToSongPath(song[0]);
+                                globalSongList.remove(songName); // To remove dups
+                                globalSongList.push(songName) + (StringTools.trim(leWeek.folder) != "" ? " (" + leWeek.folder + ")" : ""); // To add the folder name if it's not empty
                             }
                         }
                     }
