@@ -171,7 +171,7 @@ class SplashScreen extends MusicBeatState
 		finishTimer = new FlxTimer().start(0.1, function(tmr:FlxTimer)
         {
             Conductor.songPosition = 0;
-            TransitionState.transitionState(TitleState, {duration: 1.5, transitionType: "stickers", color: FlxColor.BLACK});
+            TransitionState.transitionState(FirstCheckState.relaunch ? MainMenuState : TitleState, {duration: 1.5, transitionType: "stickers", color: FlxColor.BLACK});
         });
 	}
 
@@ -202,7 +202,7 @@ class SplashScreen extends MusicBeatState
 
         if (FlxG.keys.justPressed.ENTER) 
         {
-            FlxG.switchState(new TitleState());
+            FlxG.switchState(FirstCheckState.relaunch ? new MainMenuState() : new TitleState());
             splashSound.stop();
         }
         if(phillyGlowParticles != null)

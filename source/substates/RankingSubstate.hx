@@ -23,6 +23,10 @@ class RankingSubstate extends MusicBeatSubstate
 	var ranking:String = "NA";
 	var rankingNum:Int = 15;
 
+	public static var comboRankLimit:Int = 0;
+	var comboRankSetLimit:Int = 0;
+	public static var accRankLimit:Int = 0;
+	var accRankSetLimit:Int = 0;
 	public function new()
 	{
 		super();
@@ -163,9 +167,14 @@ class RankingSubstate extends MusicBeatSubstate
 					// 	locationId += " (" + Mods.currentModDirectory + ")";
 					// }
 					trace(locationId);
-					trace(APEntryState.apGame.info().LocationChecks([APEntryState.apGame.info().get_location_id(locationId)]));
-					trace(APEntryState.apGame.info().get_location_name(APEntryState.apGame.info().get_location_id(locationId)));
-					trace(PlayState.SONG.song);
+					trace('Combo Gotten:'+comboRankLimit+" Combo Required: "+comboRankSetLimit);
+					trace('Accuracy Gotten:'+accRankLimit+" Accuracy Required: "+accRankSetLimit);
+					if (comboRankLimit >= comboRankSetLimit && accRankLimit >= accRankSetLimit)
+					{
+						trace(APEntryState.apGame.info().LocationChecks([APEntryState.apGame.info().get_location_id(locationId)]));
+						trace(APEntryState.apGame.info().get_location_name(APEntryState.apGame.info().get_location_id(locationId)));
+						trace(PlayState.SONG.song);
+					}
 					Mods.loadTopMod();
 			}
 		}
@@ -181,17 +190,17 @@ class RankingSubstate extends MusicBeatSubstate
 	function generateRanking():String
 	{
 		if (PlayState.instance.songMisses == 0 && PlayState.bads == 0 && PlayState.shits == 0 && PlayState.goods == 0 && PlayState.sicks == 0 && ClientPrefs.data.useMarvs) // Marvelous Full Combo
-			comboRank = "MFC";
+			{ comboRank = "MFC"; comboRankSetLimit = 1; }
 		else if (PlayState.instance.songMisses == 0 && PlayState.bads == 0 && PlayState.shits == 0 && PlayState.goods == 0) // Sick Full Combo
-			comboRank = "SFC";
+			{ comboRank = "SFC"; comboRankSetLimit = 2; }
 		else if (PlayState.instance.songMisses == 0 && PlayState.bads == 0 && PlayState.shits == 0 && PlayState.goods >= 1) // Good Full Combo (Nothing but Goods & Sicks)
-			comboRank = "GFC";
+			{ comboRank = "GFC"; comboRankSetLimit = 3; }
 		else if (PlayState.instance.songMisses == 0 && PlayState.bads >= 1 && PlayState.shits == 0 && PlayState.goods >= 0) // Alright Full Combo (Bads, Goods and Sicks)
-			comboRank = "AFC";
+			{ comboRank = "AFC"; comboRankSetLimit = 4; }
 		else if (PlayState.instance.songMisses == 0) // Regular FC
-			comboRank = "FC";
+			{ comboRank = "FC"; comboRankSetLimit = 5; }
 		else if (PlayState.instance.songMisses < 10) // Single Digit Combo Breaks
-			comboRank = "SDCB";
+			{ comboRank = "SDCB"; comboRankSetLimit = 6; }
 
 		var acc = backend.Highscore.floorDecimal(PlayState.instance.ratingPercent * 100, 2);
 
@@ -226,36 +235,52 @@ class RankingSubstate extends MusicBeatSubstate
 				{
 					case 0:
 						ranking = "P";
+						accRankSetLimit = 1;
 					case 1:
 						ranking = "X";
+						accRankSetLimit = 2;
 					case 2:
 						ranking = "X-";
+						accRankSetLimit = 3;
 					case 3:
 						ranking = "SS+";
+						accRankSetLimit = 4;
 					case 4:
 						ranking = "SS";
+						accRankSetLimit = 5;
 					case 5:
 						ranking = "SS-";
+						accRankSetLimit = 6;
 					case 6:
 						ranking = "S+";
+						accRankSetLimit = 7;
 					case 7:
 						ranking = "S";
+						accRankSetLimit = 8;
 					case 8:
 						ranking = "S-";
+						accRankSetLimit = 9;
 					case 9:
 						ranking = "A+";
+						accRankSetLimit = 10;
 					case 10:
 						ranking = "A";
+						accRankSetLimit = 11;
 					case 11:
 						ranking = "A-";
+						accRankSetLimit = 11;
 					case 12:
 						ranking = "B";
+						accRankSetLimit = 12;
 					case 13:
 						ranking = "C";
+						accRankSetLimit = 13;
 					case 14:
 						ranking = "D";
+						accRankSetLimit = 14;
 					case 15:
 						ranking = "E";
+						accRankSetLimit = 15;
 				}
 
 				if (PlayState.deathCounter >= 30 || acc == 0)
