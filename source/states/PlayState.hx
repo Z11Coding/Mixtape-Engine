@@ -6802,6 +6802,7 @@ class PlayState extends MusicBeatState
 		// RESET = Quick Game Over Screen
 		if (!ClientPrefs.data.noReset && controls.RESET && !inCutscene && !endingSong)
 		{
+			APPlayState.deathByLink = true; //To prevent self-made deaths (People would hate you for this)
 			health = 0;
 			die();
 			COD.setPresetCOD('r');

@@ -76,7 +76,7 @@ class FreeplayState extends MusicBeatState
 	var listChoices:Array<String> = [];
 	var multiSongs:Array<String> = [];
 
-	public static var curUnlocked:Map<String, Array<String>> = new Map<String, Array<String>>();
+	public static var curUnlocked:Map<String, String> = new Map<String, String>();
 	public static var trueUnlocked:Array<String> = [];
 	public static var doChange:Bool = false;
 	public static var multisong:Bool = false;
@@ -122,28 +122,17 @@ class FreeplayState extends MusicBeatState
 				return "";
 			}
 
-			function ifAnyTrue(input:Array<Bool>):Bool {
-				for (i in 0...input.length) {
-					if (input[i]) {
-						return true;
-					}
-				}
-				return false;
-			}
-
 			if (
-				(function() {
-					for (mods in curUnlocked.keys()) {
-						if (curUnlocked.get(mods).length > 0) {
-							for (song in curUnlocked.get(mods)) {
-								if (song.toLowerCase() == APEntryState.victorySong.toLowerCase() && mods == APPlayState.currentMod) {
-									return true;
-								}
-							}
-						}
-					}
-					return false;
-				})()
+				curUnlocked.exists(APEntryState.victorySong) &&
+				(
+					APPlayState.currentMod == curUnlocked.get(APEntryState.victorySong) ||
+					(
+						curUnlocked.get(APEntryState.victorySong) == '' &&
+						getLastParenthesesContent(curUnlocked.get(APEntryState.victorySong)) != '' &&
+						getLastParenthesesContent(curUnlocked.get(APEntryState.victorySong)) == APPlayState.currentMod
+					)
+				) &&
+				callVictory
 			)
 			{
 				callVictory = false;
@@ -224,7 +213,8 @@ class FreeplayState extends MusicBeatState
 						for (songName in curUnlocked.keys())
 						{
 							if ((song[0] == songName || checkStringCombinations(songName, song[0])) && leWeek.folder == curUnlocked.get(songName))
-									addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
+								for (comb in getAllStringCombinations(songName))
+									addSong(comb, i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
 						}
 					}
 					else addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
@@ -440,41 +430,6 @@ class FreeplayState extends MusicBeatState
 		return finalCombinations;
 	}
 
-	public function getMatchingCombination(input:String, target:String):String
-	{
-		var combinations:Array<String> = [];
-		var chars:Array<String> = input.split('');
-		
-		// Generate all combinations of capital letters
-		for (i in 0...Std.int(Math.pow(2, chars.length))) {
-			var combination:String = '';
-			for (j in 0...chars.length) {
-				if ((i >> j) & 1 == 1) {
-					combination += chars[j].toUpperCase();
-				} else {
-					combination += chars[j].toLowerCase();
-				}
-			}
-			combinations.push(combination);
-		}
-
-		// Generate combinations with dashes and spaces
-		var finalCombinations:Array<String> = [];
-		for (comb in combinations) {
-			finalCombinations.push(comb);
-			finalCombinations.push(comb.replace('-', ' '));
-			finalCombinations.push(comb.replace(' ', '-'));
-		}
-
-		// Check if target matches any combination
-		for (comb in finalCombinations) {
-			if (comb == target) {
-				return comb;
-			}
-		}
-		return '';
-	}
-
 	function collectAndRelease()
 	{
 		APEntryState.apGame.info().Say("!release");
@@ -556,12 +511,8 @@ class FreeplayState extends MusicBeatState
 									var songNameThing:String = song[0];
 									for (songName in curUnlocked.keys())
 									{
-										var songArray:Array<String> = curUnlocked.get(songName);
-										for (songStr in songArray)
-										{
-											if ((songNameThing.trim().toLowerCase().replace('-', ' ') == songStr.trim().toLowerCase().replace('-', ' ')) && leWeek.folder == songName)
-												addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
-										}
+										if ((songNameThing.trim().toLowerCase().replace('-', ' ') == songName.trim().toLowerCase().replace('-', ' ')) && leWeek.folder == curUnlocked.get(songName))
+											addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
 									}
 								}
 								else addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
@@ -582,7 +533,7 @@ class FreeplayState extends MusicBeatState
 									{
 										for (songName in curUnlocked.keys())
 										{
-											if ((song[0] == songName || checkStringCombinations(songName, song[0])) && curUnlocked.exists(leWeek.folder) && curUnlocked.get(leWeek.folder).contains(songName))
+											if ((song[0] == songName || checkStringCombinations(songName, song[0])) && leWeek.folder == curUnlocked.get(songName))
 												for (comb in getAllStringCombinations(songName))
 													addSong(comb, i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
 										}
@@ -599,15 +550,15 @@ class FreeplayState extends MusicBeatState
 			{
 				if (refresh)
 				{
-					for (song in curUnlocked.get('')) {
-							if (song.toLowerCase() == 'small argument'.toLowerCase())
-								addSong('Small Argument', 0, "gfchibi", FlxColor.fromRGB(235, 100, 161));
-							if (song.toLowerCase() == 'beat battle'.toLowerCase())
-								addSong('Beat Battle', 0, "gf", FlxColor.fromRGB(165, 0, 77));
-							if (song.toLowerCase() == 'beat battle 2'.toLowerCase())
-								addSong('Beat Battle 2', 0, "gf", FlxColor.fromRGB(165, 0, 77));
-						}
+					for (songName in curUnlocked.keys()) {
+						if (songName.trim().toLowerCase().replace('-', ' ') == 'small argument'.trim().toLowerCase().replace('-', ' ') && curUnlocked.get(songName) == '')
+							addSong('Small Argument', 0, "gfchibi", FlxColor.fromRGB(235, 100, 161));
+						if (songName.trim().toLowerCase().replace('-', ' ') == 'beat battle'.trim().toLowerCase().replace('-', ' ') && curUnlocked.get(songName) == '')
+							addSong('Beat Battle', 0, "gf", FlxColor.fromRGB(165, 0, 77));
+						if (songName.trim().toLowerCase().replace('-', ' ') == 'beat battle 2'.trim().toLowerCase().replace('-', ' ') && curUnlocked.get(songName) == '')
+							addSong('Beat Battle 2', 0, "gf", FlxColor.fromRGB(165, 0, 77));
 					}
+				}
 				else
 				{
 					if (curUnlocked.exists('Small Argument'.toLowerCase()) && Std.string('Small Argument').toLowerCase().trim().contains(searchBar.text.toLowerCase().trim()) && FlxG.save.data.gotIntoAnArgument && (CategoryState.loadWeekForce == "secrets" || CategoryState.loadWeekForce == "all")) 

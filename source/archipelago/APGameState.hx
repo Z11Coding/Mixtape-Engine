@@ -162,9 +162,16 @@ class APGameState {
     {
         if ((Reflect.hasField(data, "cause") && Reflect.hasField(data, "source") && Reflect.hasField(data, "time")) && !APPlayState.deathByLink)
         {
-            var dl:Dynamic = data;
-            APPlayState.deathLinkPacket = dl;
+            var cause:String = "";
+            try {
+                if (data.cause != null && (data.cause != "" || data.cause != " ")) cause = data.cause + "\n[pause:0.5](Sounds like a skill issue...)";
+            }
+            catch(e) {trace('DEATHLINKPACK WAS NULL!');}
+            if (cause.trim() == "") cause = data.source + " has died.\n[pause:0.5](How Unfortunate...)";
+            COD.setCOD(null, cause);
+            PlayState.instance.die();  
             APPlayState.deathByLink = true;
+            trace("Triggering DeathLink!");
         }
         trace(data);
     }
@@ -223,11 +230,7 @@ class APGameState {
                 if (itemName != "Unknown")
                 {
                     if (!isSync) ArchPopup.startPopupSong(itemName, 'archColor');
-                    if (states.FreeplayState.curUnlocked.exists(modName)) {
-                        states.FreeplayState.curUnlocked.get(modName).push(itemName);
-                    } else {
-                        states.FreeplayState.curUnlocked.set(modName, [itemName]);
-                    }
+                    states.FreeplayState.curUnlocked.set(itemName, modName == "pico-mix" ? "" : modName);
                     if (states.FreeplayState.instance != null) states.FreeplayState.instance.reloadSongs(true);
                     trace("Unlocked: " + itemName);
                     trace(states.FreeplayState.curUnlocked);
