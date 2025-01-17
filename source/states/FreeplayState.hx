@@ -123,7 +123,7 @@ class FreeplayState extends MusicBeatState
 			}
 
 			if (
-				curUnlocked.keys().exists(function(key) {
+				curUnlocked.keys().toArray().map(function(key) {
 					return getLastParenthesesContent(key) == APEntryState.victorySong;
 				}) &&
 				callVictory
