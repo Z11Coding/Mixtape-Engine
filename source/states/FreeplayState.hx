@@ -184,7 +184,7 @@ class FreeplayState extends MusicBeatState
 			return;
 		}
 
-		for (i in 0...WeekData.weeksList.length) {
+		/*for (i in 0...WeekData.weeksList.length) {
 			if(weekIsLocked(WeekData.weeksList[i])) continue;
 
 			var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
@@ -212,8 +212,6 @@ class FreeplayState extends MusicBeatState
 					{
 						for (songName in curUnlocked.keys())
 						{
-							trace(songName);
-							trace(leWeek.folder + " and " + curUnlocked.get(songName));
 							if ((song[0] == songName || checkStringCombinations(songName, song[0])) && leWeek.folder == curUnlocked.get(songName))
 								for (comb in getAllStringCombinations(songName))
 									addSong(comb, i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
@@ -222,7 +220,7 @@ class FreeplayState extends MusicBeatState
 					else addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
 				}
 			}
-		}
+		}*/
 
 		Mods.loadTopMod();
 
@@ -237,7 +235,7 @@ class FreeplayState extends MusicBeatState
 		iconList = new FlxTypedGroup<HealthIcon>();
 		add(iconList);
 
-		for (i in 0...songs.length)
+		/*for (i in 0...songs.length)
 		{
 			var songText:Alphabet = new Alphabet(90, 320, songs[i].songName, true);
 			songText.targetY = i;
@@ -263,7 +261,7 @@ class FreeplayState extends MusicBeatState
 			// songText.x += 40;
 			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
 			// songText.screenCenter(X);
-		}
+		}*/
 		WeekData.setDirectoryFromWeek();
 
 		//Search bar my belovid
@@ -506,6 +504,19 @@ class FreeplayState extends MusicBeatState
 							{
 								colors = [146, 113, 253];
 							}
+							if (categoryWhaat.toLowerCase() == CategoryState.loadWeekForce || (CategoryState.loadWeekForce == "mods" && categoryWhaat == null) || CategoryState.loadWeekForce == "all")
+							{
+								if (APEntryState.inArchipelagoMode)
+								{
+									var songNameThing:String = song[0];
+									for (songName in curUnlocked.keys())
+									{
+										if ((songNameThing.trim().toLowerCase().replace('-', ' ') == songName.trim().toLowerCase().replace('-', ' ')) && leWeek.folder == curUnlocked.get(songName))
+											addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
+									}
+								}
+								else addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
+							}
 						}
 						else
 						{	
@@ -515,6 +526,19 @@ class FreeplayState extends MusicBeatState
 								if(colors == null || colors.length < 3)
 								{
 									colors = [146, 113, 253];
+								}
+								if (categoryWhaat.toLowerCase() == CategoryState.loadWeekForce || (CategoryState.loadWeekForce == "mods" && categoryWhaat == null) || CategoryState.loadWeekForce == "all")
+								{
+									if (APEntryState.inArchipelagoMode)
+									{
+										for (songName in curUnlocked.keys())
+										{
+											if ((song[0] == songName || checkStringCombinations(songName, song[0])) && leWeek.folder == curUnlocked.get(songName))
+												for (comb in getAllStringCombinations(songName))
+													addSong(comb, i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
+										}
+									}
+									else addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
 								}
 							}
 						}
