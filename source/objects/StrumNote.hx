@@ -178,7 +178,7 @@ class StrumNote extends NoteObject
 	
 			attemptToAddAnimationByPrefix('static', 'arrow' + animationArray[0]);
 			attemptToAddAnimationByPrefix('pressed', animationArray[1] + ' press');
-			attemptToAddAnimationByPrefix('confirm', 'arrow' + animationArray[0]);
+			attemptToAddAnimationByPrefix('confirm', animationArray[1] + ' confirm', 24, false);
 		}
 		defScale.copyFrom(scale);
 		updateHitbox();

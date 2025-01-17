@@ -1359,7 +1359,7 @@ addEffect("freeze");
 
     override function startSong()
     {
-        effectTimer.start(5, function(timer)
+        /*effectTimer.start(5, function(timer)
         {
             if (paused)
                 return;
@@ -1389,10 +1389,10 @@ addEffect("freeze");
                 }
             }
             tmr.reset(FlxG.random.float(5, 10));
-        });
+        });*/
         super.startSong();
     }
-
+    
     function addNonoLetters(keyBind:String) {
         var keys:Null<Array<FlxKey>> = ClientPrefs.keyBinds.get(keyBind);
         if (keys != null) {

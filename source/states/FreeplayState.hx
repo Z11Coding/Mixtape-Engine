@@ -76,7 +76,7 @@ class FreeplayState extends MusicBeatState
 	var listChoices:Array<String> = [];
 	var multiSongs:Array<String> = [];
 
-	public static var curUnlocked:Map<String, String> = new Map();
+	public static var curUnlocked:Map<String, String> = new Map<String, String>();
 	public static var trueUnlocked:Array<String> = [];
 	public static var doChange:Bool = false;
 	public static var multisong:Bool = false;
@@ -212,6 +212,8 @@ class FreeplayState extends MusicBeatState
 					{
 						for (songName in curUnlocked.keys())
 						{
+							trace(songName);
+							trace(leWeek.folder + " and " + curUnlocked.get(songName));
 							if ((song[0] == songName || checkStringCombinations(songName, song[0])) && leWeek.folder == curUnlocked.get(songName))
 								for (comb in getAllStringCombinations(songName))
 									addSong(comb, i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
@@ -366,21 +368,6 @@ class FreeplayState extends MusicBeatState
 		// Main.simulateIntenseMaps();
 		trace(hh);
 
-		if (APEntryState.inArchipelagoMode)
-		{
-			var playButton = new FlxButton(0, 0, "Get Random Song", onAddSong);
-			//playButton.onUp.sound = FlxG.sound.load(Paths.sound('confirmMenu'));
-			playButton.x = (FlxG.width / 2) - 10 - playButton.width;
-			playButton.y = FlxG.height - playButton.height - 10;
-			add(playButton);
-
-			if (giveSong)
-			{
-				onAddSong();
-				giveSong = false;
-			}
-		}
-
 		reloadSongs(true);
 	}
 
@@ -452,21 +439,6 @@ class FreeplayState extends MusicBeatState
 		APEntryState.apGame.info().poll();
 	}
 
-	function onAddSong()
-	{	
-		var daSong = "";
-		var randomSong = FlxG.random.int(0, APEntryState.unlockable.length - 1);
-		if (APEntryState.unlockable.length > 0)
-		{
-			daSong = APEntryState.unlockable[randomSong];
-			APEntryState.unlockable.remove(daSong);
-			ArchPopup.startPopupSong(daSong, 'archColor');
-			reloadSongs(true);
-			trace("Unlocked: "+daSong);
-		}
-		trace(APEntryState.unlockable);
-	}
-
 	override function closeSubState() {
 		if (doChange) 
 		{
@@ -482,7 +454,6 @@ class FreeplayState extends MusicBeatState
 	public function addSong(songName:String, weekNum:Int, songCharacter:String, color:Int)
 	{
 		songs.push(new SongMetadata(songName, weekNum, songCharacter, color));
-		onAddSong();
 	}
 
 	function weekIsLocked(name:String):Bool {
@@ -535,15 +506,6 @@ class FreeplayState extends MusicBeatState
 							{
 								colors = [146, 113, 253];
 							}
-							// if (APEntryState.inArchipelagoMode)
-							// {
-							// 	for (songName in curUnlocked)
-							// 	{
-							// 		if (song[0].trim().toLowerCase().replace("-", " ") == songName.trim().toLowerCase().replace("-", " "))
-							// 			addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
-							// 	}
-							// }
-							// else addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
 						}
 						else
 						{	
@@ -554,15 +516,6 @@ class FreeplayState extends MusicBeatState
 								{
 									colors = [146, 113, 253];
 								}
-								if (APEntryState.inArchipelagoMode)
-								{
-								// 	for (ii in 0...curUnlocked.length)
-								// 	{
-								// 		if (curUnlocked[ii].contains(song[0]))
-								// 			addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
-								// 	}
-								// }
-								// else addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
 							}
 						}
 					}
@@ -653,7 +606,7 @@ class FreeplayState extends MusicBeatState
 			changeDiff();
 			if (PlayState.SONG != null) Conductor.bpm = PlayState.SONG.bpm;
 		}
-	} }
+	} 
 
 	var instPlaying:Int = -1;
 	public static var vocals:FlxSound = null;
