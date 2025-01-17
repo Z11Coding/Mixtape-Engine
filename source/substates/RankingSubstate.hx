@@ -169,7 +169,7 @@ class RankingSubstate extends MusicBeatSubstate
 					trace(locationId);
 					trace('Combo Gotten:'+comboRankLimit+" Combo Required: "+comboRankSetLimit);
 					trace('Accuracy Gotten:'+accRankLimit+" Accuracy Required: "+accRankSetLimit);
-					if (comboRankLimit >= comboRankSetLimit && accRankLimit >= accRankSetLimit)
+					if (comboRankLimit <= comboRankSetLimit && accRankLimit <= accRankSetLimit)
 					{
 						trace(APEntryState.apGame.info().LocationChecks([APEntryState.apGame.info().get_location_id(locationId)]));
 						trace(APEntryState.apGame.info().get_location_name(APEntryState.apGame.info().get_location_id(locationId)));
