@@ -216,20 +216,21 @@ class APGameState {
         for (songName in song)
         {
             var itemName = info().get_item_name(songName.item);
-            var song = itemName.split("||")[0];
-            var modName = itemName.split("||")[1];
-
+            var lastParenIndex = itemName.lastIndexOf("(");
+            var modName = "";
+            if (lastParenIndex != -1) {
+                    modName = itemName.substring(lastParenIndex + 1, itemName.indexOf(")", lastParenIndex));
                 if (isModName(modName)) {
-                    itemName = song;
-                    trace("Modded Song: " + itemName + " Mod: " + modName);
+                    itemName = itemName.substring(0, lastParenIndex).trim();
                 }
+            }
             if (!states.FreeplayState.curUnlocked.exists(itemName))
             {
                 trace('Item Recieved: '+itemName);
                 if (itemName != "Unknown")
                 {
                     if (!isSync) ArchPopup.startPopupSong(itemName, 'archColor');
-                    states.FreeplayState.curUnlocked.set(itemName, modName != null ? modName : "");
+                    states.FreeplayState.curUnlocked.set(itemName, modName == "pico-mix" ? "" : modName);
                     if (states.FreeplayState.instance != null) states.FreeplayState.instance.reloadSongs(true);
                     trace("Unlocked: " + itemName);
                     trace(states.FreeplayState.curUnlocked);

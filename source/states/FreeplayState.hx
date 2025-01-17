@@ -531,11 +531,11 @@ class FreeplayState extends MusicBeatState
 								{
 									if (APEntryState.inArchipelagoMode)
 									{
+										var songNameThing:String = song[0];
 										for (songName in curUnlocked.keys())
 										{
-											if ((song[0] == songName || checkStringCombinations(songName, song[0])) && leWeek.folder == curUnlocked.get(songName))
-												for (comb in getAllStringCombinations(songName))
-													addSong(comb, i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
+											if ((songNameThing.trim().toLowerCase().replace('-', ' ') == songName.trim().toLowerCase().replace('-', ' ')) && leWeek.folder == curUnlocked.get(songName))
+												addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
 										}
 									}
 									else addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
