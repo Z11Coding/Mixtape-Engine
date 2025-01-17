@@ -37,109 +37,46 @@ class APSettingsSubState extends MusicBeatSubstate {
     var gradientBar:FlxSprite;
     var dim:FlxSprite;
 
-    public static function generateSongList(?type:String, ?toList:Array<String>)
-	{
-        for (song in globalSongList)
-            globalSongList.remove(song);
-        if (toList != null)
-        {
-            switch (type)
-            {
-                case "A":
-                    toList = APInfo.baseGame;    
-                    for (erect in APInfo.baseErect)
-                        toList.push(erect);
-                    for (pico in APInfo.basePico)
-                        toList.push(pico);
-                    for (secret in APInfo.secrets)
-                        toList.push(secret);
-                case "B":
-                    if (APEntryState.gameSettings.FNF.mods_enabled)
-                    {
-                        for (i in 0...WeekData.weeksList.length) {
-                            var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
-                            for (song in leWeek.songs)
-                            {
-                                toList.remove(song[0]); // To remove dups
-                                toList.push(song[0]);
-                                toList.remove('Tutorial'); // To remove Tutorial because it keeps re-adding itself
-                            }
-                        }
-                    }
-                
-                case "Test":
-                    toList = APInfo.baseGame;
-                default:
-                    toList = APInfo.baseGame; //This always resets the list to just base base game
-                    for (erect in APInfo.baseErect)
-                        toList.push(erect);
-                    for (pico in APInfo.basePico)
-                        toList.push(pico);
-                    for (secret in APInfo.secrets)
-                        toList.push(secret);
-                    if (APEntryState.gameSettings.FNF.mods_enabled)
-                    {
-                        for (i in 0...WeekData.weeksList.length) {
-                            var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
-                            trace(leWeek.folder);
-                            for (song in leWeek.songs)
-                            {
-                                toList.remove(song[0]); // To remove dups
-                                toList.push((leWeek.folder != "") ? song[0] + " (" + leWeek.folder + ")" : song[0]);
-                            }
-                        }
-                    }
+    public static function generateSongList() {
+        globalSongList = APInfo.baseGame.concat(APInfo.baseErect).concat(APInfo.basePico).concat(APInfo.secrets);
+
+        var tempSongList:Map<String, Bool> = new Map();
+
+        if (APEntryState.gameSettings.FNF.mods_enabled) {
+            for (i in 0...WeekData.weeksList.length) {
+                var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
+                for (song in leWeek.songs) {
+                    var songName = (cast song[0] : String).toLowerCase().replace(" ", "-");
+                    tempSongList.set(songName + (StringTools.trim(leWeek.folder) != "" ? " (" + leWeek.folder + ")" : ""), true);
+                }
             }
         }
-        else
-        {
-            switch (type)
-            {
-                case "A":
-                    trace("A");
-                    globalSongList = APInfo.baseGame;    
-                    for (erect in APInfo.baseErect)
-                        globalSongList.push(erect);
-                    for (pico in APInfo.basePico)
-                        globalSongList.push(pico);
-                    for (secret in APInfo.secrets)
-                        globalSongList.push(secret);
-                case "B":
-                    trace("B");
-                    if (APEntryState.gameSettings.FNF.mods_enabled)
-                    {
-                        for (i in 0...WeekData.weeksList.length) {
-                            var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
-                            for (song in leWeek.songs)
-                            {
-                                globalSongList.remove(song[0]); // To remove dups
-                                globalSongList.push(song[0]);
-                                globalSongList.remove('Tutorial'); // To remove Tutorial because it keeps re-adding itself
-                            }
-                        }
-                    }
-                case "Test":
-                    trace("TEST");
-                    globalSongList = APInfo.baseGame;
-                default:
-                    trace("RESORTING TO DEFAULT!");
-                    if (APEntryState.gameSettings.FNF.mods_enabled)
-                    {
-                        for (i in 0...WeekData.weeksList.length) {
-                            var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
-                            trace(leWeek.folder);
-                            for (song in leWeek.songs)
-                            { 
-                                var songName = Paths.formatToSongPath(song[0]);
-                                globalSongList.remove(songName); // To remove dups
-                                globalSongList.push(songName) + (StringTools.trim(leWeek.folder) != "" ? " (" + leWeek.folder + ")" : ""); // To add the folder name if it's not empty
-                            }
-                        }
-                    }
+
+        for (song in globalSongList) {
+            tempSongList.set(song.toLowerCase().replace(" ", "-"), false);
+        }
+
+        globalSongList = [];
+        for (songName in tempSongList.keys()) {
+            if (tempSongList.get(songName)) {
+            var parts = songName.split(" (");
+            var formattedName = parts[0].toLowerCase().replace(" ", "-");
+            if (parts.length > 1) {
+                formattedName += " (" + parts[1];
+            }
+            if (formattedName != songName.trim().toLowerCase().replace(" ", "-")) {
+                trace('Verification failed for: ' + songName);
+            }
+            globalSongList.push(formattedName);
+            } else {
+            var formattedName = songName.toLowerCase().replace(" ", "-");
+            if (formattedName != songName.trim().toLowerCase().replace(" ", "-")) {
+                trace('Verification failed for: ' + songName);
+            }
+            globalSongList.push(formattedName);
             }
         }
-        trace(globalSongList);
-	}
+    }
 
     override function create() {
         FlxTween.num(1, 0.0134, 1, {ease: FlxEase.sineInOut}, function(t) {
@@ -290,7 +227,7 @@ class APSettingsSubState extends MusicBeatSubstate {
         function() 
         {
             APEntryState.gameSettings.FNF.mods_enabled = allowMods.checked;
-            //generateSongList(!allowMods.checked ? "A" : '');
+            generateSongList();
         });
         allowMods.checked = APEntryState.gameSettings.FNF.mods_enabled;
 
@@ -417,9 +354,19 @@ class APSettingsSubState extends MusicBeatSubstate {
             Reflect.setField(yamlThing, thing, Reflect.field(APEntryState.gameSettings.FNF, thing));
         }
 
-        trace(globalSongList);
-		APEntryState.gameSettings.FNF.songList = globalSongList;
-        trace(globalSongList);
+        while (globalSongList.length == 0) {
+            generateSongList();
+        }
+        APEntryState.gameSettings.FNF.songList = globalSongList;
+
+        if (APEntryState.gameSettings.FNF.songList.length == 0) {
+            while (APEntryState.gameSettings.FNF.songList.length == 0) {
+                generateSongList();
+                APEntryState.gameSettings.FNF.songList = globalSongList;
+            }
+        }
+
+
         var mainSettings = {name: APEntryState.yamlName, description: APEntryState.gameSettings.description, game: APEntryState.gameSettings.game};
         var document = Yaml.render(mainSettings, Renderer.options().setFlowLevel(1));
 		trace(document);
