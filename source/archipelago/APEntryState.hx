@@ -1,5 +1,6 @@
 package archipelago;
 
+import substates.RankingSubstate;
 import states.FreeplayState;
 import backend.modules.SyncUtils;
 #if sys
@@ -259,6 +260,9 @@ class APEntryState extends FlxState
 			lowFilterAmount = 0.0134;
 			fileDialog.load('', [new FileFilter('YAML', 'yaml')], function()
 			{
+				FlxTween.num(0.0134, 1, 1, {ease: FlxEase.sineInOut}, function(t) {
+					APEntryState.lowFilterAmount = t;
+				});
 				try
 				{
 					var filePath:String = fileDialog.path.replace('\\', '/');
@@ -315,7 +319,6 @@ class APEntryState extends FlxState
 
 	function doYaml() 
 	{
-		APEntryState.lowFilterAmount = 0.0134;
 		openSubState(new APSettingsSubState());
 	}
 
@@ -410,6 +413,8 @@ class APEntryState extends FlxState
 		ap.onSlotConnected.remove(onSlotConnected);
 		deathLink = slotData.deathlink == 0 ? false : true;
 		victorySong = slotData.victoryLocation;
+		fullSongCount = slotData.fullSongCount;
+		RankingSubstate.comboRankLimit = slotData.fullSongCount;
 		fullSongCount = slotData.fullSongCount;
 		closeSubState();
 		inArchipelagoMode = true;
@@ -583,7 +588,6 @@ class APEntryState extends FlxState
 	{
 		inArchipelagoMode = true;
 		WeekData.reloadWeekFiles(false);
-		unlockable = APSettingsSubState.globalSongList;
 		FlxG.save.data.closeDuringOverRide = false;
 		FlxG.save.data.manualOverride = false;
 		FlxG.save.data.storyWeek = null;
