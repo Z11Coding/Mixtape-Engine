@@ -10574,11 +10574,12 @@ class PlayState extends MusicBeatState
 		}
 
 		#if LUA_ALLOWED
+		try {
 		for (lua in luaArray)
 		{ var lua:Dynamic = cast(lua);
 			lua.call('onDestroy', []);
 			lua.stop();
-		}
+		} } catch(P) {trace("Ew. Can't destroy Lua.");}
 		luaArray = null;
 		FunkinLua.customFunctions.clear();
 		#end

@@ -440,7 +440,7 @@ class Client {
 
 	public function sendDeathLink(COD:String) {
 		if (state == State.SLOT_CONNECTED)
-			InternalSend(OutgoingPacket.Bounce(null,null,['DeathLink'], {time: Timer.stamp(), cause: COD, source: slot}));
+			InternalSend(OutgoingPacket.Bounce(null,null,['DeathLink'], {time: Timer.stamp(), cause: slot + ": " + COD, source: slot}));
 	}
 
 	public inline function get_server_time()

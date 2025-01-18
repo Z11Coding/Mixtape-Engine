@@ -109,7 +109,7 @@ class CategoryState extends MusicBeatState
 	override function create()
 	{
 		if (APEntryState.inArchipelagoMode && !(this is APCategoryState)) {
-			FlxG.switchState(new archipelago.APCategoryState());
+			FlxG.switchState(new states.FreeplayState());
 			return;
 		}
 		MemoryUtil.clearMajor();
