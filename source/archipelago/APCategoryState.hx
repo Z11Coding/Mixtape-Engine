@@ -36,6 +36,7 @@ class APCategoryState extends states.CategoryState {
     override function update(elapsed:Float)
     {
         AP.poll();
+        
         super.update(elapsed);
     }
 }

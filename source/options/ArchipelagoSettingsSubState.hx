@@ -13,6 +13,18 @@ class ArchipelagoSettingsSubState extends BaseOptionsMenu
 			'bool');
 		addOption(option);
 
+		var option:Option = new Option('Enable Deathlink',
+			"if checked, you will die if anyone else with Deathlink dies.", 'deathlink',
+			'bool');
+		option.onChange = function()
+		{
+			if (APEntryState.inArchipelagoMode)
+			{
+				APEntryState.ap.toggleDeathLink(option.getValue());
+			}
+		};
+		addOption(option);
+
 		super();
 	}
 

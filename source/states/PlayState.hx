@@ -2735,11 +2735,42 @@ class PlayState extends MusicBeatState
 			{
 				clearNotesBefore(startOnTime);
 				setSongTime(startOnTime - 350);
+
+								// for (field in playfields.members)
+				// field.fadeIn(true);
+
+				camHUD.alpha = 1;
+				for (member in FlxG.state.members) {
+					if (member.cameras.length > 0 && (function() {
+						for (cam in member.cameras)
+							if (cam.visible && cam == camHUD)
+								return true;
+						return false;
+					})())
+					if (member is FlxSprite)
+						(cast member : FlxSprite).alpha = 1;
+				}
+
 				return true;
 			}
 			else if (skipCountdown)
 			{
 				setSongTime(0);
+
+				// for (field in playfields.members)
+				// field.fadeIn(true);
+
+				camHUD.alpha = 1;
+				for (member in FlxG.state.members) {
+					if (member.cameras.length > 0 && (function() {
+						for (cam in member.cameras)
+							if (cam.visible && cam == camHUD)
+								return true;
+						return false;
+					})())
+					if (member is FlxSprite)
+						(cast member : FlxSprite).alpha = 1;
+				}
 				return true;
 			}
 

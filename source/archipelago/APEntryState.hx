@@ -430,6 +430,10 @@ class APEntryState extends FlxState
 		apGame = new APGameState(ap, slotData);
 		if (deathLink)
             apGame.info().add_tag("DeathLink");
+
+		// if (ClientPrefs.data.deathlink)
+			apGame.info().toggleDeathLink(ClientPrefs.data.deathlink);
+
 		runArch();
 	}
 

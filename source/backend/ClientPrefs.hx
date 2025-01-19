@@ -187,6 +187,7 @@ import states.FirstCheckState;
 
 	//Arcipelago stuff
 	public var notePopup:Bool = true;
+	public var deathlink:Bool = true;
 
 	public function new()
 	{

@@ -22,6 +22,14 @@ import lime.app.Event;
 using StringTools;
 using archipelago.Bitsets;
 
+enum Status {
+	GOAL;
+	WAITING;
+	READY;
+	PLAYING;
+	UNKNOWN;
+}
+
 /** The Archipelago client for Haxe. **/
 class Client {
 	/** Read-only. The URI the client is configured to connect to. **/
@@ -435,12 +443,66 @@ class Client {
 	public function set_clientStatus(status:ClientStatus):ClientStatus {
 		if (state == State.SLOT_CONNECTED)
 			InternalSend(OutgoingPacket.StatusUpdate(status));
+		trace("Client status set to " + status);
 		return clientStatus = status;
+	}
+
+	public function set_goal() {
+		if (state == State.SLOT_CONNECTED)
+			InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.GOAL));
+			// InternalSend(OutgoingPacket.StatusUpdate(30));
+	}
+
+
+
+	public function setStatusByEnum(status:Status) {
+		switch (status) {
+			case Status.GOAL:
+				set_goal();
+			case Status.WAITING:
+				InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.WAITING));
+			case Status.READY:
+				InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.READY));
+			case Status.FINISHED:
+				InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.FINISHED));
+			case Status.DISCONNECTED:
+				InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.DISCONNECTED));
+			case Status.UNKNOWN:
+				InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.UNKNOWN));
+		}
+	} 
+
+	public function setStatusByString(status:String) {
+		switch (status) {
+			case "GOAL":
+				set_goal();
+			case "WAITING":
+				InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.WAITING));
+			case "READY":
+				InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.READY));
+			case "PLAYING":
+				InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.PLAYING));
+			// case "FINISHED":
+			// 	InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.FINISHED));
+			// case "DISCONNECTED":
+			// 	InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.DISCONNECTED));
+			case "UNKNOWN":
+				InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.UNKNOWN));
+		}
 	}
 
 	public function sendDeathLink(COD:String) {
 		if (state == State.SLOT_CONNECTED)
 			InternalSend(OutgoingPacket.Bounce(null,null,['DeathLink'], {time: Timer.stamp(), cause: slot + ": " + COD, source: slot}));
+	}
+
+
+	public function toggleDeathLink(enable:Bool) {
+		if (enable) {
+			set_tags(['AP', 'Testing', 'DeathLink']);
+		} else {
+			set_tags(['AP', 'Testing']);
+		}
 	}
 
 	public inline function get_server_time()
@@ -1230,7 +1292,7 @@ class Client {
 					parsedPacket = parseIncomingPacket(packet);
 				default: 
 			}
-			trace("< " + parsedPacket);
+			// trace("< " + parsedPacket);
 			switch (parsedPacket) {
 				case RoomInfo(version, genver, tags, password, permissions, hint_cost, location_check_points, games, _, datapackage_checksums, seed_name, time):
 					_hasBeenConnected = true;
@@ -1313,10 +1375,12 @@ class Client {
 					}
 
 					trace(players);
+					ArchPopup.startPopupCustom("Please wait...", "Fetching data for games...", "ArchColor");
+
 					function data() {
 						var gamePackages:Map<String, DataPackageObject> = [];
 						for (game in players.mapT(function(p) return get_player_game(p.slot)).toIterable()) {
-							trace("Fetching data for game: " + game);
+							// trace("Fetching data for game: " + game);
 							var currentData = _dataPackage;
 							var theGame:String = game;
 							GetDataPackage([theGame]);
@@ -1342,7 +1406,8 @@ class Client {
 
 			backend.Threader.runInThread(data(), "DataPackageFetcher");
 
-				
+				// ArchPopup.startPopupCustom("The game can now be played!", "You are now connected to the server. Have fun!", "ArchColor");
+					//
 
 				trace("Data: " + slot_data);
 
@@ -1408,7 +1473,7 @@ class Client {
 							break;
 					}
 					_hOnBounced(data);
-					trace(data);
+					// trace(data);
 
 				// BUG: "Cannot access non-static abstract field statically" on extracting "keys"
 				// case Retrieved(keys):
@@ -1505,7 +1570,7 @@ class Client {
 				_recvLock.execute(() -> {
 					try {
 						var newPackets:Array<IncomingPacket> = TJson.parse(content);
-						trace(newPackets);
+						// trace(newPackets);
 						for (newPacket in newPackets)
 							_recvQueue.push(newPacket);
 					} catch (e) {

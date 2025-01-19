@@ -167,7 +167,7 @@ class APGameState {
             APPlayState.deathLinkPacket = dl;
             APPlayState.deathByLink = true;}
         }
-        trace(data);
+        // trace(data);
     }
 
     function onSlotConnected(slotData:Dynamic)
@@ -194,14 +194,14 @@ class APGameState {
 			}
 		}
 		archipelago.console.MainTab.addMessage(theMessageFM);
-		trace(data[0].text);
-		trace(data);
+		// trace(data[0].text);
+		// trace(data);
 	}
 
 	function sendMessageSimple(text:Dynamic)
 	{
 		archipelago.console.MainTab.addMessage(text);
-		trace(text);
+		// trace(text);
 	}
 
     public static var isSync:Bool = false;
@@ -218,7 +218,7 @@ class APGameState {
                 // endParenIndex = itemName.lastIndexOf(")", firstParenIndex);
                 if (endParenIndex != -1) {
                     modName = itemName.substring(firstParenIndex + 1, endParenIndex);
-                    trace("Mod Name: " + modName);
+                    // trace("Mod Name: " + modName);
                     if (isModName(modName)) {
                         itemName = itemName.substring(0, firstParenIndex).trim();
                         break;
@@ -235,24 +235,24 @@ class APGameState {
             }
             if (!states.FreeplayState.curUnlocked.exists(itemName))
             {
-                trace('Item Recieved: '+itemName);
+                // trace('Item Recieved: '+itemName);
                 if (itemName != "Unknown")
                 {
                     if (!isSync) ArchPopup.startPopupSong(itemName, 'archColor');
                     states.FreeplayState.curUnlocked.set(itemName, modName);
                     if (states.FreeplayState.instance != null) states.FreeplayState.instance.reloadSongs(true);
-                    trace("Unlocked: " + itemName);
-                    trace(states.FreeplayState.curUnlocked);
-                    trace(song);
+                    // trace("Unlocked: " + itemName);
+                    // trace(states.FreeplayState.curUnlocked);
+                    // trace(song);
                     for (song in states.FreeplayState.curUnlocked.keys())
                     {
                         var parts = song.split("||");
                         var key = parts[0];
                         var value = parts.length > 1 ? parts[1] : states.FreeplayState.curUnlocked.get(song);
                         states.FreeplayState.curUnlocked.set(key, value);
-                        trace("Unlocked: " + key);
-                        trace("Mod: " + value);
-                        trace("curUnlocked: " + states.FreeplayState.curUnlocked);
+                        // trace("Unlocked: " + key);
+                        // trace("Mod: " + value);
+                        // trace("curUnlocked: " + states.FreeplayState.curUnlocked);
                     }
                 }
             }
@@ -262,18 +262,18 @@ class APGameState {
 
     function isModName(name:String):Bool {
         var mods = Mods.parseList().enabled;
-        trace("Checking: " + mod);
+        // trace("Checking: " + mod);
 
         if (mods != null && mods.length > 0) {
             for (mod in mods) {
-                trace("Looking for: " + name);
+                // trace("Looking for: " + name);
                 if (mod == name) {
-                    trace("Found: " + mod);
+                    // trace("Found: " + mod);
                     return true;
                 }
             }
         }
-        trace("Not Found: " + name);
+        // trace("Not Found: " + name);
         return false;
     }
 

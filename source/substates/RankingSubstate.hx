@@ -177,20 +177,23 @@ class RankingSubstate extends MusicBeatSubstate
 
 						if (locationIdInt == null || locationIdInt <= 0)
 						{
-							trace('First if: locationIdInt is 0');
+							// trace('First if: locationIdInt is 0');
 							for (song in WeekData.getCurrentWeek().songs)
 							{
-								trace("Current Week: " + WeekData.getCurrentWeek().songs);
-								trace("Object: " + WeekData.getCurrentWeek());
-								trace("Checking song: " + song[0]);
-								trace("Comparing: " + (cast song[0] : String).toLowerCase().trim() + " to " + PlayState.SONG.song.trim().toLowerCase());
+								// trace("Current Week: " + WeekData.getCurrentWeek().songs);
+								// trace("Object: " + WeekData.getCurrentWeek());
+								// trace("Checking song: " + song[0]);
+								// trace("Comparing: " + (cast song[0] : String).toLowerCase().trim() + " to " + PlayState.SONG.song.trim().toLowerCase());
 								if ((cast song[0] : String).toLowerCase().trim() == PlayState.SONG.song.trim().toLowerCase() ||
 									(cast song[0] : String).toLowerCase().trim().replace(" ", "-") == PlayState.SONG.song.trim().toLowerCase().replace(" ", "-"))
 								{
 									locationIdInt = APPlayState.currentMod.trim() != ""
 										? APEntryState.apGame.info().get_location_id(song[0] + " (" + APPlayState.currentMod + ")")
 										: APEntryState.apGame.info().get_location_id(song[0]);
-									trace('First if: Found matching song, locationIdInt set to ' + locationIdInt);
+									// trace('First if: Found matching song, locationIdInt set to ' + locationIdInt);
+									locationId = APPlayState.currentMod.trim() != ""
+										? song[0] + " (" + APPlayState.currentMod + ")"
+										: song[0];
 									break;
 								}
 							}
@@ -198,7 +201,7 @@ class RankingSubstate extends MusicBeatSubstate
 
 						if (locationIdInt <= 0 || locationIdInt == null)
 						{
-							trace('Second if: locationIdInt is still 0');
+							// trace('Second if: locationIdInt is still 0');
 							for (song in WeekData.getCurrentWeek().songs)
 							{
 								var songPath = APPlayState.currentMod.trim() != ""
@@ -208,22 +211,25 @@ class RankingSubstate extends MusicBeatSubstate
 								var jsonStuff:Array<String> = Paths.crawlDirectoryOG("mods/" + APPlayState.currentMod + "/data", ".json");
 
 								for (json in jsonStuff)
-								{ trace("Checking: " + json); trace("Comparing to: " + songPath);
+								{
+									// trace("Checking: " + json); trace("Comparing to: " + songPath);
 									if (json.trim().toLowerCase().replace(" ", "-") == songPath.trim().toLowerCase().replace(" ", "-"))
 									{
 										songJson = Song.parseJSON(File.getContent(json));
-										trace('Second if: Found matching song, testing...');
+										// trace('Second if: Found matching song, testing...');
 
 									// trace("Song: " + songJson.song); trace("Song File: " + songJson);
 									if (songJson != null)
-									{ trace("Song: " + songJson.song); trace("Comparing to: " + PlayState.SONG.song);
-									trace("Song: " + songJson.song.trim().toLowerCase().replace(" ", "-")); trace("Comparing to: " + PlayState.SONG.song.trim().toLowerCase().replace(" ", "-"));
+									{
+										//  trace("Song: " + songJson.song); trace("Comparing to: " + PlayState.SONG.song);
+									// trace("Song: " + songJson.song.trim().toLowerCase().replace(" ", "-")); trace("Comparing to: " + PlayState.SONG.song.trim().toLowerCase().replace(" ", "-"));
 										if (songJson.song.trim().toLowerCase().replace(" ", "-") == PlayState.SONG.song.trim().toLowerCase().replace(" ", "-"))
 										{
 											// trace('Second if: Found matching song, locationIdInt set to ' + locationIdInt);
 											locationIdInt = APPlayState.currentMod.trim() != ""
 												? APEntryState.apGame.info().get_location_id(song[0] + " (" + APPlayState.currentMod + ")")
 												: APEntryState.apGame.info().get_location_id(song[0]);
+											locationId = APPlayState.currentMod.trim() != "" ? song[0] + " (" + APPlayState.currentMod + ")" : song[0];
 											break;
 										} } } 
 								}
@@ -232,7 +238,20 @@ class RankingSubstate extends MusicBeatSubstate
 						trace(APEntryState.apGame.info().LocationChecks([locationIdInt]));
 						trace(APEntryState.apGame.info().get_location_name(locationIdInt));
 						trace(PlayState.SONG.song);
+						ArchPopup.startPopupCustom("You've sent " + APEntryState.apGame.info().get_location_name(locationIdInt) + " to Archipelago!", "Go check it out!", "archipelago", function() {
+							FlxG.sound.playMusic(Paths.sound('secret'));
+												});
 					}
+
+					var locationIdInt = APEntryState.apGame.info().get_location_id(locationId.trim());
+					if (locationIdInt != null && APEntryState.apGame.info().get_location_name(locationIdInt).trim().toLowerCase().replace(" ", "-") == APEntryState.victorySong.trim().toLowerCase().replace(" ", "-"))
+					{
+						ArchPopup.startPopupCustom("You've completed your goal!", "You win!", "archipelago", function() {
+							FlxG.sound.playMusic(Paths.sound('secret'));
+
+												});
+												APEntryState.apGame.info().set_goal();
+					}						
 					Mods.loadTopMod();
 			}
 		}

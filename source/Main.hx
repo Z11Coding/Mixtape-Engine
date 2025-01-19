@@ -943,6 +943,17 @@ class CommandPrompt
 					print("Warning: exit command only accepts 'forced' as an argument. Closing game...");
 					this.switchState("ExitState");
 				}
+			case "AP:ReleaseSong":
+
+					var originalCommand = args.join(" ");
+					if (archipelago.APEntryState.inArchipelagoMode) {
+						var apRelease = archipelago.APEntryState.apGame.info().LocationChecks([archipelago.APEntryState.apGame.info().get_location_id(originalCommand)]);
+						print("Releasing song: " + originalCommand);
+						print("Result: " + apRelease);
+					} else {
+						print("Error: AP:ReleaseSong can only be used in Archipelago mode.");
+					}
+
 			case "stopTransition":
 				if (args.length == 0)
 				{
