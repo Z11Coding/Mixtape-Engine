@@ -77,9 +77,9 @@ class MainMenuState extends MusicBeatState
 
 	override function create()
 	{
-		if (APEntryState.inArchipelagoMode) {
-			FlxG.switchState(new CategoryState());
-		}
+		// if (APEntryState.inArchipelagoMode) {
+		// 	FlxG.switchState(new CategoryState());
+		// }
 		#if DISCORD_ALLOWED
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);

@@ -36,7 +36,6 @@ class APSettingsSubState extends MusicBeatSubstate {
     var MHPWeight:PsychUISlider;
     var gradientBar:FlxSprite;
     var dim:FlxSprite;
-
     public static function generateSongList() {
         globalSongList = APInfo.baseGame.concat(APInfo.baseErect).concat(APInfo.basePico).concat(APInfo.secrets);
 
@@ -48,34 +47,34 @@ class APSettingsSubState extends MusicBeatSubstate {
                 
                 if (Mods.parseList().enabled.contains(leWeek.folder))
                 for (song in leWeek.songs) {
-                    var songName = (cast song[0] : String).toLowerCase().replace(" ", "-");
+                    var songName = (cast song[0] : String);
                     tempSongList.set(songName + (StringTools.trim(leWeek.folder) != "" ? " (" + leWeek.folder + ")" : ""), true);
                 }
             }
         }
 
         for (song in globalSongList) {
-            tempSongList.set(song.toLowerCase().replace(" ", "-"), false);
+            tempSongList.set(song, false);
         }
 
         globalSongList = [];
         for (songName in tempSongList.keys()) {
             if (tempSongList.get(songName)) {
-            var parts = songName.split(" (");
-            var formattedName = parts[0].toLowerCase().replace(" ", "-");
-            if (parts.length > 1) {
-                formattedName += " (" + parts.slice(1).join(" (");
+                var parts = songName.split(" (");
+                var formattedName = parts[0];
+                if (parts.length > 1) {
+                    formattedName += " (" + parts.slice(1).join(" (");
+                }
                 if (!formattedName.endsWith(")")) {
                     formattedName += ")";
                 }
-            }
-            if (formattedName != songName.trim().toLowerCase().replace(" ", "-")) {
-                trace('Verification failed for: ' + songName);
-            }
-            globalSongList.push(formattedName);
+                if (formattedName != songName.trim()) {
+                    trace('Verification failed for: ' + songName);
+                }
+                globalSongList.push(formattedName);
             } else {
-                var formattedName = songName.toLowerCase().replace(" ", "-");
-                if (formattedName != songName.trim().toLowerCase().replace(" ", "-")) {
+                var formattedName = songName.trim();
+                if (formattedName != songName.trim()) {
                     trace('Verification failed for: ' + songName);
                 }
                 globalSongList.push(formattedName);

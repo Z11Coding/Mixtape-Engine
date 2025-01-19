@@ -210,13 +210,28 @@ class APGameState {
         for (songName in song)
         {
             var itemName = info().get_item_name(songName.item);
-            var lastParenIndex = itemName.lastIndexOf("(");
+            // trace("Item Name: " + itemName);
             var modName = "";
-            if (lastParenIndex != -1) {
-                    modName = itemName.substring(lastParenIndex + 1, itemName.indexOf(")", lastParenIndex));
-                if (isModName(modName)) {
-                    itemName = itemName.substring(0, lastParenIndex).trim();
+            var firstParenIndex = itemName.indexOf("(");
+            var endParenIndex = itemName.lastIndexOf(")");
+            while (firstParenIndex != -1) {
+                // endParenIndex = itemName.lastIndexOf(")", firstParenIndex);
+                if (endParenIndex != -1) {
+                    modName = itemName.substring(firstParenIndex + 1, endParenIndex);
+                    trace("Mod Name: " + modName);
+                    if (isModName(modName)) {
+                        itemName = itemName.substring(0, firstParenIndex).trim();
+                        break;
+                    } else {
+                        firstParenIndex = itemName.indexOf("(", firstParenIndex + 1);
+                    }
+                } else {
+                    break;
                 }
+            }
+            if (firstParenIndex == -1 || !isModName(modName)) {
+                modName = "";
+                itemName = info().get_item_name(songName.item);
             }
             if (!states.FreeplayState.curUnlocked.exists(itemName))
             {
@@ -224,7 +239,7 @@ class APGameState {
                 if (itemName != "Unknown")
                 {
                     if (!isSync) ArchPopup.startPopupSong(itemName, 'archColor');
-                    states.FreeplayState.curUnlocked.set(itemName, (modName == "pico-mix" || modName == "bf-mix") ? "" : modName);
+                    states.FreeplayState.curUnlocked.set(itemName, modName);
                     if (states.FreeplayState.instance != null) states.FreeplayState.instance.reloadSongs(true);
                     trace("Unlocked: " + itemName);
                     trace(states.FreeplayState.curUnlocked);
@@ -247,14 +262,43 @@ class APGameState {
 
     function isModName(name:String):Bool {
         var mods = Mods.parseList().enabled;
+        trace("Checking: " + mod);
+
         if (mods != null && mods.length > 0) {
             for (mod in mods) {
+                trace("Looking for: " + name);
                 if (mod == name) {
+                    trace("Found: " + mod);
                     return true;
                 }
             }
         }
+        trace("Not Found: " + name);
         return false;
+    }
+
+    function validateModSong(song:String, mod:String):Bool {
+        // Iterate through the weeks in WeekData
+        for (i in 0...WeekData.weeksList.length) {
+            var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
+            
+            // Check if the week folder matches the specified mod
+            if (leWeek.folder == mod) {
+                // Iterate through the songs in the week
+                for (songData in leWeek.songs) {
+                    var songName = (cast songData[0] : String).toLowerCase().replace(" ", "-");
+                    // Check if the song name matches the specified song
+                    if (songName == song.toLowerCase().replace(" ", "-")) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    function checkIfLocked(song:String, mod:String):Bool {
+        return !(states.FreeplayState.curUnlocked.exists(song) && states.FreeplayState.curUnlocked.get(song) == mod);
     }
 
     function validateMods()

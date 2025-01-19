@@ -612,8 +612,7 @@ class PlayState extends MusicBeatState
 		if (APEntryState.inArchipelagoMode && !(this is APPlayState))
 		{
 			FlxG.switchState(new APPlayState());
-			return;
-		}
+				}
 
 		try
 		{

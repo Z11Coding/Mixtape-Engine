@@ -135,44 +135,102 @@ class RankingSubstate extends MusicBeatSubstate
 					if (PlayState.storyPlaylist.length <= 0)
 					{
 						Mods.loadTopMod();
-					    FlxG.sound.playMusic(Paths.music('panixPress'));
+						FlxG.sound.playMusic(Paths.music('panixPress'));
 						TransitionState.transitionState(states.StoryMenuState, {transitionType: "stickers"});
 					}
 					else
 					{
 						var difficulty:String = Difficulty.getFilePath();
 
-                        trace('LOADING NEXT SONG');
-                        trace(Paths.formatToSongPath(PlayState.storyPlaylist[0]) + difficulty);
+						trace('LOADING NEXT SONG');
+						trace(Paths.formatToSongPath(PlayState.storyPlaylist[0]) + difficulty);
 
-                        FlxTransitionableState.skipNextTransIn = true;
-                        FlxTransitionableState.skipNextTransOut = true;
+						FlxTransitionableState.skipNextTransIn = true;
+						FlxTransitionableState.skipNextTransOut = true;
 
-                        PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0] + difficulty, PlayState.storyPlaylist[0]);
-                        FlxG.sound.music.stop();
+						PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0] + difficulty, PlayState.storyPlaylist[0]);
+						FlxG.sound.music.stop();
 						TransitionState.transitionState(states.PlayState, {transitionType: "stickers"});
 					}
 				case "Freeplay":
-                    trace('WENT BACK TO FREEPLAY??');
-				    Mods.loadTopMod();
-				    FlxG.sound.playMusic(Paths.music('panixPress'));
+					trace('WENT BACK TO FREEPLAY??');
+					Mods.loadTopMod();
+					FlxG.sound.playMusic(Paths.music('panixPress'));
 					TransitionState.transitionState(states.FreeplayState, {transitionType: "stickers"});
-				case "APFreeplay":	
+				case "APFreeplay":
 					trace('WENT BACK TO ARCHIPELAGO FREEPLAY??');
-				    FlxG.sound.playMusic(Paths.music('panixPress'));
+					FlxG.sound.playMusic(Paths.music('panixPress'));
 					TransitionState.transitionState(states.FreeplayState, {transitionType: "stickers"});
-					var locationId = Paths.formatToSongPath(PlayState.SONG.song);
-					trace('Combo Gotten:'+comboRankLimit+" Combo Required: "+comboRankSetLimit);
-					trace('Accuracy Gotten:'+accRankLimit+" Accuracy Required: "+accRankSetLimit);
+					var locationId = (PlayState.SONG.song);
+					trace('Combo Gotten:' + comboRankLimit + " Combo Required: " + comboRankSetLimit);
+					trace('Accuracy Gotten:' + accRankLimit + " Accuracy Required: " + accRankSetLimit);
 					if (comboRankLimit <= comboRankSetLimit && accRankLimit <= accRankSetLimit)
 					{
 						trace(APPlayState.currentMod);
-						if (APPlayState.currentMod.trim() != "") {
+						if (APPlayState.currentMod.trim() != "")
+						{
 							locationId += " (" + APPlayState.currentMod + ")";
 						}
 						trace(locationId.trim());
-						trace(APEntryState.apGame.info().LocationChecks([APEntryState.apGame.info().get_location_id(locationId.trim())]));
-						trace(APEntryState.apGame.info().get_location_name(APEntryState.apGame.info().get_location_id(locationId.trim())));
+						var locationIdInt = APEntryState.apGame.info().get_location_id(locationId.trim());
+						trace('Location ID: ' + locationIdInt);
+
+						if (locationIdInt == null || locationIdInt <= 0)
+						{
+							trace('First if: locationIdInt is 0');
+							for (song in WeekData.getCurrentWeek().songs)
+							{
+								trace("Current Week: " + WeekData.getCurrentWeek().songs);
+								trace("Object: " + WeekData.getCurrentWeek());
+								trace("Checking song: " + song[0]);
+								trace("Comparing: " + (cast song[0] : String).toLowerCase().trim() + " to " + PlayState.SONG.song.trim().toLowerCase());
+								if ((cast song[0] : String).toLowerCase().trim() == PlayState.SONG.song.trim().toLowerCase() ||
+									(cast song[0] : String).toLowerCase().trim().replace(" ", "-") == PlayState.SONG.song.trim().toLowerCase().replace(" ", "-"))
+								{
+									locationIdInt = APPlayState.currentMod.trim() != ""
+										? APEntryState.apGame.info().get_location_id(song[0] + " (" + APPlayState.currentMod + ")")
+										: APEntryState.apGame.info().get_location_id(song[0]);
+									trace('First if: Found matching song, locationIdInt set to ' + locationIdInt);
+									break;
+								}
+							}
+						}
+
+						if (locationIdInt <= 0 || locationIdInt == null)
+						{
+							trace('Second if: locationIdInt is still 0');
+							for (song in WeekData.getCurrentWeek().songs)
+							{
+								var songPath = APPlayState.currentMod.trim() != ""
+									? "mods/" + APPlayState.currentMod + "/data/" + song[0] + "/" + song[0] + "-" + Difficulty.getString(PlayState.storyDifficulty) + ".json"
+									: "assets/shared" + (song[0] + Difficulty.getFilePath());
+								var songJson:SwagSong = null;
+								var jsonStuff:Array<String> = Paths.crawlDirectoryOG("mods/" + APPlayState.currentMod + "/data", ".json");
+
+								for (json in jsonStuff)
+								{ trace("Checking: " + json); trace("Comparing to: " + songPath);
+									if (json.trim().toLowerCase().replace(" ", "-") == songPath.trim().toLowerCase().replace(" ", "-"))
+									{
+										songJson = Song.parseJSON(File.getContent(json));
+										trace('Second if: Found matching song, testing...');
+
+									// trace("Song: " + songJson.song); trace("Song File: " + songJson);
+									if (songJson != null)
+									{ trace("Song: " + songJson.song); trace("Comparing to: " + PlayState.SONG.song);
+									trace("Song: " + songJson.song.trim().toLowerCase().replace(" ", "-")); trace("Comparing to: " + PlayState.SONG.song.trim().toLowerCase().replace(" ", "-"));
+										if (songJson.song.trim().toLowerCase().replace(" ", "-") == PlayState.SONG.song.trim().toLowerCase().replace(" ", "-"))
+										{
+											// trace('Second if: Found matching song, locationIdInt set to ' + locationIdInt);
+											locationIdInt = APPlayState.currentMod.trim() != ""
+												? APEntryState.apGame.info().get_location_id(song[0] + " (" + APPlayState.currentMod + ")")
+												: APEntryState.apGame.info().get_location_id(song[0]);
+											break;
+										} } } 
+								}
+							}
+						}
+						trace(APEntryState.apGame.info().LocationChecks([locationIdInt]));
+						trace(APEntryState.apGame.info().get_location_name(locationIdInt));
 						trace(PlayState.SONG.song);
 					}
 					Mods.loadTopMod();
