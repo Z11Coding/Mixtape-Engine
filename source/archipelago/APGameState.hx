@@ -210,6 +210,14 @@ class APGameState {
         for (songName in song)
         {
             var itemName = info().get_item_name(songName.item);
+
+                        // Convert special keywords back to actual brackets
+                        itemName = itemName.replace("<cOpen>", "{")
+                        .replace("<cClose>", "}")
+                        .replace("<sOpen>", "[")
+                        .replace("<sClose>", "]");
+
+                        
             // trace("Item Name: " + itemName);
             var modName = "";
             var firstParenIndex = itemName.indexOf("(");

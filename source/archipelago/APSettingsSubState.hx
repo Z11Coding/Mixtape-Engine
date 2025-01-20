@@ -38,9 +38,9 @@ class APSettingsSubState extends MusicBeatSubstate {
     var dim:FlxSprite;
     public static function generateSongList() {
         globalSongList = APInfo.baseGame.concat(APInfo.baseErect).concat(APInfo.basePico).concat(APInfo.secrets);
-
+    
         var tempSongList:Map<String, Bool> = new Map();
-
+    
         if (APEntryState.gameSettings.FNF.mods_enabled) {
             for (i in 0...WeekData.weeksList.length) {
                 var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
@@ -48,15 +48,19 @@ class APSettingsSubState extends MusicBeatSubstate {
                 if (Mods.parseList().enabled.contains(leWeek.folder))
                 for (song in leWeek.songs) {
                     var songName = (cast song[0] : String);
-                    tempSongList.set(songName + (StringTools.trim(leWeek.folder) != "" ? " (" + leWeek.folder + ")" : ""), true);
+                    var folderName = StringTools.trim(leWeek.folder);
+                    if (folderName.indexOf("{") != -1 || folderName.indexOf("}") != -1 || folderName.indexOf("[") != -1 || folderName.indexOf("]") != -1) {
+                        folderName = folderName.replace("{", "<cOpen>").replace("}", "<cClose>").replace("[", "<sOpen>").replace("]", "<sClose>");
+                    }
+                    tempSongList.set(songName + (folderName != "" ? " (" + folderName + ")" : ""), true);
                 }
             }
         }
-
+    
         for (song in globalSongList) {
             tempSongList.set(song, false);
         }
-
+    
         globalSongList = [];
         for (songName in tempSongList.keys()) {
             if (tempSongList.get(songName)) {

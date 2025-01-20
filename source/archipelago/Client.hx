@@ -455,41 +455,41 @@ class Client {
 
 
 
-	public function setStatusByEnum(status:Status) {
-		switch (status) {
-			case Status.GOAL:
-				set_goal();
-			case Status.WAITING:
-				InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.WAITING));
-			case Status.READY:
-				InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.READY));
-			case Status.FINISHED:
-				InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.FINISHED));
-			case Status.DISCONNECTED:
-				InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.DISCONNECTED));
-			case Status.UNKNOWN:
-				InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.UNKNOWN));
-		}
-	} 
+	// public function setStatusByEnum(status:Status) {
+	// 	switch (status) {
+	// 		case Status.GOAL:
+	// 			set_goal();
+	// 		case Status.WAITING:
+	// 			InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.WAITING));
+	// 		case Status.READY:
+	// 			InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.READY));
+	// 		case Status.FINISHED:
+	// 			InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.FINISHED));
+	// 		case Status.DISCONNECTED:
+	// 			InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.DISCONNECTED));
+	// 		case Status.UNKNOWN:
+	// 			InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.UNKNOWN));
+	// 	}
+	// } 
 
-	public function setStatusByString(status:String) {
-		switch (status) {
-			case "GOAL":
-				set_goal();
-			case "WAITING":
-				InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.WAITING));
-			case "READY":
-				InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.READY));
-			case "PLAYING":
-				InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.PLAYING));
-			// case "FINISHED":
-			// 	InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.FINISHED));
-			// case "DISCONNECTED":
-			// 	InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.DISCONNECTED));
-			case "UNKNOWN":
-				InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.UNKNOWN));
-		}
-	}
+	// public function setStatusByString(status:String) {
+	// 	switch (status) {
+	// 		case "GOAL":
+	// 			set_goal();
+	// 		// case "WAITING":
+	// 		// 	InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.WAITING));
+	// 		case "READY":
+	// 			InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.READY));
+	// 		case "PLAYING":
+	// 			InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.PLAYING));
+	// 		// case "FINISHED":
+	// 		// 	InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.FINISHED));
+	// 		// case "DISCONNECTED":
+	// 		// 	InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.DISCONNECTED));
+	// 		case "UNKNOWN":
+	// 			InternalSend(OutgoingPacket.StatusUpdate(ClientStatus.UNKNOWN));
+	// 	}
+	// }
 
 	public function sendDeathLink(COD:String) {
 		if (state == State.SLOT_CONNECTED)
@@ -1377,7 +1377,7 @@ class Client {
 					trace(players);
 					ArchPopup.startPopupCustom("Please wait...", "Fetching data for games...", "ArchColor");
 
-					function data() {
+					function data():Void {
 						var gamePackages:Map<String, DataPackageObject> = [];
 						for (game in players.mapT(function(p) return get_player_game(p.slot)).toIterable()) {
 							// trace("Fetching data for game: " + game);
@@ -1402,6 +1402,7 @@ class Client {
 							games: gameData,
 						};
 						_dataPackage = data;
+						return ArchPopup.startPopupCustom("The game can now be played!", "You are now connected to the server. Have fun!", "ArchColor");
 					}
 
 			backend.Threader.runInThread(data(), "DataPackageFetcher");
