@@ -109,6 +109,7 @@ class Main extends Sprite
 	public static var audioDisconnected:Bool = false;
 	public static var changeID:Int = 0;
 	public static var scaleMode:FunkinRatioScaleMode;
+	public static var skipNextDump:Bool = false;
 
 	private function init(?E:Event):Void
 	{
@@ -252,7 +253,6 @@ class Main extends Sprite
 			// commandPrompt = null;
 			handleStateBasedClosing();
 		}
-		FlxG.signals.preStateSwitch.add(onStateSwitch);
 		FlxGraphic.defaultPersist = false;
 		#if !mobile
 		fpsVar = new FPSCounter(10, 3, 0xFFFFFF);
@@ -265,13 +265,7 @@ class Main extends Sprite
 		{
 			fpsVar.visible = ClientPrefs.data.showFPS;
 		}
-		/*if (memoryCounter != null)
-			{
-				memoryCounter.visible = ClientPrefs.data.showFPS;
-		}*/
 		#end
-
-		FlxG.scaleMode = scaleMode = new FunkinRatioScaleMode();
 
 		#if linux
 		var icon = Image.fromFile("icon.png");
@@ -306,6 +300,23 @@ class Main extends Sprite
 				}
 			}
 		});
+
+		FlxG.signals.gameResized.add(onResize);
+		FlxG.signals.preStateSwitch.add(() -> { 
+			scaleMode.resetSize();
+
+			if (!Main.skipNextDump) {
+				Paths.clearStoredMemory(true);
+				FlxG.bitmap.dumpCache();
+			}
+			MemoryUtil.clearMajor();
+		});
+		FlxG.signals.postStateSwitch.add(function () {
+			Paths.clearUnusedMemory();
+			MemoryUtil.clearMajor();
+			Main.skipNextDump = false;
+		});
+		FlxG.scaleMode = scaleMode = new FunkinRatioScaleMode();
 
 		// shader coords fix
 		FlxG.signals.gameResized.add(function(w, h)
@@ -353,6 +364,42 @@ class Main extends Sprite
 		@:privateAccess {
 			sprite.__cacheBitmap = null;
 			sprite.__cacheBitmapData = null;
+		}
+	}
+
+	static function onResize(w:Int, h:Int)
+	{
+		final scale:Float = Math.max(1, Math.min(w / FlxG.width, h / FlxG.height));
+		if (fpsVar != null)
+		{
+			fpsVar.scaleX = fpsVar.scaleY = scale;
+		}
+		@:privateAccess if (FlxG.cameras != null) for (i in FlxG.cameras.list)
+			if (i != null && i.filters != null) resetSpriteCache(i.flashSprite);
+		if (FlxG.game != null){
+			resetSpriteCache(FlxG.game);
+			fixShaderSize(FlxG.game);
+		} 
+
+		if (FlxG.cameras == null) return;
+		for (cam in FlxG.cameras.list) {
+			@:privateAccess
+			if (cam != null && (cam._filters != null || cam._filters != []))
+				fixShaderSize(cam.flashSprite);
+		}	
+	}
+
+	static function fixShaderSize(sprite:Sprite) // Shout out to Ne_Eo for bringing this to my attention
+	{
+		@:privateAccess {
+			if (sprite != null)
+			{
+				sprite.__cacheBitmap = null;
+				sprite.__cacheBitmapData = null;
+				sprite.__cacheBitmapData2 = null;
+				sprite.__cacheBitmapData3 = null;
+				sprite.__cacheBitmapColorTransform = null;
+			}
 		}
 	}
 

@@ -173,14 +173,33 @@ class StrumNote extends NoteObject
 			frames = Paths.getSparrowAtlas(texture);
 
 			antialiasing = ClientPrefs.data.globalAntialiasing;
-
 			setGraphicSize(Std.int(width * Note.scales[PlayState.mania]));
 	
 			attemptToAddAnimationByPrefix('static', 'arrow' + animationArray[0]);
 			attemptToAddAnimationByPrefix('pressed', animationArray[1] + ' press');
 			attemptToAddAnimationByPrefix('confirm', animationArray[1] + ' confirm', 24, false);
+
+			switch (Math.abs(noteData))
+			{
+				case 0:
+					attemptToAddAnimationByPrefix('static', 'arrowLEFT');
+					attemptToAddAnimationByPrefix('pressed', 'left press', 24, false);
+					attemptToAddAnimationByPrefix('confirm', 'left confirm', 24, false);
+				case 1:
+					attemptToAddAnimationByPrefix('static', 'arrowDOWN');
+					attemptToAddAnimationByPrefix('pressed', 'down press', 24, false);
+					attemptToAddAnimationByPrefix('confirm', 'down confirm', 24, false);
+				case 2:
+					attemptToAddAnimationByPrefix('static', 'arrowUP');
+					attemptToAddAnimationByPrefix('pressed', 'up press', 24, false);
+					attemptToAddAnimationByPrefix('confirm', 'up confirm', 24, false);
+				case 3:
+					attemptToAddAnimationByPrefix('static', 'arrowRIGHT');
+					attemptToAddAnimationByPrefix('pressed', 'right press', 24, false);
+					attemptToAddAnimationByPrefix('confirm', 'right confirm', 24, false);
+			}
 		}
-		defScale.copyFrom(scale);
+		//defScale.copyFrom(scale);
 		updateHitbox();
 
 		if(lastAnim != null)
@@ -188,6 +207,13 @@ class StrumNote extends NoteObject
 			playAnim(lastAnim, true);
 		}
 	}
+
+	var ogArrowList:Array<String> = [
+		"LEFT",
+		"DOWN",
+		"UP",
+		"RIGHT",
+	];
 
 	function attemptToAddAnimationByPrefix(name:String, prefix:String, framerate:Float = 24, doLoop:Bool = true)
 	{

@@ -57,6 +57,8 @@ import states.FirstCheckState;
 	public var enableArtemis:Bool = false;
 	public var mixupMode:Bool = false;
 	public var aiDifficulty:String = 'Average FNF Player';
+	public var loadingThreads:Int = Math.floor(Std.parseInt(Sys.getEnv("NUMBER_OF_PROCESSORS")) / 2);
+	public var multicoreLoading:Bool = false;
 	public var arrowHSV:Array<Array<Int>> = [
 		[0, 0, 0], [0, 0, 0], 
 		[0, 0, 0], [0, 0, 0], 
@@ -172,6 +174,7 @@ import states.FirstCheckState;
 	public var volMax:String = 'VolMAX';
 
 	public var comboOffset:Array<Int> = [0, 0, 0, 0, 0];
+	public var comboOffsetOpp:Array<Int> = [0, 0, 0, 0, 0];
 	public var ratingOffset:Int = 0;
 	public var marvWindow:Int = 22;
 	public var sickWindow:Int = 45;
@@ -725,6 +728,16 @@ class ClientPrefs {
 			FlxG.sound.muted = FlxG.save.data.mute;
 
 		#if DISCORD_ALLOWED DiscordClient.check(); #end
+
+		if (FlxG.save.data.loadingThreads != null)
+		{
+			data.loadingThreads = FlxG.save.data.loadingThreads;
+			if (data.loadingThreads > Math.floor(Std.parseInt(Sys.getEnv("NUMBER_OF_PROCESSORS"))))
+			{
+				data.loadingThreads = Math.floor(Std.parseInt(Sys.getEnv("NUMBER_OF_PROCESSORS")));
+				FlxG.save.data.loadingThreads = data.loadingThreads;
+			}
+		}
 
 		// controls on a separate save file
 		var save:FlxSave = new FlxSave();

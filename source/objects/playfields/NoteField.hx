@@ -171,7 +171,7 @@ class NoteField extends FieldBase
 			var object = drawNote(obj, pos);
 			if (object == null)
 				continue;
-			object.zIndex += (obj.animation != null && obj.animation.curAnim != null && obj.animation.curAnim.name == 'confirm') ? 1 : 0;
+			object.zIndex += (obj.animation != null && obj.animation.curAnim != null && obj.animation.curAnim.name == 'confirm') ? 1 : 2;
 
 			lookupMap.set(obj, object);
 			drawQueue.push(object);

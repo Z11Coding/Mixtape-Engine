@@ -57,27 +57,35 @@ class Paths
 	public static var localTrackedAssets:Array<String> = [];
 
 	@:access(flixel.system.frontEnds.BitmapFrontEnd._cache)
-	public static function clearStoredMemory()
+	public static function clearStoredMemory(?cleanUnused:Bool = false)
 	{
 		// clear anything not in the tracked assets list
+		@:privateAccess
 		for (key in FlxG.bitmap._cache.keys())
 		{
-			if (!currentTrackedAssets.exists(key))
-				destroyGraphic(FlxG.bitmap.get(key));
+			var obj = FlxG.bitmap._cache.get(key);
+			if (obj != null && !currentTrackedAssets.exists(key))
+			{
+				if (obj.bitmap != null && obj.bitmap.__texture != null) obj.bitmap.__texture.dispose();
+				openfl.Assets.cache.removeBitmapData(key);
+				FlxG.bitmap._cache.remove(key);
+				obj.destroy();
+			}
 		}
 
 		// clear all sounds that are cached
-		for (key => asset in currentTrackedSounds)
+		for (key in currentTrackedSounds.keys())
 		{
-			if (!localTrackedAssets.contains(key) && !dumpExclusions.contains(key) && asset != null)
+			if (!localTrackedAssets.contains(key) && !dumpExclusions.contains(key) && key != null)
 			{
+				// trace('test: ' + dumpExclusions, key);
 				Assets.cache.clear(key);
 				currentTrackedSounds.remove(key);
 			}
 		}
 		// flags everything to be cleared out next unused memory clear
 		localTrackedAssets = [];
-		#if !html5 openfl.Assets.cache.clear("songs"); #end
+		openfl.Assets.cache.clear("songs");
 	}
 
 	inline static function destroyGraphic(graphic:FlxGraphic)
@@ -427,6 +435,7 @@ class Paths
 	public static var currentTrackedAssets:Map<String, FlxGraphic> = [];
 	static public function image(key:String, ?library:String = null, ?allowGPU:Bool = false):FlxGraphic
 	{
+		/*
 		try
 		{
 			if((CacheState.imageCache.getGraphic(getPath('images/$key', IMAGE, library)) != null) && !(allowGPU && ClientPrefs.data.cacheOnGPU)){
@@ -514,8 +523,9 @@ class Paths
 			}
 
 			trace('oh no its returning null NOOOO ($file)');
-		}
-		return null;
+		}*/
+		// streamlined the assets process more
+		return newReturnGraphic(key, library);
 	}
 
 	/**
@@ -647,7 +657,81 @@ class Paths
 		newGraphic.destroyOnNoUse = false;
 		currentTrackedAssets.set(file, newGraphic);
 		return newGraphic;
-	}	
+	}
+	
+	public static function newReturnGraphic(key:String, ?library:String, ?allowGPU:Bool = true)
+	{
+		var bitmap:BitmapData = null;
+		var file:String = null;
+
+		#if MODS_ALLOWED
+		file = modsImages(key);
+		if (currentTrackedAssets.exists(file))
+		{
+			localTrackedAssets.push(file);
+			return currentTrackedAssets.get(file);
+		}
+		else if (FileSystem.exists(file)) bitmap = BitmapData.fromFile(file);
+		else
+		#end
+		{
+			file = getPath('images/$key.png', IMAGE, library);
+			if (currentTrackedAssets.exists(file))
+			{
+				localTrackedAssets.push(file);
+				return currentTrackedAssets.get(file);
+			}
+			else if (FileSystem.exists(file))
+			{
+				bitmap = BitmapData.fromFile(file);
+			}
+			else if (OpenFlAssets.exists(file, IMAGE))
+			{
+				bitmap = OpenFlAssets.getBitmapData(file);
+			}
+		}
+
+		if (bitmap != null)
+		{
+			var retVal = cacheBitmap(file, bitmap, allowGPU);
+			if (retVal != null) return retVal;
+		}
+
+		trace('oh no its returning null NOOOO ($file)');
+		return null;
+	}
+
+	static public function newCacheBitmap(file:String, ?bitmap:BitmapData = null, ?allowGPU:Bool = true)
+	{
+		if (bitmap == null)
+		{
+			#if MODS_ALLOWED
+			if (FileSystem.exists(file)) bitmap = BitmapData.fromFile(file);
+			else
+			#end
+			{
+				if (OpenFlAssets.exists(file, IMAGE)) bitmap = OpenFlAssets.getBitmapData(file);
+			}
+
+			if (bitmap == null) return null;
+		}
+
+		localTrackedAssets.push(file);
+		if (allowGPU && ClientPrefs.data.cacheOnGPU)
+		{
+			var texture:openfl.display3D.textures.RectangleTexture = FlxG.stage.context3D.createRectangleTexture(bitmap.width, bitmap.height, BGRA, true);
+			texture.uploadFromBitmapData(bitmap);
+			bitmap.image.data = null;
+			bitmap.dispose();
+			bitmap.disposeImage();
+			bitmap = BitmapData.fromTexture(texture);
+		}
+		var newGraphic:FlxGraphic = FlxGraphic.fromBitmapData(bitmap, false, file);
+		newGraphic.persist = true;
+		newGraphic.destroyOnNoUse = false;
+		currentTrackedAssets.set(file, newGraphic);
+		return newGraphic;
+	}
 
 	inline static public function getTextFromFile(key:String, ?ignoreMods:Bool = false):String
 	{

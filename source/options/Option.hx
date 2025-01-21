@@ -47,6 +47,8 @@ class Option
 		if(this.type != 'keybind') this.defaultValue = Reflect.getProperty(ClientPrefs.defaultData, variable);
 		switch(type)
 		{
+			case 'button' | 'label':
+					defaultValue = ''; // never used anyway, so like
 			case 'bool':
 				if(defaultValue == null) defaultValue = false;
 			case 'int' | 'float':
@@ -142,6 +144,8 @@ class Option
 			case 'integer': newValue = 'int';
 			case 'str': newValue = 'string';
 			case 'fl': newValue = 'float';
+			case 'button': newValue = 'button';
+			case 'label': 'label';
 		}
 		type = newValue;
 		return type;

@@ -172,8 +172,8 @@ class APGameState {
 
     function onSlotConnected(slotData:Dynamic)
     {
-    //     if (APEntryState.deathLink)
-    //         _ap.tags.push("DeathLink");
+        if (APEntryState.deathLink)
+            _ap.tags.push("DeathLink");
     }
 
     function sendMessage(data:Array<JSONMessagePart>, item:Dynamic, receiving:Dynamic)
@@ -194,15 +194,10 @@ class APGameState {
 			}
 		}
 		archipelago.console.MainTab.addMessage(theMessageFM);
-		// trace(data[0].text);
-		// trace(data);
 	}
 
 	function sendMessageSimple(text:Dynamic)
-	{
-		archipelago.console.MainTab.addMessage(text);
-		// trace(text);
-	}
+        archipelago.console.MainTab.addMessage(text);
 
     public static var isSync:Bool = false;
     function addSongs(song:Array<NetworkItem>)

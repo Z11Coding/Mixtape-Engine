@@ -777,20 +777,21 @@ class Note extends NoteObject
 					if (isSustainNote)
 					{
 						loadGraphic(Paths.image('pixelUI/' + skinPixel + 'ENDS' + skinPostfix, null, true));
-						width = width / 18;
-						height = height / 5;
-						loadGraphic(Paths.image('pixelUI/' + skinPixel + 'ENDS' + skinPostfix, null, true), true, Math.floor(width), Math.floor(height));
+						width = width / Note.pixelNotesDivisionValue;
+						height = height / 6;
+						loadGraphic(Paths.image('pixelUI/' + skinPixel + 'ENDS' + skinPostfix, null, true), true, Math.floor(width), 0);
 					}
 					else
 					{
 						loadGraphic(Paths.image('pixelUI/' + skinPixel + skinPostfix, null, true));
-						width = width / 18;
+						width = width / Note.pixelNotesDivisionValue;
 						height = height / 5;
 						loadGraphic(Paths.image('pixelUI/' + skinPixel + skinPostfix, null, true), true, Math.floor(width), Math.floor(height));
 					}
 			}
 			defaultWidth = width;
-			setGraphicSize(Std.int(width * PlayState.daPixelZoom * Note.pixelScales[mania]));
+			defaultHeight = height;
+			setGraphicSize(Std.int(width * PlayState.daPixelZoom * Note.pixelScales[mania]), 0);
 			loadPixelNoteAnims();
 			antialiasing = false;
 		}
@@ -860,12 +861,19 @@ class Note extends NoteObject
 			attemptToAddAnimationByPrefix(gfxLetter[i], gfxLetter[i] + '0');
 			attemptToAddAnimationByPrefix(gfxLetter[i], colArray[Note.keysShit.get(mania).get('colArray')[noteData]] + '0');
 
+			attemptToAddAnimationByPrefix(gfxLetter[i], colArray[Note.keysShit.get(mania).get('colArray')[noteData]] + '0');
+
 			if (isSustainNote)
 			{
-				attemptToAddAnimationByPrefix(gfxLetter[i] + 'tail', colArray[Note.keysShit.get(mania).get('colArray')[noteData]] + ' hold end');
-				attemptToAddAnimationByPrefix(gfxLetter[i] + 'hold', colArray[Note.keysShit.get(mania).get('colArray')[noteData]] + ' hold piece');
+				attemptToAddAnimationByPrefix(gfxLetter[i] + ' tail', colArray[Note.keysShit.get(mania).get('colArray')[noteData]] + ' hold end');
+				attemptToAddAnimationByPrefix(gfxLetter[i] + ' hold', colArray[Note.keysShit.get(mania).get('colArray')[noteData]] + ' hold piece');
 				attemptToAddAnimationByPrefix(gfxLetter[i] + ' hold', gfxLetter[i] + ' hold');
 				attemptToAddAnimationByPrefix(gfxLetter[i] + ' tail', gfxLetter[i] + ' tail');
+
+				attemptToAddAnimationByPrefix(gfxLetter[i] + ' tail', 'pruple end hold');
+				attemptToAddAnimationByPrefix(gfxLetter[i] + ' tail', colArray[Note.keysShit.get(mania).get('colArray')[noteData]] + ' hold end');
+
+				attemptToAddAnimationByPrefix(gfxLetter[i] + ' hold', colArray[Note.keysShit.get(mania).get('colArray')[noteData]] + ' hold piece');
 			}
 		}
 
@@ -892,56 +900,12 @@ class Note extends NoteObject
 		for (i in 0...gfxLetter.length)
 		{
 			animation.add(gfxLetter[i], [i + pixelNotesDivisionValue]);
-
 			if (isSustainNote)
 			{
 				animation.add(gfxLetter[i] + ' hold', [i]);
 				animation.add(gfxLetter[i] + ' tail', [i + pixelNotesDivisionValue]);
 			}
 		}
-	}
-
-	public function applyManiaChange()
-	{
-		reloadNote(texture);
-		if (isSustainNote)
-			offsetX = width / 2;
-		if (!isSustainNote)
-		{
-			var animToPlay:String = '';
-			animToPlay = Note.keysShit.get(mania).get('letters')[noteData];
-			if (hasAnimation(animToPlay))
-				animation.play(animToPlay);
-			else
-			{
-				animToPlay = colArray[Note.keysShit.get(mania).get('colArray')[noteData]];
-				animation.play(animToPlay + 'Scroll');
-			}
-		}
-
-		if (isSustainNote && prevNote != null)
-		{
-			var animToPlay:String = '';
-			animToPlay = Note.keysShit.get(mania).get('letters')[noteData] + ' tail';
-			if (!hasAnimation(animToPlay))
-			{
-				animToPlay = colArray[Note.keysShit.get(mania).get('colArray')[noteData]] + 'holdend';
-			}
-			animation.play(animToPlay);
-			if (prevNote.isSustainNote)
-			{
-				var animToPlay2:String = '';
-				animToPlay2 = Note.keysShit.get(mania).get('letters')[noteData] + ' hold';
-				if (!hasAnimation(animToPlay2))
-				{
-					animToPlay2 = colArray[Note.keysShit.get(mania).get('colArray')[noteData]] + 'hold';
-				}
-				prevNote.animation.play(animToPlay2);
-				prevNote.updateHitbox();
-			}
-		}
-
-		updateHitbox();
 	}
 
 	override function update(elapsed:Float)

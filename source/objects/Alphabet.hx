@@ -3,6 +3,22 @@ package objects;
 import haxe.Json;
 import openfl.utils.Assets;
 
+interface Scrollable extends IFlxSprite {
+	public var targetY:Int;
+	public var distancePerItem:FlxPoint;
+	public var startPosition:FlxPoint;
+	function snapToPosition():Void;
+
+	var isMenuItem:Bool;
+	var scaleX(default, set):Float;
+	var scaleY(default, set):Float;
+
+	// IFlxSprite doesn't have?
+	public var width(get, set):Float;
+	public var height(get, set):Float;
+	public var cameras(get, set):Array<FlxCamera>;
+}
+
 enum Alignment
 {
 	LEFT;
@@ -10,7 +26,7 @@ enum Alignment
 	RIGHT;
 }
 
-class Alphabet extends FlxSpriteGroup
+class Alphabet extends FlxSpriteGroup implements Scrollable
 {
 	public var text(default, set):String;
 

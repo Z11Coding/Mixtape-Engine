@@ -652,11 +652,12 @@ class PlayState extends MusicBeatState
 			throw e;
 		}
 
+		Paths.clearStoredMemory(); // Please just do it anyway
+		MemoryUtil.clearMajor();
+
 		if (!CacheMode)
 			PlayState.cachingSongs = [];
 
-		Paths.clearUnusedMemory(); // Please just do it anyway
-		MemoryUtil.clearMajor();
 		// motionBlur = new shaders.Shaders.MotionBlur();
 
 		if (!CacheMode)
@@ -1190,6 +1191,127 @@ class PlayState extends MusicBeatState
 			debugPrint('Test!')
 		end
 		");
+		IntegratedScript.runNamelessHScript("
+		import psychlua.LuaUtils;
+
+		var options = {
+			alphaToSubtract: 0.3,
+			blendMode: 'add',
+			fadeTime: 0.2,
+			easeType: 'expoIn'
+		}
+
+		var getCharFromString = function(name:String) {
+			switch (name) {
+				case 'dad': return game.dad;
+				case 'gf': return game.gf != null ? game.gf : (daNote.mustPress ? game.boyfriend : game.dad);
+				case 'boyfriend': return game.boyfriend;
+				case '': return null;
+				default: return getVar(name);
+			}
+			return null;
+		}
+		function jumpCheck(daNote:Note, setChar:String, ?useFakeNoAnim:Bool = false) {
+			if (!daNote.isSustainNote) {
+				final char:Character = getCharFromString(setChar); if (char == null) return;
+				final prevNote:Note = char.extraData.exists('prevNote') ? char.extraData.get('prevNote') : null;
+				final noAnim:Bool = useFakeNoAnim ? (daNote.extraData.exists('noAnimation') ? daNote.extraData.get('noAnimation') : false) : daNote.noAnimation;
+				final prevNoAnim:Bool = prevNote == null ? !useFakeNoAnim : (useFakeNoAnim ? (prevNote.extraData.exists('noAnimation') ? prevNote.extraData.get('noAnimation') : false) : prevNote.noAnimation);
+				if (prevNote != null && ((!noAnim && prevNoAnim) || (noAnim && !prevNoAnim) || (!noAnim && !prevNoAnim))) {
+					if (prevNote.strumTime == daNote.strumTime && prevNote.noteData != daNote.noteData) {
+						final setNote:Note = prevNote.sustainLength > daNote.sustainLength ? daNote : prevNote;
+						setNote.extraData.set('noAnimation', true);
+						setNote.noAnimation = true;
+						for (susNote in setNote.tail) {
+							susNote.extraData.set('noAnimation', true);
+							susNote.noAnimation = true;
+						}
+						// if (setNote == prevNote) char.playAnim(game.singAnimations[setNote.noteData] + setNote.animSuffix, true);
+						createAfterImage(setChar, setNote);
+						createGlobalCallback('ghostAnim', setNote);
+					}
+				}
+				char.extraData.set('prevNote', daNote);
+			}
+			if (daNote.extraData.exists('afterImage') && daNote.extraData.get('afterImage') != null) {
+				final afterImage:Character = daNote.extraData.get('afterImage');
+				if (!afterImage.stunned) {
+					afterImage.playAnim(game.singAnimations[daNote.noteData] + daNote.animSuffix, true);
+					afterImage.holdTimer = 0;
+				}
+			}
+		}
+		// Normal note hits.
+		function opponentNoteHitPre(daNote:Note) jumpCheck(daNote, daNote.gfNote ? 'gf' : 'dad');
+		function goodNoteHitPre(daNote:Note) jumpCheck(daNote, daNote.gfNote ? 'gf' : 'boyfriend');
+		// Extra for vs impostor stuff I'm working on.
+		function gfNoteHitPre(daNote:Note) jumpCheck(daNote, 'gf');
+		function momNoteHitPre(daNote:Note) jumpCheck(daNote, 'mom');
+		// For extra character script.
+		function extraNoteHitPre(daNote:Note, setChar:Dynamic, isPlayerNote:Bool) jumpCheck(daNote, setChar.name, true);
+		function otherStrumHitPre(daNote:Note, strumLane) jumpCheck(daNote, strumLane.attachmentVar == 'gfNote' ? 'gf' : '');
+
+		// decided to make it not kill it because the game would yell at you after hitting a note with the dead after image... even tho there are NULL CHECKS
+		function killAfterImage(daNote:Note) {
+			if (daNote.extraData.exists('afterImage') && daNote.extraData.get('afterImage') != null) {
+				final afterImage:Character = daNote.extraData.get('afterImage');
+				FlxTween.tween(afterImage.colorTransform, {alphaMultiplier: 0}, (options.fadeTime / 2) / game.playbackRate, {ease: LuaUtils.getTweenEaseByString(options.easeType)});
+				afterImage.playAnim(game.singAnimations[daNote.noteData] + (afterImage.hasMissAnimations ? 'miss' : '') + daNote.animSuffix, true);
+				afterImage.stunned = true;
+			}
+		}
+		function noteMiss(daNote:Note) killAfterImage(daNote);
+		function opponentNoteMiss(daNote:Note) killAfterImage(daNote); // jic
+		function extraNoteMiss(daNote:Note, setChar:Dynamic, isPlayerNote:Bool) killAfterImage(daNote);
+
+		function createAfterImage(char:String, daNote:Note) {
+			final mainChar:Character = getCharFromString(char);
+			if (mainChar == null || !mainChar.visible || mainChar.alpha < 1 || daNote.extraData.exists('afterImage')) return;
+
+			var groupCheck = function(char:Character) {
+				switch (char) {
+					case game.dad: return game.dadGroup;
+					case game.gf: return game.gfGroup;
+					case game.boyfriend: return game.boyfriendGroup;
+					default: return char;
+				}
+				return;
+			}
+			var afterImage:Character = new Character(mainChar.x, mainChar.y, mainChar.curCharacter, mainChar.isPlayer);
+			afterImage.camera = mainChar.camera;
+			insert(game.members.indexOf(groupCheck(mainChar)), afterImage);
+			
+
+			// Tell me if there's anything else I should add!
+			afterImage.flipX = mainChar.flipX;
+			afterImage.flipY = mainChar.flipY;
+			afterImage.scale.x = mainChar.scale.x; // would've done copyFrom if it wouldn't fucking crash
+			afterImage.scale.y = mainChar.scale.y;
+			afterImage.alpha = mainChar.alpha - options.alphaToSubtract;
+			afterImage.shader = mainChar.shader;
+			afterImage.blend = LuaUtils.blendModeFromString(options.blendMode);
+
+			afterImage.skipDance = true; // prevent after image from going idle
+			afterImage.color = FlxColor.fromRGB(mainChar.healthColorArray[0] + 50, mainChar.healthColorArray[1] + 50, mainChar.healthColorArray[2] + 50);
+			if (!afterImage.stunned) { // jic
+				afterImage.playAnim(game.singAnimations[daNote.noteData] + daNote.animSuffix, true);
+				afterImage.holdTimer = 0;
+			}
+			
+			daNote.extraData.set('afterImage', afterImage); // funny sustain shit
+			for (susNote in daNote.tail) susNote.extraData.set('afterImage', afterImage);
+			FlxTween.tween(afterImage, {alpha: 0}, options.fadeTime / game.playbackRate, {
+				ease: LuaUtils.getTweenEaseByString(options.easeType),
+				startDelay: ((daNote.sustainLength / 1000) - (options.fadeTime / 2)) / game.playbackRate,
+				onComplete: function(_) {
+					daNote.extraData.remove('afterImage'); // jic
+					for (susNote in daNote.tail) susNote.extraData.remove('afterImage');
+					afterImage.kill();
+					afterImage.destroy();
+				}
+			});
+		}
+		");
 		// IntegratedScript.runNamelessLuaScript("  end
 		// "
 		// );
@@ -1298,7 +1420,9 @@ class PlayState extends MusicBeatState
 		add(comboGroup);
 		add(uiGroup);
 		add(noteGroup);
-		Conductor.songPosition = -Conductor.crochet * 5 + Conductor.offset;
+
+		Conductor.songPosition = -Conductor.crochet * 5;
+		
 		strumLine = new FlxSprite(ClientPrefs.data.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X, 50).makeGraphic(FlxG.width, 10);
 		if (ClientPrefs.data.downScroll)
 			strumLine.y = FlxG.height - 150;
@@ -1759,8 +1883,9 @@ class PlayState extends MusicBeatState
 		daStatic.cameras = [camOther];
 		daStatic.alpha = 0;
 		add(daStatic);
+		
 		Paths.clearUnusedMemory();
-		MemoryUtil.clearMajor();
+		
 		cacheCountdown();
 		cachePopUpScore();
 		if (eventNotes.length < 1)
@@ -2683,7 +2808,7 @@ class PlayState extends MusicBeatState
 			callOnScripts('preReceptorGeneration'); // backwards compat, deprecated
 			callOnScripts('onReceptorGeneration');
 
-			changeMania(mania);
+			//changeMania(mania);
 
 			for (field in playfields.members)
 			{
@@ -2724,7 +2849,7 @@ class PlayState extends MusicBeatState
 			Conductor.songPosition = -Conductor.crochet * 5;
 			setOnScripts('startedCountdown', true);
 			callOnScripts('onCountdownStarted');
-			changeMania(chartModifier != 'ManiaConverter' ? SONG.startMania : convertMania, isStoryMode || skipArrowStartTween);
+			if (SONG.startMania != mania) changeMania(chartModifier != 'ManiaConverter' ? SONG.startMania : convertMania, isStoryMode || skipArrowStartTween);
 
 			var swagCounter:Int = 0;
 
@@ -5569,28 +5694,33 @@ class PlayState extends MusicBeatState
 
 		if (note.isSustainNote && prevNote != null)
 		{
-			note.offsetX += note.width / 2;
+			note.sustainMult = 0.5; // early hit mult but just so note-types can set their own and not have sustains fuck them
+			note.alpha = 0.6;
+			note.multAlpha = 0.6;
+			note.hitsoundDisabled = true;
+			note.copyAngle = false;
 
-			note.animation.play(Note.keysShit.get(mania).get('letters')[noteData] + ' tail');
-
+			var animToPlay:String = '';
+			animToPlay = Note.keysShit.get(mania).get('letters')[noteData] + ' tail';
+			if (!note.hasAnimation(animToPlay))
+			{
+				animToPlay = Note.colArray[Note.keysShit.get(mania).get('colArray')[noteData]] + 'holdend';
+			}
+			note.animation.play(animToPlay);
 			note.updateHitbox();
-
-			note.offsetX -= note.width / 2;
 
 			if (note != null && prevNote != null && prevNote.isSustainNote && prevNote.animation != null)
 			{ // haxe flixel
-				prevNote.animation.play(Note.keysShit.get(mania).get('letters')[noteData % tMania] + ' hold');
-
-				prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.05;
-				prevNote.scale.y *= songSpeed;
-
-				if (isPixelStage)
+				var animToPlay2:String = '';
+				animToPlay2 = Note.keysShit.get(mania).get('letters')[noteData] + ' hold';
+				if (!note.hasAnimation(animToPlay2))
 				{
-					prevNote.scale.y *= 1.19;
-					prevNote.scale.y *= (6 / note.height);
+					animToPlay2 = Note.colArray[Note.keysShit.get(mania).get('colArray')[noteData]] + 'hold';
 				}
+				prevNote.animation.play(animToPlay2);
 
 				prevNote.updateHitbox();
+				prevNote.defScale.copyFrom(prevNote.scale);
 				// trace(prevNote.scale.y);
 			}
 
@@ -7209,7 +7339,6 @@ class PlayState extends MusicBeatState
 			ratingPercent = 0;
 			ratingName = "";
 			ratingFC = "";
-
 			RecalculateRating();
 
 			AIPlayMap = AIPlayer.GeneratePlayMap(SONG, AIPlayer.diff);
@@ -7217,6 +7346,7 @@ class PlayState extends MusicBeatState
 			AIMisses = 0;
 			AITotalNotesHit = 0;
 			AITotalPlayed = 0;
+			comboOpp = 0;
 			ratingFCAI = "";
 			ratingNameAI = "";
 			ratingPercentAI = 0;
@@ -9305,8 +9435,8 @@ class PlayState extends MusicBeatState
 		rating.velocity.y -= FlxG.random.int(140, 175) * playbackRate;
 		rating.velocity.x -= FlxG.random.int(0, 10) * playbackRate;
 		rating.visible = showRatingAI;
-		rating.x += ClientPrefs.data.comboOffset[0] + 400;
-		rating.y -= ClientPrefs.data.comboOffset[1];
+		rating.x += ClientPrefs.data.comboOffsetOpp[0] + 400;
+		rating.y -= ClientPrefs.data.comboOffsetOpp[1];
 
 		var comboSpr:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'combo' + pixelShitPart2));
 		comboSpr.cameras = [if (ClientPrefs.data.inGameRatings) camGame else camHUD];
@@ -9315,8 +9445,8 @@ class PlayState extends MusicBeatState
 		comboSpr.acceleration.y = FlxG.random.int(200, 300) * playbackRate * playbackRate;
 		comboSpr.velocity.y -= FlxG.random.int(140, 160) * playbackRate;
 		comboSpr.visible = showCombo;
-		comboSpr.x += ClientPrefs.data.comboOffset[0] + 400;
-		comboSpr.y -= ClientPrefs.data.comboOffset[1];
+		comboSpr.x += ClientPrefs.data.comboOffsetOpp[0] + 400;
+		comboSpr.y -= ClientPrefs.data.comboOffsetOpp[1];
 		comboSpr.y += 60;
 		comboSpr.x -= 200;
 		comboSpr.velocity.x += FlxG.random.int(1, 10) * playbackRate;
@@ -9372,8 +9502,8 @@ class PlayState extends MusicBeatState
 			var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2));
 			numScore.cameras = [if (ClientPrefs.data.inGameRatings) camGame else camHUD];
 			numScore.screenCenter();
-			numScore.x = coolText.x + (43 * daLoop) - 90 + ClientPrefs.data.comboOffset[2] + 400;
-			numScore.y += 80 - ClientPrefs.data.comboOffset[3];
+			numScore.x = coolText.x + (43 * daLoop) - 90 + ClientPrefs.data.comboOffsetOpp[2] + 400;
+			numScore.y += 80 - ClientPrefs.data.comboOffsetOpp[3];
 
 			if (!ClientPrefs.data.comboStacking)
 				lastScoreOpp.push(numScore);

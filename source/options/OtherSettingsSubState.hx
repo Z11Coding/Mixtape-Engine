@@ -44,6 +44,36 @@ class OtherSettingsSubState extends BaseOptionsMenu
 		option.maxValue = 10;
 		//addOption(option);
 
+		var maxThreads:Int = Std.parseInt(Sys.getEnv("NUMBER_OF_PROCESSORS"));
+		if (maxThreads > 1)
+		{
+			var option:Option = new Option('Multi-thread Loading', // Name
+				'--INCOMPLETE-- If checked, the mod can use multiple threads to speed up loading times on some songs.\nRecommended to leave on, unless it causes crashing', // Description
+				'multicoreLoading', // Save data variable name
+				'bool'); // Variable type
+				addOption(option);
+
+			var option:Option = new Option('Loading Threads', // Name
+				'--INCOMPLETE-- How many threads the game can use to load graphics when using Multi-thread Loading.\nThe maximum amount of threads depends on your processor', // Description
+				'loadingThreads', // Save data variable name
+				'int'); // Variable type
+
+			option.minValue = 1;
+			option.maxValue = Std.parseInt(Sys.getEnv("NUMBER_OF_PROCESSORS"));
+			option.displayFormat = '%v';
+
+			addOption(option);
+		}
+		else
+		{
+			// if you guys ever add more options to misc that dont rely on the thread count
+			var option:Option = new Option("Nothin' here!", // Name
+				"Usually there'd be options about multi-thread loading, but you only have 1 thread to use so no real use", // Description
+				'', // Save data variable name
+				'label'); // Variable type
+			addOption(option);
+		}
+
 		var option:Option = new Option('Cache Graphics', // even tho only one person asked, it here
 			"If checked, The Graphics Will Be Cached.", 'graphicsPreload2', 'bool');
 		addOption(option);
