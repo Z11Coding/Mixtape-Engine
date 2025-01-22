@@ -77,7 +77,7 @@ class APEntryState extends FlxState
 
 	private var _tabOrder:Array<PsychUIInputText> = [];
 	public static var yamlName:String;
-	var checker:FlxBackdrop = new FlxBackdrop(Paths.image('mainmenu/Main_Checker'), XY, Std.int(0.2), Std.int(0.2));
+	var checker:FlxBackdrop;
 	var gradientBar:FlxSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, 300, 0x83B700FF);
 	var swagShader:ColorSwap = null;
 	var titleText:Alphabet;
@@ -178,6 +178,7 @@ class APEntryState extends FlxState
 			add(gradientBar);
 			gradientBar.scrollFactor.set(0, 0);
 
+			checker = new FlxBackdrop(Paths.image('mainmenu/Main_Checker'), XY, Std.int(0.2), Std.int(0.2));
 			add(checker);
 			checker.scrollFactor.set(0, 0.07);
 		}

@@ -828,8 +828,6 @@ class FreeplayState extends MusicBeatState
 					if(colorTween != null) {
 						colorTween.cancel();
 					}
-					if (curSelected == -1)
-						playFreakyMusic('freeplayRandom');
 					FlxG.sound.play(Paths.sound('cancelMenu'));
 					if (APEntryState.inArchipelagoMode)
 						FlxG.switchState(new archipelago.APCategoryState(APEntryState.apGame, APEntryState.ap));
@@ -1230,6 +1228,13 @@ class FreeplayState extends MusicBeatState
 			curSelected = songs.length - 1;
 		if (curSelected >= songs.length)
 			curSelected = -1;
+
+		
+		if (curSelected == -1)
+			playFreakyMusic('freeplayRandom');
+		else if (!player.playingMusic) {
+			playFreakyMusic('panixPress', TitleState.globalBPM);
+		}
 		
 		try {
 			if (songs.length >= 0)
@@ -1238,10 +1243,6 @@ class FreeplayState extends MusicBeatState
 					curSelected = songs.length - 1;
 				if (curSelected >= songs.length)
 					curSelected = -1;
-		
-				if (curSelected > -1 && trackPlaying == 'freeplayRandom' && !player.playingMusic) {
-					playFreakyMusic('panixPress', TitleState.globalBPM);
-				}
 
 				var newColor:Int = curSelected != -1 ? songs[curSelected].color : FlxColor.fromString('#FD719B');
 				if(newColor != intendedColor) {
@@ -1444,6 +1445,7 @@ class FreeplayState extends MusicBeatState
 			ease: FlxEase.quadOut
 		});
 
+		super.beatHit();
 		if (trackPlaying == 'freeplayRandom') {
 			randomIcon.scale.set(1.2, 1.2);
 			return;
@@ -1451,8 +1453,6 @@ class FreeplayState extends MusicBeatState
 
 		if (listening && instPlaying > -1 && iconList.members[instPlaying] != null)
 			iconList.members[instPlaying].scale.set(1.2, 1.2);
-
-		super.beatHit();
 	}
 
 	override function destroy():Void
