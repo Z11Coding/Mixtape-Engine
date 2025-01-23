@@ -1772,14 +1772,16 @@ public function doEffect(effect:String)
 	var isFrozen:Bool = false;
 	var doRandomize:Bool = false;
     override public function update(elapsed:Float)
-	{
+    {
         if ((startedCountdown && !(inCutscene || (function()
         {
             var hasVideoSprite = false;
-            this.members.forEach(function(member) {
-                if (Std.is(member, VideoSprite)) {
+            this.members.map(function(member) {
+                if (Std.is(member, objects.VideoSprite)) {
                     hasVideoSprite = true;
+                    return member;
                 }
+                return member;
             });
             return hasVideoSprite;
         })())) && deathByLink) {
