@@ -10,7 +10,7 @@ enum DO {
     LOAD_FILE, SAVE_FILE, DOWNLOAD_FILE
 }
 
-class FileHandler extends SyncUtils {
+class FileHandler {
     private var fileRef:FileReference;
     private var fileData:Dynamic;
     private var filePath:String;

@@ -3,7 +3,7 @@ package yutautil;
 import haxe.crypto.Base64;
 import haxe.crypto.Sha256;
 import haxe.io.Bytes;
-import haxe.Reflect;
+// import haxe.Reflect;
 import haxe.rtti.Meta;
 
 class Secure<T> {

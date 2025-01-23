@@ -25,7 +25,7 @@ class QuantumBool {
 }
 
 enum QuantumBoolState {
-	true,
-	false,
-	deci
+	TRUE;
+	FALSE;
+	YES;
 }

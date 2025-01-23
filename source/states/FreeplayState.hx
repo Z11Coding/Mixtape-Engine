@@ -630,6 +630,7 @@ class FreeplayState extends MusicBeatState
 			if (songs.length == -1 || songs.length == 0)
 			{
 				addSong('SONG NOT FOUND', -999, 'face', FlxColor.fromRGB(255, 255, 255));
+
 			}
 			changeSelection();
 			updateTexts();
@@ -1212,7 +1213,6 @@ class FreeplayState extends MusicBeatState
 		missingText.visible = false;
 		missingTextBG.visible = false;
 	}
-
 	function changeSelection(change:Int = 0, playSound:Bool = true)
 	{
 		if (player.playingMusic)
@@ -1226,10 +1226,9 @@ class FreeplayState extends MusicBeatState
 
 		if (curSelected < -1)
 			curSelected = songs.length - 1;
-		if (curSelected >= songs.length)
+		if (songs.length > 0 && curSelected >= songs.length)
 			curSelected = -1;
 
-		
 		if (curSelected == -1)
 			playFreakyMusic('freeplayRandom');
 		else if (!player.playingMusic) {
@@ -1361,6 +1360,8 @@ class FreeplayState extends MusicBeatState
 				Difficulty.list = ['SONG NOT FOUND'];
 				curDifficulty = 0;
 				addSong('SONG NOT FOUND', -999, 'face', FlxColor.fromRGB(255, 255, 255));
+				changeDiff();
+				_updateSongLastDifficulty();
 			}
 		}
 		catch(e)

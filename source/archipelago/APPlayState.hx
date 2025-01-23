@@ -1773,7 +1773,16 @@ public function doEffect(effect:String)
 	var doRandomize:Bool = false;
     override public function update(elapsed:Float)
 	{
-        if (startedCountdown && deathByLink) {
+        if ((startedCountdown && !(inCutscene || (function()
+        {
+            var hasVideoSprite = false;
+            this.members.forEach(function(member) {
+                if (Std.is(member, VideoSprite)) {
+                    hasVideoSprite = true;
+                }
+            });
+            return hasVideoSprite;
+        })())) && deathByLink) {
             var cause:String = "";
             try {
                 if (deathLinkPacket.cause != null && (deathLinkPacket.cause != "" || deathLinkPacket.cause != " ")) cause = deathLinkPacket.cause + "\n[pause:0.5](Sounds like a skill issue...)";

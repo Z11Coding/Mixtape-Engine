@@ -1,6 +1,6 @@
 package yutautil;
 
-import tink.CoreApi.Ref;
+// import tink.CoreApi.Ref;
 import haxe.ds.WeakMap;
 import haxe.Timer;
 // import haxe.macro.Context;
@@ -61,15 +61,18 @@ class MetaData {
                         for (stuff in Reflect.fields(Reflect.field(c, field))) {
                             metadata(Reflect.field(Reflect.field(c, field), stuff));
                         }
-                    } else {
+                    } 
+                    else {
                         metadata(Reflect.field(c, field));
+                    }
                 }
                 Reflect.setField(meta, "class", Type.getClassName(c));
                 Reflect.setField(meta, "super", Type.getClassName(Type.getSuperClass(c)));
             case TInt:
+                // Reflect.setField(meta, "e", Std.int(variable));
 
             case TFloat:
-                Reflect.setField(meta, "int", Std.int(variable));
+                Reflect.setField(meta, "int", Std.int(cast(variable, Float)));
             case TBool:
                 Reflect.setField(meta, "binary", cast(variable, Bool) ? "1" : "0");
             // case TString:
@@ -77,28 +80,30 @@ class MetaData {
 
             case TFunction:
                 Reflect.setField(meta, "call", function() {
-                    variable();
+                    if (Reflect.isFunction(variable)) {
+                        (cast variable:Void->Void)();
+                    }
                 });
             default:
                 // Handle other types if necessary
 
                 if (variable is String) {
-                    Reflect.setField(meta, "base64", haxe.crypto.Base64.encode(variable));
+                    // Reflect.setField(meta, "base64", haxe.crypto.Base64.encode((cast variable : String));
+                    Reflect.setField(meta, "char", (cast variable : String).split(""));
                 }
                 if (variable is Array) {
-                    for (thing in cast(variable, Iterable<Dynamic>)) {
+                    for (thing in cast(variable, Array<Dynamic>)) {
                         metadata(thing);
                     }
                 }
                 if (variable is haxe.Constraints.IMap) {
-                    for (key in variable.keys()) {
+                    for (key in (cast variable:haxe.Constraints.IMap<Dynamic, Dynamic>).keys()) {
                         metadata(key);
-                        metadata(variable.get(key));
+                        metadata((cast variable:haxe.Constraints.IMap<Dynamic, Dynamic>).get(key));
                     }
                 }
         }
     }
-}
 
     private static function cleanup():Void {
         for (key in metaMap.keys()) {
