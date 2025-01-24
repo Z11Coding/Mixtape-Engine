@@ -179,7 +179,6 @@ class PlayField extends FlxTypedGroup<FlxBasic>
 		if(noteQueue[note.column]==null)
 			noteQueue[note.column] = [];
 		noteQueue[note.column].push(note);
-
 		noteQueue[note.column].sort((a, b) -> Std.int(a.strumTime - b.strumTime));
 		
 	}

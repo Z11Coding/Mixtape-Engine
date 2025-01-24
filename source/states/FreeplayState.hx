@@ -1231,9 +1231,8 @@ class FreeplayState extends MusicBeatState
 
 		if (curSelected == -1)
 			playFreakyMusic('freeplayRandom');
-		else if (!player.playingMusic) {
+		else if (!player.playingMusic)
 			playFreakyMusic('panixPress', TitleState.globalBPM);
-		}
 		
 		try {
 			if (songs.length >= 0)

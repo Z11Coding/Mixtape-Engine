@@ -1760,6 +1760,7 @@ class PlayState extends MusicBeatState
 		add(playfields);
 		add(notefields);
 		add(PlayField.extraStuff);
+		playfields.recycle(PlayField);
 		if (gf != null && !Crashed)
 		{
 			#if desktop
@@ -4579,6 +4580,7 @@ class PlayState extends MusicBeatState
 			noteTypes = null;
 			eventsPushed = null;
 		}
+		notes.recycle(Note);
 	}
 
 	public function regenerateNotes(songData:SwagSong, AIPlayMap:Array<Array<Float>>)
@@ -8863,7 +8865,7 @@ class PlayState extends MusicBeatState
 
 	public var transitioning = false;
 	var daEnding:String;
-	public static var songEndTriggered:Bool = false;
+	public var songEndTriggered:Bool = false;
 
 	public function endSong()
 	{

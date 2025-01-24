@@ -174,10 +174,6 @@ class StrumNote extends NoteObject
 
 			antialiasing = ClientPrefs.data.globalAntialiasing;
 			setGraphicSize(Std.int(width * Note.scales[PlayState.mania]));
-	
-			attemptToAddAnimationByPrefix('static', 'arrow' + animationArray[0]);
-			attemptToAddAnimationByPrefix('pressed', animationArray[1] + ' press');
-			attemptToAddAnimationByPrefix('confirm', animationArray[1] + ' confirm', 24, false);
 
 			switch (Math.abs(noteData))
 			{
@@ -198,6 +194,10 @@ class StrumNote extends NoteObject
 					attemptToAddAnimationByPrefix('pressed', 'right press', 24, false);
 					attemptToAddAnimationByPrefix('confirm', 'right confirm', 24, false);
 			}
+
+			attemptToAddAnimationByPrefix('static', 'arrow' + animationArray[0]);
+			attemptToAddAnimationByPrefix('pressed', animationArray[1] + ' press');
+			attemptToAddAnimationByPrefix('confirm', animationArray[1] + ' confirm', 24, false);
 		}
 		//defScale.copyFrom(scale);
 		updateHitbox();
