@@ -30,7 +30,7 @@ class RankingSubstate extends MusicBeatSubstate
 	public function new()
 	{
 		super();
-		PlayState.songEndTriggered = false;
+		// PlayState.songEndTriggered = false;
 		Conductor.songPosition = 0;
 
 		generateRanking();

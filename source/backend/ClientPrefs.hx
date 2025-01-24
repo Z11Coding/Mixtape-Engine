@@ -39,6 +39,7 @@ import states.FirstCheckState;
 	public var cursing:Bool = true;
 	public var violence:Bool = true;
 	public var camZooms:Bool = true;
+	public var doubleGhosts:Bool = true;
 	public var hideHud:Bool = false;
 	public var wife3:Bool = true;
 	public var cacheOnGPU:Bool = true;

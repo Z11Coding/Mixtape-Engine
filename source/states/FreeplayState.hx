@@ -1074,11 +1074,11 @@ class FreeplayState extends MusicBeatState
 								LoadingState.loadNextDirectory();
 								alreadyClicked = true;
 								MusicBeatState.reopen = false; //Fix a sticker bug
-								TransitionState.transitionState(APEntryState.inArchipelagoMode ? archipelago.APPlayState : PlayState, {transitionType: "instant"});
+								TransitionState.transitionState(APEntryState.inArchipelagoMode ? archipelago.APPlayState : states.PlayState2, {transitionType: "instant"});
 							}
-							else TransitionState.transitionState(APEntryState.inArchipelagoMode ? archipelago.APPlayState : PlayState, {transitionType: "instant"});
+							else TransitionState.transitionState(APEntryState.inArchipelagoMode ? archipelago.APPlayState : states.PlayState2, {transitionType: "instant"});
 						}
-						else TransitionState.transitionState(APEntryState.inArchipelagoMode ? archipelago.APPlayState : PlayState, {transitionType: "instant"});
+						else TransitionState.transitionState(APEntryState.inArchipelagoMode ? archipelago.APPlayState : states.PlayState2, {transitionType: "instant"});
 						#if !SHOW_LOADING_SCREEN FlxG.sound.music.stop(); #end
 						stopMusicPlay = true;
 					}

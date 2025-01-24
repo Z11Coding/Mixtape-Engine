@@ -1191,6 +1191,8 @@ class PlayState extends MusicBeatState
 			debugPrint('Test!')
 		end
 		");
+
+		if (ClientPrefs.data.doubleGhosts)
 		IntegratedScript.runNamelessHScript("
 		import psychlua.LuaUtils;
 
@@ -6070,8 +6072,8 @@ class PlayState extends MusicBeatState
 	{
 		if (songEndTriggered)
 			endSong();
-		if (timeBar != null && timeBar.percent == 100)
-			finishSong();
+		// if (timeBar != null && timeBar.percent == 100 && !inst.playing)
+		// 	finishSong();
 		if (FlxG.sound.music != null && !endingSong && !startingSong && !paused)
 			FlxG.sound.music.volume = 1 * instVolumeMultiplier;
 		specialOverlays.forEachAlive(function(sprite:FlxSprite)
@@ -8863,7 +8865,7 @@ class PlayState extends MusicBeatState
 
 	public var transitioning = false;
 	var daEnding:String;
-	public static var songEndTriggered:Bool = false;
+	public var songEndTriggered:Bool = false;
 
 	public function endSong()
 	{
