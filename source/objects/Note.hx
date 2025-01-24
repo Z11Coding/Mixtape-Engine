@@ -860,7 +860,6 @@ class Note extends NoteObject
 		{
 			attemptToAddAnimationByPrefix(gfxLetter[i], gfxLetter[i] + '0');
 			attemptToAddAnimationByPrefix(gfxLetter[i], colArray[Note.keysShit.get(mania).get('colArray')[noteData]] + '0');
-
 			attemptToAddAnimationByPrefix(gfxLetter[i], colArray[Note.keysShit.get(mania).get('colArray')[noteData]] + '0');
 
 			if (isSustainNote)

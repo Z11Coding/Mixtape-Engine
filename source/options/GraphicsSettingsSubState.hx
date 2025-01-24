@@ -71,6 +71,14 @@ class GraphicsSettingsSubState extends BaseOptionsMenu
 		}
 
 		var option:Option = new Option(
+			'Ghost Effect', 
+			"If checked, does the ever-so-popular double/triple/quadrouple ghost effect.", 
+			'doubleGhosts', 
+			'bool'
+		);
+		addOption(option);
+
+		var option:Option = new Option(
 			'Optimized Holds', 
 			"If checked, smooth holds will have fewer calls to the modchart system for position info.\nBest to leave this on, unless you have a high-end PC and require the highest accuracy rendering for, some reason.", 
 			'optimizeHolds', 
