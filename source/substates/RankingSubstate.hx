@@ -23,10 +23,10 @@ class RankingSubstate extends MusicBeatSubstate
 	var ranking:String = "NA";
 	var rankingNum:Int = 15;
 
-	public static var comboRankLimit:Int = 0;
-	var comboRankSetLimit:Int = 0;
-	public static var accRankLimit:Int = 0;
-	var accRankSetLimit:Int = 0;
+	var comboRankLimit:Int = 0;
+	public static var comboRankSetLimit:Int = 0;
+	var accRankLimit:Int = 0;
+	public static var accRankSetLimit:Int = 0;
 	public function new()
 	{
 		super();
@@ -162,9 +162,9 @@ class RankingSubstate extends MusicBeatSubstate
 					FlxG.sound.playMusic(Paths.music('panixPress'));
 					TransitionState.transitionState(states.FreeplayState, {transitionType: "stickers"});
 					var locationId = (PlayState.SONG.song);
-					trace('Combo Gotten:' + comboRankLimit + " Combo Required: " + comboRankSetLimit);
-					trace('Accuracy Gotten:' + accRankLimit + " Accuracy Required: " + accRankSetLimit);
-					if (comboRankLimit <= comboRankSetLimit && accRankLimit <= accRankSetLimit)
+					trace('Combo Required:' + comboRankLimit + " Combo Required: " + comboRankSetLimit);
+					trace('Accuracy Required:' + accRankLimit + " Accuracy Required: " + accRankSetLimit);
+					if (comboRankSetLimit <= comboRankLimit && accRankLimit <= accRankSetLimit)
 					{
 						trace(APPlayState.currentMod);
 						if (APPlayState.currentMod.trim() != "")
@@ -217,21 +217,22 @@ class RankingSubstate extends MusicBeatSubstate
 									{
 										songJson = Song.parseJSON(File.getContent(json));
 										// trace('Second if: Found matching song, testing...');
-
-									// trace("Song: " + songJson.song); trace("Song File: " + songJson);
-									if (songJson != null)
-									{
-										//  trace("Song: " + songJson.song); trace("Comparing to: " + PlayState.SONG.song);
-									// trace("Song: " + songJson.song.trim().toLowerCase().replace(" ", "-")); trace("Comparing to: " + PlayState.SONG.song.trim().toLowerCase().replace(" ", "-"));
-										if (songJson.song.trim().toLowerCase().replace(" ", "-") == PlayState.SONG.song.trim().toLowerCase().replace(" ", "-"))
+										// trace("Song: " + songJson.song); trace("Song File: " + songJson);
+										if (songJson != null)
 										{
-											// trace('Second if: Found matching song, locationIdInt set to ' + locationIdInt);
-											locationIdInt = APPlayState.currentMod.trim() != ""
-												? APEntryState.apGame.info().get_location_id(song[0] + " (" + APPlayState.currentMod + ")")
-												: APEntryState.apGame.info().get_location_id(song[0]);
-											locationId = APPlayState.currentMod.trim() != "" ? song[0] + " (" + APPlayState.currentMod + ")" : song[0];
-											break;
-										} } } 
+											// trace("Song: " + songJson.song); trace("Comparing to: " + PlayState.SONG.song);
+											// trace("Song: " + songJson.song.trim().toLowerCase().replace(" ", "-")); trace("Comparing to: " + PlayState.SONG.song.trim().toLowerCase().replace(" ", "-"));
+											if (songJson.song.trim().toLowerCase().replace(" ", "-") == PlayState.SONG.song.trim().toLowerCase().replace(" ", "-"))
+											{
+												// trace('Second if: Found matching song, locationIdInt set to ' + locationIdInt);
+												locationIdInt = APPlayState.currentMod.trim() != ""
+													? APEntryState.apGame.info().get_location_id(song[0] + " (" + APPlayState.currentMod + ")")
+													: APEntryState.apGame.info().get_location_id(song[0]);
+												locationId = APPlayState.currentMod.trim() != "" ? song[0] + " (" + APPlayState.currentMod + ")" : song[0];
+												break;
+											}
+										}
+									} 
 								}
 							}
 						}
@@ -240,7 +241,7 @@ class RankingSubstate extends MusicBeatSubstate
 						trace(PlayState.SONG.song);
 						ArchPopup.startPopupCustom("You've sent " + APEntryState.apGame.info().get_location_name(locationIdInt) + " to Archipelago!", "Go check it out!", "archipelago", function() {
 							FlxG.sound.playMusic(Paths.sound('secret'));
-												});
+						});
 					}
 
 					var locationIdInt = APEntryState.apGame.info().get_location_id(locationId.trim());
@@ -248,9 +249,8 @@ class RankingSubstate extends MusicBeatSubstate
 					{
 						ArchPopup.startPopupCustom("You've completed your goal!", "You win!", "archipelago", function() {
 							FlxG.sound.playMusic(Paths.sound('secret'));
-
-												});
-												APEntryState.apGame.info().set_goal();
+						});
+						APEntryState.apGame.info().set_goal();
 					}						
 					Mods.loadTopMod();
 			}
@@ -267,17 +267,17 @@ class RankingSubstate extends MusicBeatSubstate
 	function generateRanking():String
 	{
 		if (PlayState.instance.songMisses == 0 && PlayState.bads == 0 && PlayState.shits == 0 && PlayState.goods == 0 && PlayState.sicks == 0 && ClientPrefs.data.useMarvs) // Marvelous Full Combo
-			{ comboRank = "MFC"; comboRankSetLimit = 1; }
+			{ comboRank = "MFC"; comboRankLimit = 1; }
 		else if (PlayState.instance.songMisses == 0 && PlayState.bads == 0 && PlayState.shits == 0 && PlayState.goods == 0) // Sick Full Combo
-			{ comboRank = "SFC"; comboRankSetLimit = 2; }
+			{ comboRank = "SFC"; comboRankLimit = 2; }
 		else if (PlayState.instance.songMisses == 0 && PlayState.bads == 0 && PlayState.shits == 0 && PlayState.goods >= 1) // Good Full Combo (Nothing but Goods & Sicks)
-			{ comboRank = "GFC"; comboRankSetLimit = 3; }
+			{ comboRank = "GFC"; comboRankLimit = 3; }
 		else if (PlayState.instance.songMisses == 0 && PlayState.bads >= 1 && PlayState.shits == 0 && PlayState.goods >= 0) // Alright Full Combo (Bads, Goods and Sicks)
-			{ comboRank = "AFC"; comboRankSetLimit = 4; }
+			{ comboRank = "AFC"; comboRankLimit = 4; }
 		else if (PlayState.instance.songMisses == 0) // Regular FC
-			{ comboRank = "FC"; comboRankSetLimit = 5; }
+			{ comboRank = "FC"; comboRankLimit = 5; }
 		else if (PlayState.instance.songMisses < 10) // Single Digit Combo Breaks
-			{ comboRank = "SDCB"; comboRankSetLimit = 6; }
+			{ comboRank = "SDCB"; comboRankLimit = 6; }
 
 		var acc = backend.Highscore.floorDecimal(PlayState.instance.ratingPercent * 100, 2);
 
@@ -312,52 +312,52 @@ class RankingSubstate extends MusicBeatSubstate
 				{
 					case 0:
 						ranking = "P";
-						accRankSetLimit = 1;
+						accRankLimit = 1;
 					case 1:
 						ranking = "X";
-						accRankSetLimit = 2;
+						accRankLimit = 2;
 					case 2:
 						ranking = "X-";
-						accRankSetLimit = 3;
+						accRankLimit = 3;
 					case 3:
 						ranking = "SS+";
-						accRankSetLimit = 4;
+						accRankLimit = 4;
 					case 4:
 						ranking = "SS";
-						accRankSetLimit = 5;
+						accRankLimit = 5;
 					case 5:
 						ranking = "SS-";
-						accRankSetLimit = 6;
+						accRankLimit = 6;
 					case 6:
 						ranking = "S+";
-						accRankSetLimit = 7;
+						accRankLimit = 7;
 					case 7:
 						ranking = "S";
-						accRankSetLimit = 8;
+						accRankLimit = 8;
 					case 8:
 						ranking = "S-";
-						accRankSetLimit = 9;
+						accRankLimit = 9;
 					case 9:
 						ranking = "A+";
-						accRankSetLimit = 10;
+						accRankLimit = 10;
 					case 10:
 						ranking = "A";
-						accRankSetLimit = 11;
+						accRankLimit = 11;
 					case 11:
 						ranking = "A-";
-						accRankSetLimit = 11;
+						accRankLimit = 11;
 					case 12:
 						ranking = "B";
-						accRankSetLimit = 12;
+						accRankLimit = 12;
 					case 13:
 						ranking = "C";
-						accRankSetLimit = 13;
+						accRankLimit = 13;
 					case 14:
 						ranking = "D";
-						accRankSetLimit = 14;
+						accRankLimit = 14;
 					case 15:
 						ranking = "E";
-						accRankSetLimit = 15;
+						accRankLimit = 15;
 				}
 
 				if (PlayState.deathCounter >= 30 || acc == 0)
