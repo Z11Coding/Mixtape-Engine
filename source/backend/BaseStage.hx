@@ -96,6 +96,7 @@ class BaseStage extends FlxBasic
 	override function update(elapsed:Float) {}
 	public function countdownTick(count:Countdown, num:Int) {}
 	public function startSong() {}
+	public function onEndSong() {} //To compensate for the frickin endSong function not working for some reason
 
 	// FNF steps, beats and sections
 	public var curBeat:Int = 0;

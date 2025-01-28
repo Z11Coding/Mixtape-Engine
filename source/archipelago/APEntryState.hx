@@ -80,7 +80,7 @@ class APEntryState extends FlxState
 	var checker:FlxBackdrop;
 	var gradientBar:FlxSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, 300, 0x83B700FF);
 	var swagShader:ColorSwap = null;
-	var titleText:Alphabet;
+	var titleText:ColoredAlphabet;
 	public static var ap:Client;
 	public static var apGame:APGameState;
 
@@ -183,11 +183,10 @@ class APEntryState extends FlxState
 			checker.scrollFactor.set(0, 0.07);
 		}
 
-		titleText = new Alphabet(20, 0, "FRIDAY NIGHT FUNKIN: ARCHIPELAGO", true);
+		titleText = new ColoredAlphabet(20, 0, "FRIDAY NIGHT FUNKIN: ARCHIPELAGO", true);
 		titleText.scaleX = titleText.scaleY = 0.8;
 		titleText.screenCenter(X);
 		add(titleText);
-		titleText.shader = swagShader.shader;
 
 		bpmTxt = new FlxText(10, 100, 0, "", 16);
 		bpmTxt.scrollFactor.set();
@@ -604,8 +603,12 @@ class APEntryState extends FlxState
 		FlxG.switchState(new archipelago.APCategoryState(apGame, ap));
 	}
 
+	var e:Int = 0;
 	override function update(elapsed:Float)
 	{
+		//this is the stupidest way to fix elapsed being weird
+		e++;
+		titleText.color = FlxColor.fromHSL(((e / (20 * 50.0)) / 300 * 360) % 360, 1.0, 0.5*1.0);
 		if (FlxG.keys.justPressed.HOME) runArch();
 		if(swagShader != null) swagShader.hue += 0.45 / (ClientPrefs.data.framerate / 60);
 		if (!ClientPrefs.data.lowQuality)

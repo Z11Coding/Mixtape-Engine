@@ -3,11 +3,13 @@ package states.stages;
 import openfl.display.BlendMode;
 import shaders.AdjustColorShader;
 import states.stages.PicoCapableStage;
+import states.stages.gimmicks.Week1Gimmick;
 
 class MainStageErect extends PicoCapableStage {
     var dadbattleBlack:BGSprite;
 	var dadbattleLight:BGSprite;
 	var peeps:BGSprite;
+    var crowdPleaser:Week1Gimmick;
 	override function create()
 	{
 		var bg:BGSprite = new BGSprite('stages/stage/erect/backDark', 729, -170);
@@ -15,7 +17,7 @@ class MainStageErect extends PicoCapableStage {
 
         if(!ClientPrefs.data.lowQuality) {
             peeps = new BGSprite('stages/stage/erect/crowd', 560, 290,0.8,0.8,["Symbol 2 instance 10"],true);
-            //peeps.animation.curAnim.frameRate = 12;
+            peeps.animation.curAnim.frameRate = 12;
             add(peeps);
 
             var lightSmol = new BGSprite('stages/stage/erect/brightLightSmall',967, -103,1.2,1.2);
@@ -60,10 +62,47 @@ class MainStageErect extends PicoCapableStage {
             dad.shader = makeCoolShader(-32,0,-33,-23);
             boyfriend.shader = makeCoolShader(12,0,-23,7);
         }
+
+        if(ClientPrefs.data.gimmicksAllowed) {
+			crowdPleaser = new Week1Gimmick();
+			crowdPleaser.cameras = [camHUD];
+			add(crowdPleaser);
+		}
+        switch(songName.toLowerCase().replace('-', ' '))
+        {
+            case 'bopeebo erect':
+                crowdPleaser.crowdAttentionLoss = 0.04;
+            case 'fresh erect':
+                crowdPleaser.crowdAttentionLoss = 0.03;
+            case 'dad battle erect':
+                crowdPleaser.crowdAttentionLoss = 0.04;
+        }
+    }
+
+    override function startSong()
+		crowdPleaser.startGimmick();
+
+    override function onEndSong() {
+		crowdPleaser.stopGimmick();
+    }
+
+	override function goodNoteHit(note:Note, field:PlayField) {
+		crowdPleaser.crowdAppeasment += 1;
+		super.goodNoteHit(note, field);
+	}
+	
+	override function noteMiss(note:Note, field:PlayField) {
+		crowdPleaser.crowdAppeasment -= 5;
+		super.noteMiss(note, field);
     }
 
     override function startCountdown():Bool {
         return super.startCountdown();
+    }
+
+    override function beatHit() {
+        super.beatHit();
+        crowdPleaser.doClap(curBeat);
     }
     
     function makeCoolShader(hue:Float,sat:Float,bright:Float,contrast:Float) {
