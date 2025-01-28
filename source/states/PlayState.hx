@@ -5977,6 +5977,7 @@ class PlayState extends MusicBeatState
 			]);
 			#end
 
+
 			notes.recycle(Note);
 			var index:Int = unspawnNotes.indexOf(dunceNote);
 			unspawnNotes.splice(index, 1);
@@ -11311,7 +11312,7 @@ class PlayState extends MusicBeatState
 		if (excludeValues == null)
 			excludeValues = [LuaUtils.Function_Continue];
 
-		var arr:Array<FunkinLua> = [];
+		var arr:Array<LuaScript> = [];
 		for (script in luaArray)
 		{ var script:Dynamic = cast(script);
 			if (script.closed)

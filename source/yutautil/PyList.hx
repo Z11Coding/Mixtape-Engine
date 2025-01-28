@@ -3,8 +3,8 @@ package yutautil;
 class PyList<T> {
     public var items:Array<T>;
 
-    public function new(initialItems:Array<T> = []) {
-        this.items = initialItems;
+    public function new(initialItems:Array<T> = null) {
+        this.items = initialItems != null ? initialItems : [];
     }
 
     public function add(item:T):Void {
@@ -15,7 +15,7 @@ class PyList<T> {
         return new PyList<T>(this.items.concat(other.items));
     }
     @:op(A + B)
-    public static function opPlus(A:PyList<T>, B:PyList<T>):PyList<T> {
+    public static function opPlus<T>(A:PyList<T>, B:PyList<T>):PyList<T> {
         return A.concat(B);
     }
 

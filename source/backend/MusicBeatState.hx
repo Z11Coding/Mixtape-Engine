@@ -10,6 +10,8 @@ import flixel.tweens.FlxTween;
 
 class MusicBeatState extends FlxState
 {
+
+	// private static final telem:HxTelemetry = new HxTelemetry();
 	private var curSection:Int = 0;
 	private var stepsToDo:Int = 0;
 
@@ -47,6 +49,7 @@ class MusicBeatState extends FlxState
 		}
 		TransitionState.currenttransition = null;
 		trace("Transition = " + TransitionState.currenttransition);
+		// telem.advance_frame();
 	}
 
 	public static var emptyStickers:StickerSubState = null;
@@ -64,7 +67,8 @@ class MusicBeatState extends FlxState
 	var zoomies:Float = 1.025;
 	public static var timePassedOnState:Float = 0;
 	override function update(elapsed:Float)
-	{
+	{	
+			// telem.advance_frame();
 		if (ClientPrefs.data.forcePriority) {
 			if (backend.window.Priority.getPriority() != ClientPrefs.data.gamePriority) {
 				var success:Bool = backend.window.Priority.setPriority(ClientPrefs.data.gamePriority);

@@ -97,6 +97,7 @@ class FunkinLua {
 		set('mixtapeVersion', MainMenuState.mixtapeEngineVersion.trim());
 		set('modFolder', this.modFolder);
 		set('inChartEditor', false);
+		set('Reflect', Reflect);
 
 		// Song/Week shit
 		set('curBpm', Conductor.bpm);
