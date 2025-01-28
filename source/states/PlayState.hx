@@ -603,6 +603,8 @@ class PlayState extends MusicBeatState
 	public var uiGroup:FlxSpriteGroup;
 	// Stores Note Objects in a Group
 	public var noteGroup:FlxTypedGroup<FlxBasic>;
+	// Stores Ratings and Combo Sprites in a group
+	public var comboGroupOpp:FlxSpriteGroup;
 
 	var resistanceBar:IntegratedScript;
 
@@ -1419,9 +1421,11 @@ class PlayState extends MusicBeatState
 		uiGroup = new FlxSpriteGroup();
 		comboGroup = new FlxSpriteGroup();
 		noteGroup = new FlxTypedGroup<FlxBasic>();
+		comboGroupOpp = new FlxSpriteGroup();
 		add(comboGroup);
 		add(uiGroup);
 		add(noteGroup);
+		add(comboGroupOpp);
 
 		Conductor.songPosition = -Conductor.crochet * 5;
 		
@@ -1683,6 +1687,7 @@ class PlayState extends MusicBeatState
 			uiGroup.cameras = [camHUD];
 			noteGroup.cameras = [camHUD];
 			comboGroup.cameras = [camHUD];
+			comboGroupOpp.cameras = [camHUD];
 			if (!playAsGF)
 			{
 				playerField.cameras = [camHUD];
@@ -5942,6 +5947,7 @@ class PlayState extends MusicBeatState
 		return field;
 	}
 
+	var spawnedNote:Note = new Note();
 	// good to call this whenever you make a playfield
 	public function initPlayfield(field:PlayField)
 	{
@@ -5977,11 +5983,21 @@ class PlayState extends MusicBeatState
 			]);
 			#end
 
-
-			notes.recycle(Note);
+			spawnedNote = notes.recycle(Note);
+			spawnedNote.texture = dunceNote.texture;
+			spawnedNote.noAnimation = dunceNote.noAnimation;
+			spawnedNote.noMissAnimation = dunceNote.noMissAnimation;
+			spawnedNote.gfNote = dunceNote.gfNote;
+			spawnedNote.exNote = dunceNote.exNote;
+			spawnedNote.multSpeed = dunceNote.multSpeed;
+			spawnedNote.ignoreNote = dunceNote.ignoreNote;
+			spawnedNote.blockHit = dunceNote.blockHit;
+			spawnedNote.lowPriority = dunceNote.lowPriority;
+			spawnedNote.hitHealth = dunceNote.hitHealth;
+			spawnedNote.missHealth = dunceNote.missHealth;
+			spawnedNote.missHealth = dunceNote.missHealth;
 			var index:Int = unspawnNotes.indexOf(dunceNote);
 			unspawnNotes.splice(index, 1);
-
 			callOnScripts('onSpawnNotePost', [dunceNote]);
 		});
 	}
@@ -8959,6 +8975,7 @@ class PlayState extends MusicBeatState
 		]);
 		#end
 
+		stagesFunc(function(stage:BaseStage) stage.onEndSong());
 		var ret:Dynamic = callOnScripts('onEndSong', null, true);
 		if (ret != LuaUtils.Function_Stop && !transitioning)
 		{
@@ -9102,22 +9119,30 @@ class PlayState extends MusicBeatState
 		var uiSkin:String = '';
 		var altPart:String = isPixelStage ? '-pixel' : '';
 
-		switch (ClientPrefs.data.uiSkin)
+		if (ClientPrefs.data.uiSkin != null)
 		{
-			case 'Bedrock':
-				uiSkin = 'bedrock';
-			case 'BEAT!':
-				uiSkin = 'beat';
-			case 'BEAT! Gradient':
-				uiSkin = 'beat-alt';
-			case 'Psych Engine':
-				uiSkin = 'psych';
-			case 'Mixtape Engine':
-				uiSkin = 'mixtape';
-			case 'Base Game':
-				uiSkin = 'base';
-			default:
-				uiSkin = ClientPrefs.data.uiSkin;
+			switch (ClientPrefs.data.uiSkin)
+			{
+				case 'Bedrock':
+					uiSkin = 'bedrock';
+				case 'BEAT!':
+					uiSkin = 'beat';
+				case 'BEAT! Gradient':
+					uiSkin = 'beat-alt';
+				case 'Psych Engine':
+					uiSkin = 'psych';
+				case 'Mixtape Engine':
+					uiSkin = 'mixtape';
+				case 'Base Game':
+					uiSkin = 'base';
+				default:
+					uiSkin = ClientPrefs.data.uiSkin;
+			}
+		}
+		else 
+		{
+			uiSkin = 'Mixtape Engine';
+			ClientPrefs.data.uiSkin = 'Mixtape Engine';
 		}
 
 		Paths.image(getUiSkin(uiSkin, "marv", altPart));
@@ -9454,7 +9479,7 @@ class PlayState extends MusicBeatState
 		comboSpr.x -= 200;
 		comboSpr.velocity.x += FlxG.random.int(1, 10) * playbackRate;
 
-		comboGroup.add(rating);
+		comboGroupOpp.add(rating);
 		if (!ClientPrefs.data.comboStacking)
 		{
 			if (lastRatingOpp != null)
@@ -9491,7 +9516,7 @@ class PlayState extends MusicBeatState
 		var daLoop:Int = 0;
 		var xThing:Float = 0;
 		if (showCombo)
-			comboGroup.add(comboSpr);
+			comboGroupOpp.add(comboSpr);
 		if (lastScore != null)
 		{
 			while (lastScore.length > 0)
@@ -9528,7 +9553,7 @@ class PlayState extends MusicBeatState
 
 			// if (combo >= 10 || combo == 0)
 			if (showComboNum)
-				comboGroup.add(numScore);
+				comboGroupOpp.add(numScore);
 
 			FlxTween.tween(numScore, {alpha: 0}, 0.2 / playbackRate, {
 				onComplete: function(tween:FlxTween)
@@ -9565,6 +9590,15 @@ class PlayState extends MusicBeatState
 			},
 			startDelay: Conductor.crochet * 0.002 / playbackRate
 		});
+		if (comboGroupOpp.members.length > 0)
+		{
+			for (spr in comboGroupOpp)
+			{
+				if (spr == null)
+					continue;
+				spr.cameras = [if (ClientPrefs.data.inGameRatings) camGame else camHUD];
+			}
+		}
 	}
 
 	/*private function onKeyPress(event:KeyboardEvent):Void
@@ -9899,6 +9933,7 @@ class PlayState extends MusicBeatState
 			gf.playAnim('sad');
 		}
 
+		stagesFunc(function(stage:BaseStage) stage.noteMiss(daNote, field));
 		var result:Dynamic = callOnLuas('noteMiss', [
 			notes.members.indexOf(daNote),
 			daNote.noteData,
@@ -10797,7 +10832,7 @@ class PlayState extends MusicBeatState
 
 		if (!(Conductor.songPosition > 20 && FlxG.sound.music.time < 20))
 		{
-			pauseVocals();
+			if (vocals != null) pauseVocals();
 			FlxG.sound.music.pause();
 
 			if (FlxG.sound.music.time >= FlxG.sound.music.length)
@@ -10805,15 +10840,18 @@ class PlayState extends MusicBeatState
 			else
 				Conductor.songPosition = FlxG.sound.music.time + delayOffset;
 
-			setVocalsTime(Conductor.songPosition - (delayOffset * 1.5));
+			if (vocals != null) setVocalsTime(Conductor.songPosition - (delayOffset * 1.5));
 
 			FlxG.sound.music.play();
-			for (i in [vocals, opponentVocals, gfVocals])
-				if (i != null && i.time <= i.length)
-					i.play();
-			for (track in tracks)
-				if (track != null && track.time <= track.length)
-					track.play();
+			if (vocals != null) 
+			{
+				for (i in [vocals, opponentVocals, gfVocals])
+					if (i != null && i.time <= i.length)
+						i.play();
+				for (track in tracks)
+					if (track != null && track.time <= track.length)
+						track.play();
+			}	
 		}
 		else
 		{

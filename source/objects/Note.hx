@@ -574,7 +574,7 @@ class Note extends NoteObject
 		return value;
 	}
 
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inEditor:Bool = false, ?createdFrom:Dynamic = null)
+	public function new(?strumTime:Float = -1, ?noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inEditor:Bool = false, ?createdFrom:Dynamic = null)
 	{
 		super();
 		objType = NOTE;
@@ -597,7 +597,7 @@ class Note extends NoteObject
 		y -= 2000;
 		this.strumTime = strumTime;
 		if(!inEditor) this.strumTime += ClientPrefs.data.noteOffset;
-		if(!inEditor) visualTime = createdFrom.getNoteInitialTime(this.strumTime);
+		if (strumTime != -1 && !inEditor) visualTime = createdFrom.getNoteInitialTime(this.strumTime);
 
 		if (isSustainNote && prevNote != null) {
 			parentNote = prevNote;

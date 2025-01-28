@@ -134,8 +134,10 @@ class GameOverSubstate extends MusicBeatSubstate
 		causeofdeath.scrollFactor.set(0,0);
 		causeofdeath.font = Paths.font("determination-extended.ttf");
         causeofdeath.color = 0xFFFFFFFF; 
-		for (letter in alphabet)
+		for (letter in alphabet) {
 			causeofdeath.soundOnChars.set(letter, FlxG.sound.load(Paths.sound('ut/uifont'), 1));
+			causeofdeath.soundOnChars.set(letter.toUpperCase(), FlxG.sound.load(Paths.sound('ut/uifont'), 1));
+		}
 		add(causeofdeath);
 
 

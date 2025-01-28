@@ -2,12 +2,14 @@ package states.stages;
 
 import states.stages.objects.*;
 import objects.Character;
+import states.stages.gimmicks.Week1Gimmick;
 
 class StageWeek1 extends BaseStage
 {
 	var dadbattleBlack:BGSprite;
 	var dadbattleLight:BGSprite;
 	var dadbattleFog:DadBattleFog;
+	var crowdPleaser:Week1Gimmick;
 	override function create()
 	{
 		var bg:BGSprite = new BGSprite('stages/stage/stageback', -600, -200, 0.9, 0.9);
@@ -34,6 +36,29 @@ class StageWeek1 extends BaseStage
 			add(stageCurtains);
 		}
 	}
+
+	override function createPost() {
+        super.createPost();
+       if(ClientPrefs.data.gimmicksAllowed) {
+			crowdPleaser = new Week1Gimmick();
+			crowdPleaser.cameras = [camHUD];
+			add(crowdPleaser);
+		}
+    }
+
+	override function startSong()
+		crowdPleaser.startGimmick();
+
+	override function goodNoteHit(note:Note, field:PlayField) {
+		crowdPleaser.crowdAppeasment += 1;
+		super.goodNoteHit(note, field);
+	}
+	
+	override function noteMiss(note:Note, field:PlayField) {
+		crowdPleaser.crowdAppeasment -= 5;
+		super.noteMiss(note, field);
+	}
+
 	override function eventPushed(event:objects.Note.EventNote)
 	{
 		switch(event.event)
