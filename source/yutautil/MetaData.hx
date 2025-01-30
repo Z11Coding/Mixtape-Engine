@@ -68,6 +68,8 @@ class MetaData {
                 }
                 Reflect.setField(meta, "class", Type.getClassName(c));
                 Reflect.setField(meta, "super", Type.getClassName(Type.getSuperClass(c)));
+                Reflect.setField(meta, "mainClass", Type.getClassName((function(c) { while (Type.getSuperClass(c) != null) c = Type.getSuperClass(c); return c; })(Type.getClass(variable))));
+                Reflect.setField(meta, "classHierarchy", (function(c) { var classes = []; while (c != null) { classes.push(Type.getClassName(c)); c = Type.getSuperClass(c); } return classes; })(Type.getClass(variable)));
             case TInt:
                 // Reflect.setField(meta, "e", Std.int(variable));
 
@@ -101,6 +103,13 @@ class MetaData {
                         metadata(key);
                         metadata((cast variable:haxe.Constraints.IMap<Dynamic, Dynamic>).get(key));
                     }
+                }
+                if (variable is FlxBasic) {
+                    Reflect.setField(meta, "class", Type.getClassName(Type.getClass(variable)));
+                    Reflect.setField(meta, "super", Type.getClassName(Type.getSuperClass(Type.getClass(variable))));
+                    Reflect.setField(meta, "mainClass", Type.getClassName((function(c) { while (Type.getSuperClass(c) != null) c = Type.getSuperClass(c); return c; })(Type.getClass(variable))));
+                    Reflect.setField(meta, "classHierarchy", (function(c) { var classes = []; while (c != null) { classes.push(Type.getClassName(c)); c = Type.getSuperClass(c); } return classes; })(Type.getClass(variable)));
+                    Reflect.setField(meta, "displayable", Std.is(variable, FlxSprite) ? (cast variable:FlxSprite).visible : false);
                 }
         }
     }

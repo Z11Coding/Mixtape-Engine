@@ -493,17 +493,22 @@ class Note extends NoteObject
 		var arr:Array<FlxColor> = ClientPrefs.data.arrowRGBExtra[Note.keysShit.get(mania).get('pixelAnimIndex')[noteData]];
 		if(PlayState.isPixelStage) arr = ClientPrefs.data.arrowRGBPixelExtra[Note.keysShit.get(mania).get('pixelAnimIndex')[noteData]];
 
-		if (arr != null && noteData > -1 && noteData <= mania)
-		{
-			rgbShader.r = arr[0];
-			rgbShader.g = arr[1];
-			rgbShader.b = arr[2];
-		}
-		else
-		{
-			rgbShader.r = 0xFFFF0000;
-			rgbShader.g = 0xFF00FF00;
-			rgbShader.b = 0xFF0000FF;
+		try {
+			if (arr != null && noteData > -1 && noteData <= mania)
+			{
+				rgbShader.r = arr[0];
+				rgbShader.g = arr[1];
+				rgbShader.b = arr[2];
+			}
+			else
+			{
+				rgbShader.r = 0xFFFF0000;
+				rgbShader.g = 0xFF00FF00;
+				rgbShader.b = 0xFF0000FF;
+			}
+		} catch (e:Dynamic) {
+			trace('Error setting RGB values: ' + e);
+			// rgbShader.enabled = false;
 		}
 	}
 
@@ -572,6 +577,31 @@ class Note extends NoteObject
 		}
 
 		return value;
+	}
+
+	public function resetNote(strumTime:Float, noteData:Int, isSustainNote:Bool = false, prevNote:Note = null):Void {
+		this.strumTime = strumTime;
+		this.noteData = noteData;
+		this.isSustainNote = isSustainNote;
+		this.prevNote = prevNote;
+		this.wasGoodHit = false;
+		this.tooLate = false;
+		this.missed = false;
+		this.ignoreNote = false;
+		this.hitByOpponent = false;
+		this.noteWasHit = false;
+		this.spawned = false;
+		this.alpha = 1;
+		this.multAlpha = 1;
+		this.scale.set(1, 1);
+		this.visible = true;
+		this.active = true;
+		this.exists = true;
+	
+		// Reset any other necessary properties
+		if (isSustainNote && prevNote != null) {
+			prevNote.nextNote = this;
+		}
 	}
 
 	public function new(?strumTime:Float = -1, ?noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inEditor:Bool = false, ?createdFrom:Dynamic = null)
