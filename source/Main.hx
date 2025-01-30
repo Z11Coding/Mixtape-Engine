@@ -176,8 +176,7 @@ class Main extends Sprite
 	}
 
 	private function setupGame():Void
-	{ 
-		// var tel = new HxTelemetry();
+	{
 		// trace(StateCollector.collectStates());
 		// trace(StateCollector.collectFlxStates());
 		if (cmdArgs.indexOf('check') != -1)

@@ -3429,10 +3429,6 @@ class HScriptLegacy
 		#end
 		interp.variables.set('ShaderFilter', openfl.filters.ShaderFilter);
 		interp.variables.set('StringTools', StringTools);
-		interp.variables.set('Reflect', Reflect);
-		interp.variables.set('Std', Std);
-		interp.variables.set('Type', Type);
-		interp.variables.set('NewLua', FunkinLua);
 
 		interp.variables.set('setVar', function(name:String, value:Dynamic)
 		{

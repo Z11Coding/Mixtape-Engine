@@ -11350,7 +11350,7 @@ class PlayState extends MusicBeatState
 		if (excludeValues == null)
 			excludeValues = [LuaUtils.Function_Continue];
 
-		var arr:Array<LuaScript> = [];
+		var arr:Array<FunkinLua> = [];
 		for (script in luaArray)
 		{ var script:Dynamic = cast(script);
 			if (script.closed)
