@@ -463,8 +463,6 @@ class Note extends NoteObject
 		'GF Duet'
 	];
 
-	public var isSustainEnd:Bool = false;
-
 	private function set_multSpeed(value:Float):Float {
 		resizeByRatio(value / multSpeed);
 		multSpeed = value;

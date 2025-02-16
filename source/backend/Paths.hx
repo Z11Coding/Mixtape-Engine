@@ -24,8 +24,16 @@ import states.CacheState;
 
 class Paths
 {
+	inline public static var IMAGE_EXT = "png";
 	inline public static var SOUND_EXT = #if web "mp3" #else "ogg" #end;
 	inline public static var VIDEO_EXT = "mp4";
+	public static final HSCRIPT_EXTENSIONS:Array<String> = ["hscript", "hxs", "hx"];
+	public static final LUA_EXTENSIONS:Array<String> = ["lua"];
+	public static final SCRIPT_EXTENSIONS:Array<String> = [
+		"hscript",
+		"hxs",
+		"hx",
+		#if LUA_ALLOWED "lua" #end]; // TODo: initialize this by combining the top 2 vars ^
 
 	public static function excludeAsset(key:String)
 	{
@@ -51,6 +59,42 @@ class Paths
 
 		// run the garbage collector for good measure lmfao
 		System.gc();
+	}
+
+	public static function getFileWithExtensions(scriptPath:String, extensions:Array<String>) {
+		for (fileExt in extensions) {
+			var baseFile:String = '$scriptPath.$fileExt';
+			for (file in [#if MODS_ALLOWED Paths.modFolders(baseFile), #end Paths.getSharedPath(baseFile)]) {
+				if (Paths.exists(file))
+					return file;
+			}
+		}
+
+		return null;
+	}
+
+	public static function isHScript(file:String){
+		for(ext in Paths.HSCRIPT_EXTENSIONS)
+			if(file.endsWith('.$ext'))
+				return true;
+		
+		return false;
+	}
+	public inline static function getHScriptPath(scriptPath:String)
+	{
+		#if HSCRIPT_ALLOWED
+		return getFileWithExtensions(scriptPath, Paths.HSCRIPT_EXTENSIONS);
+		#else
+		return null;
+		#end
+	}
+
+	public inline static function getLuaPath(scriptPath:String) {
+		#if LUA_ALLOWED
+		return getFileWithExtensions(scriptPath, Paths.LUA_EXTENSIONS);
+		#else
+		return null;
+		#end
 	}
 
 	// define the locally tracked assets
@@ -97,7 +141,6 @@ class Paths
 	}
 
 	static public var currentLevel:String;
-
 	static public function setCurrentLevel(name:String)
 		currentLevel = name.toLowerCase();
 

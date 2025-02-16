@@ -15,7 +15,6 @@ class ShadersHandler
 	public static var visualizer:ShaderFilter = new ShaderFilter(new shaders.VisualizerShader());
 	public static var heatwaveShader:ShaderFilter = new ShaderFilter(new shaders.HeatwaveShader().shader);
 	public static var rainShader:RainShader;
-	public static var motionBlur:shaders.MotionBlur;
     // public static var rtxShader:RTX = new RTX();
 
 	public static function setupRainShader()

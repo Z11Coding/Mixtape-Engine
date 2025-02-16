@@ -38,7 +38,8 @@ class FirstCheckState extends MusicBeatState
     }
 
 	override public function create()
-	{ backend.window.Priority.setPriority(0);
+	{ 
+		backend.window.Priority.setPriority(0);
 		if (gameInitialized && !relaunch)
 		{
 			lime.app.Application.current.window.alert("You cannot access this state. It is for initialization only.", "Debug");

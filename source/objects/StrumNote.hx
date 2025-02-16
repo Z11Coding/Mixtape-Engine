@@ -6,10 +6,7 @@ import flixel.addons.plugin.FlxMouseControl;
 
 import shaders.RGBPalette;
 import shaders.RGBPalette.RGBShaderReference;
-
 import backend.math.Vector3;
-
-using StringTools;
 
 class StrumNote extends NoteObject
 {

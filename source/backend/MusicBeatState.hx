@@ -123,7 +123,8 @@ class MusicBeatState extends FlxState
 	}
 
 	override function destroy()
-	{	MemoryUtil.clearMajor();
+	{	
+		MemoryUtil.clearMajor();
 		MemoryUtil.clearMinor();
 			var clearfuck:yutautil.MemoryHelper = new yutautil.MemoryHelper();
 		clearfuck.clearClassObject(Type.getClass(this));
@@ -132,7 +133,7 @@ class MusicBeatState extends FlxState
 		// trace("Dealing with the rest...");
 		// backend.ImageCache.SpriteManager.disposeAllSprites(this);
 		// trace("Done!");
-	super.destroy();
+		super.destroy();
 	}
 
 	private function updateSection():Void
@@ -168,7 +169,7 @@ class MusicBeatState extends FlxState
 		if(curSection > lastSection) sectionHit();
 	}
 
-	    /**
+	/**
      * Plays music and sets the BPM for the Conductor.
      * @param musicPath The path to the music file.
      * @param bpm The beats per minute to set for the Conductor.

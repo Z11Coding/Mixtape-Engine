@@ -257,8 +257,6 @@ class PlayState extends MusicBeatState
 	public var MaxHP:Float = 2;
 	public var extraHealth:Float = 0;
 	public var noHeal:Bool = false;
-	public var combo:Int = 0;
-	public var comboOpp:Int = 0;
 
 	public var healthBar:Bar;
 	public var healthBar2:Bar;
@@ -267,8 +265,6 @@ class PlayState extends MusicBeatState
 	var songPercent:Float = 0;
 
 	public var timeBar:Bar;
-
-	public var ratingsData:Array<Rating> = Rating.loadDefault();
 
 	public static var mania:Int = -1;
 
@@ -323,6 +319,20 @@ class PlayState extends MusicBeatState
 	public var botplaySine:Float = 0;
 	public var botplayTxt:FlxText;
 
+	public var ratingsData:Array<Rating> = Rating.loadDefault();
+    
+    public var combo:Int = 0;
+	public var songScore:Int = 0;
+	public var songHits:Int = 0;
+	public var songMisses:Int = 0;
+	
+	public var comboOpp:Int = 0;
+	
+	public var gfBopCombo:Int = 0;
+	public var gfBopComboBest:Int = 0;
+	public var gfHits:Int = 0;
+	public var gfMisses:Int = 0;
+
 	// Debug buttons
 	private var debugKeysChart:Array<FlxKey>;
 	private var debugKeysCharacter:Array<FlxKey>;
@@ -340,13 +350,6 @@ class PlayState extends MusicBeatState
 	public var camDialogue:FlxCamera;
 	public var cameraSpeed:Float = 1;
 
-	public var songScore:Int = 0;
-	public var gfBopCombo:Int = 0;
-	public var gfBopComboBest:Int = 0;
-	public var songHits:Int = 0;
-	public var gfHits:Int = 0;
-	public var songMisses:Int = 0;
-	public var gfMisses:Int = 0;
 	public var scoreTxt:FlxText;
 	public var playerScoreTxt:FlxText;
 	public var opponentScoreTxt:FlxText;
@@ -415,7 +418,6 @@ class PlayState extends MusicBeatState
 
 	// Less laggy controls
 	public var keysArray:Array<Dynamic>;
-
 	private var controlArray:Array<String>;
 
 	// aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
@@ -428,7 +430,6 @@ class PlayState extends MusicBeatState
 	public var camDialoguefilters:Array<BitmapFilter> = [];
 
 	var ch = 2 / 1000;
-
 	public var shaderUpdates:Array<Float->Void> = [];
 
 	var metadata:MetadataFile;
@@ -536,7 +537,6 @@ class PlayState extends MusicBeatState
 	public var blammedLightsBlack:FlxSprite;
 
 	private var timerExtensions:Array<Float>;
-
 	public var maskedSongLength:Float = -1;
 
 	// things from trials
@@ -1733,7 +1733,9 @@ class PlayState extends MusicBeatState
 		}
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
+		
 		// PRECACHING THINGS THAT GET USED FREQUENTLY TO AVOID LAGSPIKES
+		
 		if (ClientPrefs.data.hitsoundVolume > 0)
 			Paths.sound('hitsound');
 		if (!ClientPrefs.data.ghostTapping)
@@ -1751,6 +1753,7 @@ class PlayState extends MusicBeatState
 			Paths.music(PauseSubState.songName);
 		else if (Paths.formatToSongPath(ClientPrefs.data.pauseMusic) != 'none')
 			Paths.music(Paths.formatToSongPath(ClientPrefs.data.pauseMusic));
+		
 		resetRPC();
 		#if sys
 		ArtemisIntegration.setDadName(SONG.player2);
