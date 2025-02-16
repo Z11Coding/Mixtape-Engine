@@ -85,8 +85,6 @@ typedef SpeedEvent =
 	speed:Float // speed mult after the change
 }
 
-typedef LuaScript = flixel.util.typeLimit.OneOfTwo<FunkinLua, LegacyFunkinLua>;
-
 class PlayState extends MusicBeatState
 {
 	private var specialOverlays:FlxTypedGroup<FlxSprite>;
