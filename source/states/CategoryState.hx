@@ -2,21 +2,31 @@ package states;
 import flixel.input.keyboard.FlxKey;
 import flixel.addons.transition.FlxTransitionableState;
 import backend.WeekData;
+
+typedef Category = {
+	var name:String;
+	var transition:Void -> Void;
+	var isLocked:Bool;
+}
 class CategoryState extends MusicBeatState
 {
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 	var grpLocks:FlxTypedGroup<FlxSprite>;
 
-	public static var menuItems:Array<String> = [
-		"All", "Base"
+	public var menuItems:Array<String> = [
+		"All", "Base", "Erect", "Pico"
 	];
 	private var showMods:Bool = true;
 	private var showSecrets:Bool = true;
 	private var showAll:Bool = true;
+	private var softCoded:Bool = true;
 
 	//I'll softcode this eventually
-	public static var menuLocks:Array<Bool> = [
-		false, false
+	public var menuLocks:Array<Bool> = [
+		false, false, false, false
+	];
+	public var specialOptions:Array<Void -> Void> = [
+		//function() { FlxG.switchState(new FreeplayState()); }
 	];
 
 	private var hhhhhh:Bool = true;
@@ -31,13 +41,20 @@ class CategoryState extends MusicBeatState
 	var allowedKeys:String = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 	var easterEggKeysBuffer:String = '';
 
-	public function new(?categories:Dynamic, ?showmods:Bool = true, ?showsecrets:Bool = true, ?showall:Bool = true, ?h:Bool = true)
-	{
+	// TODO: later, change to OneOfTwo<Array<String>, Map<String, Void -> Bool>> for categories, so it specifies that it must be one of the two types.
+
+	public function new(?categories:Dynamic, ?showmods:Bool = true, ?showsecrets:Bool = true, ?showall:Bool = true, ?h:Bool = true, ?softCoded:Bool = true) {
 		super();
+		this.softCoded = softCoded;
 		if (categories != null) {
+			menuItems = [];
 			if (Std.is(categories, Array)) {
 				menuItems = categories;
-			} else if (Std.is(categories, Map)) {
+				menuLocks = [];
+				for (i in 0...menuItems.length) {
+					menuLocks.push(false);
+				}
+			} else if (categories.isMap()) {
 				menuItems = [];
 				menuLocks = [];
 				for (key in categories.toIterable()) {
@@ -51,15 +68,24 @@ class CategoryState extends MusicBeatState
 						throw "CategoryState: 'categories' Map values must be either Bool or Void -> Bool!";
 					}
 				}
+			} else if (Reflect.isObject(categories)) {
+				var category:Category = cast categories;
+				menuItems = [category.name];
+				menuLocks = [category.isLocked];
+				if (category.transition != null) {
+					specialOptions.push(category.transition);
+				} else {
+					specialOptions.push(null);
+				}
 			} else {
-				throw "CategoryState: 'categories' must be either an Array<String> or a Map<String, Void -> Bool>!";
+				throw "CategoryState: 'categories' must be either an Array<String>, a Map<String, Void -> Bool>, or a Category!";
 			}
 		}
 		this.showMods = showmods;
 		this.showSecrets = showsecrets;
 		this.showAll = showall;
 		this.hhhhhh = h;
-
+	
 		if (menuItems.contains("All") && !showAll) {
 			throw "CategoryState: 'All' category is disabled, yet it's in the menuItems array!";
 		}
@@ -69,9 +95,8 @@ class CategoryState extends MusicBeatState
 		if (menuItems.contains("Secrets") && !showSecrets) {
 			throw "CategoryState: 'Secrets' category is disabled, yet it's in the menuItems array!";
 		}
-		if (menuItems.contains(" ") || menuItems.contains("")) {
-			throw "CategoryState: Empty strings are not allowed in the menuItems array!";
-		}
+		// menuItems.mapIfBreak(it -> it.isEmpty(), throw "CategoryState: Empty strings are not allowed in the menuItems array!");
+	
 		if (menuItems.contains("h?")) {
 			if (h) {
 				throw "CategoryState: 'h?' category is reserved for a secret!";
@@ -83,12 +108,15 @@ class CategoryState extends MusicBeatState
 
 	override function create()
 	{
+		// if (APEntryState.inArchipelagoMode && !(this is APCategoryState)) {
+		// 	FlxG.switchState(new states.FreeplayState());
+		// 	return;
+		// }
 		MemoryUtil.clearMajor();
-		menuItems.remove("");
-		menuItems.remove(" ");
+		menuItems = menuItems.filter(it -> (!it.isEmpty() && Alphabet.isValidText(it)));
 		FlxTransitionableState.skipNextTransOut = false;
 
-		if (FlxG.save.data.gotIntoAnArgument) menuItems.push("Secrets");
+		if (showSecrets && FlxG.save.data.gotIntoAnArgument) menuItems.insert(menuItems.length+1, "Secrets");
 
 		WeekData.reloadWeekFiles(false);
 		var weeks:Array<WeekData> = [];
@@ -125,6 +153,7 @@ class CategoryState extends MusicBeatState
 			existingCategories.push(item.toLowerCase());
 		}
 
+			if (softCoded)
 		for (week in weeks) {
 			if (week.category != null && !existingCategories.contains(week.category.toLowerCase())) {
 				menuItems.push(week.category);
@@ -268,6 +297,10 @@ class CategoryState extends MusicBeatState
 				{
 					Window.alert('h?', 'h?');
 					Main.closeGame();
+				}
+				else if (curSelected < specialOptions.length && specialOptions[curSelected] != null)
+				{
+					specialOptions[curSelected]();
 				}
 				else
 				{
